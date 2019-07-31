@@ -45,15 +45,10 @@ from six import StringIO
 
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Storage                  import PkgInfo
-from ToolBOSCore.Storage                  import UserSrcPHP
 from ToolBOSCore.Storage                  import CMakeLists
 from ToolBOSCore.Storage.PkgInfoInterface import PkgInfoInterface
-from ToolBOSCore.Storage.PkgInfoWriter    import PkgInfoWriter
-from ToolBOSCore.Storage.UserInstallPHP   import UserInstallPHP
 from ToolBOSCore.Storage                  import VersionControl
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Util                     import Any, FastScript
 
 
 
@@ -182,190 +177,6 @@ class PatchSystem( object ):
         if oldContent.find( 'bst_build_wrapper' ) == -1:
             shutil.copyfile( template, fileName )
             return [ fileName ]
-        else:
-            return False
-
-
-    def _patchCIA892( self, dryRun=False ):
-        """
-            Extract information from legacy ./install/userSrc.php and convert
-            it to ./pkgInfo.py.
-        """
-        oldFile = './install/userSrc.php'
-        newFile = './pkgInfo.py'
-
-        if not os.path.exists( oldFile ):
-            return False
-
-        if os.path.exists( newFile ):
-            logging.debug( '%s: File exists (assuming is already up-to-date)',
-                           newFile )
-            return False
-
-        xmlData = UserSrcPHP.getUserSrcAsXML( oldFile )
-        Any.requireIsTextNonEmpty( xmlData )
-
-        envVars  = UserSrcPHP.getEnvSettingsFromUserSrcContent( xmlData )
-        aliases  = UserSrcPHP.getAliasesFromUserSrcContent( xmlData )
-        bashCode = UserSrcPHP.getBashCodeFromUserSrcContent( xmlData )
-        cmdCode  = UserSrcPHP.getCmdCodeFromUserSrcContent( xmlData )
-
-
-        if not envVars and not aliases and not bashCode and not cmdCode:
-            # user had a boilerplate userSrc.php with no settings, we can
-            # safely remove it
-
-            if not dryRun:
-                logging.info( 'no user code found (just boilerplate)' )
-                logging.info( 'no need to generate %s', newFile )
-                FastScript.remove( oldFile )
-                try:
-                    vcs = VersionControl.auto()
-                    vcs.remove( oldFile )
-                except subprocess.CalledProcessError:
-                    pass
-
-            return [ oldFile ]
-
-
-        p = PkgInfoWriter( self.details, sourceTree=True )
-
-        if os.path.exists( newFile ):
-            content = FastScript.getFileContent( newFile )
-        else:
-            content = p.addLeadIn()
-
-        table = {}
-
-        if envVars:
-            logging.info( 'converting settings from userSrc.php (env. variables)' )
-            table[ 'envVars' ] = envVars
-
-        if aliases:
-            logging.info( 'converting settings from userSrc.php (aliases)' )
-            table[ 'aliases' ] = aliases
-
-        if bashCode:
-            logging.info( 'converting settings from userSrc.php (Bash code)' )
-            table[ 'bashCode' ] = bashCode
-
-        if cmdCode:
-            logging.info( 'converting settings from userSrc.php (cmd.exe code)' )
-            table[ 'cmdCode' ] = cmdCode
-
-        content += p.writeTable( table )
-
-
-        # replace legacy variable names
-        content = content.replace( '${PROJECT_START_PATH}', '${SIT}/${PACKAGE_CATEGORY}' )
-        content = content.replace( '${PROJECT_NAME}', '${PACKAGE_NAME}' )
-        content = content.replace( '${FULL_VERSION}', '${PACKAGE_VERSION}' )
-
-        content = content.replace( '${SIT}/${PACKAGE_CATEGORY}/${PACKAGE_NAME}/${PACKAGE_VERSION}',
-                                   '${INSTALL_ROOT}' )
-
-        if not dryRun:
-            FastScript.setFileContent( newFile, content )
-
-            output = StringIO()
-            try:
-                vcs = VersionControl.auto()
-                vcs.add( newFile, output=output )
-            except subprocess.CalledProcessError:
-                pass
-
-        return [ oldFile, newFile ]
-
-
-    def _patchCIA894( self, dryRun=False ):
-        """
-            Extract information from legacy ./install/userInstall.php and
-            convert it to ./pkgInfo.py.
-        """
-        oldFile = './install/userInstall.php'
-        newFile = './pkgInfo.py'
-
-        if not os.path.exists( oldFile ):
-            return False
-
-        if os.path.exists( newFile ):
-            logging.debug( '%s: File exists (assuming is already up-to-date)',
-                           newFile )
-            return False
-
-        uiPHP = UserInstallPHP( oldFile )
-
-        linkAllLibraries     = uiPHP.linkAllLibraries()
-        usePatchlevelHandler = uiPHP.usePatchlevelHandler()
-        install              = uiPHP.install()
-        installMatching      = uiPHP.installMatching()
-        umask                = uiPHP.umask()
-
-        if not linkAllLibraries and not usePatchlevelHandler and \
-           not install and not installMatching and not umask:
-            # user had a boilerplate userInstall.php with no settings, we can
-            # safely remove it
-
-            return []
-
-
-        p = PkgInfoWriter( self.details, sourceTree=True )
-
-        modified = False
-
-        if os.path.exists( newFile ):
-            p.setContent( newFile )
-        else:
-            p.setLeadIn()
-
-
-        def _keyDefined( key ):
-            try:
-                value = PkgInfo.getPkgInfoContent()[ key ]
-                return True
-            except ( AssertionError, IOError, KeyError ):
-                return False
-
-        if linkAllLibraries and not _keyDefined( 'linkAllLibraries' ):
-            modified = True
-            logging.info( 'found LinkAllLibraries' )
-            p.setLinkAllLibraries( True )
-
-        if usePatchlevelHandler and not _keyDefined( 'usePatchlevels' ):
-            modified = True
-            logging.info( 'found patchlevel handler' )
-            p.setUsePatchlevelSystem( True )
-
-        if umask and not _keyDefined( 'installUmask' ):
-            modified = True
-            logging.info( 'found umask setting' )
-            p.setInstallUmask( umask )
-
-        if install and not _keyDefined( 'install' ):
-            modified = True
-            logging.info( 'found copy-statements' )
-            p.setInstall( install )
-
-        if installMatching and not _keyDefined( 'installMatching' ):
-            modified = True
-            logging.info( 'found copyMatching-statements' )
-            p.setInstallMatching( installMatching )
-
-        p.setLeadOut()
-
-
-        if not dryRun:
-            FastScript.setFileContent( newFile, p.content )
-
-            output = StringIO()
-            try:
-                vcs = VersionControl.auto()
-                vcs.add( newFile, output=output )
-            except subprocess.CalledProcessError:
-                pass
-
-        if modified:
-            return [ newFile ]
         else:
             return False
 
@@ -863,14 +674,6 @@ class PatchSystem( object ):
                    ( 'update MEX building rules in H.Dot packages (CIA-868)',
                      self._patchCIA868,
                      'updated Matlab wrapper build rules (CIA-868)' ),
-
-                   ( 'convert ./install/userSrc.php --> ./pkgInfo.py (CIA-892)',
-                     self._patchCIA892,
-                     'converted ./install/userSrc.php --> ./pkgInfo.py (CIA-892)' ),
-
-                   ( 'convert ./install/userInstall.php --> ./pkgInfo.py (CIA-894)',
-                     self._patchCIA894,
-                     'converted ./install/userInstall.php --> ./pkgInfo.py (CIA-894)' ),
 
                    ( 'pre-configure.sh update (CIA-923)',
                       self._patchCIA923,

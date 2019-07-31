@@ -41,7 +41,6 @@ import subprocess
 
 from ToolBOSCore.Packages        import ProjectProperties
 from ToolBOSCore.Storage         import CMakeLists
-from ToolBOSCore.Storage         import UserSrcPHP
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
 from ToolBOSCore.Util            import Any
 from ToolBOSCore.Util            import FastScript
@@ -315,7 +314,6 @@ class PackageDetector( object ) :
             corresponding member fields.
         """
         self._parseCMakeLists()
-        self._parseUserSrc()
         self._parsePkgInfo()
         self._getInheritedProjects()
 
@@ -473,6 +471,7 @@ class PackageDetector( object ) :
         self.gitRelPath        = getValue( 'repoRelPath',      self.gitRelPath )
         self.packageName       = getValue( 'package',          self.packageName ) # legacy 2018-09-26
 
+        # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
         self.useClang          = getValue( 'BST_useClang',     self.useClang )
         self.buildDependencies = getValue( 'buildDepends',     self.buildDependencies )
@@ -543,23 +542,6 @@ class PackageDetector( object ) :
 
         Any.requireIsIn( self.installMode, ( 'clean', 'incremental' ),
                          'invalid value of "installMode" in pkgInfo.py' )
-
-
-    def _parseUserSrc( self ):
-        # the userSrc.php files are optional
-        filename = os.path.join( self.topLevelDir, 'install', 'userSrc.php' )
-
-        if not os.path.isfile( filename ):
-            return
-
-        logging.debug( 'reading %s', filename )
-        self.userSrcContent = UserSrcPHP.getUserSrcAsXML( filename )
-
-        if self.userSrcContent:
-            self.userSrcEnv      = UserSrcPHP.getEnvSettingsFromUserSrcContent( self.userSrcContent )
-            self.userSrcAlias    = UserSrcPHP.getAliasesFromUserSrcContent( self.userSrcContent )
-            self.userSrcBashCode = UserSrcPHP.getBashCodeFromUserSrcContent( self.userSrcContent )
-            self.userSrcCmdCode  = UserSrcPHP.getCmdCodeFromUserSrcContent( self.userSrcContent )
 
 
     def _retrieveCurrentUser( self ):
