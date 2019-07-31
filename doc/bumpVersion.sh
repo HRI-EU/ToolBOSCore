@@ -34,20 +34,17 @@
 #
 
 
-OLD_VERSION=3[.]0
-NEW_VERSION=3.1
+OLD_VERSION=3[.]1
+NEW_VERSION=3.2
 
 
 sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
                                           bin/ToolBOS-Setup.py \
-                                          etc/mako-templates/JetBrains_CLion_Config/workspace.xml.mako \
                                           etc/ToolBOS.conf \
                                           doc/documentation.h \
                                           include/ToolBOSCore/Settings/ToolBOSSettings.py
 
-source useFromHere.sh
-
-./test/PackageCreator/General/CreateGroundTruthData.py
+#                                          etc/mako-templates/JetBrains_CLion_Config/workspace.xml.mako \
 
 
 # EOF

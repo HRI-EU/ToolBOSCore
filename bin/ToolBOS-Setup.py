@@ -70,12 +70,12 @@ sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 sourced = False
 
 for directory in sys.path:
-    if directory.endswith( 'ToolBOSCore/3.1/include' ):
+    if directory.endswith( 'ToolBOSCore/3.2/include' ):
         sourced = True
 
 if not sourced:
     print( "\nPlease run the following command first:" )
-    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.1/BashSrc\n" )
+    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc\n" )
     sys.exit( -1 )
 
 
