@@ -1,0 +1,16 @@
+usage: SVNImport.py [-h] [-v]
+
+Imports everything from the current directory into SVN. The install
+category information is taken from the CMakeLists.txt file so please
+check it before. To import a package, please call this script from the
+directory which has all the version directories inside (see example).
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --verbose  show debug messages
+
+examples:
+  cd MyPackage
+  SVNImport.py
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

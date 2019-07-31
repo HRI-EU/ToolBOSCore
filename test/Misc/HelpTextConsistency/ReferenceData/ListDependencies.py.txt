@@ -1,0 +1,26 @@
+usage: ListDependencies.py [-h] [-d] [-f] [-l] [-m] [-r] [-v] package
+
+Lists the dependencies of a package, taken from the pkgInfo.py files
+in the Software Installation Tree (SIT). By default each package
+appears only once for better readability.
+
+positional arguments:
+  package             absolute or canonical package path
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -d, --direct        direct dependencies only, exclude transitive ones
+  -f, --full          show full tree (default: suppress duplicates)
+  -l, --list          show as list (default: show as tree)
+  -m, --missing-only  only list missing (implies "--list" and "--direct")
+  -r, --reverse       find out who is depending on package
+  -v, --verbose       show debug messages
+
+examples:
+  ListDependencies.py .
+  ListDependencies.py Libraries/MasterClock/1.6
+  ListDependencies.py ${SIT}/Libraries/MasterClock/1.6
+  ListDependencies.py -f /hri/sit/latest/Libraries/MasterClock/1.6
+  ListDependencies.py -r sit://Libraries/MasterClock/1.6
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

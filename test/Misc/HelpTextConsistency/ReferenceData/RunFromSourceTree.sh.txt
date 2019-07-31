@@ -1,0 +1,19 @@
+
+This script tests for the ./install/BashSrc, creates it if not 
+present, sets the LD_LIBRARY_PATH to the local ./lib/<platform> 
+directory and executes the specified program.
+
+Usage: RunFromSourceTree.sh <executable>
+
+Parameters:
+        executable      the file to be executed
+
+Options:
+        -h, --help      display this help and exit
+        -d, --debug     execute under GNU Data Display Debugger (ddd)
+        -p <platform>   run with settings for a different platform
+
+Examples:
+        RunFromSourceTree.sh ./examples/${MAKEFILE_PLATFORM}/myExample
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

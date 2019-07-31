@@ -1,0 +1,10 @@
+
+Launches the PyCharm IDE pre-configured for this package.
+
+Usage: runPyCharm.sh [--help]
+
+options:
+  -h|--help       show this help and exit
+
+Examples: runPyCharm.sh
+

@@ -1,0 +1,15 @@
+usage: MSVC-Setup.py [-h] [-p PATH] [-m MSVC_VERSION] [-v]
+
+Configures the user's shell environment to use MSVC (with Wine).
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PATH, --path PATH  Wine config directory (default: $HOME/.wine)
+  -m MSVC_VERSION, --msvc-version MSVC_VERSION
+                        SDK version to setup (default: 2017)
+  -v, --verbose         show debug messages
+
+examples:
+  MSVC-Setup.py
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

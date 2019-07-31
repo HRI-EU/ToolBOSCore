@@ -1,0 +1,8 @@
+<application>
+  <component name="HttpConfigurable">
+    <option name="USE_HTTP_PROXY" value="true" />
+    <option name="PROXY_HOST" value="hri-proxy.honda-ri.de" />
+    <option name="PROXY_PORT" value="3128" />
+    <option name="PAC_URL" value=" http://hri-proxy.honda-ri.de/proxy.pac" />
+  </component>
+</application>

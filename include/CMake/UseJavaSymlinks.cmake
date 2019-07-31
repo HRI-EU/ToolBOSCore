@@ -1,0 +1,1 @@
+../../external/cmake.org/UseJavaSymlinks.cmake

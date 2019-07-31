@@ -1,0 +1,27 @@
+usage: SVNCheckout.py [-h] [-a] [-g] [-r REVISION] [-u USER] [-v] package
+
+Download the source code of a particular package from SVN. By default
+will fetch the HEAD revision, but with "--global" will checkout the
+revision that was used at last globalinstall time. Please note that
+certain SVN servers may require additional steps before connecting,
+such as setting up "authorized keys" or SSH agents.
+
+positional arguments:
+  package               package (absolute or canonical path)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             checkout full repository (not just specified version)
+  -g, --global          fetch last globally installed revision
+  -r REVISION, --revision REVISION
+                        revision to checkout (default: HEAD)
+  -u USER, --user USER  account name to use for SVN server
+  -v, --verbose         show debug messages
+
+examples:
+  SVNCheckout.py -a Libraries/MasterClock/1.6       # full repository
+  SVNCheckout.py -v -u monthy --global Libraries/MasterClock/1.6
+  SVNCheckout.py ${SIT}/Libraries/MasterClock/1.6
+  SVNCheckout.py -r 30 sit://Libraries/MasterClock/1.6
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

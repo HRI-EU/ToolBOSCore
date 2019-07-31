@@ -1,0 +1,20 @@
+usage: SITDNS.py [-h] [-f FILENAME] [-v] package
+
+Extracts SIT meta-infos (SIT-DNS) for a particular package (and all
+its dependencies), and writes them into a SITDNS file. SITDNS files
+contain "pickled" Python data structures used by CIA and BatchBST.py.
+
+positional arguments:
+  package               package (absolute or canonical path)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILENAME, --filename FILENAME
+                        path to output file (default: <Name>-<Version>.sitdns)
+  -v, --verbose         show debug messages
+
+examples:
+  SITDNS.py Libraries/MasterClock/1.6
+  SITDNS.py -f MasterClock.sitdns Libraries/MasterClock/1.6
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

@@ -1,0 +1,3 @@
+- Libraries/MasterClock/1.6/bin/***
+- Libraries/MasterClock/1.6/lib/***
+

@@ -1,0 +1,21 @@
+usage: AddGlobalInstallLogEntry.py [-h] [-d] [-n] [-t TYPE] [-v]
+                                   installRoot message
+
+This script creates a new global install log entry.
+
+positional arguments:
+  installRoot           install path (e.g. ${SIT}/Libraries/Foo/1.0)
+  message               the log message
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --dry-run         do not write the log entry, just show the information
+                        (for debugging)
+  -n, --new             flag package as "new" (first installation)
+  -t TYPE, --type TYPE  log entry type ("NEW" [=default], "FIX" or "DOC")
+  -v, --verbose         show debug messages
+
+examples:
+  AddGlobalInstallLogEntry.py -d -t FIX "${SIT}/Libraries/Foo/1.0" "Message text"
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

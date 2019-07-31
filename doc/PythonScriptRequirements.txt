@@ -1,0 +1,168 @@
+
+TOOLBOS REQUIREMENTS FOR (MAINTAINABLE) PYTHON SCRIPTS
+======================================================
+
+
+  - file must start with file encoding + copyright header
+
+    #!/usr/bin/env python
+    # -*- coding: utf-8 -*-
+    #
+    #  put short description here
+    #
+    #  <copyright note>
+    #
+    #
+
+
+  - last line in file must be "# EOF" followed by a newline character
+
+
+  - max. line length should be 78 characters (to fit well in terminals),
+    exceptions are fine if they improve readability
+
+
+  - docstring style (indentation, double quotes):
+
+
+    def funcName():
+    """
+        Text
+        ...
+        ...
+    """
+
+
+  - use os.path.join() instead of "x + os.sep + y"
+
+
+  - CLI frontend scripts to be launched by the user (e.g. BST.py,
+    UpdateProxyDir.py,...) must use ToolBOSCore.Util.ArgsManager for common
+    help dialog style and arguments parsing
+
+
+  - status + logging must only be done using Python's logging module, no custom
+    printing (exceptions are possible if log-preamble is undesired,
+    e.g. as in ListDependencies.py)
+
+
+  - scripts should support normal (rather quiet) + verbose (debug messages) mode
+
+
+  - all scripts which use logging must import ToolBOSCore.Util.Any
+
+
+  - logging must only be done via these calls:
+
+    logging.critical()
+    logging.warning()
+    logging.info()
+    logging.debug()
+
+
+  - implementation functions must never exit using sys.exit() but instead
+    throw exceptions, in rare cases they may throw SystemExit
+
+
+  - each function must check its arguments for semantic validity, using
+    functions from ToolBOSCore.Util.Any, e.g.:
+
+    Any.requireIsTextNonEmpty( x )
+    Any.requireIsFileNonEmpty( y )
+
+
+  - before accessing or copying files/directories, their existence needs
+    to be checked , especially if path names are computed
+
+
+  - helper functions must be prefixed with "_" (aka private) and should typically
+    be grouped near the end of the file
+
+
+  - comments must start with single hash (#), not multiple
+
+
+  - variables must use camelcase (e.g. "srcDir", not "srcdir")
+
+
+  - if standard variable names exist, they have to be used:
+    see ${TOOLBOSCORE_ROOT}/doc/Terminology.txt
+
+
+  - as we've learned from PHP scripts: Readability and maintainability
+    matters! Prefer putting spaces, empty lines, more readable code than
+    trying to find the most compact expressions
+
+
+  - separate steps within a function need to be separated by blank line(s),
+    e.g.:
+
+    def foo( params ):
+    '''
+        Documentation
+    '''
+    # parameter checking
+
+    # main logic, step 1
+
+    # main logic, step 2
+
+    # main logic, step 3
+
+    # return result
+
+
+  - maintainability matters, avoid difficult to read expressions, e.g.
+    found in DTBOS.py:
+
+    self.implementationPath = os.path.join(os.sep, \
+    os.path.join(*(self.sourcePath.split(os.sep)[:-1])), \
+    "I" + self.sourcePath.split(os.sep)[-1])
+
+    --> use temporary variables with phony names to store intermediate
+        values
+
+
+  - in a group of assignments, put the '=' below each other for improved
+    readability:
+
+    ugly:
+
+    dataType = childNode.getAttribute('DataType')
+    format = childNode.getAttribute('Format')
+    mandatory = childNode.getAttribute('Mandatory')
+    name = childNode.getAttribute('Name')
+    target = childNode.getAttribute('Target')
+
+
+    nice:
+
+    dataType  = childNode.getAttribute('DataType')
+    format    = childNode.getAttribute('Format')
+    mandatory = childNode.getAttribute('Mandatory')
+    name      = childNode.getAttribute('Name')
+    target    = childNode.getAttribute('Target')
+
+
+  - source code must not have trailing spaces
+
+
+  - use the PyCharms IDE to check for suspicious code and/or errors
+
+
+  - HRI-EU customization: in PyCharms go to File --> Settings --> Inspections
+
+    * enable "Internationalization Issues" --> Lossy encoding
+
+    * enable "Portability issues" --> Inconsistent line separator
+
+    * enable "Python" --> Code compatibility inspection [2.6 and later]
+
+    * enable "Python" --> No encoding specified for file
+
+    * disable "PEP-8 coding style violation"
+
+    * disable "PEP-8 naming convention violation"
+
+
+# EOF
