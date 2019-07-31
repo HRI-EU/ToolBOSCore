@@ -161,8 +161,7 @@ class PatchSystem( object ):
             wrapper generation.
         """
         fileName = 'wrapper/CMakeLists.txt'
-        template = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'etc/mako-templates',
+        template = os.path.join( PackageCreator.templateDir,
                                  'HDot_Component_Evaluation',
                                  'CMakeLists.txt' )
 
