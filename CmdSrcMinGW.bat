@@ -50,7 +50,7 @@
 
 
 :: avoid multiple inclusion
-echo %PATH% | find "DevelopmentTools/ToolBOSCore/3.1" > null
+echo %PATH% | find "DevelopmentTools/ToolBOSCore/3.2" > null
 if %errorlevel% equ 0 ( goto :EOF )
 
 
@@ -101,7 +101,7 @@ if defined SIT_LOCATION (
 
 
 :: Windows requires backslashes
-set TOOLBOSCORE_ROOT=%SIT%\DevelopmentTools\ToolBOSCore\3.1
+set TOOLBOSCORE_ROOT=%SIT%\DevelopmentTools\ToolBOSCore\3.2
 
 :: Run-time libraries paths
 set PATH=%TOOLBOSCORE_ROOT%\bin;%PATH%
@@ -115,7 +115,7 @@ set PYTHONPATH=%TOOLBOSCORE_ROOT%\lib\%MAKEFILE_PLATFORM%;%PYTHONPATH%
 
 
 :: CMake requires forward slashes
-set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.1
+set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.2
 
 
 :: EOF

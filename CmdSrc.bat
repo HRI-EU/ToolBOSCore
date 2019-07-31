@@ -50,7 +50,7 @@
 
 
 :: avoid multiple inclusion
-echo %PATH% | find "DevelopmentTools/ToolBOSCore/3.1" > null
+echo %PATH% | find "DevelopmentTools/ToolBOSCore/3.2" > null
 if %errorlevel% equ 0 ( goto :EOF )
 
 
@@ -99,7 +99,7 @@ if defined SIT_LOCATION (
     set SIT=S:
 )
 
-set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.1
+set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.2
 
 :: Run-time libraries paths
 set PATH=%TOOLBOSCORE_ROOT%\bin;%PATH%
