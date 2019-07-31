@@ -11,9 +11,9 @@ This package contains:
 
 Authors:
 
-* Marcus Stein (coordinator)
-* Roberto Fichera
-* Alessandro Piras
-* Mattia Ziulu
-* Siddhata Naik
+* <a href="https://github.com/MarcusStein">Marcus Stein</a> (coordinator)
+* <a href="https://github.com/robyf70">Roberto Fichera</a>
+* <a href="https://github.com/laynor">Alessandro Piras</a>
+* <a href="https://github.com/mrz">Mattia Ziulu</a>
+* <a href="https://github.com/NaikS8">Siddhata Naik</a>
 * and contributions by several other people
