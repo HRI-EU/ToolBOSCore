@@ -1,0 +1,19 @@
+usage: GitClone.py [-h] [-u USER] [-v] package
+
+Clones the source code of a particular package from its blessed Git
+repository into a local Git repository.
+
+positional arguments:
+  package               absolute or canonical package path
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -u USER, --user USER  account name to use for Git server
+  -v, --verbose         show debug messages
+
+examples:
+  GitClone.py Libraries/MasterClock/1.6
+  GitClone.py ${SIT}/Libraries/MasterClock/1.6
+  GitClone.py -v /hri/sit/latest/Libraries/MasterClock/1.6
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

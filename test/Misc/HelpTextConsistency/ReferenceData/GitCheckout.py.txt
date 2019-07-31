@@ -1,0 +1,23 @@
+usage: GitCheckout.py [-h] [-u USER] [-v] package
+
+Download the source code of a particular package from an SVN server
+into a local git repository (using the git-svn bridge). Mind that git
+will clone the entire repository, so this may take some time and
+diskspace. Please note that certain SVN servers may require additional
+steps before connecting, such as setting up "authorized keys" or SSH
+agents.
+
+positional arguments:
+  package               absolute or canonical package path
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -u USER, --user USER  account name to use for SVN server
+  -v, --verbose         show debug messages
+
+examples:
+  GitCheckout.py Libraries/MasterClock/1.6
+  GitCheckout.py -v -u monthy Libraries/MasterClock/1.6
+  GitCheckout.py ${SIT}/Libraries/MasterClock/1.6
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

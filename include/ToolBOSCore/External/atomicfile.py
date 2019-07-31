@@ -1,0 +1,1 @@
+../../../external/github.com/sashka/atomicfile.py

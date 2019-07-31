@@ -1,0 +1,10 @@
+
+Launches the latest stable version of TotalView
+
+Usage: runTotalView.sh [--help]
+
+options:
+  -h|--help       show this help and exit
+
+Examples: runTotalView.sh
+

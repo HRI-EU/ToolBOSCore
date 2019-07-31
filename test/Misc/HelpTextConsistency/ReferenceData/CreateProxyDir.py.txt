@@ -1,0 +1,24 @@
+usage: CreateProxyDir.py [-h] [-b BUILD] [-g GLOBALDIR] [-p PROXYDIR] [-v]
+
+Create a sandbox for the Software Installation Tree (SIT) in the
+directory specified with -p|--proxyDir, or in the default location
+"/home/<user>/.HRI/sit/<build>" (where <build> will be replaced by the
+SIT release identifier such as "latest").
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b BUILD, --build BUILD
+                        SIT release to use (default: "latest")
+  -g GLOBALDIR, --globalDir GLOBALDIR
+                        path to global SIT (default: /hri/sit/latest)
+  -p PROXYDIR, --proxyDir PROXYDIR
+                        path to proxy SIT (default:
+                        /home/<user>/.HRI/sit/<build>)
+  -v, --verbose         show debug messages
+
+examples:
+  CreateProxyDir.py
+  CreateProxyDir.py -b testing
+  CreateProxyDir.py -g /hri/sit/oldstable -p /tmp/mySIT
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

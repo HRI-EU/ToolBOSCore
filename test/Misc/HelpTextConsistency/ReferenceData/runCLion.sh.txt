@@ -1,0 +1,10 @@
+
+Launches the CLion IDE pre-configured for this package.
+
+Usage: runCLion.sh [--help]
+
+options:
+  -h|--help       show this help and exit
+
+Examples: runCLion.sh
+

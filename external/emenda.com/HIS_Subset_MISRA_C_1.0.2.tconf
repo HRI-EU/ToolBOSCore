@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<errors language="Any" version="1.4">
+    <categories name="HIS Subset MISRA C 1.0.2" locale="en">
+		<error id="MISRA.TOKEN.WRONGESC"/>
+		<error id="MISRA.CHAR.TRIGRAPH"/>
+		<error id="MISRA.DEFINE.LONGNAME"/>
+		<error id="MISRA.IDENT.LONG"/>
+		<error id="MISRA.BUILTIN_NUMERIC"/>
+		<error id="PORTING.SIGNED.CHAR"/>
+		<error id="MISRA.FLOAT.BIT.REPR"/>
+		<error id="MISRA.TYPEDEF.NOT_UNIQUE"/>
+		<error id="MISRA.LITERAL.UNSIGNED.SUFFIX"/>
+		<error id="MISRA.TOKEN.OCTAL.ESCAPE"/>
+		<error id="MISRA.TOKEN.OCTAL.INT"/>
+		<error id="MISRA.FUNC.NOPROT.CALL"/>
+		<error id="MISRA.FUNC.NOPROT.DEF"/>
+		<error id="MISRA.VAR.HIDDEN"/>
+		<error id="MISRA.VAR.MIN.VIS"/>
+		<error id="MISRA.OBJ.TYPE.COMPAT"/>
+		<error id="MISRA.TYPE.NAMECLASH"/>
+		<error id="UNINIT.HEAP.MIGHT"/>
+		<error id="UNINIT.HEAP.MUST"/>
+		<error id="UNINIT.STACK.ARRAY.MIGHT"/>
+		<error id="UNINIT.STACK.ARRAY.MUST"/>
+		<error id="UNINIT.STACK.ARRAY.PARTIAL.MUST"/>
+		<error id="UNINIT.STACK.MIGHT"/>
+		<error id="UNINIT.STACK.MUST"/>
+		<error id="MISRA.INIT.BRACES"/>
+		<error id="MISRA.ENUM.INIT"/>
+		<error id="MISRA.LOGIC.SIDEEFF"/>
+		<error id="MISRA.LOGIC.SIDEEFF.COND"/>
+		<error id="MISRA.LOGIC.PRIMARY"/>
+		<error id="MISRA.ASSIGN.COND"/>
+		<error id="MISRA.LOGIC.OPERAND.NOT_BOOL"/>
+		<error id="MISRA.LOGIC.OPERATOR.NOT_BOOL"/>
+		<error id="MISRA.BITS.NOT_UNSIGNED"/>
+		<error id="MISRA.SHIFT.RANGE"/>
+		<error id="MISRA.UMINUS.UNSIGNED"/>
+		<error id="MISRA.SIZEOF.SIDE_EFFECT"/>
+		<error id="MISRA.COMMA"/>
+		<error id="MISRA.CVALUE.IMPL.CAST"/>
+		<error id="MISRA.CAST.PTR.UNRELATED"/>
+		<error id="MISRA.CAST.PTR_TO_INT"/>
+		<error id="PORTING.VAR.EFFECTS"/>
+		<error id="MISRA.EXPR.PARENS.INSUFFICIENT"/>
+		<error id="MISRA.EXPR.PARENS.REDUNDANT"/>
+		<error id="MISRA.FLOAT_EQUAL"/>
+		<error id="MISRA.COMP.WRAPAROUND"/>
+		<error id="MISRA.ELIF.WRAPAROUND"/>
+		<error id="MISRA.IF.WRAPAROUND"/>
+		<error id="UNREACH.GEN"/>
+		<error id="UNREACH.RETURN"/>
+		<error id="MISRA.STMT.NO_EFFECT"/>
+		<error id="MISRA.NULL.STMT"/>
+		<error id="MISRA.GOTO"/>
+		<error id="MISRA.CONTINUE"/>
+		<error id="MISRA.IF.NO_COMPOUND"/>
+		<error id="MISRA.STMT.NO_COMPOUND"/>
+		<error id="MISRA.IF.NO_ELSE"/>
+		<error id="MISRA.SWITCH.NO_BREAK"/>
+		<error id="MISRA.SWITCH.NODEFAULT"/>
+		<error id="MISRA.SWITCH.BOOL"/>
+		<error id="MISRA.SWITCH.NO_CASE"/>
+		<error id="MISRA.FOR.COND"/>
+		<error id="MISRA.FOR.INCR.CHANGE"/>
+		<error id="MISRA.FOR.STMT.CHANGE"/>
+		<error id="MISRA.DECL.FUNC_LOCAL"/>
+		<error id="MISRA.FUNC.VARARG"/>
+		<error id="MISRA.FUNC.RECUR"/>
+		<error id="MISRA.OBJ.TYPE.IDENT"/>
+		<error id="MISRA.DECL.NO_TYPE"/>
+		<error id="MISRA.FUNC.NO_PARAMS"/>
+		<error id="MISRA.FUNC.UNMATCHED.PARAMS"/>
+		<error id="VOIDRET"/>
+		<error id="MISRA.PPARAM.NEEDS.CONST"/>
+		<error id="FUNCRET.GEN"/>
+		<error id="FUNCRET.IMPLICIT"/>
+		<error id="SV.RVT.RETVAL_NOTTESTED"/>
+		<error id="MISRA.INCL.INSIDE"/>
+		<error id="MISRA.INCL.SYMS"/>
+		<error id="MISRA.INCL.BAD"/>
+		<error id="MISRA.DEFINE.BADEXP"/>
+		<error id="MISRA.DEFINE.NOTGLOBAL"/>
+		<error id="MISRA.UNDEF.NOTGLOBAL"/>
+		<error id="MISRA.DEFINE.FUNC"/>
+		<error id="MISRA.EXPANSION.NARGS"/>
+		<error id="MISRA.EXPANSION.DIRECTIVE"/>
+		<error id="MISRA.DEFINE.NOPARS"/>
+		<error id="MISRA.ELIF.UNDEF"/>
+		<error id="MISRA.DEFINE.SHARP.MANY"/>
+		<error id="MISRA.PRAGMA"/>
+		<error id="MISRA.ELIF.DEFINED"/>
+		<error id="MISRA.IF.DEFINED"/>
+		<error id="MISRA.PTR.TO_PTR_TO_PTR"/>
+		<error id="MISRA.CAST.FUNC_PTR"/>
+		<error id="LOCRET.ARG"/>
+		<error id="LOCRET.GLOB"/>
+		<error id="LOCRET.RET"/>
+		<error id="NPD.GEN.MUST"/>
+		<error id="MISRA.ASSIGN.OVERLAP"/>
+		<error id="MISRA.BITFIELD.SIGNED"/>
+		<error id="MISRA.BITFIELD.SIGNED.UNNAMED"/>
+		<error id="MISRA.DEFINE.WRONGNAME"/>
+		<error id="MISRA.DEFINE.WRONGNAME.UNDERSCORE"/>
+		<error id="MISRA.EXPANSION.UNSAFE"/>
+		<error id="MISRA.INCL.UNSAFE"/>
+		<error id="MISRA.STDLIB.WRONGNAME"/>
+		<error id="MISRA.STDLIB.WRONGNAME.UNDERSCORE"/>
+		<error id="MISRA.STDLIB.MEMORY"/>
+		<error id="MISRA.STDLIB.ERRNO"/>
+		<error id="MISRA.STDLIB.LONGJMP"/>
+		<error id="MISRA.STDLIB.SIGNAL"/>
+		<error id="MISRA.STDLIB.STDIO"/>
+		<error id="MISRA.STDLIB.ATOI"/>
+		<error id="MISRA.STDLIB.ABORT"/>
+
+		<errorAttr id="MISRA.TOKEN.WRONGESC" metainfo="HIS Subset MISRA C 1.0.2 Rule 5"/>
+		<errorAttr id="MISRA.CHAR.TRIGRAPH" metainfo="HIS Subset MISRA C 1.0.2 Rule 7"/>
+		<errorAttr id="MISRA.DEFINE.LONGNAME" metainfo="HIS Subset MISRA C 1.0.2 Rule 11"/>
+		<errorAttr id="MISRA.IDENT.LONG" metainfo="HIS Subset MISRA C 1.0.2 Rule 11"/>
+		<errorAttr id="MISRA.BUILTIN_NUMERIC" metainfo="HIS Subset MISRA C 1.0.2 Rule 13"/>
+		<errorAttr id="PORTING.SIGNED.CHAR" metainfo="HIS Subset MISRA C 1.0.2 Rule 14"/>
+		<errorAttr id="MISRA.FLOAT.BIT.REPR" metainfo="HIS Subset MISRA C 1.0.2 Rule 16"/>
+		<errorAttr id="MISRA.TYPEDEF.NOT_UNIQUE" metainfo="HIS Subset MISRA C 1.0.2 Rule 17"/>
+		<errorAttr id="MISRA.LITERAL.UNSIGNED.SUFFIX" metainfo="HIS Subset MISRA C 1.0.2 Rule 18"/>
+		<errorAttr id="MISRA.TOKEN.OCTAL.ESCAPE" metainfo="HIS Subset MISRA C 1.0.2 Rule 19"/>
+		<errorAttr id="MISRA.TOKEN.OCTAL.INT" metainfo="HIS Subset MISRA C 1.0.2 Rule 19"/>
+		<errorAttr id="MISRA.FUNC.NOPROT.CALL" metainfo="HIS Subset MISRA C 1.0.2 Rule 20, 71"/>
+		<errorAttr id="MISRA.FUNC.NOPROT.DEF" metainfo="HIS Subset MISRA C 1.0.2 Rule 20, 71"/>
+		<errorAttr id="MISRA.VAR.HIDDEN" metainfo="HIS Subset MISRA C 1.0.2 Rule 21"/>
+		<errorAttr id="MISRA.VAR.MIN.VIS" metainfo="HIS Subset MISRA C 1.0.2 Rule 22"/>
+		<errorAttr id="MISRA.OBJ.TYPE.COMPAT" metainfo="HIS Subset MISRA C 1.0.2 Rule 26"/>
+		<errorAttr id="MISRA.TYPE.NAMECLASH" metainfo="HIS Subset MISRA C 1.0.2 Rule 29"/>
+		<errorAttr id="UNINIT.HEAP.MIGHT" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="UNINIT.HEAP.MUST" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="UNINIT.STACK.ARRAY.MIGHT" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="UNINIT.STACK.ARRAY.MUST" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="UNINIT.STACK.ARRAY.PARTIAL.MUST" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="UNINIT.STACK.MIGHT" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="UNINIT.STACK.MUST" metainfo="HIS Subset MISRA C 1.0.2 Rule 30"/>
+		<errorAttr id="MISRA.INIT.BRACES" metainfo="HIS Subset MISRA C 1.0.2 Rule 31"/>
+		<errorAttr id="MISRA.ENUM.INIT" metainfo="HIS Subset MISRA C 1.0.2 Rule 32"/>
+		<errorAttr id="MISRA.LOGIC.SIDEEFF" metainfo="HIS Subset MISRA C 1.0.2 Rule 33"/>
+		<errorAttr id="MISRA.LOGIC.SIDEEFF.COND" metainfo="HIS Subset MISRA C 1.0.2 Rule 33"/>
+		<errorAttr id="MISRA.LOGIC.PRIMARY" metainfo="HIS Subset MISRA C 1.0.2 Rule 34"/>
+		<errorAttr id="MISRA.ASSIGN.COND" metainfo="HIS Subset MISRA C 1.0.2 Rule 35"/>
+		<errorAttr id="MISRA.LOGIC.OPERAND.NOT_BOOL" metainfo="HIS Subset MISRA C 1.0.2 Rule 36"/>
+		<errorAttr id="MISRA.LOGIC.OPERATOR.NOT_BOOL" metainfo="HIS Subset MISRA C 1.0.2 Rule 36"/>
+		<errorAttr id="MISRA.BITS.NOT_UNSIGNED" metainfo="HIS Subset MISRA C 1.0.2 Rule 37"/>
+		<errorAttr id="MISRA.SHIFT.RANGE" metainfo="HIS Subset MISRA C 1.0.2 Rule 38"/>
+		<errorAttr id="MISRA.UMINUS.UNSIGNED" metainfo="HIS Subset MISRA C 1.0.2 Rule 39"/>
+		<errorAttr id="MISRA.SIZEOF.SIDE_EFFECT" metainfo="HIS Subset MISRA C 1.0.2 Rule 40"/>
+		<errorAttr id="MISRA.COMMA" metainfo="HIS Subset MISRA C 1.0.2 Rule 42"/>
+		<errorAttr id="MISRA.CVALUE.IMPL.CAST" metainfo="HIS Subset MISRA C 1.0.2 Rule 43"/>
+		<errorAttr id="MISRA.CAST.PTR.UNRELATED" metainfo="HIS Subset MISRA C 1.0.2 Rule 45"/>
+		<errorAttr id="MISRA.CAST.PTR_TO_INT" metainfo="HIS Subset MISRA C 1.0.2 Rule 45"/>
+		<errorAttr id="PORTING.VAR.EFFECTS" metainfo="HIS Subset MISRA C 1.0.2 Rule 46"/>
+		<errorAttr id="MISRA.EXPR.PARENS.INSUFFICIENT" metainfo="HIS Subset MISRA C 1.0.2 Rule 47"/>
+		<errorAttr id="MISRA.EXPR.PARENS.REDUNDANT" metainfo="HIS Subset MISRA C 1.0.2 Rule 47"/>
+		<errorAttr id="MISRA.FLOAT_EQUAL" metainfo="HIS Subset MISRA C 1.0.2 Rule 50"/>
+		<errorAttr id="MISRA.COMP.WRAPAROUND" metainfo="HIS Subset MISRA C 1.0.2 Rule 51"/>
+		<errorAttr id="MISRA.ELIF.WRAPAROUND" metainfo="HIS Subset MISRA C 1.0.2 Rule 51"/>
+		<errorAttr id="MISRA.IF.WRAPAROUND" metainfo="HIS Subset MISRA C 1.0.2 Rule 51"/>
+		<errorAttr id="UNREACH.GEN" metainfo="HIS Subset MISRA C 1.0.2 Rule 52"/>
+		<errorAttr id="UNREACH.RETURN" metainfo="HIS Subset MISRA C 1.0.2 Rule 52"/>
+		<errorAttr id="MISRA.STMT.NO_EFFECT" metainfo="HIS Subset MISRA C 1.0.2 Rule 53"/>
+		<errorAttr id="MISRA.NULL.STMT" metainfo="HIS Subset MISRA C 1.0.2 Rule 54"/>
+		<errorAttr id="MISRA.GOTO" metainfo="HIS Subset MISRA C 1.0.2 Rule 56"/>
+		<errorAttr id="MISRA.CONTINUE" metainfo="HIS Subset MISRA C 1.0.2 Rule 57"/>
+		<errorAttr id="MISRA.IF.NO_COMPOUND" metainfo="HIS Subset MISRA C 1.0.2 Rule 59"/>
+		<errorAttr id="MISRA.STMT.NO_COMPOUND" metainfo="HIS Subset MISRA C 1.0.2 Rule 59"/>
+		<errorAttr id="MISRA.IF.NO_ELSE" metainfo="HIS Subset MISRA C 1.0.2 Rule 60"/>
+		<errorAttr id="MISRA.SWITCH.NO_BREAK" metainfo="HIS Subset MISRA C 1.0.2 Rule 61"/>
+		<errorAttr id="MISRA.SWITCH.NODEFAULT" metainfo="HIS Subset MISRA C 1.0.2 Rule 62"/>
+		<errorAttr id="MISRA.SWITCH.BOOL" metainfo="HIS Subset MISRA C 1.0.2 Rule 63"/>
+		<errorAttr id="MISRA.SWITCH.NO_CASE" metainfo="HIS Subset MISRA C 1.0.2 Rule 64"/>
+		<errorAttr id="MISRA.FOR.COND" metainfo="HIS Subset MISRA C 1.0.2 Rule 66"/>
+		<errorAttr id="MISRA.FOR.INCR.CHANGE" metainfo="HIS Subset MISRA C 1.0.2 Rule 66"/>
+		<errorAttr id="MISRA.FOR.STMT.CHANGE" metainfo="HIS Subset MISRA C 1.0.2 Rule 67"/>
+		<errorAttr id="MISRA.DECL.FUNC_LOCAL" metainfo="HIS Subset MISRA C 1.0.2 Rule 68"/>
+		<errorAttr id="MISRA.FUNC.VARARG" metainfo="HIS Subset MISRA C 1.0.2 Rule 69"/>
+		<errorAttr id="MISRA.FUNC.RECUR" metainfo="HIS Subset MISRA C 1.0.2 Rule 70"/>
+		<errorAttr id="MISRA.OBJ.TYPE.IDENT" metainfo="HIS Subset MISRA C 1.0.2 Rule 72, 74"/>
+		<errorAttr id="MISRA.DECL.NO_TYPE" metainfo="HIS Subset MISRA C 1.0.2 Rule 75"/>
+		<errorAttr id="MISRA.FUNC.NO_PARAMS" metainfo="HIS Subset MISRA C 1.0.2 Rule 76"/>
+		<errorAttr id="MISRA.FUNC.UNMATCHED.PARAMS" metainfo="HIS Subset MISRA C 1.0.2 Rule 78"/>
+		<errorAttr id="VOIDRET" metainfo="HIS Subset MISRA C 1.0.2 Rule 79, 84"/>
+		<errorAttr id="MISRA.PPARAM.NEEDS.CONST" metainfo="HIS Subset MISRA C 1.0.2 Rule 81"/>
+		<errorAttr id="FUNCRET.GEN" metainfo="HIS Subset MISRA C 1.0.2 Rule 83"/>
+		<errorAttr id="FUNCRET.IMPLICIT" metainfo="HIS Subset MISRA C 1.0.2 Rule 83"/>
+		<errorAttr id="SV.RVT.RETVAL_NOTTESTED" metainfo="HIS Subset MISRA C 1.0.2 Rule 86"/>
+		<errorAttr id="MISRA.INCL.INSIDE" metainfo="HIS Subset MISRA C 1.0.2 Rule 87"/>
+		<errorAttr id="MISRA.INCL.SYMS" metainfo="HIS Subset MISRA C 1.0.2 Rule 88"/>
+		<errorAttr id="MISRA.INCL.BAD" metainfo="HIS Subset MISRA C 1.0.2 Rule 89"/>
+		<errorAttr id="MISRA.DEFINE.BADEXP" metainfo="HIS Subset MISRA C 1.0.2 Rule 90"/>
+		<errorAttr id="MISRA.DEFINE.NOTGLOBAL" metainfo="HIS Subset MISRA C 1.0.2 Rule 91"/>
+		<errorAttr id="MISRA.UNDEF.NOTGLOBAL" metainfo="HIS Subset MISRA C 1.0.2 Rule 91"/>
+		<errorAttr id="MISRA.DEFINE.FUNC" metainfo="HIS Subset MISRA C 1.0.2 Rule 93"/>
+		<errorAttr id="MISRA.EXPANSION.NARGS" metainfo="HIS Subset MISRA C 1.0.2 Rule 94"/>
+		<errorAttr id="MISRA.EXPANSION.DIRECTIVE" metainfo="HIS Subset MISRA C 1.0.2 Rule 95"/>
+		<errorAttr id="MISRA.DEFINE.NOPARS" metainfo="HIS Subset MISRA C 1.0.2 Rule 96"/>
+		<errorAttr id="MISRA.ELIF.UNDEF" metainfo="HIS Subset MISRA C 1.0.2 Rule 97"/>
+		<errorAttr id="MISRA.DEFINE.SHARP.MANY" metainfo="HIS Subset MISRA C 1.0.2 Rule 98"/>
+		<errorAttr id="MISRA.PRAGMA" metainfo="HIS Subset MISRA C 1.0.2 Rule 99"/>
+		<errorAttr id="MISRA.ELIF.DEFINED" metainfo="HIS Subset MISRA C 1.0.2 Rule 100"/>
+		<errorAttr id="MISRA.IF.DEFINED" metainfo="HIS Subset MISRA C 1.0.2 Rule 100"/>
+		<errorAttr id="MISRA.PTR.TO_PTR_TO_PTR" metainfo="HIS Subset MISRA C 1.0.2 Rule 102"/>
+		<errorAttr id="MISRA.CAST.FUNC_PTR" metainfo="HIS Subset MISRA C 1.0.2 Rule 105"/>
+		<errorAttr id="LOCRET.ARG" metainfo="HIS Subset MISRA C 1.0.2 Rule 106"/>
+		<errorAttr id="LOCRET.GLOB" metainfo="HIS Subset MISRA C 1.0.2 Rule 106"/>
+		<errorAttr id="LOCRET.RET" metainfo="HIS Subset MISRA C 1.0.2 Rule 106"/>
+		<errorAttr id="NPD.GEN.MUST" metainfo="HIS Subset MISRA C 1.0.2 Rule 107"/>
+		<errorAttr id="MISRA.ASSIGN.OVERLAP" metainfo="HIS Subset MISRA C 1.0.2 Rule 109"/>
+		<errorAttr id="MISRA.BITFIELD.SIGNED" metainfo="HIS Subset MISRA C 1.0.2 Rule 112"/>
+		<errorAttr id="MISRA.BITFIELD.SIGNED.UNNAMED" metainfo="HIS Subset MISRA C 1.0.2 Rule 112"/>
+		<errorAttr id="MISRA.DEFINE.WRONGNAME" metainfo="HIS Subset MISRA C 1.0.2 Rule 114"/>
+		<errorAttr id="MISRA.DEFINE.WRONGNAME.UNDERSCORE" metainfo="HIS Subset MISRA C 1.0.2 Rule 114"/>
+		<errorAttr id="MISRA.EXPANSION.UNSAFE" metainfo="HIS Subset MISRA C 1.0.2 Rule 114, 120, 122"/>
+		<errorAttr id="MISRA.INCL.UNSAFE" metainfo="HIS Subset MISRA C 1.0.2 Rule 114, 123, 124, 127"/>
+		<errorAttr id="MISRA.STDLIB.WRONGNAME" metainfo="HIS Subset MISRA C 1.0.2 Rule 115"/>
+		<errorAttr id="MISRA.STDLIB.WRONGNAME.UNDERSCORE" metainfo="HIS Subset MISRA C 1.0.2 Rule 115"/>
+		<errorAttr id="MISRA.STDLIB.MEMORY" metainfo="HIS Subset MISRA C 1.0.2 Rule 118"/>
+		<errorAttr id="MISRA.STDLIB.ERRNO" metainfo="HIS Subset MISRA C 1.0.2 Rule 119"/>
+		<errorAttr id="MISRA.STDLIB.LONGJMP" metainfo="HIS Subset MISRA C 1.0.2 Rule 122"/>
+		<errorAttr id="MISRA.STDLIB.SIGNAL" metainfo="HIS Subset MISRA C 1.0.2 Rule 123"/>
+		<errorAttr id="MISRA.STDLIB.STDIO" metainfo="HIS Subset MISRA C 1.0.2 Rule 124"/>
+		<errorAttr id="MISRA.STDLIB.ATOI" metainfo="HIS Subset MISRA C 1.0.2 Rule 125"/>
+		<errorAttr id="MISRA.STDLIB.ABORT" metainfo="HIS Subset MISRA C 1.0.2 Rule 126"/>
+		<errorAttr id="MISRA.STDLIB.TIME" metainfo="HIS Subset MISRA C 1.0.2 Rule 127"/>
+    </categories>
+</errors>

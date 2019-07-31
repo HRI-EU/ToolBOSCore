@@ -1,0 +1,11 @@
+
+Usage: FreezeSIT.sh PROJECTDIR
+
+PROJECTDIR: Directory to the application stored as HRI project in the global SIT (*)
+
+Example:
+FreezeSIT.sh /hri/sit/latest/Applications/Hdot/HCollect/1.3
+The libraries are copied to /hri/sit/frozen
+
+(*) Please note that your application needs to be globally installed before you can make a copy of the tree
+

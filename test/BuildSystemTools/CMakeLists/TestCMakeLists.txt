@@ -1,0 +1,81 @@
+#  CMake build settings
+#  Copyright (C)
+#  Honda Research Institute Europe GmbH
+#  Carl-Legien-Str. 30
+#  63073 Offenbach/Main
+#  Germany
+#  UNPUBLISHED PROPRIETARY MATERIAL.
+#  ALL RIGHTS RESERVED.
+
+
+#----------------------------------------------------------------------------
+# Standard header + common routines
+#----------------------------------------------------------------------------
+
+
+cmake_minimum_required(VERSION 2.8.8)
+
+find_package(BuildSystemTools)
+
+set(BST_INSTALL_CATEGORY Libraries)
+
+
+#----------------------------------------------------------------------------
+# Dependencies
+#----------------------------------------------------------------------------
+
+
+# please include here the packages this one depends on
+# (one bst_find_package() per dependency), e.g:
+# bst_find_package(DevelopmentTools/ToolBOSCore/2.0)
+
+bst_find_package(DevelopmentTools/ToolBOSCore/2.0)
+bst_find_package(Libraries/BPLBase/7.0)
+# bst_find_package(Libraries/MasterClock/1.0)
+bst_find_package(Libraries/MasterClock/1.7)
+  # bst_find_package( wrong syntax but anyway commented out )
+
+
+#----------------------------------------------------------------------------
+# Build specification
+#----------------------------------------------------------------------------
+
+
+include_directories(src/BPL
+                    src/BPL_Common
+                    src/BPL_FFT
+                    src/BPL_ImageIO
+                    src/BPL_Main
+                    src/BPL_Main/BPL_Autogen
+                    src/BPL_Main/BPL_Handmade
+                    src/BPL_Templates
+                    src/VLW
+                    src/VLW_Common
+                    src/VLW_Core
+                    src/VLW_Core/VLW_Color
+                    src/VLW_Core/VLW_Filter
+                    src/VLW_Core/VLW_FilterOp
+                    src/VLW_Core/VLW_Geom
+                    src/VLW_Core/VLW_ImageIO
+                    src/VLW_Core/VLW_Matrix
+                    src/VLW_Core/VLW_Morphology
+                    src/VLW_Core/VLW_Pixel
+                    src/VLW_Core/VLW_Stat
+                    src/VLW_Core/VLW_ThrCmp
+                    src/VLW_FFT
+                    src/VLW_Moment
+                    src/VLW_Neuro)
+
+
+file(GLOB SRC_FILES src/*/*.c)
+
+bst_build_libraries("${SRC_FILES}" "${PROJECT_NAME}" "${BST_LIBRARIES_SHARED}")
+
+
+file(GLOB EXE_FILES bin/*.c bin/*.cpp examples/*.c examples/*.cpp
+                    test/*.c test/*.cpp)
+
+bst_build_executables("${EXE_FILES}" "${BST_LIBRARIES_SHARED}")
+
+
+# EOF

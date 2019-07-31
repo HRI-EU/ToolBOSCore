@@ -1,0 +1,13 @@
+usage: FindProxyInstallations.py [-h] [-v]
+
+Lists all packages installed only in your SIT sandbox ("proxy
+directory").
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -v, --verbose  show debug messages
+
+examples:
+  %prog
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

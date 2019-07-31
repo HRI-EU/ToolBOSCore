@@ -1,0 +1,16 @@
+usage: sitorphan.py [-h] [-a] [-v]
+
+List packages which have no dependee (inspired by "deborphan"). Note
+that some SIT categories (such as "Applications" or "Modules/BBCM")
+contain packages which typically have no dependee by design. They are
+excluded by default, pass "--all" to also show them.
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -a, --all      show all SIT packages without dependee
+  -v, --verbose  show debug messages
+
+examples:
+  sitorphan.py
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

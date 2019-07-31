@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+#  Switch to a different SIT release / build, such as "testing"
+#
+#  Copyright (c) Honda Research Institute Europe GmbH
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are
+#  met:
+#
+#  1. Redistributions of source code must retain the above copyright notice,
+#     this list of conditions and the following disclaimer.
+#
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#
+#  3. Neither the name of the copyright holder nor the names of its
+#     contributors may be used to endorse or promote products derived from
+#     this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+#  Note:  This file needs to be sourced, not executed! For example:
+#         $ source ./switchSIT.rc
+#
+
+
+export PATH=/bin:/usr/bin
+unset LD_LIBRARY_PATH
+unset PYTHONPATH
+
+unset SIT
+unset HRI_GLOBAL_ROOT
+unset HGR
+unset TOOLBOSCORE_ROOT
+unset TOOLBOSCORE_SOURCED
+
+
+export SIT_VERSION=$1
+
+if [ -z "${SIT_VERSION}" ]
+then
+    echo -e "\nUsage:   source switchSIT.rc <SIT_VERSION>"
+    echo -e "\nExample: source switchSIT.rc testing\n"
+else
+    if [ -e /hri/sit/${SIT_VERSION} ]
+    then
+        source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/3.1/BashSrc
+        echo "new SIT: ${SIT}"
+    else
+        echo "/hri/sit/${SIT_VERSION}: No such SIT"
+    fi
+fi
+
+
+# EOF

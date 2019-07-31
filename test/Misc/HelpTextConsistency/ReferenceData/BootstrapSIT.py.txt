@@ -1,0 +1,23 @@
+usage: BootstrapSIT.py [-h] [-b] [-d] [-p PLATFORMS] [-r] [-v] path
+
+Creates a minimalistic SIT which will only contain the ToolBOS SDK and
+some essential packages.
+
+positional arguments:
+  path                  directory where to create the new SIT
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -b, --buildSDK        include essential build environment
+  -d, --documentation   filter-out / exclude documentation
+  -p PLATFORMS, --platforms PLATFORMS
+                        copy only binaries of specified platforms (comma-
+                        separated)
+  -r, --resolveLTS      copy content of LTS packages
+  -v, --verbose         show debug messages
+
+examples:
+  BootstrapSIT.py -bd /tmp/newSIT
+  BootstrapSIT.py --platforms=${MAKEFILE_PLATFORM},${MAKEFILE_PLATFORM} /tmp/newSIT
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).

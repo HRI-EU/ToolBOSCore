@@ -1,0 +1,6 @@
+PROJECT_NAME   = "ToolBOS (Core)"
+INPUT          = .
+SEARCHENGINE   = NO
+HAVE_DOT       = NO
+CLASS_DIAGRAMS = NO
+SHOW_FILES     = NO

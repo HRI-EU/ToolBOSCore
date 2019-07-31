@@ -1,0 +1,61 @@
+usage: BST.py [-h] [-a] [-B BUILD_TYPE] [-b] [-d] [--deprecate]
+              [--deprecate-all] [-f] [-i] [-j JOBS] [-k] [-l] [-M MESSAGE]
+              [-m] [-n] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U] [-u] [-x] [-y]
+              [-z] [-v]
+
+The Build System Tools (BST.py) are used for various tasks dealing
+with compiling, installing and maintaining software packages. They are
+used as an abstraction layer to the underlying build system and
+utilities.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a, --all             same as distclean, setup, build and test
+  -B BUILD_TYPE, --build-type BUILD_TYPE
+                        build type: Release|Debug (default: Release)
+  -b, --build           compile package
+  -d, --distclean       remove all buildsystem-related files
+  --deprecate           mark a version of a package as deprecated
+  --deprecate-all       mark a whole package as deprecated
+  -f, --shellfiles      generate install/{BashSrc,pkgInfo.py} etc.
+  -i, --install         install package into global SIT
+  -j JOBS, --jobs JOBS  run number of compile jobs in parallel (default: 1)
+  -k, --codecheck       static source code analysis
+  -l, --list            list all used env. variables + build settings
+  -M MESSAGE, --message MESSAGE
+                        message for global installation and deprecation
+  -m, --doc             make API documentation (HTML)
+  -n, --new             create new package from template (see examples below)
+  -p PLATFORM, --platform PLATFORM
+                        cross-compile for specified target platform ("-p help"
+                        to list supported platforms)
+  -q, --quality         run SW Quality Guideline 2.0 checker
+  -r, --release         create release tarball
+  -s, --setup           setup/configure the package for being built
+  -t, --test            run the unittest suite of the package
+  -U, --uninstall       remove package from SIT
+  -u, --upgrade         automatic upgrade (apply all available patches)
+  -x, --proxy           install package into SIT-Proxy (sandbox)
+  -y, --yes             reply "yes" to all prompts, f.i. run non-interactively
+  -z, --zen             zen build mode (GUI)
+  -v, --verbose         show debug messages
+
+examples:
+  BST.py                         # build (setup once + compile)
+  BST.py -avx                    # all + install into proxy (verbose)
+  BST.py -ai                     # all + install globally
+  BST.py -bv                     # build in verbose mode
+  BST.py /path/to/sourcetree     # out-of-tree build
+  BST.py -p help                 # show cross-compile platforms
+  BST.py -p ${MAKEFILE_PLATFORM} # cross-compile for Windows
+  BST.py -n                      # create new packages (GUI-version)
+  BST.py -n help                 # show available templates
+  BST.py -n C_Library Foo 1.0    # create new C library named Foo/1.0
+  BST.py -q                      # run all quality checks
+  BST.py -q src C01 C02 C03      # run specified checks on "src" only
+  BST.py -u                      # check for updates / apply patches
+  BST.py --uninstall             # remove package from SIT
+  BST.py --deprecate             # deprecate this package
+  BST.py --deprecate Foo/Bar/1.0 # deprecate specified package
+
+Please report bugs on JIRA (https://jira.honda-ri.de:8443).
