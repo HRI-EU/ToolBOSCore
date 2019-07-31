@@ -60,7 +60,7 @@ templateDir_core = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
 # location of higher-level templates such as BBCMs etc.
 templateDir      = os.path.join( SIT.getPath(),
                                  ToolBOSSettings.getConfigOption( 'package_pkgCreator' ),
-                                 'etc/mako-templates2' )
+                                 'etc/mako-templates' )
 
 
 class PackageCreator( object ):
