@@ -9,6 +9,11 @@ This package contains:
 * tools for distributing and deploying SIT-packages
 * software quality guidelines and check routines
 
+Documentation:
+
+[will be migrated from doxygen to markdown within next few days, please stay tuned]
+
+
 Authors:
 
 * <a href="https://github.com/MarcusStein">Marcus Stein</a> (coordinator)
