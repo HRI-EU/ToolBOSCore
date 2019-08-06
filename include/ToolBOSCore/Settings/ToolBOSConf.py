@@ -297,7 +297,7 @@ class ToolBOSConf( object ):
                 logging.error( '%s: Not a regular file', filePath )
                 result = {}
         else:
-            logging.debug( '%s: No such file', filePath )
+            # logging.debug( '%s: No such file', filePath )
             result = {}
 
         return result
