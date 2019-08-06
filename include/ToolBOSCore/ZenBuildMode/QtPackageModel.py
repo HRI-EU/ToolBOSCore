@@ -502,7 +502,13 @@ class BSTPackageModel( QObject, object ):
             oldDebugLevel = Any.getDebugLevel()
             Any.setDebugLevel( 1 )
 
-            patchesAvailable = PatchSystem().run( dryRun=True )
+            try:
+                patchesAvailable = PatchSystem().run( dryRun=True )
+            except AssertionError as e:
+                # e.g. templates not installed, let's gnore this case
+                logging.debug( e )
+                patchesAvailable = False
+
 
             Any.setDebugLevel( oldDebugLevel )
 
