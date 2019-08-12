@@ -249,7 +249,7 @@ class PackageCreator_C_BBCM( PackageCreator ):
             self.values[ 'category' ] = 'Modules/BBCM/Testing'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0',
+            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.1',
                                               'External/cutest/1.5',
                                               package_libxml ]
 
