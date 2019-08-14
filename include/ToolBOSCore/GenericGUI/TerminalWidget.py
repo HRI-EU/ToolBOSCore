@@ -60,8 +60,9 @@ class TerminalWidget( QWidget, object ):
         Contains a QTextEdit (with domain-specific context menu) and a
         QLabel indicating the current working directory.
     """
-    closeRequest = pyqtSignal()
-    hostChanged  = pyqtSignal( str )
+    closeRequest          = pyqtSignal()
+    hostChanged           = pyqtSignal( str )
+    terminateAllProcesses = pyqtSignal()
 
 
     def __init__( self, readonly, inactiveColor=lightGrey,
@@ -161,6 +162,7 @@ class TerminalWidget( QWidget, object ):
         self.textField.closeRequest.connect( self.closeRequest.emit )
         self.textField.reRunProcess.connect( self._reRun )
         self.textField.terminateProcess.connect( self.terminate )
+        self.textField.terminateAllProcesses.connect( self.terminateAll )
         self.textField.standaloneRequest.connect( self.toggleStandalone )
 
         self.vLayout = QVBoxLayout()
@@ -396,7 +398,14 @@ class TerminalWidget( QWidget, object ):
 
     def terminate( self ):
         self._terminating = True
-        self.taskProcess.terminate()
+
+        if self.taskProcess is not None:
+            self.taskProcess.terminate()
+
+
+    def terminateAll( self ):
+        self._terminating = True
+        self.terminateAllProcesses.emit()
 
 
     def toggleStandalone( self):
@@ -528,10 +537,11 @@ class TerminalWidget( QWidget, object ):
         """
             Contains a QTextEdit (with domain-specific context menu.
         """
-        closeRequest      = pyqtSignal()
-        reRunProcess      = pyqtSignal()
-        standaloneRequest = pyqtSignal()
-        terminateProcess  = pyqtSignal()
+        closeRequest          = pyqtSignal()
+        reRunProcess          = pyqtSignal()
+        standaloneRequest     = pyqtSignal()
+        terminateProcess      = pyqtSignal()
+        terminateAllProcesses = pyqtSignal()
 
 
         def __init__( self, warningColor=lightOrange,
@@ -725,6 +735,15 @@ class TerminalWidget( QWidget, object ):
 
             menu.addAction( terminateAction )
 
+            # the "terminate all"-action is only available during process execution
+
+            terminateAllAction = QAction( self )
+            terminateAllAction.setText( 'Terminate all' )
+            terminateAllAction.triggered.connect( self._terminateAllProcess )
+            terminateAllAction.setEnabled( self._haveTerminateAction )
+
+            menu.addAction( terminateAllAction )
+
 
             if self._frozen:
                 menu.addAction( 'Un-freeze', self._unfreeze )
@@ -762,6 +781,10 @@ class TerminalWidget( QWidget, object ):
             self.terminateProcess.emit()
 
 
+        def _terminateAllProcess( self ):
+           self.terminateAllProcesses.emit()
+
+
         def _unfreeze( self ):
             self._frozen = False
             self.writeText( '[Terminal activated]\n' )
@@ -797,8 +820,9 @@ class MultiTermWidget( QGroupBox, object ):
         self._terminals.append( terminal )
 
         self.layout.addWidget( terminal, self._nextRow, self._nextCol )
-
         self.rearrangeTerminals()
+
+        terminal.terminateAllProcesses.connect( self.terminateAllProcesses )
         terminal.show()
 
 
@@ -851,5 +875,10 @@ class MultiTermWidget( QGroupBox, object ):
         for terminal in self._terminals:
             terminal.setOutputFilter( func )
 
+    def terminateAllProcesses(self):
+        for terminal in self._terminals:
+            terminal.terminate()
+
 
 # EOF
+
