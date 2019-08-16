@@ -1293,14 +1293,14 @@ class PackageCreator_Python( PackageCreator ):
         srcDir = os.path.join( self.templateDir, 'Python' )
         dstDir = self.dstDir
 
-        FastScript.remove( os.path.join( dstDir, 'src' ) )
+        FastScript.remove( os.path.join( dstDir, 'include' ) )
 
         self.copyVerbatim( os.path.join( srcDir, '__init__.py' ),
-                           os.path.join( dstDir, 'src', self.packageName,
+                           os.path.join( dstDir, 'include', self.packageName,
                                          '__init__.py' ) )
 
         self.copyVerbatim( os.path.join( srcDir, 'HelloWorld.py' ),
-                           os.path.join( dstDir, 'src', self.packageName,
+                           os.path.join( dstDir, 'include', self.packageName,
                                          'HelloWorld.py' ) )
 
         self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
