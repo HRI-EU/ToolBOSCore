@@ -53,7 +53,7 @@ delete           = [ '*py.class' ]
 
 usePatchlevels   = True
 
-patchlevel       = 1
+patchlevel       = 2
 
 install          = [ 'external',
                      'share' ]
