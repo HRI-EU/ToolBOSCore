@@ -699,7 +699,7 @@ Project
  *      </center>
  *
  *      <ol>
- *          <li>Open <a href="https://doc.honda-ri.de/hri/sit/latest/Intranet/TopicPortal/3.2/web/QualityGuideline.html">Quality Guideline</a></li>
+ *          <li>Open <a href="https://doc.honda-ri.de/hri/sit/latest/Intranet/TopicPortal/3.0/web/QualityGuideline.html">Quality Guideline</a></li>
  *          <li>Choose a desired quality level from the dropdown menu,
  *              and in case opt-in/out further rules using the
  *              checkboxes.</li>
