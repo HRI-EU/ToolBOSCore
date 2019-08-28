@@ -585,7 +585,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
             logging.debug( 'found SVN repository URL: %s',
                            self._repoUrlFromInfo )
 
-            self._revFromInfo = int( re.search( "Revision : (\d+?)\s",
+            self._revFromInfo = int( re.search( "Revision\s?: (\d+?)\s",
                                 self._infoOutput ).group(1) )
 
             logging.debug( 'found SVN revision: %d', self._revFromInfo )
