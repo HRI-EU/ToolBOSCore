@@ -338,7 +338,7 @@ def link( target, symlink, dryRun=False ):
         os.symlink( target, symlink )
 
 
-def mkdir( path ):
+def mkdir( path, verbose=False ):
     """
         Creates the directory "path", with all intermediate directories to
         this path if they do not exist, yet (like the "mkdir -p <path>" on
@@ -354,7 +354,10 @@ def mkdir( path ):
     if not path:
         return
 
-    logging.debug( 'mkdir -p %s', path )
+    if verbose:
+        logging.info( 'mkdir -p %s', path )
+    else:
+        logging.debug( 'mkdir -p %s', path )
 
     try:
         os.makedirs( path )
