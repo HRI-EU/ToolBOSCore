@@ -243,6 +243,7 @@ class PackageCreator_C_BBCM( PackageCreator ):
         Creates a BBCM component for wrapping code in RTBOS.
     """
     def run( self ):
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
         package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
         package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
@@ -251,7 +252,7 @@ class PackageCreator_C_BBCM( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ package_toolBOSLib,
-                                              'External/cutest/1.5',
+                                              package_cutest,
                                               package_libxml ]
 
         Any.requireMsg( self.packageName[0].isupper() == True,
@@ -295,6 +296,7 @@ class PackageCreator_C_BBDM( PackageCreator ):
         Any.requireMsg( len(self.packageName) > 4, "package name is too short" )
         Any.requireMsg( self.packageName.startswith( 'BBDM' ), "package name must start with 'BBDM'" )
 
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
         package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
         package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
@@ -303,7 +305,7 @@ class PackageCreator_C_BBDM( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ package_toolBOSLib,
-                                              'External/cutest/1.5',
+                                              package_cutest,
                                               package_libxml ]
 
         self.values[ 'DataType' ] = self.packageName[4:]
@@ -345,6 +347,7 @@ class PackageCreator_C_Library( PackageCreator ):
         Creates a simple C library package.
     """
     def run( self ):
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
         package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
@@ -352,7 +355,7 @@ class PackageCreator_C_Library( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ package_toolBOSLib,
-                                              'External/cutest/1.5' ]
+                                              package_cutest ]
 
         self.setValidFlags()
 
