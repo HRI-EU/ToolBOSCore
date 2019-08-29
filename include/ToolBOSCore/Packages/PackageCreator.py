@@ -78,12 +78,12 @@ class PackageCreator( object ):
         Any.requireIsTextNonEmpty( packageVersion )
         Any.requireIsText( outputDir )
 
-        self.packageName    = packageName
-        self.packageVersion = packageVersion
-        self.templateDir    = templateDir
+        self.packageName      = packageName
+        self.packageVersion   = packageVersion
+        self.templateDir      = templateDir
         self.templateDir_core = templateDir_core
-        self.outputDir      = outputDir
-        self.dstDir         = os.path.join( outputDir, packageName,
+        self.outputDir        = outputDir
+        self.dstDir           = os.path.join( outputDir, packageName,
                                             packageVersion )
 
         # replacement map passed to templating engine
@@ -243,14 +243,16 @@ class PackageCreator_C_BBCM( PackageCreator ):
         Creates a BBCM component for wrapping code in RTBOS.
     """
     def run( self ):
-        package_libxml = ToolBOSSettings.getConfigOption( 'package_libxml' )
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
+        package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Modules/BBCM/Testing'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0',
-                                              'External/cutest/1.5',
+            self.values[ 'dependencies' ] = [ package_toolboslib,
+                                              package_cutest,
                                               package_libxml ]
 
         Any.requireMsg( self.packageName[0].isupper() == True,
@@ -294,14 +296,16 @@ class PackageCreator_C_BBDM( PackageCreator ):
         Any.requireMsg( len(self.packageName) > 4, "package name is too short" )
         Any.requireMsg( self.packageName.startswith( 'BBDM' ), "package name must start with 'BBDM'" )
 
-        package_libxml = ToolBOSSettings.getConfigOption( 'package_libxml' )
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
+        package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Modules/BBDM'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0',
-                                              'External/cutest/1.5',
+            self.values[ 'dependencies' ] = [ package_toolboslib,
+                                              package_cutest,
                                               package_libxml ]
 
         self.values[ 'DataType' ] = self.packageName[4:]
@@ -343,12 +347,15 @@ class PackageCreator_C_Library( PackageCreator ):
         Creates a simple C library package.
     """
     def run( self ):
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Libraries'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0',
-                                              'External/cutest/1.5' ]
+            self.values[ 'dependencies' ] = [ package_toolboslib,
+                                              package_cutest ]
 
         self.setValidFlags()
 
@@ -376,11 +383,12 @@ class PackageCreator_C_MainProgram( PackageCreator ):
         Creates a simple C main program package.
     """
     def run( self ):
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Applications'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0' ]
+            self.values[ 'dependencies' ] = [ package_toolboslib ]
 
         self.createMainPackage()
 
@@ -400,11 +408,13 @@ class PackageCreator_Cpp_Class( PackageCreator ):
         Creates a simple C++ class package.
     """
     def run( self ):
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Libraries'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0' ]
+            self.values[ 'dependencies' ] = [ package_toolboslib ]
 
         self.createMainPackage()
 
@@ -425,11 +435,13 @@ class PackageCreator_Cpp_MainProgram( PackageCreator ):
         Creates a simple C main program package.
     """
     def run( self ):
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Applications'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'Libraries/ToolBOSLib/3.0' ]
+            self.values[ 'dependencies' ] = [ package_toolboslib ]
 
 
         self.createMainPackage()
@@ -1456,6 +1468,7 @@ class PackageCreator_XIF_Data( PackageCreator ):
 
 
     def run( self ):
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
         sourced = FastScript.getEnv( 'TOOLBOSCORE_SOURCED' )
 
         if not 'SplitterBBCMMaker' in sourced:
@@ -1478,7 +1491,7 @@ class PackageCreator_XIF_Data( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ splitterPkg,
-                                              'Libraries/ToolBOSLib/3.0',
+                                              package_toolboslib,
                                               'External/jansson/2.0' ]
 
         self.createMainPackage()
@@ -1530,6 +1543,8 @@ class PackageCreator_XIF_Splitter_BBCM( PackageCreator ):
         Any.requireMsg( self.packageName.startswith( 'Split' ),
                            "package name must start with 'Split'" )
 
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+
         sourced = FastScript.getEnv( 'TOOLBOSCORE_SOURCED' )
 
         if not 'SplitterBBCMMaker' in sourced:
@@ -1552,7 +1567,7 @@ class PackageCreator_XIF_Splitter_BBCM( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ splitterPkg,
-                                              'Libraries/ToolBOSLib/3.0',
+                                              package_toolboslib,
                                               'External/jansson/2.0',
                                               'Libraries/BPLBase/7.1',
                                               'Modules/BBDM/BBDMMemI8/1.7',
