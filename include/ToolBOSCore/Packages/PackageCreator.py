@@ -245,13 +245,13 @@ class PackageCreator_C_BBCM( PackageCreator ):
     def run( self ):
         package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
         package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Modules/BBCM/Testing'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ package_toolBOSLib,
+            self.values[ 'dependencies' ] = [ package_toolboslib,
                                               package_cutest,
                                               package_libxml ]
 
@@ -298,13 +298,13 @@ class PackageCreator_C_BBDM( PackageCreator ):
 
         package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
         package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Modules/BBDM'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ package_toolBOSLib,
+            self.values[ 'dependencies' ] = [ package_toolboslib,
                                               package_cutest,
                                               package_libxml ]
 
@@ -348,13 +348,13 @@ class PackageCreator_C_Library( PackageCreator ):
     """
     def run( self ):
         package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Libraries'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ package_toolBOSLib,
+            self.values[ 'dependencies' ] = [ package_toolboslib,
                                               package_cutest ]
 
         self.setValidFlags()
@@ -383,12 +383,12 @@ class PackageCreator_C_MainProgram( PackageCreator ):
         Creates a simple C main program package.
     """
     def run( self ):
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Applications'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ package_toolBOSLib ]
+            self.values[ 'dependencies' ] = [ package_toolboslib ]
 
         self.createMainPackage()
 
@@ -408,13 +408,13 @@ class PackageCreator_Cpp_Class( PackageCreator ):
         Creates a simple C++ class package.
     """
     def run( self ):
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Libraries'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ package_toolBOSLib ]
+            self.values[ 'dependencies' ] = [ package_toolboslib ]
 
         self.createMainPackage()
 
@@ -435,13 +435,13 @@ class PackageCreator_Cpp_MainProgram( PackageCreator ):
         Creates a simple C main program package.
     """
     def run( self ):
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Applications'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ package_toolBOSLib ]
+            self.values[ 'dependencies' ] = [ package_toolboslib ]
 
 
         self.createMainPackage()
@@ -1468,7 +1468,7 @@ class PackageCreator_XIF_Data( PackageCreator ):
 
 
     def run( self ):
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
         sourced = FastScript.getEnv( 'TOOLBOSCORE_SOURCED' )
 
         if not 'SplitterBBCMMaker' in sourced:
@@ -1491,7 +1491,7 @@ class PackageCreator_XIF_Data( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ splitterPkg,
-                                              package_toolBOSLib,
+                                              package_toolboslib,
                                               'External/jansson/2.0' ]
 
         self.createMainPackage()
@@ -1543,7 +1543,7 @@ class PackageCreator_XIF_Splitter_BBCM( PackageCreator ):
         Any.requireMsg( self.packageName.startswith( 'Split' ),
                            "package name must start with 'Split'" )
 
-        package_toolBOSLib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
 
         sourced = FastScript.getEnv( 'TOOLBOSCORE_SOURCED' )
 
@@ -1567,7 +1567,7 @@ class PackageCreator_XIF_Splitter_BBCM( PackageCreator ):
 
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ splitterPkg,
-                                              package_toolBOSLib,
+                                              package_toolboslib,
                                               'External/jansson/2.0',
                                               'Libraries/BPLBase/7.1',
                                               'Modules/BBDM/BBDMMemI8/1.7',
