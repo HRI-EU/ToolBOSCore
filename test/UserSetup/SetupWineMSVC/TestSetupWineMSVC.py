@@ -28,6 +28,8 @@ from ToolBOSCore.Util               import Any
 
 class TestSetupWineMSVC( unittest.TestCase ):
 
+    _msvc = 2017
+
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
             Any.setDebugLevel( 1 )
@@ -39,8 +41,8 @@ class TestSetupWineMSVC( unittest.TestCase ):
 
 
         # setup Wine
-        UserSetup.setupWineDotNet( configDir, stdout=output, stderr=output )
-        UserSetup.setupMSVC( configDir, 2012 )
+        UserSetup.setupWineDotNet( configDir, stdout=output, stderr=output, msvc=self._msvc )
+        UserSetup.setupMSVC( configDir, self._msvc )
 
 
         # check result
@@ -50,11 +52,11 @@ class TestSetupWineMSVC( unittest.TestCase ):
         Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'c:' ) )
         Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'z:' ) )
 
-        msvcLink   = os.path.join( configDir, 'drive_c', 'msvc-sdk' )
+        msvcLink   = os.path.join( configDir, 'drive_c', 'BuildTools' )
         Any.requireIsSymlink( msvcLink )
         msvcTarget = os.path.realpath( msvcLink )
         Any.requireIsDirNonEmpty( msvcTarget )
-        self.assertTrue( msvcTarget.find( 'External/MSVC/10.0' ) > 0 )
+        self.assertTrue( msvcTarget.find( 'Data/wine.net/1.1' ) > 0 )
 
 
         # clean-up
@@ -66,7 +68,7 @@ class TestSetupWineMSVC( unittest.TestCase ):
 
 
         # setup MSVC (implcitely setting up Wine if not present)
-        UserSetup.setupMSVC( configDir, 2012 )
+        UserSetup.setupMSVC( configDir, self._msvc )
 
 
         # check result
@@ -76,11 +78,11 @@ class TestSetupWineMSVC( unittest.TestCase ):
         Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'c:' ) )
         Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'z:' ) )
 
-        msvcLink   = os.path.join( configDir, 'drive_c', 'msvc-sdk' )
+        msvcLink   = os.path.join( configDir, 'drive_c', 'BuildTools' )
         Any.requireIsSymlink( msvcLink )
         msvcTarget = os.path.realpath( msvcLink )
         Any.requireIsDirNonEmpty( msvcTarget )
-        self.assertTrue( msvcTarget.find( 'External/MSVC/10.0' ) > 0 )
+        self.assertTrue( msvcTarget.find( 'Data/wine.net/1.1' ) > 0 )
 
 
         # clean-up
