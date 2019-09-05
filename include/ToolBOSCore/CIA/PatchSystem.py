@@ -154,30 +154,30 @@ class PatchSystem( object ):
         return modified
 
 
-    def _patchCIA868( self, dryRun=False ):
-        """
-            Replace old CMakeLists.txt files by new ones from the package
-            templates in order to spread the new CMake build rules for Matlab
-            wrapper generation.
-        """
-        fileName = 'wrapper/CMakeLists.txt'
-        template = os.path.join( PackageCreator.templateDir,
-                                 'HDot_Component_Evaluation',
-                                 'CMakeLists.txt' )
-
-        Any.requireIsFileNonEmpty( template )
-
-        try:
-            oldContent = FastScript.getFileContent( fileName )
-        except IOError:
-            # package is not affected (has no wrapper code)
-            return False
-
-        if oldContent.find( 'bst_build_wrapper' ) == -1:
-            shutil.copyfile( template, fileName )
-            return [ fileName ]
-        else:
-            return False
+    # def _patchCIA868( self, dryRun=False ):
+    #     """
+    #         Replace old CMakeLists.txt files by new ones from the package
+    #         templates in order to spread the new CMake build rules for Matlab
+    #         wrapper generation.
+    #     """
+    #     fileName = 'wrapper/CMakeLists.txt'
+    #     template = os.path.join( PackageCreator.templateDir,
+    #                              'HDot_Component_Evaluation',
+    #                              'CMakeLists.txt' )
+    #
+    #     Any.requireIsFileNonEmpty( template )
+    #
+    #     try:
+    #         oldContent = FastScript.getFileContent( fileName )
+    #     except IOError:
+    #         # package is not affected (has no wrapper code)
+    #         return False
+    #
+    #     if oldContent.find( 'bst_build_wrapper' ) == -1:
+    #         shutil.copyfile( template, fileName )
+    #         return [ fileName ]
+    #     else:
+    #         return False
 
 
     def _patchCIA923( self, dryRun=False ):
@@ -670,9 +670,9 @@ class PatchSystem( object ):
                      self._patchCIA765,
                      'upgraded XIF package versions (CIA-765)' ),
 
-                   ( 'update MEX building rules in H.Dot packages (CIA-868)',
-                     self._patchCIA868,
-                     'updated Matlab wrapper build rules (CIA-868)' ),
+                   # ( 'update MEX building rules in H.Dot packages (CIA-868)',
+                   #   self._patchCIA868,
+                   #   'updated Matlab wrapper build rules (CIA-868)' ),
 
                    ( 'pre-configure.sh update (CIA-923)',
                       self._patchCIA923,
