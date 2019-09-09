@@ -34,8 +34,7 @@ class TestMakeShellfiles( unittest.TestCase ):
     def test_makeShellfiles( self ):
         projectRoot    = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
         installDir     = os.path.join( projectRoot, 'install' )
-        fileNamePrefix = '%s-%s-' % ( ToolBOSSettings.packageName,
-                                      ToolBOSSettings.packageVersion )
+        fileNamePrefix = ToolBOSSettings.packageName + '-'
 
         # create shellfiles
         makeShellfiles( projectRoot )

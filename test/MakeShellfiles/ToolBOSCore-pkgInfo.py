@@ -16,7 +16,7 @@
 
 section          = 'DevelopmentTools'
 
-version          = '3.0'
+version          = '3.2'
 
 name             = 'ToolBOSCore'
 
@@ -24,11 +24,9 @@ package          = 'ToolBOSCore'
 
 maintainer       = ( 'mstein', 'Marcus Stein' )
 
-commitID         = '5c90e60b0126f437fddf203ea89a2973a234cb4b'
+gitBranch        = 'develop'
 
-origin           = 'https://github.com/HRI-EU/ToolBOSCore.git'
-
-repoRelPath      = ''
+gitRelPath       = ''
 
 recommends       = [ 'deb://git-core',
                      'deb://git-svn',
