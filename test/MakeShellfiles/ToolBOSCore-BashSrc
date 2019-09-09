@@ -2,14 +2,34 @@
 #
 #  ToolBOS environment setup
 #
-#  Copyright (C)
-#  Honda Research Institute Europe GmbH
-#  Carl-Legien-Str. 30
-#  63073 Offenbach/Main
-#  Germany
+#  Copyright (c) Honda Research Institute Europe GmbH
 #
-#  UNPUBLISHED PROPRIETARY MATERIAL.
-#  ALL RIGHTS RESERVED.
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions are
+#  met:
+#
+#  1. Redistributions of source code must retain the above copyright notice,
+#     this list of conditions and the following disclaimer.
+#
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#
+#  3. Neither the name of the copyright holder nor the names of its
+#     contributors may be used to endorse or promote products derived from
+#     this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+#  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+#  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
 #  Note:  This file needs to be sourced, not executed! For example:
@@ -24,12 +44,12 @@
 
 # This fix creates trouble when re-sourcing ToolBOS as a dependency of other
 # packages. In this case, regardless what TOOLBOSCORE_ROOT was being set to
-# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/3.0 :-/
+# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/3.2 :-/
 #
 ## workaround for LD_LIBRARY_PATH being emptied for security reasons
 ## at "newgrp" command while all other variables survive
 #if [[ ! -z ${TOOLBOSCORE_SOURCED} &&
-#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/3.0" ]]
+#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/3.2" ]]
 #then
 #    unset TOOLBOSCORE_SOURCED
 #fi
@@ -37,7 +57,7 @@
 
 
 # avoid multiple inclusion
-if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/3.0" ]]
+if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/3.2" ]]
 then
 
     # auto-detect location of this BashSrc file
@@ -64,7 +84,7 @@ then
       TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
     fi
 
-    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/3.0 ${TOOLBOSCORE_SOURCED}"
+    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/3.2 ${TOOLBOSCORE_SOURCED}"
 
 
     #------------------------------------------------------------------------

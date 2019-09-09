@@ -76,8 +76,6 @@ argman.addExample( '%(prog)s "svn st"' )
 argman.addExample( '%(prog)s -f script.sh' )
 argman.addExample( '%(prog)s -v -l whitelist.txt "svn st"' )
 
-logging.info( sys.argv )
-
 args         = vars( argman.run() )
 
 command      = args['command']
