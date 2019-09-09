@@ -49,7 +49,7 @@ class TestProxyDirectory( unittest.TestCase ):
         Any.requireIsDir( os.path.join( sitProxyPath, 'Libraries' ) )
 
         self.assertTrue( os.path.islink( os.path.join( sitProxyPath, canonicalPath ) ) )
-        self.assertTrue( os.path.islink( os.path.join( sitProxyPath, 'External/java/1.7' ) ) )
+        self.assertTrue( os.path.islink( os.path.join( sitProxyPath, 'External/java/1.8' ) ) )
 
         FastScript.remove( sitProxyPath )
 

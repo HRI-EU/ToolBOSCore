@@ -186,12 +186,10 @@ def setupLegacyMSVC( configDir ):
     for item in ( 'Program Files', 'windows' ):
         path = os.path.join( configDir, 'drive_c', item )
         Any.requireIsDir( path )
-        logging.debug( 'rm -rf %s', path )
         FastScript.remove( path )
 
         target = os.path.join( handmadeDir, 'drive_c', item )
-        logging.debug( 'ln -s %s %s', target, path )
-        os.symlink( target, path )
+        FastScript.link( target, path )
 
 
     # copy all the handmade *.reg files
@@ -259,7 +257,7 @@ def setupMSVC2017( configDir ):
     """
     from ToolBOSCore.Storage.SIT import getPath
 
-    if not os.path.exists( configDir ):
+    if not os.path.exists( os.path.join( configDir, 'user.reg' ) ):
         setupWineDotNet( configDir, msvc=2017 )
 
     Any.requireIsDir( configDir )
@@ -273,17 +271,17 @@ def setupMSVC2017( configDir ):
     linkPath   = os.path.join( configDir, 'drive_c', 'BuildTools' )
     linkTarget = os.path.join( msvcDir, 'drive_c', 'BuildTools')
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
     linkPath   = os.path.join( configDir, 'drive_c', 'Program Files', 'Microsoft SDKs'  )
     linkTarget = os.path.join( msvcDir, 'drive_c', 'Program Files', 'Microsoft SDKs' )
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
     linkPath   = os.path.join( configDir, 'drive_c', 'Program Files', 'Windows Kits'  )
     linkTarget = os.path.join( msvcDir, 'drive_c', 'Program Files', 'Windows Kits' )
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
 
 def setupMSVC2012( configDir ):
@@ -297,7 +295,7 @@ def setupMSVC2012( configDir ):
     """
     from ToolBOSCore.Storage.SIT import getPath
 
-    if not os.path.exists( configDir ):
+    if not os.path.exists( os.path.join( configDir, 'user.reg' ) ):
         setupWineDotNet( configDir )
 
     Any.requireIsDir( configDir )
@@ -310,12 +308,12 @@ def setupMSVC2012( configDir ):
     linkPath   = os.path.join( configDir, 'dosdevices', 'c:' )
     linkTarget = '../drive_c'
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
     linkPath   = os.path.join( configDir, 'dosdevices', 'z:' )
     linkTarget = '/'
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
     # create temp. directories
     driveC      = os.path.join( configDir, 'drive_c' )
@@ -337,12 +335,12 @@ def setupMSVC2012( configDir ):
     linkPath   = os.path.join( configDir, 'drive_c', 'msvc-sdk' )
     linkTarget = os.path.join( sitPath, 'External/MSVC/10.0/msvc-sdk' )
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
     linkPath   = os.path.join( configDir, 'drive_c', 'Program Files' )
     linkTarget = os.path.join( sitPath, 'External/MSVC/10.0/Program Files' )
     FastScript.remove( linkPath )
-    os.symlink( linkTarget, linkPath )
+    FastScript.link( linkTarget, linkPath )
 
     # copy a hancrafted system.reg
     srcFile = os.path.join( sitPath, 'External/MSVC/10.0/otherstuff/winevs2012/system.reg' )
