@@ -134,48 +134,64 @@ class LibIndex( object ):
         Any.requireIsList( pkgList )
         Any.requireIsCallable( filterFunc )
 
-        pkgFileDict     = {}
+pkgFileDependecies = []
         for pkg in pkgList:
             deps        = getDependencies( project        = pkg,
-                                         recursive      = True,
-                                         cache          = self._depCache,
-                                         systemPackages = False,
-                                         sitPath        = getPath() )
+                                           recursive      = True,
+                                           cache          = self._depCache,
+                                           systemPackages = False,
+                                           sitPath        = getPath() )
             shortDeps   = FastScript.reduceList( deps )
-            if shortDeps:
-                pkgFileDict[ strip( splitPath(pkg)[1] ) ] = shortDeps
 
+            for shortDep in shortDeps:
+                path       = splitPath( pkg )
+                Any.requireIsTuple( path )
+
+                dependency = splitPath( shortDep )
+                Any.requireIsTuple( dependency )
+
+                mod  = strip( path[ 1 ] )
+                lib  = strip( dependency[ 1 ] )
+                vers = strip( dependency[ 2 ] )
+
+                pkgFileDependecies.append( ( mod, lib, vers ) )
+
+        conflictDeps = []
         #returns the list of conflicting dependencies, if empty there are no conflicts
-        conflictDeps = self.confDeps( pkgFileDict )
+
+        for deps in pkgFileDependecies:
+            mod  = deps[ 0 ]
+            lib  = deps[ 1 ]
+            vers = deps[ 2 ]
+            #we build the list where the lib library appears in other versions
+            listDep = [ x for x in pkgFileDependecies if x[ 1 ] == lib and not x[ 2 ] == vers ]
+
+            for dep in listDep:
+                module  = dep[ 0 ]
+                lib     = dep[ 1 ]
+                version = dep[ 2 ]
+                #check for duplicates
+                if not ( module, mod, lib, version, vers ) in conflictDeps:
+                    conflictDeps.append( ( mod, module, lib, vers, version ) )
+
+
         textError    = 'ERROR:\n'
         text         = '{} {} used by {} \n is in conflict with \n{} {} used by {}\n\n'
 
         for dep in conflictDeps:
-            textError = textError + text.format( dep[ 1 ], dep[ 2 ], dep[ 0 ], dep[ 1 ], dep[ 4 ], dep[ 3 ] )
+            mod1  = dep[ 0 ]  # first module
+            mod2  = dep[ 1 ]  # second module
+            lib   = dep[ 2 ]  # library
+            vers1 = dep[ 3 ]  # first version
+            vers2 = dep[ 4 ]  # second version
+
+
+            textError = textError + text.format( lib, vers1, mod1, lib, vers2, mod2 )
 
         Any.requireMsg( not conflictDeps, '\n %s' % textError )
 
         for pkg in pkgList:
             self.addPackage( pkg, recursive, filterFunc )
-
-
-    def confDeps( self, pkgDeps):
-        conflict = []
-
-        for key, value in pkgDeps.items():
-            for key2, value2 in pkgDeps.items():
-                if not key is key2:
-                    for v in value:
-                        if v not in value2:
-                            for v2 in value2:
-                                if splitPath( v )[ 1 ] == splitPath( v2 )[ 1 ]:
-                                    #check for duplicates
-                                    if not ((key2 , key, splitPath( v )[ 1 ]) in
-                                            ((cd[ 0 ], cd[ 3 ], cd[ 1 ]) for cd in conflict)):
-
-                                        conflict.append( (key, splitPath( v )[ 1 ], splitPath( v )[ 2 ],
-                                                                 key2, splitPath( v2 )[ 2 ]) )
-        return conflict
 
 
     def addFile( self, srcFile_abs, dstFile_rel ):
