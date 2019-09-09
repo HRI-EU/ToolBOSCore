@@ -46,6 +46,7 @@
 # platforms!
 
 import logging
+import io
 import os
 import sys
 
@@ -53,6 +54,10 @@ from atexit import register
 from glob   import glob
 from re     import match
 
+try:
+    _FILE_TYPES = (io.IOBase, file)
+except NameError:
+    _FILE_TYPES = (io.IOBase,)
 
 #----------------------------------------------------------------------------
 # Public functions for assertion (condition checking)
@@ -401,7 +406,14 @@ def requireIsIn( obj, container, msg=None ):
     requireMsg( isIn( obj, container ), msg )
 
 
+def isFileHandle( handle ):
+    """
+        Returns a boolean whether or not 'handle' points to an open file handle.
+    """
+    return isinstance( handle, _FILE_TYPES )
+
 def isFile( path ):
+
     """
         Returns a boolean whether or not 'path' points to a regular file.
     """

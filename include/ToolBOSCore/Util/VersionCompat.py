@@ -60,6 +60,11 @@ else:
     from urllib.parse import urlunsplit
 
 
+if six.PY2:
+    STDIN_BIN = sys.stdin
+else:
+    STDIN_BIN = sys.stdin.buffer
+
 def getInput( prompt ):
     if sys.version[0] == '2':
         return raw_input( prompt )
@@ -129,6 +134,8 @@ def base64encode( text ):
         base64bytes = base64.encodebytes( encoded )
 
     return base64bytes.decode('utf8').strip()
+
+
 
 
 # EOF

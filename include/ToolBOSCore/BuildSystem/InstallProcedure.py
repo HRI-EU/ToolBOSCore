@@ -431,7 +431,7 @@ class InstallProcedure( object ):
         """
             Shows some closing notes after the Install Procedure finished.
         """
-        logging.info( 'Thank you for using ToolBOS 3.0.' )
+        logging.info( 'Thank you for using ToolBOS!' )
         Any.logVerbatim( 3, '\n' + '-' * 78 + '\n\n' )
 
 

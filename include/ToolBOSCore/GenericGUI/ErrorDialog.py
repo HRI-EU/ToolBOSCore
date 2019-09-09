@@ -50,7 +50,7 @@ def ErrorDialog( title, msg, printException=False ):
     Any.requireIsTextNonEmpty( title )
     Any.requireIsTextNonEmpty( msg )
 
-    if printException or Any.getDebugLevel >= 5:
+    if printException or Any.getDebugLevel() >= 5:
         excType, _excValue, excTraceback = sys.exc_info()
         tbs = traceback.format_tb( excTraceback )
 
