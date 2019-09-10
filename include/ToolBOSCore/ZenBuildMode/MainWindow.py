@@ -237,6 +237,7 @@ class MainWindow( QObject, object ):
 
         # Potentially this could be more generalized, f.i. into
         # PackageDetector / pkgInfo.py --> "Does pkg. need seq. install"?
+        Any.requireIsTextNonEmpty( self.projectRoot )
         installHook  = os.path.join( self.projectRoot, 'installHook.sh' )
         doSeqInstall = os.path.exists( installHook )
 
@@ -560,6 +561,8 @@ class MainWindow( QObject, object ):
 
         try:
             self.model.open( topLevelDir )
+            self.projectRoot = topLevelDir
+
         except ( NameError, SyntaxError, ValueError ) as details:
             logging.error( 'unable to read-in pkgInfo.py:' )
             logging.error( details )
