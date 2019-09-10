@@ -134,7 +134,7 @@ class LibIndex( object ):
         Any.requireIsList( pkgList )
         Any.requireIsCallable( filterFunc )
 
-pkgFileDependecies = []
+        pkgFileDependecies = []
         for pkg in pkgList:
             deps        = getDependencies( project        = pkg,
                                            recursive      = True,
@@ -184,7 +184,6 @@ pkgFileDependecies = []
             lib   = dep[ 2 ]  # library
             vers1 = dep[ 3 ]  # first version
             vers2 = dep[ 4 ]  # second version
-
 
             textError = textError + text.format( lib, vers1, mod1, lib, vers2, mod2 )
 
