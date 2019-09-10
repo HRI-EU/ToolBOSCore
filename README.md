@@ -9,9 +9,41 @@ This package contains:
 * tools for distributing and deploying SIT-packages
 * software quality guidelines and check routines
 
-Documentation:
 
-[will be migrated from doxygen to markdown within next few days, please stay tuned]
+#### Setup 
+* [Installing ToolBOS on disk](doc/ToolBOSCore/Setup/InstallingToolBOS.md)
+* [Shell configuration](doc/ToolBOSCore/Setup/ShellConfig.md)
+* [Sourcing additional packages](doc/ToolBOSCore/Setup/SourcingAdditionalPackages.md)
+* [Supported platforms](doc/ToolBOSCore/Setup/SupportedPlatforms.md)
+
+
+#### Concepts
+
+* [Software Installation Tree (SIT)](doc/ToolBOSCore/Concepts/SIT.md)
+* [Proxy Directory](doc/ToolBOSCore/Concepts/ProxyDirectory.md)
+* [Quality Guideline](doc/ToolBOSCore/Concepts/QualityGuidelines.md)
+* [Source tree conventions](doc/ToolBOSCore/Concepts/SourceTreeConventions.md)
+* [Installation conventions](doc/ToolBOSCore/Concepts/InstallationConventions.md)
+* [ToolBOS.conf](doc/ToolBOSCore/Concepts/ToolBOSConf.md)
+* [SIT builds](doc/ToolBOSCore/How%20To's/SITBuilds.md)
+* [Rolling releases](doc/ToolBOSCore/Concepts/RollingReleases.md)
+
+
+#### Tools
+
+* [Package Creator](doc/ToolBOSCore/Tools/Package%20Creator/PackageCreator.md)
+* [Build System Tools](doc/ToolBOSCore/Tools/Build%20System%20Tools/BuildSystemTools.md)
+* [ExecInAllProjects.py](doc/ToolBOSCore/Tools/ExecInAllProjects.md)
+
+
+#### HowTo's
+
+* [Debugging](doc/ToolBOSCore/How%20To's/Debugging.md)
+* [Writing C/C++ libraries](doc/ToolBOSCore/How%20To's/WritingC_CPlusPlusLibraries.md)
+* [External packages](doc/ToolBOSCore/How%20To's/ExternalPackages.md)
+* [userDoxyfile](doc/ToolBOSCore/How%20To's/UserDoxyfile.md)
+* [ToolBOS release rollback or beta-test ](doc/ToolBOSCore/How%20To's/ToolBOSBetaTest.md)
+* [Deprecated packages](doc/ToolBOSCore/How%20To's/DeprecatedPkg.md)
 
 
 Authors:
