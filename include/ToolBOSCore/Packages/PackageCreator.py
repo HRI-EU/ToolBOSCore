@@ -446,7 +446,7 @@ class PackageCreator_Cpp_MainProgram( PackageCreator ):
 
         self.createMainPackage()
 
-        srcDir = os.path.join( self.templateDir, 'Cpp_MainProgram' )
+        srcDir = os.path.join( self.templateDir_core, 'Cpp_MainProgram' )
         dstDir = self.dstDir
 
         self.templatize( os.path.join( srcDir, 'main.cpp.mako' ),
