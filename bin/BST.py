@@ -457,6 +457,7 @@ try:
             sys.exit( 0 )
 
         else:
+            FastScript.tryImport( 'PyQt5' )
             from ToolBOSCore.ZenBuildMode import MainWindow
 
             logging.info( 'starting zen build mode' )
