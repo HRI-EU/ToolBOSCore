@@ -53,8 +53,23 @@ class ToolBOSConf( AppConfig.AppConfig ):
         tcRoot     = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
         defaultDir = os.path.join( tcRoot, 'etc' )
         userDir    = os.path.join( os.path.expanduser( '~' ), '.HRI', appName )
+        addFiles   = []
 
-        super( ToolBOSConf, self ).__init__( appName, defaultDir, userDir )
+
+        # integrate settings from other ToolBOS packages, if present
+
+        mwRoot     = FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' )
+        mwFile     = os.path.join( mwRoot, 'etc', 'ToolBOS-Middleware.conf' )
+
+        if os.path.exists( mwFile ):
+            logging.info( 'found ToolBOS Middleware in %s', mwRoot )
+            addFiles.append( mwFile )
+
+        if not addFiles:
+            addFiles = None
+
+        super( ToolBOSConf, self ).__init__( appName, defaultDir, userDir,
+                                             addFiles=addFiles )
 
 
 def getGlobalToolBOSConf():
