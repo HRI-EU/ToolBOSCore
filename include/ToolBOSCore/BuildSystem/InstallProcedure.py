@@ -994,6 +994,7 @@ class InstallProcedure( object ):
         if not self.details.isComponent():
             return
 
+        FastScript.tryImport( [ 'astor', 'dill', 'nanomsg' ] )
 
         try:
             from Middleware.Common                    import DefinitionFile, DTBOS
