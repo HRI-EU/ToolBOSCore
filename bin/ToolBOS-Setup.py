@@ -120,10 +120,16 @@ argman.addArgument( '-r', '--rootDir', metavar='PATH', default=sitRootPath,
 argman.addArgument( '-p', '--proxyDir', metavar='PATH', default=sitProxyPath,
                     help='path to proxy SIT (default: %s)' % sitProxyPathHelp )
 
+argman.addArgument( '-a', '--advanced', action='store_true',
+                    help='advanced config with SIT proxy directory' )
 
-args         = vars( argman.run() )
-sitRootPath  = args['rootDir']
-sitProxyPath = args['proxyDir']
+argman.addExample( '%(prog)s' )
+argman.addExample( '%(prog)s -a' )
+
+args           = vars( argman.run() )
+sitRootPath    = args['rootDir']
+sitProxyPath   = args['proxyDir']
+createProxyDir = args['createProxyDir']
 
 
 #----------------------------------------------------------------------------
@@ -158,7 +164,10 @@ if os.path.exists( dirName ):
 
 try:
     UserSetup.setupShell()
-    UserSetup.setupProxy( sitRootPath, sitProxyPath )
+
+    if createProxyDir:
+        UserSetup.setupProxy( sitRootPath, sitProxyPath )
+
 except AssertionError as details:
     raise SystemExit( details )
 
@@ -198,7 +207,6 @@ logging.info( '' )
 logging.info( '' )
 logging.info( 'Have a lot of fun with ToolBOS %s :-)' % version )
 logging.info( '' )
-
 
 
 # EOF
