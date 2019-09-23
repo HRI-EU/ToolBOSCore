@@ -46,14 +46,14 @@ import tempfile
 
 import six
 
-from ToolBOSCore.Packages                  import PackageCreator
-from ToolBOSCore.Packages.PackageDetector  import PackageDetector
-from ToolBOSCore.Platforms                 import Platforms
-from ToolBOSCore.Settings.ToolBOSSettings  import getConfigOption
-from ToolBOSCore.Storage                   import VersionControl
-from ToolBOSCore.Tools                     import RTMaps
-from ToolBOSCore.Util                      import Any
-from ToolBOSCore.Util                      import FastScript
+from ToolBOSCore.Packages                 import PackageCreator
+from ToolBOSCore.Packages.PackageDetector import PackageDetector
+from ToolBOSCore.Platforms                import Platforms
+from ToolBOSCore.Settings                 import ToolBOSConf
+from ToolBOSCore.Storage                  import VersionControl
+from ToolBOSCore.Tools                    import RTMaps
+from ToolBOSCore.Util                     import Any
+from ToolBOSCore.Util                     import FastScript
 
 
 class InstallProcedure( object ):
@@ -371,7 +371,7 @@ class InstallProcedure( object ):
         Any.logVerbatim( 3, '' )
 
         if FastScript.getEnv( 'MAKEFILE_FASTINSTALL' ) == 'FALSE' or \
-            getConfigOption( 'BST_confirmInstall' ) is True:
+            ToolBOSConf.getConfigOption( 'BST_confirmInstall' ) is True:
 
             try:
                 prompt = '\t--> Install now? (Y/n)  '
@@ -1004,7 +1004,7 @@ class InstallProcedure( object ):
             from Middleware.BBMLv1                    import VirtualModules
 
         except ImportError as e:
-            pkg = getConfigOption( 'package_toolbosmiddleware' )
+            pkg = ToolBOSConf.getConfigOption( 'package_toolbosmiddleware' )
             msg = 'To work with Middleware-related packages, please run ' \
                   '"source ${SIT}/%s/BashSrc" first.' % pkg
 
@@ -1460,7 +1460,7 @@ class GlobalInstallProcedure( InstallProcedure ):
             For batch processings, the user may also specify a message
             using the MAKEFILE_GLOBALINSTALLREASON environment variable.
         """
-        if getConfigOption( 'askGlobalInstallReason' ) is False:
+        if ToolBOSConf.getConfigOption( 'askGlobalInstallReason' ) is False:
             logging.debug( 'global install log disabled')
             return
 
@@ -1702,7 +1702,7 @@ class GlobalInstallProcedure( InstallProcedure ):
 
     def _vcsConsistencyCheck( self ):
         if FastScript.getEnv( 'MAKEFILE_SKIPSVNCHECK' ) == 'TRUE' or \
-            getConfigOption( 'BST_svnCheck' ) is False:
+            ToolBOSConf.getConfigOption( 'BST_svnCheck' ) is False:
 
             logging.warning( 'VCS consistency check skipped' )
             return
