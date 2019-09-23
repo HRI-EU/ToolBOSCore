@@ -71,16 +71,13 @@ dataDir = args['dataDir']
 
 if dataDir:
     klocworkDir   = dataDir
-
     Any.requireIsTextNonEmpty( klocworkDir )
     Any.requireMsg( klocworkDir not in ( '.', '..' ), "invalid path names!" )
 
-    createProject = not os.path.exists( klocworkDir )
     deleteDir     = False
 
 else:
     klocworkDir   = tempfile.mkdtemp( prefix='klocwork-' )
-    createProject = True
     deleteDir     = True
 
 
@@ -92,9 +89,7 @@ else:
 logging.info( 'Klocwork data directory: %s', klocworkDir )
 
 try:
-    if createProject:
-        Klocwork.createLocalProject( klocworkDir )
-
+    Klocwork.createLocalProject( klocworkDir )
     Klocwork.startGUI( klocworkDir, blocking=True )
     status = 0
 
