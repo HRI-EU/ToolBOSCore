@@ -49,11 +49,10 @@ import six
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
-from ToolBOSCore.Settings                 import ToolBOSConf
+from ToolBOSCore.Settings                 import ToolBOSConf, ToolBOSSettings
 from ToolBOSCore.Storage                  import VersionControl
 from ToolBOSCore.Tools                    import RTMaps
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Util                     import Any, FastScript
 
 
 class InstallProcedure( object ):
@@ -1382,9 +1381,14 @@ class InstallProcedure( object ):
         """
         Any.requireIsTextNonEmpty( text )
 
+        version = ToolBOSSettings.packageVersion
+        Any.requireIsTextNonEmpty( version )
+
+        display = 'TOOLBOS %s - %s' % ( version, text )
+
         Any.logVerbatim( 3, ''       )
         Any.logVerbatim( 3, 78 * '=' )
-        Any.logVerbatim( 3, text     )
+        Any.logVerbatim( 3, display  )
         Any.logVerbatim( 3, 78 * '=' )
 
 
@@ -1404,7 +1408,7 @@ class GlobalInstallProcedure( InstallProcedure ):
             Shows some opening header that the Install Procedure will start
             now.
         """
-        self._showIntro( 'TOOLBOS 3.0 - GLOBAL INSTALLATION PROCEDURE' )
+        self._showIntro( 'GLOBAL INSTALLATION PROCEDURE' )
 
 
     def postCollectMetaInfo( self ):
@@ -1740,7 +1744,7 @@ class ProxyInstallProcedure( InstallProcedure ):
             Shows some opening header that the Install Procedure will start
             now.
         """
-        self._showIntro( 'TOOLBOS 3.0 - PROXY INSTALLATION PROCEDURE' )
+        self._showIntro( 'PROXY INSTALLATION PROCEDURE' )
 
 
     def postCollectMetaInfo( self ):
@@ -1833,7 +1837,7 @@ class TarExportProcedure( InstallProcedure ):
             Shows some opening header that the Tar Export Procedure will start
             now.
         """
-        self._showIntro( 'TOOLBOS 3.0 - TAR EXPORT PROCEDURE' )
+        self._showIntro( 'TAR EXPORT PROCEDURE' )
 
 
     def confirmInstall( self ):
