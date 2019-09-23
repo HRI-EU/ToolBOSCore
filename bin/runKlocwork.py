@@ -41,7 +41,6 @@
 
 
 import logging
-import os.path
 import sys
 import tempfile
 
@@ -70,15 +69,14 @@ dataDir = args['dataDir']
 
 
 if dataDir:
+    deleteDir     = False
     klocworkDir   = dataDir
     Any.requireIsTextNonEmpty( klocworkDir )
     Any.requireMsg( klocworkDir not in ( '.', '..' ), "invalid path names!" )
 
-    deleteDir     = False
-
 else:
-    klocworkDir   = tempfile.mkdtemp( prefix='klocwork-' )
     deleteDir     = True
+    klocworkDir   = tempfile.mkdtemp( prefix='klocwork-' )
 
 
 #----------------------------------------------------------------------------
