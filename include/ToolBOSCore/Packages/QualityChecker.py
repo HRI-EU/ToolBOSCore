@@ -2149,7 +2149,7 @@ under `${SIT}/External/PyCharmPro`.'''
 
         isPythonFile    = lambda s: s.endswith( '.py' )
         isPkgInfo       = lambda s: os.path.basename( s ) == 'pkgInfo.py'
-        numberOfPyFiles = map( isPythonFile, files ).count( True )
+        numberOfPyFiles = list( map( isPythonFile, files ) ).count( True )
         pkgInfoFound    = filter( isPkgInfo, files )
 
         if numberOfPyFiles == 1 and pkgInfoFound:
