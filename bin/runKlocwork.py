@@ -41,12 +41,11 @@
 
 
 import logging
-import os.path
 import sys
+import tempfile
 
-from ToolBOSCore.BuildSystem import BuildSystemTools
-from ToolBOSCore.Tools       import Klocwork
-from ToolBOSCore.Util        import ArgsManagerV2
+from ToolBOSCore.Tools import Klocwork
+from ToolBOSCore.Util  import Any, ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -58,9 +57,26 @@ desc = 'Launches the Klocwork Desktop GUI to analyze the current package.'
 
 argman = ArgsManagerV2.ArgsManager( desc )
 
-argman.addExample( '%(prog)s' )
+argman.addArgument( '-d', '--dataDir', action='store', type=str,
+                    metavar='PATH',
+                    help='Klocwork data dir. (default: /tmp)' )
 
-argman.run()
+argman.addExample( '%(prog)s' )
+argman.addExample( '%(prog)s -d ./klocworkData' )
+
+args    = vars( argman.run() )
+dataDir = args['dataDir']
+
+
+if dataDir:
+    deleteDir     = False
+    klocworkDir   = dataDir
+    Any.requireIsTextNonEmpty( klocworkDir )
+    Any.requireMsg( klocworkDir not in ( '.', '..' ), "invalid path names!" )
+
+else:
+    deleteDir     = True
+    klocworkDir   = tempfile.mkdtemp( prefix='klocwork-' )
 
 
 #----------------------------------------------------------------------------
@@ -68,24 +84,26 @@ argman.run()
 #----------------------------------------------------------------------------
 
 
-BuildSystemTools.requireTopLevelDir()
-
-
-klocworkDir='klocwork'
-
+logging.info( 'Klocwork data directory: %s', klocworkDir )
 
 try:
-    if not os.path.exists( klocworkDir ):
-        Klocwork.createLocalProject( klocworkDir )
-
+    Klocwork.createLocalProject( klocworkDir )
     Klocwork.startGUI( klocworkDir, blocking=True )
+    status = 0
 
 except AssertionError as details:
     logging.error( details )
+    status = -1
 
 except KeyboardInterrupt:
     # user pressed <Ctrl+C>
-    sys.exit( -1 )
+    status = -1
+
+
+if deleteDir:
+    FastScript.remove( klocworkDir )
+
+sys.exit( status )
 
 
 # EOF

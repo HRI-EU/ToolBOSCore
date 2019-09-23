@@ -108,7 +108,7 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
 
     # inspect the build process to capture source files, defines, flags,...
-    cmd = 'kwinject -o %s %s' % ( buildSpec, 'BST.py -dsb' )
+    cmd = 'kwinject -o %s %s' % ( buildSpec, 'BST.py -sb' )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
     Any.requireIsFileNonEmpty( buildSpec )
 
