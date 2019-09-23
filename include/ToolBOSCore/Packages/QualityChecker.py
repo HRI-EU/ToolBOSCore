@@ -1766,7 +1766,20 @@ class QualityRule_C12( AbstractQualityRule ):
     description = '''If resources are not explicitly released then it is
 possible for a failure to occur due to exhaustion of those resources.
 Releasing resources as soon as possible reduces the possibility that
-exhaustion will occur.'''
+exhaustion will occur.
+
+The check function for this rule invokes Valgrind on all executables listed
+in the SQ_12 variable in pkgInfo.py, e.g.:
+
+    SQ_12 = [ 'bin/${MAKEFILE_PLATFORM}/main',
+              'bin/${MAKEFILE_PLATFORM}/main foo --bar' ]
+
+Please specify a list of commands, including arguments (if any), that
+shall be analyzed by the check routine.
+
+The paths to the executables are interpreted as relative to the package root.
+
+Specify an empty list if really nothing has to be executed.'''
 
     seeAlso     = { 'MISRA-2012 rule 22.1': None }
 
@@ -2149,7 +2162,7 @@ under `${SIT}/External/PyCharmPro`.'''
 
         isPythonFile    = lambda s: s.endswith( '.py' )
         isPkgInfo       = lambda s: os.path.basename( s ) == 'pkgInfo.py'
-        numberOfPyFiles = map( isPythonFile, files ).count( True )
+        numberOfPyFiles = list( map( isPythonFile, files ) ).count( True )
         pkgInfoFound    = filter( isPkgInfo, files )
 
         if numberOfPyFiles == 1 and pkgInfoFound:
