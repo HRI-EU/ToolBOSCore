@@ -647,6 +647,75 @@ class PatchSystem( object ):
             return False
 
 
+    def _patchCIA1265( self, dryRun=False ):
+        """
+            Checks BBCM package for included outdated headerfiles and
+            replaces them with the nowadays version.
+            Duplicates will be deleted.
+        """
+        if not self.details.isBBCM():
+            return False
+
+        # Get a list of all files to check
+        files    = FastScript.getFilesInDirRecursive( 'src' )
+        modified = []
+
+        # Check every file
+        for filePath in files:
+            logging.debug( 'processing %s', filePath )
+
+            # Only rewrite line if changed
+            rewrite = False
+            # Get file content
+            fileContent = FastScript.getFileContent( filename=filePath,
+                                                     splitLines=True )
+            # Check every line
+            for line in fileContent:
+                item = line.split()
+
+                # Check for include statement
+                if line.find( '#include <BBDM' ) != -1:
+                    # Replace old package names with the nowadays form
+                    match = re.search( r"-A|-CID|-S", item[ 1 ] )
+                    if match:
+                        fileContent[ fileContent.index( line ) ] = re.sub(
+                            r"-A|-CID|-S", "", line )
+                        rewrite = True
+
+            includes = []
+
+            # Check file backwards
+            for line in reversed( fileContent ):
+                item = line.split()
+
+                if line.find( '#include <BBDM' ) != -1:
+                    # Check for duplicates and remove existing ones
+                    if line in includes:
+                        rewrite = True
+                        fileContent.remove( line )
+
+                    # add to list of known includes
+                    else:
+                        includes.append( line )
+
+            # Overwrite file with new content
+            try:
+                if rewrite:
+                    if dryRun:
+                        logging.info( '[DRY-RUN] patching %s', filePath )
+                    else:
+                        logging.info( 'patching %s', filePath )
+                        newContent = ''.join( fileContent )
+                        FastScript.setFileContent( filePath, newContent )
+
+                    modified.append( filePath )
+
+            except IOError as e:
+                logging.error( e )
+
+        return modified
+
+
     def getPatchesAvailable( self ):
         """
             Returns a list of available patches, each item in the list
@@ -740,9 +809,11 @@ class PatchSystem( object ):
 
                    ( 'upgrading RTMaps dependency (CIA-1239)',
                      self._patchCIA1239,
-                     'upgraded RTMaps dependency to 4.56 (CIA-1239)' )
+                     'upgraded RTMaps dependency to 4.56 (CIA-1239)' ),
 
-                   ]
+                   ( 'replacing outdated BBDM filenames (CIA-1265)',
+                     self._patchCIA1265,
+                     'replaced BBDM headerfile names (CIA-1265)' ) ]
 
         return result
 
