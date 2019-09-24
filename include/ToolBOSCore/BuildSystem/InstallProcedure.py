@@ -46,14 +46,13 @@ import tempfile
 
 import six
 
-from ToolBOSCore.Packages                  import PackageCreator
-from ToolBOSCore.Packages.PackageDetector  import PackageDetector
-from ToolBOSCore.Platforms                 import Platforms
-from ToolBOSCore.Settings.ToolBOSSettings  import getConfigOption
-from ToolBOSCore.Storage                   import VersionControl
-from ToolBOSCore.Tools                     import RTMaps
-from ToolBOSCore.Util                      import Any
-from ToolBOSCore.Util                      import FastScript
+from ToolBOSCore.Packages                 import PackageCreator
+from ToolBOSCore.Packages.PackageDetector import PackageDetector
+from ToolBOSCore.Platforms                import Platforms
+from ToolBOSCore.Settings                 import ToolBOSConf, ToolBOSSettings
+from ToolBOSCore.Storage                  import VersionControl
+from ToolBOSCore.Tools                    import RTMaps
+from ToolBOSCore.Util                     import Any, FastScript
 
 
 class InstallProcedure( object ):
@@ -98,9 +97,6 @@ class InstallProcedure( object ):
         self._outOfTree        = sourceTree and binaryTree and sourceTree != binaryTree
         self._sourceTree       = sourceTree
         self._binaryTree       = binaryTree if self._outOfTree else sourceTree
-        self._defFile_name     = None
-        self._defFile_local    = None
-        self._defFile_relHGR   = None
         self._installGroupID   = None
         self._installGroupName = None
         self._installUmask     = None
@@ -371,7 +367,7 @@ class InstallProcedure( object ):
         Any.logVerbatim( 3, '' )
 
         if FastScript.getEnv( 'MAKEFILE_FASTINSTALL' ) == 'FALSE' or \
-            getConfigOption( 'BST_confirmInstall' ) is True:
+            ToolBOSConf.getConfigOption( 'BST_confirmInstall' ) is True:
 
             try:
                 prompt = '\t--> Install now? (Y/n)  '
@@ -988,112 +984,19 @@ class InstallProcedure( object ):
 
     def _registerComponent_ToolBOS( self ):
         """
-            Creates an interface definition file (*.def) for a
-            BBCM/BBDM/VM package.
+            Add a symlink to the pkgInfo.py file into the module index.
         """
-        if not self.details.isComponent():
-            return
+        if self.details.isBBCM() or self.details.isBBDM():
 
-        FastScript.tryImport( [ 'astor', 'dill', 'nanomsg' ] )
+            canonicalPath  = self.details.canonicalPath
+            packageName    = self.details.packageName
+            packageVersion = self.details.packageVersion
 
-        try:
-            from Middleware.Common                    import DefinitionFile, DTBOS
-            from Middleware.InfoParser.BBCMInfoParser import BBCMInfoParser
-            from Middleware.InfoParser.BBDMInfoParser import BBDMInfoParser
-            from Middleware.InfoParser                import Utils
-            from Middleware.BBMLv1                    import VirtualModules
+            symlinkFile    = '%s_%s.py' % ( packageName, packageVersion )
+            symlinkRelPath = os.path.join( 'Modules', 'Index', symlinkFile )
+            target         = os.path.join( '../..', canonicalPath, 'pkgInfo.py' )
 
-        except ImportError as e:
-            pkg = getConfigOption( 'package_toolbosmiddleware' )
-            msg = 'To work with Middleware-related packages, please run ' \
-                  '"source ${SIT}/%s/BashSrc" first.' % pkg
-
-            logging.debug( e )
-
-            raise EnvironmentError( msg )
-
-
-        self._defFile_name = DTBOS.getIndexFileName( self.details.canonicalPath )
-        defFilePath = os.path.join( 'install', self._defFile_name )
-
-        # BBDMAll is a collector package which does not provide a shared
-        # library and also does not need to be registered into DTBOS
-        if self.details.packageName != 'BBDMAll':
-            if self.details.isVirtualModule():
-                logging.info( 'generating %s', defFilePath )
-
-                VirtualModules.generateDefinitionFile( defFilePath )
-
-                Any.requireIsFileNonEmpty( defFilePath )
-
-            else:
-                infoFileExtensionSet = [ '.c', '.cpp', '.cxx', '.cc', '.c++' ]
-                srcDir               = os.path.join( self.details.topLevelDir, 'src' )
-
-                if self.details.isOldBBCM():
-                    infos  = Utils.collectOldStyleBBCMInfos( self.details.packageName, srcDir )
-                    module = Utils.createCodeModule( infos )
-
-                    DefinitionFile.save( module, defFilePath, False, category=self.details.packageCategory )
-
-                    Any.requireIsFileNonEmpty( defFilePath )
-                else:
-                    validSrcFiles = []
-
-                    if self.details.isNewBBCM():
-                        srcPattern     = os.path.join( srcDir, self.details.packageName + '_info.*' )
-                        srcFiles       = glob.glob( srcPattern )
-                        parser         = BBCMInfoParser()
-                        createModule   = Utils.createCodeModule
-                        hasInitFromXML = Utils.hasInitFromXML( 'BBCM', srcDir, self.details.packageName )
-
-
-                    elif self.details.isBBDM( ):
-                        srcPattern     = os.path.join( srcDir, self.details.packageName + '.*' )
-                        srcFiles       = glob.glob( srcPattern )
-                        parser         = BBDMInfoParser()
-                        createModule   = Utils.createDataModule
-                        hasInitFromXML = Utils.hasInitFromXML( 'BBDM', srcDir, self.details.packageName )
-
-                    else:
-                        # We're not installing a BBCM nor a BBDM nor a VirtualModule
-                        return
-
-
-                    if parser:
-                        for f in srcFiles:
-                            name, ext = os.path.splitext( f )
-                            if ext.lower( ) in infoFileExtensionSet:
-                                validSrcFiles.append( f )
-
-                        Any.requireMsg( len( validSrcFiles ) == 1,
-                                        "More than one source file was found: {}".format( validSrcFiles ) )
-
-                        infoFilePath = validSrcFiles[ 0 ]
-                        Any.requireIsFileNonEmpty( infoFilePath )
-
-                        infos  = parser.parse( FastScript.getFileContent( infoFilePath ) )
-                        module = createModule( infos )
-
-                        DefinitionFile.save( module, defFilePath, hasInitFromXML, category=self.details.packageCategory )
-
-                        Any.requireIsFileNonEmpty( defFilePath )
-
-        if os.path.exists( defFilePath ):
-            # Legacy definition file (used by DTBOS 1.8)
-
-            self._defFile_local  = defFilePath
-            self._defFile_relHGR = DTBOS.getIndexFilePath_relHGR( self.details.canonicalPath )
-
-            self.copyMandatory( defFilePath,
-                                self._defFile_relHGR,
-                                relativeToHGR=True )
-
-
-            # Pythonic "definition file" aka symlinks to pkgInfo.py in SIT
-            symlink = DTBOS.getPythonIndexFilePath_relHGR( self.details.canonicalPath )
-            target  = os.path.join( '../..', self.details.canonicalPath, 'pkgInfo.py' )
-            self.link( target, symlink, True )
+            self.link( target, symlinkRelPath, True )
 
 
     def _setUmask( self ):
@@ -1212,8 +1115,6 @@ class InstallProcedure( object ):
         groupID        = self._installGroupID
         groupName      = self._installGroupName
         umask          = self._installUmask
-        defFile_local  = self._defFile_local
-        defFile_relHGR = self._defFile_relHGR
         fail           = False
 
         # THEORY:
@@ -1353,38 +1254,20 @@ class InstallProcedure( object ):
                 logging.warning( 'unable to set umask=%s (see "-v" for details)', str(umask) )
 
 
-        # make DTBOS definition file world-readable
-        # (however consider user-defined group if specified)
-
-        if not fail and defFile_local is not None:
-
-            if self._installUmask is not None:
-                umask = self._installUmask
-            else:
-                umask = 0o022
-
-            mode = 0o666 & ~umask
-
-
-            defFile_SIT = os.path.join( sitRootPath, defFile_relHGR )
-            logging.debug( 'chmod %o %s', mode, defFile_SIT )
-            os.chmod( defFile_SIT, mode )
-
-
-            if self._installGroupID is not None:
-                logging.debug( 'chgrp %s %s', self._installGroupName, defFile_SIT )
-                os.chown( defFile_SIT, -1, self._installGroupID )
-
-
     def _showIntro( self, text ):
         """
             Show application name / headline at start-up.
         """
         Any.requireIsTextNonEmpty( text )
 
+        version = ToolBOSSettings.packageVersion
+        Any.requireIsTextNonEmpty( version )
+
+        display = 'TOOLBOS %s - %s' % ( version, text )
+
         Any.logVerbatim( 3, ''       )
         Any.logVerbatim( 3, 78 * '=' )
-        Any.logVerbatim( 3, text     )
+        Any.logVerbatim( 3, display  )
         Any.logVerbatim( 3, 78 * '=' )
 
 
@@ -1404,7 +1287,7 @@ class GlobalInstallProcedure( InstallProcedure ):
             Shows some opening header that the Install Procedure will start
             now.
         """
-        self._showIntro( 'TOOLBOS 3.0 - GLOBAL INSTALLATION PROCEDURE' )
+        self._showIntro( 'GLOBAL INSTALLATION PROCEDURE' )
 
 
     def postCollectMetaInfo( self ):
@@ -1449,7 +1332,6 @@ class GlobalInstallProcedure( InstallProcedure ):
 
     def postInstall( self ):
         self._registerComponent_RTMaps()
-        self._removeDefFileFromProxy()
 
 
     def _globalInstallReason( self ):
@@ -1460,7 +1342,7 @@ class GlobalInstallProcedure( InstallProcedure ):
             For batch processings, the user may also specify a message
             using the MAKEFILE_GLOBALINSTALLREASON environment variable.
         """
-        if getConfigOption( 'askGlobalInstallReason' ) is False:
+        if ToolBOSConf.getConfigOption( 'askGlobalInstallReason' ) is False:
             logging.debug( 'global install log disabled')
             return
 
@@ -1660,17 +1542,6 @@ class GlobalInstallProcedure( InstallProcedure ):
                 logging.info( 'skipped RTMaps component registration (no proxy SIT found)' )
 
 
-    def _removeDefFileFromProxy( self ):
-        if self.sitProxyPath and self.details.isBBCM() and self._defFile_name:
-            # remove left-over *.def from previous proxy installations (if existing),
-            # see JIRA ticket TBCORE-747
-
-            defFilePath = os.path.join( self.sitProxyPath, 'Modules/Index',
-                                        self._defFile_name )
-
-            FastScript.remove( defFilePath )
-
-
     def _updateProxyDir( self ):
         """
             Replace the symlink inside the proxy (if exists) by a one pointing
@@ -1702,7 +1573,7 @@ class GlobalInstallProcedure( InstallProcedure ):
 
     def _vcsConsistencyCheck( self ):
         if FastScript.getEnv( 'MAKEFILE_SKIPSVNCHECK' ) == 'TRUE' or \
-            getConfigOption( 'BST_svnCheck' ) is False:
+            ToolBOSConf.getConfigOption( 'BST_svnCheck' ) is False:
 
             logging.warning( 'VCS consistency check skipped' )
             return
@@ -1740,7 +1611,7 @@ class ProxyInstallProcedure( InstallProcedure ):
             Shows some opening header that the Install Procedure will start
             now.
         """
-        self._showIntro( 'TOOLBOS 3.0 - PROXY INSTALLATION PROCEDURE' )
+        self._showIntro( 'PROXY INSTALLATION PROCEDURE' )
 
 
     def postCollectMetaInfo( self ):
@@ -1833,7 +1704,7 @@ class TarExportProcedure( InstallProcedure ):
             Shows some opening header that the Tar Export Procedure will start
             now.
         """
-        self._showIntro( 'TOOLBOS 3.0 - TAR EXPORT PROCEDURE' )
+        self._showIntro( 'TAR EXPORT PROCEDURE' )
 
 
     def confirmInstall( self ):

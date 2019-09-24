@@ -1195,19 +1195,6 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
         uninstalled from global SIT (if applicable). If False it
         will only be uninstalled from the proxy SIT.
     """
-    try:
-        from Middleware.Common import DTBOS
-
-    except ImportError as e:
-        pkg = ToolBOSSettings.getConfigOption( 'package_toolbosmiddleware' )
-        msg = 'For reliability reasons please run ' \
-              '"source ${SIT}/%s/BashSrc" first.' % pkg
-
-        logging.error( e )
-
-        raise EnvironmentError( msg )
-
-
     from ToolBOSCore.Platforms  import Platforms
     from ToolBOSCore.Tools      import RTMaps
 
@@ -1223,12 +1210,6 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
     installRoot_proxy  = os.path.join( sitProxyPath, canonicalPath )
     installRoot_root   = os.path.join( sitRootPath, canonicalPath )
 
-    defFile_relHGR     = DTBOS.getIndexFilePath_relHGR( canonicalPath )
-    Any.requireIsTextNonEmpty( defFile_relHGR )
-
-    defFile_proxy      = os.path.join( sitProxyPath, defFile_relHGR )
-    defFile_root       = os.path.join( sitRootPath, defFile_relHGR )
-
     rtmapsVersion      = FastScript.getEnv( 'RTMAPS_VERSION' )
 
     logging.info( 'uninstalling %s', canonicalPath )
@@ -1236,11 +1217,9 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
 
     logging.info( 'cleaning proxy-installation' )
     FastScript.remove( installRoot_proxy, dryRun )
-    FastScript.remove( defFile_proxy,     dryRun )
 
     if cleanGlobalInstallation:
         logging.info( 'cleaning global-installation' )
-        FastScript.remove( defFile_root,     dryRun )
         FastScript.remove( installRoot_root, dryRun )
 
     if rtmapsVersion:
@@ -1294,7 +1273,6 @@ def randomizeValidityFlags():
     Any.requireIsTextNonEmpty( invalidStr )
 
     return validStr, invalidStr
-
 
 
 # EOF
