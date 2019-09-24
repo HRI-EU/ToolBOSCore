@@ -48,6 +48,9 @@ from ToolBOSCore.Util     import Any, FastScript, VersionCompat
 
 class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
 
+    _modifiedFileExpr = re.compile( '^\sM\s(.+)$' )
+
+
     def __init__( self ):
         super( LocalGitRepository, self ).__init__()
 
@@ -101,9 +104,39 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
 
     def consistencyCheck( self ):
         """
-            If everything is OK just passes and returns None, see SVN.py.
+            Performs a check if the working tree is clean, e.g. for
+            performing a global SIT installation.
+
+            If everything is OK just passes and returns None, otherwise
+            returns the modifications.
+
+            If there are problems returns a tuple of three elements:
+               1. descriptive short error message
+               2. detailed description of the problem
+               3. suggested solution
         """
-        logging.warning( 'Git repository check not implemented' )
+        tmp = VersionCompat.StringIO()
+        cmd = 'git status --porcelain'
+
+        FastScript.execProgram( cmd, stdout=tmp )
+
+        output = tmp.getvalue()
+        Any.requireIsText( output )
+
+        modifiedFiles = set()
+
+        for line in output.splitlines():
+            tmp = self._modifiedFileExpr.match( line )
+
+            if tmp is not None:
+                modifiedFiles.add( tmp.group(1) )
+
+        if modifiedFiles:
+            s1 = 'Git consistency check failed'
+            s2 = 'modified files not committed (%s)' % ','.join( sorted(modifiedFiles) )
+            s3 = 'Working tree has uncommitted changes, see "git status" for details.'
+
+            return s1, s2, s3
 
 
     def diff( self, output=None ):
