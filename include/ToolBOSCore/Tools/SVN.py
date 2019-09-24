@@ -412,9 +412,8 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
     def consistencyCheck( self ):
         """
-            Performs a check if the working copy is clean against the
-            provided reference revision, e.g. for performing a
-            global SIT installation.
+            Performs a check if the working copy is clean, e.g. for
+            performing a global SIT installation.
 
             If everything is OK just passes and returns None, otherwise
             returns the modifications.

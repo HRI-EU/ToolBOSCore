@@ -289,6 +289,7 @@ class BuildSystemTools( object ):
         from ToolBOSCore.Packages import PackageCreator
 
         detector = PackageDetector( self._sourceTree )
+        detector.retrieveMakefileInfo()
 
         try:
             PackageCreator.uninstall( detector.canonicalPath,
