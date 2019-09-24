@@ -192,11 +192,11 @@ class DefinitionWithCursor( Definition ):
         """
         loc = cursor.location
         try:
-            dloc = (loc.file.name, loc.line, loc.column)
+            self._dloc = (loc.file.name, loc.line, loc.column)
         except AttributeError:
-            dloc = None
+            self._dloc = None
 
-        super( DefinitionWithCursor, self ).__init__( cursor.spelling, dloc )
+        super( DefinitionWithCursor, self ).__init__( cursor.spelling, self._dloc )
 
         self._cursor = cursor
 
@@ -223,6 +223,9 @@ class DefinitionWithCursor( Definition ):
     # does not make sense.
     def __eq__( self, o ):
         return self._cursor.location == o._cursor.location
+
+    def __hash__( self ):
+        return hash( self._dloc )
 
     def _key( self ):
         return self.name, self._cursor
