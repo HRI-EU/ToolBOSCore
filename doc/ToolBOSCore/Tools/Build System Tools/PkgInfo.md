@@ -157,6 +157,12 @@ At loading time the Python code gets evaluated and the following variables are s
           justification why a rule cannot be fulfilled</td>
  </tr>
  <tr>
+      <td>sqCheckExe</td>
+      <td>list of strings</td>
+      <td>paths to the executables, including arguments (if any), that
+          shall be analyzed by the valgrind check routine</td>
+ </tr>
+ <tr>
    <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
        colspan="3">documentation</td>
  </tr>
