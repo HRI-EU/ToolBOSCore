@@ -1807,19 +1807,33 @@ Specify an empty list if really nothing has to be executed.'''
 
         binDirContents             = list( os.walk( binDirPath ) )
         _dirpath, _dirnames, files = binDirContents[0]
-        if 'SQ_12' not in pkgInfo and files:
-            return ( FAILED, 0, 1,
-                     "executable source code was found in %s directory"
-                     " but no SQ_12 directive was specified in pkgInfo.py" % binDirPath )
 
-        executables    = pkgInfo.get( 'SQ_12', [] )
+        if 'sqCheckExe' not in pkgInfo and files:
+            if 'SQ_12' not in pkgInfo and files:
+                logging.error( "no 'sqCheckExe' directive was specified in pkgInfo.py" )
+                return ( FAILED, 0, 1,
+                         "executable source code was found in %s directory"
+                         " but no sqCheckExe directive was specified in pkgInfo.py" % binDirPath )
+
+        if 'sqCheckExe' in pkgInfo:
+            executables = pkgInfo.get( 'sqCheckExe', [] )
+        elif 'SQ_12' in pkgInfo:
+            executables = pkgInfo.get( 'SQ_12', [] )
+        else:
+            logging.error ( "no 'SQ_12' or 'sqCheckExe' directive was specified in pkgInfo.py" )
+
         for path in executables:
             executable     = os.path.expandvars( path )
             executablePath = os.path.realpath( os.path.join( details.topLevelDir, executable ) )
 
             logging.info( 'Analyzing %s', executablePath )
 
-            failed, errors = Valgrind.checkExecutable( executablePath, details )
+            if os.path.exists( executablePath ):
+                failed, errors = Valgrind.checkExecutable( executablePath, details )
+            else:
+                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'",
+                               executablePath )
+                return False
 
             if failed:
                 failedExecutables += 1
