@@ -810,6 +810,36 @@ def getDependenciesFromCurrentPackage( recursive=False, systemPackages=False ):
     return result
 
 
+def getFlatDependencies( canonicalPaths, cache=None, sitPath=None ):
+    """
+        Resolves all dependencies recursively and converts them to a flat
+        set of overall dependencies.
+
+        This function might be handy to determine all SIT packages that
+        need to transferred to another site.
+    """
+    cache   = {}            if cache   is None else cache
+    sitPath = SIT.getPath() if sitPath is None else sitPath
+
+    Any.requireIsIterable( canonicalPaths )
+    Any.requireIsDict( cache )
+    Any.requireIsTextNonEmpty( sitPath )
+
+
+    tmp = []
+
+    for canonicalPath in canonicalPaths:
+        requireIsCanonicalPath( canonicalPath )
+
+        deps = getDependencies( canonicalPath, recursive=True, cache=cache,
+                                systemPackages=False, sitPath=sitPath )
+        tmp.append( deps )
+
+    result = sorted( set( FastScript.flattenList( tmp ) ) )
+
+    return result
+
+
 def isDeprecated( canonicalPath ):
     """
         Checks from the filesystem if the specified package (canonical path)
