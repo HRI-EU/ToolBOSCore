@@ -140,11 +140,11 @@ class CParser( Namespace ):
 
     def _populateMacros( self, filepath, includepaths, defines, langStd ):
         """Populates the macro definitions in defs['macros'] and defs['fnmacros']"""
-        macroTuples = clang_macroinfo.get_macros( filepath,
-                                                  includepaths,
+        macroTuples = clang_macroinfo.get_macros( filepath.encode( 'utf8' ),
+                                                  [p.encode( 'utf8' ) for p in includepaths],
                                                   True,
-                                                  defines,
-                                                  langStd )
+                                                  [d.encode( 'utf8' ) for d in defines],
+                                                  langStd.encode( 'utf8' ) )
 
         macros   = { }
         fnmacros = { }
