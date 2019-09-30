@@ -826,16 +826,20 @@ def getFlatDependencies( canonicalPaths, cache=None, sitPath=None ):
     Any.requireIsTextNonEmpty( sitPath )
 
 
-    tmp = []
+    result = set()
 
     for canonicalPath in canonicalPaths:
         requireIsCanonicalPath( canonicalPath )
 
+        result.add( 'sit://' + canonicalPath )
+
         deps = getDependencies( canonicalPath, recursive=True, cache=cache,
                                 systemPackages=False, sitPath=sitPath )
-        tmp.append( deps )
 
-    result = sorted( set( FastScript.flattenList( tmp ) ) )
+        flatDeps = FastScript.flattenList( deps )
+
+        for item in flatDeps:
+            result.add( item )
 
     return result
 
