@@ -460,7 +460,7 @@ try:
             FastScript.tryImport( 'PyQt5' )
             from ToolBOSCore.ZenBuildMode import MainWindow
 
-            logging.info( 'starting zen build mode' )
+            logging.debug( 'starting zen build mode' )
             MainWindow.MainWindow( os.getcwd() ).main()
 
         sys.exit( 0 )
