@@ -557,7 +557,7 @@ class MainWindow( QObject, object ):
             QMessageBox().critical( self.window, "Error", str(details), "OK" )
             return
 
-        logging.info( 'opening package: %s', topLevelDir )
+        logging.debug( 'opening package: %s', topLevelDir )
 
         try:
             self.model.open( topLevelDir )

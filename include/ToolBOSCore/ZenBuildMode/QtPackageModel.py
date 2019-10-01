@@ -514,7 +514,7 @@ class BSTPackageModel( QObject, object ):
 
 
             if patchesAvailable:
-                 logging.info( "Patches available" )
+                 logging.debug( 'patches available' )
                  self.updatesAvailable.emit()
 
 
