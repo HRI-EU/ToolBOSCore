@@ -698,7 +698,12 @@ fileHandler   = None
 
 rootLogger = logging.getLogger()
 rootLogger.addHandler( consoleHandler )
-rootLogger.setLevel( logging.DEBUG )
+
+# default loglevel after importing Any.py
+#
+# Note: If set to logging.DEBUG then all other Python modules may log a lot
+#       of stuff, better keep logging.INFO here.
+rootLogger.setLevel( logging.INFO )
 
 
 # ensure flushing the streams at application exit
