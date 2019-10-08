@@ -192,7 +192,7 @@
    \endverbatim
  *
  * \li Copy the Software Installation Tree (SIT) that you have received
- * on DVD or via network share into the \c /hri/sit directory. Example:
+ * into the \c /hri/sit directory. Example:
  *
  * \verbatim
    $ cp -R /media/dvd/* /hri/sit
@@ -208,7 +208,7 @@
  * <h2>Windows</h2>
  *
  * \li Copy the Software Installation Tree (SIT) that you have received
- * on DVD or via network share to some local directory (e.g. c:\\SIT)
+ * to some local directory (e.g. c:\\SIT)
  *
  * \li Map the drive letter \c S: to this directory. Open a terminal using
  * "Start → Run → cmd.exe" and enter the following command (replace
