@@ -64,7 +64,7 @@ sys.path.append( os.path.join( tcRootDir, 'include' ) )
 sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 
 
-# check if ToolBOSCore/2.0/BashSrc was sourced (so PYTHONPATH was set),
+# check if ToolBOSCore/3.2/BashSrc was sourced (so PYTHONPATH was set),
 # otherwise we will not be able to import any ToolBOSCore Python package
 #
 sourced = False
