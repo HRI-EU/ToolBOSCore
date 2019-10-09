@@ -255,7 +255,7 @@
  * script:
  *
  * \verbatim
-   S:\DevelopmentTools\ToolBOSCore\2.0\CmdSrc.bat
+   S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
    \endverbatim
  *
  * \image html BuildSystemTools/WindowsSetEnv.png
@@ -1510,7 +1510,7 @@ Project
          bst_find_package(Libraries/MasterClock/1.6)
          \endcode
  *
- *       This includes both packages ToolBOSCore 2.0 and MasterClock 1.6
+ *       This includes both packages ToolBOSCore 3.2 and MasterClock 1.6
  *       (and recursively all of their dependencies) from the SIT.
  *
  *       The \c packageVar.cmake inside each of these packages is
