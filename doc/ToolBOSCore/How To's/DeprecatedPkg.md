@@ -19,8 +19,8 @@ package may be used instead.
 
 ####  Examples
 
-    BST.py -M "I don't need a reason!" --deprecate
-    BST.py -M "No replacement!" --deprecate-all DeviceIO/CanMessage/0.3
+    BST.py -M "Please use newer version 2.0 instead." --deprecate
+    BST.py -M "Package is discontinued." --deprecate-all DeviceIO/CanMessage/0.3
     BST.py --deprecate Libraries/CameraModel/0.5
 
 **The manual way**
@@ -30,6 +30,8 @@ package may be used instead.
 To flag a particular version of a package as deprecated, create a file with the following name in the SIT:
 
     $ touch /hri/sit/latest/Libraries/MyPackage/1.0/deprecated.txt
+
+You may also put some information to the user into this file, e.g. what to use instead.
     
 **All versions of a package**
 
