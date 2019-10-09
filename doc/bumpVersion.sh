@@ -39,10 +39,14 @@ NEW_VERSION=3.2
 
 
 sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
+                                          bin/*.bat \
                                           bin/ToolBOS-Setup.py \
                                           etc/ToolBOS.conf \
                                           doc/documentation.h \
-                                          include/ToolBOSCore/Settings/ToolBOSSettings.py
+                                          doc/ToolBOSCore/Setup/ShellConfig.md \
+                                          include/ToolBOSCore/Settings/ToolBOSSettings.py \
+                                          test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
+                                          useFromHere.bat
 
 #                                          etc/mako-templates/JetBrains_CLion_Config/workspace.xml.mako \
 
