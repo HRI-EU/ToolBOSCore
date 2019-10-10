@@ -12,8 +12,8 @@
     
       $ mkdir -p /hri/sit
       
-* Copy the Software Installation Tree (SIT) that you have received on DVD or via network share into the /hri/sit directory. 
- Example:
+* Copy the Software Installation Tree (SIT) that you have received into the /hri/sit directory.
+  Example:
 
       $ cp -R /media/dvd/* /hri/sit
       
@@ -28,7 +28,7 @@
 ### Windows
 
 
-* Copy the Software Installation Tree (SIT) that you have received on DVD or via network share to some local directory 
+* Copy the Software Installation Tree (SIT) that you have received to some local directory
   (e.g. c:\SIT)
 * Map the drive letter S: to this directory. Open a terminal using "Start → Run → cmd.exe" and enter the following 
   command (replace c:\SIT accordingly).

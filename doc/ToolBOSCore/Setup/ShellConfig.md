@@ -18,6 +18,6 @@ As mentioned by the script, please add a line like this to your ~/.bashrc, and t
 
 ToolBOS needs some environment variables which can be brought up with this script:
 
-    S:\DevelopmentTools\ToolBOSCore\2.0\CmdSrc.bat
+    S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
     
  ![](WindowsSetEnv.png)
