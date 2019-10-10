@@ -192,7 +192,7 @@
    \endverbatim
  *
  * \li Copy the Software Installation Tree (SIT) that you have received
- * on DVD or via network share into the \c /hri/sit directory. Example:
+ * into the \c /hri/sit directory. Example:
  *
  * \verbatim
    $ cp -R /media/dvd/* /hri/sit
@@ -208,7 +208,7 @@
  * <h2>Windows</h2>
  *
  * \li Copy the Software Installation Tree (SIT) that you have received
- * on DVD or via network share to some local directory (e.g. c:\\SIT)
+ * to some local directory (e.g. c:\\SIT)
  *
  * \li Map the drive letter \c S: to this directory. Open a terminal using
  * "Start → Run → cmd.exe" and enter the following command (replace
@@ -255,7 +255,7 @@
  * script:
  *
  * \verbatim
-   S:\DevelopmentTools\ToolBOSCore\2.0\CmdSrc.bat
+   S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
    \endverbatim
  *
  * \image html BuildSystemTools/WindowsSetEnv.png
@@ -1510,7 +1510,7 @@ Project
          bst_find_package(Libraries/MasterClock/1.6)
          \endcode
  *
- *       This includes both packages ToolBOSCore 2.0 and MasterClock 1.6
+ *       This includes both packages ToolBOSCore 3.2 and MasterClock 1.6
  *       (and recursively all of their dependencies) from the SIT.
  *
  *       The \c packageVar.cmake inside each of these packages is
