@@ -45,10 +45,11 @@ This package contains:
 * [ToolBOS release rollback or beta-test ](doc/ToolBOSCore/How%20To's/ToolBOSBetaTest.md)
 * [Deprecated packages](doc/ToolBOSCore/How%20To's/DeprecatedPkg.md)
 
+___
 
 Authors:
 
-* <a href="https://github.com/MarcusStein">Marcus Stein</a> (coordinator)
+* <a href="https://github.com/MarcusStein">Marcus Stein</a> (maintainer)
 * <a href="https://github.com/robyf70">Roberto Fichera</a>
 * <a href="https://github.com/laynor">Alessandro Piras</a>
 * <a href="https://github.com/mrz">Mattia Ziulu</a>
