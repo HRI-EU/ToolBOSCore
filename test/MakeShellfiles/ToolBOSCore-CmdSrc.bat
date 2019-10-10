@@ -32,12 +32,12 @@
 ::
 ::
 ::  Example usage in Windows cmd.exe:
-::  C:\>S:\DevelopmentTools\ToolBOSCore\2.0\CmdSrc.bat
+::  C:\>S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
 ::
 ::  If you need to use a different location for the SIT than S:
 ::  just set the variable SIT_LOCATION before calling this batch script, e.g.
 ::  set SIT_LOCATION=C:\Users\Me\MyLocalSIT
-::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\2.0\CmdSrc.bat
+::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
 
 
 
