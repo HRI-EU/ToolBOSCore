@@ -40,6 +40,7 @@ import re
 import subprocess
 
 from ToolBOSCore.Packages        import ProjectProperties
+from ToolBOSCore.Platforms       import Platforms
 from ToolBOSCore.Storage         import CMakeLists
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
 from ToolBOSCore.Util            import Any
@@ -119,6 +120,7 @@ class PackageDetector( object ) :
         self.sqOptOutDirs      = []
         self.sqOptInFiles      = []
         self.sqOptOutFiles     = []
+        self.sqCheckExe        = None
         self.sqComments        = {}
         self.useClang          = None
 
@@ -164,6 +166,20 @@ class PackageDetector( object ) :
 
         Any.requireIsTextNonEmpty( self.packageName )
         Any.requireIsTextNonEmpty( self.packageVersion )
+
+
+        # compute typical directory names (may not be present!)
+        hostPlatform           = Platforms.getHostPlatform()
+        Any.requireIsTextNonEmpty( hostPlatform )
+
+        self.binDir            = os.path.join( self.topLevelDir, 'bin' )
+        self.binDirArch        = os.path.join( self.topLevelDir, 'bin', hostPlatform )
+        self.examplesDir       = os.path.join( self.topLevelDir, 'examples' )
+        self.includeDir        = os.path.join( self.topLevelDir, 'include' )
+        self.installDir        = os.path.join( self.topLevelDir, 'install' )
+        self.libDir            = os.path.join( self.topLevelDir, 'lib' )
+        self.srcDir            = os.path.join( self.topLevelDir, 'src' )
+        self.testDir           = os.path.join( self.topLevelDir, 'test' )
 
         if self.hasCMakeLists:
             # source tree, C/C++ package
@@ -470,6 +486,7 @@ class PackageDetector( object ) :
         self.gitOrigin         = getValue( 'origin',           self.gitOrigin )
         self.gitRelPath        = getValue( 'repoRelPath',      self.gitRelPath )
         self.packageName       = getValue( 'package',          self.packageName ) # legacy 2018-09-26
+        self.sqCheckExe        = getValue( 'SQ_12',            self.sqCheckExe )  # legacy 2019-10-08
 
         # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
@@ -517,6 +534,7 @@ class PackageDetector( object ) :
         self.svnRevision       = getValue( 'revision',         self.svnRevision )
         self.svnRevisionForCIA = getValue( 'revisionForCIA',   self.svnRevisionForCIA )
         self.sqComments        = getValue( 'sqComments',       self.sqComments )
+        self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )
         self.sqLevel           = getValue( 'sqLevel',          self.sqLevel )
         self.sqOptInRules      = getValue( 'sqOptInRules',     self.sqOptInRules )
         self.sqOptOutRules     = getValue( 'sqOptOutRules',    self.sqOptOutRules )
