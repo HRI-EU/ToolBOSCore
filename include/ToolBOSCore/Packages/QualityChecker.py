@@ -42,6 +42,8 @@ import inspect
 import logging
 import os
 import re
+import shlex
+import subprocess
 import sys
 import tempfile
 
@@ -1789,51 +1791,137 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
+        # look-up executables bin/<platform>/ directory
+        binFiles   = self._getBinFiles( details )
+
+        if not binFiles:
+            result = ( FAILED, 0, 1,
+                       '%s not found' % details.binDirArch )
+
+            return result
+
+        # get SQ-settings from pkgInfo.py
+        sqSettings = self._getSQSettings( details )
+
+        if not sqSettings:          # None == checker not implemented
+            result = ( FAILED, 0, 1,
+                       "could not retreiving sq settings from pkgInfo." )
+
+            return result
+
+        # verify that we have:
+        #     - one executable present for each setting (to check if compilation was forgotten)
+        #     - one setting is present for each executable (to check if developer was lazy ;-)
+
+        validityCheck = self._validityCheck( binFiles, sqSettings )
+
+        if validityCheck[0] == FAILED:
+            shortText = validityCheck[3]
+            logging.debug( shortText )
+
+            # result = ( FAILED, 0, 1,
+            #            "Validity check failed" )
+
+            return validityCheck
+
+        # finally run Valgrind
+        self._runValgrind( sqSettings, details )
+
+
+    def _getSQSettings( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        try:
+            sqSettingsTmp = details.sqCheckExe
+            Any.requireIsNotNone( sqSettingsTmp )
+            Any.requireIsList( sqSettingsTmp )
+
+            logging.info( sqSettingsTmp )
+            sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
+
+            return sqSettings
+
+        except ( IOError, ValueError, TypeError, OSError ) as e:
+            logging.error( e )
+            logging.error( 'issue with retreiving SQ settings from pkgInfo.')
+
+            return False
+
+        except AssertionError as e:
+            logging.error( e )
+            logging.error( 'no sqCheckExe setting was specified in pkgInfo.py.' )
+
+            return False
+
+
+    def _getBinFiles( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        binFilesTmp = FastScript.getFilesInDir( details.binDirArch )
+        Any.requireIsList( binFilesTmp )
+
+        if not binFilesTmp:
+            logging.error( 'No files found in %s directory. Is the package compiled?', details.binDirArch )
+
+            return False
+
+        binFiles = []
+        platform = getHostPlatform()
+
+        for binFile in binFilesTmp:
+            tmp = os.path.join( 'bin', platform, binFile )
+            binFiles.append(tmp)
+
+        return binFiles
+
+
+    def _validityCheck( self, binFiles, commandLines ):
+        Any.requireIsList( binFiles )
+        Any.requireIsList( commandLines )
+
+        commands = []
+
+        for cmdLine in commandLines:
+
+            tmp = shlex.split( cmdLine )
+            command = tmp[0]
+            commands.append( command )
+
+        # TODO: check matching
+
+        for command in commands:
+            if not os.path.exists( command ):
+                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'. "
+                               "Is the package compiled?", command )
+
+                result = ( FAILED, 0, 1,
+                         '%s specified in pkgInfo.py does not exist' % command )
+
+                return result
+
+        for binFile in binFiles:
+            if binFile not in commands:
+                logging.warning("%s executable source code was found. "
+                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
+
+                result = ( FAILED, 0, 1,
+                           "%s not specified in pkgInfo.py %s" % binFile )
+
+                return result
+
+
+    def _runValgrind( self, commandLines, details ):
         passedExecutables = 0
         failedExecutables = 0
         errorMessages     = []
 
-        try:
-            pkgInfo = PkgInfo.getPkgInfoContent()
-        except AssertionError:
-            logging.error( 'No pkgInfo file found, quitting.' )
-            return FAILED, 0, 1, 'Unable to run memory analysis.'
+        for command in commandLines:
 
-        binDirPath = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
-
-        if not os.path.isdir( binDirPath ):
-            return ( OK, passedExecutables, failedExecutables,
-                     'package has no executables that could be checked' )
-
-        binDirContents             = list( os.walk( binDirPath ) )
-        _dirpath, _dirnames, files = binDirContents[0]
-
-        if 'sqCheckExe' not in pkgInfo and files:
-            if 'SQ_12' not in pkgInfo and files:
-                logging.error( "no 'sqCheckExe' directive was specified in pkgInfo.py" )
-                return ( FAILED, 0, 1,
-                         "executable source code was found in %s directory"
-                         " but no sqCheckExe directive was specified in pkgInfo.py" % binDirPath )
-
-        if 'sqCheckExe' in pkgInfo:
-            executables = pkgInfo.get( 'sqCheckExe', [] )
-        elif 'SQ_12' in pkgInfo:
-            executables = pkgInfo.get( 'SQ_12', [] )
-        else:
-            logging.error ( "no 'SQ_12' or 'sqCheckExe' directive was specified in pkgInfo.py" )
-
-        for path in executables:
-            executable     = os.path.expandvars( path )
-            executablePath = os.path.realpath( os.path.join( details.topLevelDir, executable ) )
-
-            logging.info( 'Analyzing %s', executablePath )
-
-            if os.path.exists( executablePath ):
-                failed, errors = Valgrind.checkExecutable( executablePath, details )
-            else:
-                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'",
-                               executablePath )
-                return False
+            try:
+                failed, errors = Valgrind.checkExecutable( command, details )
+            except subprocess.CalledProcessError as e:
+                logging.error( e )
+                return
 
             if failed:
                 failedExecutables += 1
@@ -1843,21 +1931,22 @@ Specify an empty list if really nothing has to be executed.'''
             else:
                 passedExecutables += 1
 
-        for error in errorMessages:
-            logging.error( error )
+            for error in errorMessages:
+                logging.error( error )
 
-        if not passedExecutables and not failedExecutables:
-            result = ( OK, passedExecutables, failedExecutables,
-                       'no executables were checked with Valgrind' )
-        elif not failedExecutables:
-            result = ( OK, passedExecutables, failedExecutables,
-                       'no defects found by Valgrind' )
-        else:
-            result = ( FAILED, passedExecutables, failedExecutables,
-                       'Valgrind found %d defect%s' % ( failedExecutables,
-                                                        's' if failedExecutables > 1 else '' ) )
+            if not passedExecutables and not failedExecutables:
+                result = ( OK, passedExecutables, failedExecutables,
+                           'no executables were checked with Valgrind' )
+            elif not failedExecutables:
+                result = ( OK, passedExecutables, failedExecutables,
+                           'no defects found by Valgrind' )
+            else:
+                result = ( FAILED, passedExecutables, failedExecutables,
+                           'Valgrind found %d defect%s' % ( failedExecutables,
+                                                            's' if failedExecutables > 1 else '' ) )
 
-        return result
+            return result
+
 
 class QualityRule_C13( AbstractQualityRule ):
 
