@@ -159,7 +159,7 @@ function MakefileSystem_unpackSources()
             rm -rf ${SOURCES_DIR}
             mkdir ${SOURCES_DIR}
             echo "unpacking tarball... (this may take some time)"
-            tar xjf ${SRC_TARBALL_NAME} -C ${SOURCES_DIR}
+            tar xvjf ${SRC_TARBALL_NAME} -C ${SOURCES_DIR}
         else
             echo "${SRC_TARBALL_NAME}: No such file"
             exit ${EXIT_FAILURE}
