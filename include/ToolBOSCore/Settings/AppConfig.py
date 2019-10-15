@@ -267,7 +267,7 @@ class AppConfig( object ):
 
                     # remove Python modules, callables etc. from dict
                     for key, value in allSymbols.items():
-                        if Any.isTextNonEmpty( key ) and not Any.isCallable( value ):
+                        if Any.isTextNonEmpty( key ):
                             result[ key ] = value
 
                 except( AssertionError, IOError, OSError ) as e:
