@@ -175,11 +175,14 @@ class PackageDetector( object ) :
         self.binDir            = os.path.join( self.topLevelDir, 'bin' )
         self.binDirArch        = os.path.join( self.topLevelDir, 'bin', hostPlatform )
         self.examplesDir       = os.path.join( self.topLevelDir, 'examples' )
+        self.examplesDirArch   = os.path.join( self.topLevelDir, 'examples', hostPlatform )
         self.includeDir        = os.path.join( self.topLevelDir, 'include' )
         self.installDir        = os.path.join( self.topLevelDir, 'install' )
         self.libDir            = os.path.join( self.topLevelDir, 'lib' )
+        self.libDirArch        = os.path.join( self.topLevelDir, 'lib', hostPlatform )
         self.srcDir            = os.path.join( self.topLevelDir, 'src' )
         self.testDir           = os.path.join( self.topLevelDir, 'test' )
+        self.testDirArch       = os.path.join( self.topLevelDir, 'test', hostPlatform )
 
         if self.hasCMakeLists:
             # source tree, C/C++ package
