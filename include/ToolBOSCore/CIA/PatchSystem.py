@@ -716,6 +716,47 @@ class PatchSystem( object ):
         return modified
 
 
+    def _patchCIA1267( self, dryRun=False ):
+        """
+            Check files for outdated CSV keywords and remove
+            these keywords and expanded information from the source code
+        """
+        files    = FastScript.getFilesInDirRecursive( 'bin' ) | \
+                   FastScript.getFilesInDirRecursive( 'examples' ) | \
+                   FastScript.getFilesInDirRecursive( 'src' ) | \
+                   FastScript.getFilesInDirRecursive( 'test' )
+
+        modified = []
+
+        # CSV keywords
+        keywords = frozenset( [ '$Author', '$Date', '$Header', '$Id', '$Log',
+                                '$Locker', '$Name', '$RCSfile', '$Revision',
+                                '$Source', '$State' ] )
+
+        for filePath in files:
+            rewrite     = False
+            fileContent = FastScript.getFileContent( filename=filePath,
+                                                     splitLines=True )
+
+            # check each line for CSV keyword and remove line if found
+            for line in fileContent:
+                if any( key in line for key in keywords):
+                    rewrite = True
+                    fileContent.remove( line )
+
+            if rewrite:
+                if dryRun:
+                    logging.info( '[DRY-RUN] patching %s', filePath )
+                else:
+                    logging.info( 'patching %s', filePath )
+                    newContent = ''.join( fileContent )
+                    FastScript.setFileContent( filePath, newContent )
+
+                modified.append( filePath )
+
+        return modified
+
+
     def getPatchesAvailable( self ):
         """
             Returns a list of available patches, each item in the list
@@ -813,7 +854,11 @@ class PatchSystem( object ):
 
                    ( 'replacing outdated BBDM filenames (CIA-1265)',
                      self._patchCIA1265,
-                     'replaced BBDM headerfile names (CIA-1265)' ) ]
+                     'replaced BBDM headerfile names (CIA-1265)' ),
+
+                   ( 'removing outdated CVS keywords (CIA-1267)',
+                     self._patchCIA1267,
+                     'removed outdated CVS keywords and related code (CIA-1267)' )]
 
         return result
 
