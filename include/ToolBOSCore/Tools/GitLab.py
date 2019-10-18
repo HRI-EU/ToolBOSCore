@@ -61,6 +61,7 @@ class GitLabServer( object ):
             'token' needs to be a pre-configured private access token
         """
         Any.requireIsTextNonEmpty( serverURL )
+        Any.requireIsMatching( serverURL, '^http.+' )
 
         self._gl = gitlab.Gitlab( serverURL, ssl_verify=False, private_token=token )
         Any.requireIsInstance( self._gl, gitlab.Gitlab )
@@ -146,8 +147,8 @@ class GitLabRepo( object ):
     def enableDeployKey( self, keyID ):
         Any.requireIsIntNotZero( keyID )
 
-        logging.info( 'adding deployKey=%d to project=%s',
-                      keyID, self._project.path_with_namespace )
+        logging.debug( 'adding deployKey=%d to project=%s',
+                       keyID, self._project.path_with_namespace )
 
         self._project.keys.enable( keyID )
 
@@ -161,6 +162,27 @@ class GitLabRepo( object ):
         Any.requireIsDictNonEmpty( result )
 
         return result
+
+
+def git2https( gitURL ):
+    """
+        Translates an URL in form "git@<host>:<group>/<project>.git" into
+        the form "https://<host>/<group>/<project>".
+    """
+    Any.requireIsTextNonEmpty( gitURL )
+    Any.requireIsMatching( gitURL, '^git@.+' )
+
+    # replace the ':' by '/'
+    tmp = gitURL.replace( ':', '/' )
+
+    # replace 'git@' by 'https//'
+    httpsURL = tmp.replace( 'git@', 'https://' )
+
+    # ensure it ends with '.git'
+    if not httpsURL.endswith( '.git' ):
+        httpsURL += '.git'
+
+    return httpsURL
 
 
 # EOF
