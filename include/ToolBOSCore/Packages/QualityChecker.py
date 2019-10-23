@@ -58,8 +58,8 @@ from ToolBOSCore.Storage                          import PkgInfo
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
-from ToolBOSCore.Util                             import Any
-from ToolBOSCore.Util                             import FastScript
+from ToolBOSCore.Util                             import Any, FastScript, \
+                                                         VersionCompat
 
 
 OK                = 'OK'
@@ -1791,23 +1791,24 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
-        # look-up executables bin/<platform>/ directory
-        binFiles   = self._getBinFiles( details )
-
-        if not binFiles:
-            result = ( FAILED, 0, 1,
-                       '%s not found' % details.binDirArch )
-
-            return result
-
         # get SQ-settings from pkgInfo.py
         sqSettings = self._getSQSettings( details )
+        logging.debug( 'SQ_C12 settings from pkgInfo.py: %s',sqSettings )
 
-        if not sqSettings:          # None == checker not implemented
+        if sqSettings is None:
             result = ( FAILED, 0, 1,
-                       "could not retreiving sq settings from pkgInfo." )
+                       'no SQ_12 settings found in pkgInfo.py' )
 
             return result
+
+        # look-up executables bin/<platform>/ directory
+        binFiles = self._getBinFiles( details )
+        logging.debug( 'executable found in %s directory: %s',details.binDirArch, binFiles )
+
+        if not binFiles:
+            # only warn!! can be Python files
+            logging.warning('No executables found in %s directory. Is it a python package or '
+                            'Is the package not compiled?', details.binDirArch)
 
         # verify that we have:
         #     - one executable present for each setting (to check if compilation was forgotten)
@@ -1819,13 +1820,12 @@ Specify an empty list if really nothing has to be executed.'''
             shortText = validityCheck[3]
             logging.debug( shortText )
 
-            # result = ( FAILED, 0, 1,
-            #            "Validity check failed" )
-
             return validityCheck
 
         # finally run Valgrind
-        self._runValgrind( sqSettings, details )
+        runValgrindResult = self._runValgrind( sqSettings, details )
+
+        return runValgrindResult
 
 
     def _getSQSettings( self, details ):
@@ -1836,22 +1836,20 @@ Specify an empty list if really nothing has to be executed.'''
             Any.requireIsNotNone( sqSettingsTmp )
             Any.requireIsList( sqSettingsTmp )
 
-            logging.info( sqSettingsTmp )
             sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
 
             return sqSettings
 
         except ( IOError, ValueError, TypeError, OSError ) as e:
             logging.error( e )
-            logging.error( 'issue with retreiving SQ settings from pkgInfo.')
+            logging.error( 'issue with retrieving SQ settings from pkgInfo')
 
-            return False
+            return None
 
         except AssertionError as e:
-            logging.error( e )
-            logging.error( 'no sqCheckExe setting was specified in pkgInfo.py.' )
+            logging.error( 'no sqCheckExe setting was specified in pkgInfo.py' )
 
-            return False
+            return None
 
 
     def _getBinFiles( self, details ):
@@ -1859,13 +1857,14 @@ Specify an empty list if really nothing has to be executed.'''
 
         binFilesTmp = FastScript.getFilesInDir( details.binDirArch )
         Any.requireIsList( binFilesTmp )
+        binFiles = []
 
         if not binFilesTmp:
-            logging.error( 'No files found in %s directory. Is the package compiled?', details.binDirArch )
+            logging.error( 'No executables found in %s directory. Is it a python package or '
+                           'Is the package not compiled?', details.binDirArch )
 
-            return False
+            return binFiles
 
-        binFiles = []
         platform = getHostPlatform()
 
         for binFile in binFilesTmp:
@@ -1901,13 +1900,15 @@ Specify an empty list if really nothing has to be executed.'''
 
         for binFile in binFiles:
             if binFile not in commands:
-                logging.warning("%s executable source code was found. "
+                logging.warning("%s executable was found. "
                                 "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
 
                 result = ( FAILED, 0, 1,
-                           "%s not specified in pkgInfo.py %s" % binFile )
+                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
 
                 return result
+
+        return OK, 0, 0, 'validity check paas'
 
 
     def _runValgrind( self, commandLines, details ):
@@ -1917,35 +1918,50 @@ Specify an empty list if really nothing has to be executed.'''
 
         for command in commandLines:
 
+            logging.info( "C12: checking '%s'", command )
+
+            if Any.getDebugLevel() <= 3:
+                stdout = VersionCompat.StringIO()
+                stderr = VersionCompat.StringIO()
+            else:
+                stdout = None
+                stderr = None
+
             try:
-                failed, errors = Valgrind.checkExecutable( command, details )
+                failed, errors = Valgrind.checkExecutable( command, details,
+                                                           stdout=stdout, stderr=stderr )
             except subprocess.CalledProcessError as e:
-                logging.error( e )
-                return
+                failed = True
+                errors = []
 
             if failed:
                 failedExecutables += 1
 
                 for error in errors:
-                    errorMessages.append( 'C12: %s:%s - %s' % ( error.fname, error.lineno, error.description ) )
+                    errorMessages.append( 'C12: %s:%s - %s'
+                                          % ( error.fname, error.lineno, error.description ) )
+
+                logging.info( "C12: '%s' failed (see verbose-mode for details)", command )
+
             else:
                 passedExecutables += 1
+                logging.info( "C12: '%s successfully finished", command )
 
-            for error in errorMessages:
-                logging.error( error )
+        for error in errorMessages:
+            logging.error( error )
 
-            if not passedExecutables and not failedExecutables:
-                result = ( OK, passedExecutables, failedExecutables,
-                           'no executables were checked with Valgrind' )
-            elif not failedExecutables:
-                result = ( OK, passedExecutables, failedExecutables,
-                           'no defects found by Valgrind' )
-            else:
-                result = ( FAILED, passedExecutables, failedExecutables,
-                           'Valgrind found %d defect%s' % ( failedExecutables,
-                                                            's' if failedExecutables > 1 else '' ) )
+        if not passedExecutables and not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no executables were checked with Valgrind' )
+        elif not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no defects found by Valgrind' )
+        else:
+            result = ( FAILED, passedExecutables, failedExecutables,
+                       'Valgrind found %d defect%s' % ( failedExecutables,
+                                                        's' if failedExecutables > 1 else '' ) )
 
-            return result
+        return result
 
 
 class QualityRule_C13( AbstractQualityRule ):
