@@ -126,10 +126,10 @@ argman.addArgument( '-a', '--advanced', action='store_true',
 argman.addExample( '%(prog)s' )
 argman.addExample( '%(prog)s -a' )
 
-args           = vars( argman.run() )
-sitRootPath    = args['rootDir']
-sitProxyPath   = args['proxyDir']
-advanced       = args['advanced']
+args         = vars( argman.run() )
+sitRootPath  = args['rootDir']
+sitProxyPath = args['proxyDir']
+advanced     = args['advanced']
 
 
 #----------------------------------------------------------------------------
