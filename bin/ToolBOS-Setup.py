@@ -129,7 +129,7 @@ argman.addExample( '%(prog)s -a' )
 args           = vars( argman.run() )
 sitRootPath    = args['rootDir']
 sitProxyPath   = args['proxyDir']
-createProxyDir = args['advanced']
+advanced       = args['advanced']
 
 
 #----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ if os.path.exists( dirName ):
 try:
     UserSetup.setupShell()
 
-    if createProxyDir:
+    if advanced:
         UserSetup.setupProxy( sitRootPath, sitProxyPath )
 
 except AssertionError as details:
