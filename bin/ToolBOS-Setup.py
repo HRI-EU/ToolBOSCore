@@ -129,7 +129,7 @@ argman.addExample( '%(prog)s -a' )
 args           = vars( argman.run() )
 sitRootPath    = args['rootDir']
 sitProxyPath   = args['proxyDir']
-createProxyDir = args['createProxyDir']
+createProxyDir = args['advanced']
 
 
 #----------------------------------------------------------------------------
