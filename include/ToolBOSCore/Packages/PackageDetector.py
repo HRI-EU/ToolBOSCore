@@ -262,18 +262,32 @@ class PackageDetector( object ) :
     def isBBDM( self ):
         """
             Returns True if package is a BBDM component.
+
+            The specific "BBDMAll" collector-package is explicitly
+            blacklisted because is not a real component by itself.
         """
-        return self.packageCategory == 'Modules/BBDM' and \
-               self.packageName.startswith( 'BBDM' )
+        isBBDMAll      = self.packageName == 'BBDMAll'
+        isBBDMName     = self.packageName.startswith( 'BBDM' )
+        isBBDMCategory = self.packageCategory == 'Modules/BBDM'
+        result         = ( not isBBDMAll ) & isBBDMName & isBBDMCategory
+
+        return result
 
 
     def isComponent( self ):
         """
             Returns True if package is installed under "Modules" category,
             but is not a library containing the implementation of a module.
+
+            The specific "BBDMAll" collector-package is explicitly
+            blacklisted because is not a real component by itself.
         """
-        return self.packageCategory.startswith( 'Modules/BB' ) or \
-               self.packageCategory.startswith( 'Modules/RTMaps' )
+        isBBDMAll        = self.packageName == 'BBDMAll'
+        isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
+                           self.packageCategory.startswith( 'Modules/RTMaps' )
+        result           = ( not isBBDMAll ) & isModuleCategory
+
+        return result
 
 
     def isVirtualModule( self ):
