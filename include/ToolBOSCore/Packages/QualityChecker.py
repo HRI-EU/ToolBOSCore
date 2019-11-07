@@ -163,19 +163,28 @@ class QualityCheckerRoutine( object ):
 
         for (ruleID, rule) in self.checkersEnabled:
 
-            logging.info( 'checking rule: %s', ruleID )
+            if hasattr( rule, 'run' ):
+                logging.info( 'checking rule: %s', ruleID )
+            else:
+                logging.info( 'checking rule: %s → not implemented', ruleID )
+                continue
+
             result = rule.run( self.details, self.files )
 
-            if result is not None:          # None == checker not implemented
+            if result is None:
+                logging.debug( 'checking rule: %s → no result data (?)', ruleID )
+            else:
                 status    = result[0]
                 shortText = result[3]
                 logging.debug( shortText )
+                logging.info( 'checking rule: %s → %s', ruleID, status )
 
                 if status == FAILED:
                     overallResult = False
 
                     results[ ruleID ] = result
 
+            logging.info( '' )
 
         if showReport:
             if not self.details.canonicalPath:
@@ -274,7 +283,7 @@ class QualityCheckerRoutine( object ):
                 elif sqLevel not in rule.sqLevel:
                     logging.debug( "not checked (not required at level='%s')", sqLevel )
 
-                elif rule.run is None:
+                elif not hasattr( rule, 'run' ):
                     logging.debug( 'not implemented' )
 
                 elif ruleID not in sqOptOutRules[:]:
@@ -463,10 +472,6 @@ class AbstractQualityRule( object ):
         ruleID    = className.split('_')[-1]
 
         return ruleID
-
-
-    def run( self, details, files ):
-        logging.debug( 'not implemented, yet' )
 
 
 class QualityRule_GEN01( AbstractQualityRule ):
