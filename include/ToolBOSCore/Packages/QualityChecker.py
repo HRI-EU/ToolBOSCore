@@ -160,6 +160,8 @@ class QualityCheckerRoutine( object ):
 
         results       = {}
         overallResult = True
+        i             = 0
+        numEnabled    = len( self.checkersEnabled )
 
         for (ruleID, rule) in self.checkersEnabled:
 
@@ -184,7 +186,10 @@ class QualityCheckerRoutine( object ):
 
                     results[ ruleID ] = result
 
-            logging.info( '' )
+            i += 1
+
+            if i < numEnabled:
+                logging.info( '' )
 
         if showReport:
             if not self.details.canonicalPath:
