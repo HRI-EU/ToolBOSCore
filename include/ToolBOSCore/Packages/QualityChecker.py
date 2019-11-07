@@ -1194,10 +1194,18 @@ Without these macros the code will not link in C++ context.'''
         logging.debug( 'checking C header files for linkage guards' )
 
         binDir            = os.path.join( details.topLevelDir, 'bin' )
-        ifdefRegex        = r'#\s*if\s+defined\(\s*__cplusplus\s*\)\s+extern\s+"C"\s+\{\s+#\s*endif'
-        toolbosMacroRegex = r'ANY_BEGIN_C_DECLS.*ANY_END_C_DECLS'
+        ifdefExpr         = r'#\s*if\s+defined\(\s*__cplusplus\s*\)\s+extern\s+"C"\s+\{\s+#\s*endif'
+        ifdefinedExpr     = r'#\s*ifdef\s+__cplusplus\s+extern\s+"C"\s+\{\s+#\s*endif'
+        toolbosMacroExpr  = r'ANY_BEGIN_C_DECLS.*ANY_END_C_DECLS'
+        ifdefRegex        = re.compile( ifdefExpr )
+        ifDefinedRegex    = re.compile( ifdefinedExpr )
+        toolbosMacroRegex = re.compile( toolbosMacroExpr )
         passed            = 0
         failed            = 0
+
+        patterns          = { ifdefExpr       : ifdefRegex,
+                              ifdefinedExpr   : ifDefinedRegex,
+                              toolbosMacroExpr: toolbosMacroRegex }
 
         platform = getHostPlatform()
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
@@ -1218,23 +1226,29 @@ Without these macros the code will not link in C++ context.'''
                         logging.debug( 'Skipping file "%s" as it looks like a C++ only header file.', filePath )
                         continue
 
-                    contents   = FastScript.getFileContent( filePath )
-                    ifdefMatch = re.search( ifdefRegex, contents )
+                    contents = FastScript.getFileContent( filePath )
+                    found    = False
 
-                    if not ifdefMatch:
-                        toolbosMacroMatch = re.search( toolbosMacroRegex, contents )
+                    logging.debug( 'checking: %s', filePath )
 
-                        if not toolbosMacroMatch:
-                            logging.info( 'failed: %s', filePath )
-                            failed += 1
+                    for expr, regex in patterns.items():
+                        if regex.search( contents ):
+                            logging.debug( 'pattern found: %s', expr )
+                            found = True
                         else:
-                            passed += 1
-                    else:
+                            logging.debug( 'pattern not found: %s', expr )
+
+
+                    if found:
+                        logging.debug( 'passed: %s', filePath )
                         passed += 1
+                    else:
+                        logging.info( 'failed: %s', filePath )
+                        failed += 1
 
         except EnvironmentError as e:
             logging.error( e )
-            result = ( FAILED, passed, failed, e )
+            return FAILED, passed, failed, e
 
 
         if failed == 0:
