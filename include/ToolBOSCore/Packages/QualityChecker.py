@@ -2116,8 +2116,10 @@ application, potentially causing data loss or inconsistent states.'''
             Checks for call to sys.exit() in files other than bin/*.py
         """
         logging.debug( "checking for calls to sys.exit()" )
-        passed = 0
-        failed = 0
+        passed    = 0
+        failed    = 0
+        syntaxErr = 0
+
         binDir = os.path.join( details.topLevelDir, 'bin' )
 
         for filePath in files:
@@ -2129,7 +2131,7 @@ application, potentially causing data loss or inconsistent states.'''
                     exitCalls = self.getExitCalls( code )
                 except SyntaxError:
                     logging.error( 'PY04: %s: syntax error', filePath )
-                    failed += 1
+                    syntaxErr += 1
                     continue
 
                 if not exitCalls:
@@ -2141,11 +2143,19 @@ application, potentially causing data loss or inconsistent states.'''
                     failed += len( exitCalls )
 
         if failed == 0:
-            result = ( OK, passed, failed,
-                       'no call to sys.exit() found' )
+            if syntaxErr > 0:
+                msg = 'no call to sys.exit() found, found syntax error/s in %d files' % syntaxErr
+            else:
+                msg = 'no call to sys.exit() found'
+
+            result = ( OK, passed, failed, msg )
         else:
-            result = ( FAILED, passed, failed,
-                       'found %d calls to sys.exit()' % failed )
+            if syntaxErr > 0:
+                msg = 'found %d calls to sys.exit(), found syntax error/s in %d files' % ( failed, syntaxErr )
+            else:
+                msg = 'found %d calls to sys.exit()' % failed
+
+            result = ( FAILED, passed, failed, msg )
 
         return result
 
