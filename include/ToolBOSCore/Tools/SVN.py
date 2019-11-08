@@ -58,6 +58,9 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         # get rid of legacy hostnames
         url = url.replace( 'svnhost', 'hri-svn' )
 
+        # use FQDN
+        url = url.replace( 'hri-svn/', 'hri-svn.honda-ri.de/' )
+
         super( SVNRepository, self ).__init__( url )
 
         self._allowedHosts = ToolBOSSettings.getConfigOption( 'SVN_allowedHosts' )
