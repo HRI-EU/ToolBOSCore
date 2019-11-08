@@ -345,9 +345,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
             If 'output' is a StringIO object, the command's output will be
             redirected there (otherwise printed on screen).
         """
-        Any.requireIsTextNonEmpty( self.url )
-
-        cmd = "git clone %s" % self.url
+        cmd = self.getSourceCodeCommand()
         FastScript.execProgram( cmd, stdout=output, stderr=output )
 
 
@@ -398,6 +396,18 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
 
     def getSourceCode( self, *unused ):
         return self.clone()
+
+
+    def getSourceCodeCommand( self, asSubModule=False ):
+        Any.requireIsBool( asSubModule )
+        Any.requireIsTextNonEmpty( self.url )
+
+        if asSubModule:
+            cmd = 'git submodule add %s' % self.url
+        else:
+            cmd = 'git clone %s' % self.url
+
+        return cmd
 
 
     def setUserName( self, username ):
