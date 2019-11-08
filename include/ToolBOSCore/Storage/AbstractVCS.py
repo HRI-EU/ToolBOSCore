@@ -170,6 +170,14 @@ class RemoteRepository( Repository ):
         raise NotImplementedError()
 
 
+    def getRepositoryName( self ):
+        """
+            Returns the name of a repository which can be different from
+            the package name.
+        """
+        raise NotImplementedError()
+
+
     def getSourceCode( self, revision ):
         """
             Get the source code from the repository onto local disk,

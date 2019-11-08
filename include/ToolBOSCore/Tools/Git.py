@@ -394,6 +394,26 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
         return hostName
 
 
+    def getRepositoryName( self ):
+        """
+            Returns the name of a repository which can be different from
+            the package name, e.g.:
+
+            URL = git@dmz-gitlab.honda-ri.de:ToolBOS/BasicComponents.git
+
+            returns: "BasicComponents"
+        """
+        Any.requireIsTextNonEmpty( self.url )
+
+        tmp      = os.path.basename( self.url )
+        Any.requireIsTextNonEmpty( tmp )
+
+        repoName = tmp.replace( '.git', '' )
+        Any.requireIsTextNonEmpty( repoName )
+
+        return repoName
+
+
     def getSourceCode( self, *unused ):
         return self.clone()
 
