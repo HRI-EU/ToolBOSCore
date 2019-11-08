@@ -359,6 +359,12 @@ class PackageDetector( object ) :
             self.vcsRelPath  = self.svnRelPath
             self.vcsRoot     = self.svnRepositoryRoot
 
+            # svnRelPath is not present in pkgInfo.py but solely computed
+            # from the svnRepositoryURL and svnRepositoryRoot
+            self.svnRelPath  = os.path.relpath( self.svnRepositoryURL,
+                                                self.svnRepositoryRoot )
+            self.vcsRelPath  = self.svnRelPath
+
             Any.requireIsTextNonEmpty( self.vcsURL )
             Any.requireIsTextNonEmpty( self.vcsRoot )
             Any.requireIsIntNotZero( self.vcsRevision )
@@ -628,9 +634,10 @@ class PackageDetector( object ) :
             wc = SVN.WorkingCopy()
 
             self.svnRevision       = wc.getRevision()
-            self.svnRelPath        = None                       # TODO
             self.svnRepositoryURL  = wc.getRepositoryURL()
             self.svnRepositoryRoot = wc.getRepositoryRoot()
+            self.svnRelPath        = os.path.relpath( self.svnRepositoryURL,
+                                                      self.svnRepositoryRoot )
             self.svnFound          = True
 
         except ( subprocess.CalledProcessError, OSError ):
