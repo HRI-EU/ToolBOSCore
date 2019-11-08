@@ -2129,35 +2129,34 @@ application, potentially causing data loss or inconsistent states.'''
 
                 try:
                     exitCalls = self.getExitCalls( code )
-                except SyntaxError:
-                    logging.error( 'PY04: %s: syntax error', filePath )
+                except SyntaxError as e:
+                    logging.error( 'PY04: %s: syntax error in line %d',
+                                   filePath, e.lineno )
                     syntaxErr += 1
                     continue
 
                 if not exitCalls:
-                    logging.debug( '%s: OK', filePath )
                     passed += 1
                 else:
                     for call in exitCalls:
-                        logging.info( 'PY04: %s:%s: found sys.exit() call', filePath, call[1] )
+                        logging.info( 'PY04: %s:%s: found sys.exit() call',
+                                      filePath, call[1] )
                     failed += len( exitCalls )
 
-        if failed == 0:
-            if syntaxErr > 0:
-                msg = 'no call to sys.exit() found, found syntax error/s in %d files' % syntaxErr
-            else:
-                msg = 'no call to sys.exit() found'
 
-            result = ( OK, passed, failed, msg )
+        if syntaxErr:
+            msg    = 'syntax error(s) in %d files' % syntaxErr
+            status = FAILED
+
+        elif failed:
+            msg    = 'found %d calls to sys.exit()' % failed
+            status = FAILED
+
         else:
-            if syntaxErr > 0:
-                msg = 'found %d calls to sys.exit(), found syntax error/s in %d files' % ( failed, syntaxErr )
-            else:
-                msg = 'found %d calls to sys.exit()' % failed
+            msg    = 'no calls to sys.exit() found'
+            status = OK
 
-            result = ( FAILED, passed, failed, msg )
-
-        return result
+        return status, passed, failed, msg
 
 
 class QualityRule_PY05( AbstractQualityRule ):
