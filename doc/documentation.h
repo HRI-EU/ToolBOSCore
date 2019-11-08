@@ -236,16 +236,16 @@
  * Please execute the following commands and follow their instructions:
  *
  * \code
-   $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+   $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/BashSrc
 
-   $ /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/bin/ToolBOS-Setup.py
+   $ /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/bin/ToolBOS-Setup.py
    \endcode
  *
  * As mentioned by the script, please add a line like this to your
  * ~/.bashrc, and then logout and login again.
  *
  * \code
-   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/BashSrc
    \endcode
  *
  * <hr>
@@ -255,7 +255,7 @@
  * script:
  *
  * \verbatim
-   S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
+   S:\DevelopmentTools\ToolBOSCore\3.3\CmdSrc.bat
    \endverbatim
  *
  * \image html BuildSystemTools/WindowsSetEnv.png
@@ -264,13 +264,13 @@
  * \page ToolBOS_Setup_AddOns Sourcing additional packages
  *
  * To always have additional packages sourced, please do so directly in
- * your ~/.bashrc (after the sourcing of ToolBOSCore/3.2/BashSrc).
+ * your ~/.bashrc (after the sourcing of ToolBOSCore/3.3/BashSrc).
  *
  * \note At this point you may make use of ${SIT}.
  *
  * \verbatim
    # mandatory:
-   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/BashSrc
 
    # optional:
    source ${SIT}/Applications/ABC/1.0/BashSrc
@@ -470,7 +470,7 @@
 \endcode
  * for example:
  * \code
- * ${SIT}/DevelopmentTools/ToolBOSCore/3.2
+ * ${SIT}/DevelopmentTools/ToolBOSCore/3.3
 \endcode
  *
  * A package name must start with an alphabetic character (A-Z, a-z).
@@ -1506,11 +1506,11 @@ Project
  * <tr>
  *   <td>\b Example:
  *       \code
-         bst_find_package(DevelopmentTools/ToolBOSCore/3.2)
+         bst_find_package(DevelopmentTools/ToolBOSCore/3.3)
          bst_find_package(Libraries/MasterClock/1.6)
          \endcode
  *
- *       This includes both packages ToolBOSCore 3.2 and MasterClock 1.6
+ *       This includes both packages ToolBOSCore 3.3 and MasterClock 1.6
  *       (and recursively all of their dependencies) from the SIT.
  *
  *       The \c packageVar.cmake inside each of these packages is
@@ -2254,7 +2254,7 @@ Project
  * CMakeLists.txt:
  *
  * \verbatim
-   bst_find_package(DevelopmentTools/ToolBOSCore/3.2)
+   bst_find_package(DevelopmentTools/ToolBOSCore/3.3)
    bst_find_package(Libraries/MasterClock/1.6)
    \endverbatim
  *
@@ -2495,7 +2495,7 @@ Project
    Major version:          1
    Minor version:          6
    CMake generator:        Unix Makefiles
-   including package:      sit://DevelopmentTools/ToolBOSCore/3.2
+   including package:      sit://DevelopmentTools/ToolBOSCore/3.3
    including package:      sit://Libraries/MasterClockCore/1.2
    -- Configuring done
    -- Generating done
@@ -3204,7 +3204,7 @@ make install
 
    # explicitly state dependencies (otherwise extracted from CMakeLists.txt)
 
-   depends       = [ 'sit://DevelopmentTools/ToolBOSCore/3.2',
+   depends       = [ 'sit://DevelopmentTools/ToolBOSCore/3.3',
                      'deb://libjpeg62' ]
 
    buildDepends  = [ 'sit://External/pthreads/1.0',
@@ -3677,7 +3677,7 @@ make install
  *
  * \code
  * export SIT_VERSION=oldstable
- * source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+ * source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/3.3/BashSrc
 \endcode
  *
  * To work permanently with this build you should set this in your
@@ -3714,7 +3714,7 @@ make install
  * Set this in your ~/.bashrc:
  * \code
  * export TOOLBOSCORE_AUTO_VERSION=FALSE
- * source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2.1234
+ * source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3.1234
 \endcode
  * where "2.0.1234" is the particular version you are interested in.
  *

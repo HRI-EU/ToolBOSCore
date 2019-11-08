@@ -34,8 +34,8 @@
 #
 
 
-OLD_VERSION=3[.]1
-NEW_VERSION=3.2
+OLD_VERSION=3[.]2
+NEW_VERSION=3.3
 
 
 sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
