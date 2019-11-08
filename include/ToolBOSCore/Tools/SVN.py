@@ -200,6 +200,23 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         return hostName
 
 
+    def getRepositoryName( self ):
+        """
+            Returns the name of a repository which can be different from
+            the package name, e.g.:
+
+            URL = svn+ssh://user@host/path/to/Foo
+
+            returns: "Foo"
+        """
+        Any.requireIsTextNonEmpty( self.url )
+
+        repoName = os.path.basename( self.url )
+        Any.requireIsTextNonEmpty( repoName )
+
+        return repoName
+
+
     def getSourceCode( self, revision='HEAD' ):
         return self.checkout( revision)
 
