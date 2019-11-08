@@ -112,7 +112,8 @@ then
         then
             export MAKEFILE_PLATFORM=$(awk -F\' '/hostPlatform/ { print $2 }' ${FILE})
         else
-            export MAKEFILE_PLATFORM=precise64
+            # also in etc/ToolBOS.conf!
+            export MAKEFILE_PLATFORM=bionic64
         fi
     fi
 
