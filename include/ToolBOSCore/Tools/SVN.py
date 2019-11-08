@@ -88,8 +88,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
 
         FastScript.setEnv( 'SVN_SSH', newValue )
 
-
-        cmd = "svn co -r %s %s" % ( revision, self.url )
+        cmd = self.getSourceCodeCommand( revision )
 
         return FastScript.execProgram( cmd, stdout=output, stderr=output )
 
@@ -200,6 +199,17 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
 
     def getSourceCode( self, revision='HEAD' ):
         return self.checkout( revision)
+
+
+    def getSourceCodeCommand( self, revision='HEAD' ):
+        Any.requireIsTextNonEmpty( self.url )
+
+        if revision == 'HEAD':
+            cmd = "svn co %s" % self.url
+        else:
+            cmd = "svn co -r %s %s" % ( revision, self.url )
+
+        return cmd
 
 
     def exists( self ):

@@ -178,6 +178,17 @@ class RemoteRepository( Repository ):
         raise NotImplementedError()
 
 
+    def getSourceCodeCommand( self, *params ):
+        """
+            Returns the command the user would have to invoke on commandline
+            to fetch the source code from the repository, e.g.:
+
+            'git clone <url>'
+            'svn co <url>'
+        """
+        raise NotImplementedError()
+
+
     def isOnMasterServer( self ):
         """
             Issues a warning message if the URL does not point to a
