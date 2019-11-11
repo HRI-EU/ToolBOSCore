@@ -436,6 +436,7 @@ def getFileContent( filename, splitLines = False, asBinary=False ):
         mode += 'b'
 
     with open( filename, mode ) as f:
+        logging.debug( 'reading file: %s', filename )
         return f.readlines() if splitLines else f.read()
 
 
