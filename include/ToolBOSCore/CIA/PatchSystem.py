@@ -735,8 +735,14 @@ class PatchSystem( object ):
 
         for filePath in files:
             rewrite     = False
-            fileContent = FastScript.getFileContent( filename=filePath,
-                                                     splitLines=True )
+
+            try:
+                fileContent = FastScript.getFileContent( filename=filePath,
+                                                         splitLines=True )
+            except UnicodeDecodeError:
+                # most probably we attempt to read a binary file,
+                # e.g. a compiled executable under bin/ or the like
+                continue
 
             # check each line for CSV keyword and remove line if found
             for line in fileContent:
