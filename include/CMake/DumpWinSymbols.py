@@ -270,7 +270,7 @@ with open( inputFile, 'r' ) as fd:
             if bits == 32 and sym.startswith( '_' ):
                 sym = sym[1:]
 
-            if symbols.has_key( sym ):
+            if sym in symbols:
                 continue
 
             symbols[ sym ] = isData
