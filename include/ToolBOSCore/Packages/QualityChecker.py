@@ -160,22 +160,36 @@ class QualityCheckerRoutine( object ):
 
         results       = {}
         overallResult = True
+        i             = 0
+        numEnabled    = len( self.checkersEnabled )
 
         for (ruleID, rule) in self.checkersEnabled:
 
-            logging.info( 'checking rule: %s', ruleID )
+            if hasattr( rule, 'run' ):
+                logging.info( 'checking rule: %s', ruleID )
+            else:
+                logging.info( 'checking rule: %s → not implemented', ruleID )
+                continue
+
             result = rule.run( self.details, self.files )
 
-            if result is not None:          # None == checker not implemented
+            if result is None:
+                logging.debug( 'checking rule: %s → no result data (?)', ruleID )
+            else:
                 status    = result[0]
                 shortText = result[3]
                 logging.debug( shortText )
+                logging.info( 'checking rule: %s → %s', ruleID, status )
 
                 if status == FAILED:
                     overallResult = False
 
                     results[ ruleID ] = result
 
+            i += 1
+
+            if i < numEnabled:
+                logging.info( '' )
 
         if showReport:
             if not self.details.canonicalPath:
@@ -274,7 +288,7 @@ class QualityCheckerRoutine( object ):
                 elif sqLevel not in rule.sqLevel:
                     logging.debug( "not checked (not required at level='%s')", sqLevel )
 
-                elif rule.run is None:
+                elif not hasattr( rule, 'run' ):
                     logging.debug( 'not implemented' )
 
                 elif ruleID not in sqOptOutRules[:]:
@@ -463,10 +477,6 @@ class AbstractQualityRule( object ):
         ruleID    = className.split('_')[-1]
 
         return ruleID
-
-
-    def run( self, details, files ):
-        logging.debug( 'not implemented, yet' )
 
 
 class QualityRule_GEN01( AbstractQualityRule ):
@@ -1189,10 +1199,18 @@ Without these macros the code will not link in C++ context.'''
         logging.debug( 'checking C header files for linkage guards' )
 
         binDir            = os.path.join( details.topLevelDir, 'bin' )
-        ifdefRegex        = r'#\s*if\s+defined\(\s*__cplusplus\s*\)\s+extern\s+"C"\s+\{\s+#\s*endif'
-        toolbosMacroRegex = r'ANY_BEGIN_C_DECLS.*ANY_END_C_DECLS'
+        ifdefExpr         = r'#\s*if\s+defined\(\s*__cplusplus\s*\)\s+extern\s+"C"\s+\{\s+#\s*endif'
+        ifdefinedExpr     = r'#\s*ifdef\s+__cplusplus\s+extern\s+"C"\s+\{\s+#\s*endif'
+        toolbosMacroExpr  = r'ANY_BEGIN_C_DECLS.*ANY_END_C_DECLS'
+        ifdefRegex        = re.compile( ifdefExpr )
+        ifDefinedRegex    = re.compile( ifdefinedExpr )
+        toolbosMacroRegex = re.compile( toolbosMacroExpr )
         passed            = 0
         failed            = 0
+
+        patterns          = { ifdefExpr       : ifdefRegex,
+                              ifdefinedExpr   : ifDefinedRegex,
+                              toolbosMacroExpr: toolbosMacroRegex }
 
         platform = getHostPlatform()
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
@@ -1213,23 +1231,29 @@ Without these macros the code will not link in C++ context.'''
                         logging.debug( 'Skipping file "%s" as it looks like a C++ only header file.', filePath )
                         continue
 
-                    contents   = FastScript.getFileContent( filePath )
-                    ifdefMatch = re.search( ifdefRegex, contents )
+                    contents = FastScript.getFileContent( filePath )
+                    found    = False
 
-                    if not ifdefMatch:
-                        toolbosMacroMatch = re.search( toolbosMacroRegex, contents )
+                    logging.debug( 'checking: %s', filePath )
 
-                        if not toolbosMacroMatch:
-                            logging.info( 'failed: %s', filePath )
-                            failed += 1
+                    for expr, regex in patterns.items():
+                        if regex.search( contents ):
+                            logging.debug( 'pattern found: %s', expr )
+                            found = True
                         else:
-                            passed += 1
-                    else:
+                            logging.debug( 'pattern not found: %s', expr )
+
+
+                    if found:
+                        logging.debug( 'passed: %s', filePath )
                         passed += 1
+                    else:
+                        logging.info( 'failed: %s', filePath )
+                        failed += 1
 
         except EnvironmentError as e:
             logging.error( e )
-            result = ( FAILED, passed, failed, e )
+            return FAILED, passed, failed, e
 
 
         if failed == 0:
@@ -2092,8 +2116,10 @@ application, potentially causing data loss or inconsistent states.'''
             Checks for call to sys.exit() in files other than bin/*.py
         """
         logging.debug( "checking for calls to sys.exit()" )
-        passed = 0
-        failed = 0
+        passed    = 0
+        failed    = 0
+        syntaxErr = 0
+
         binDir = os.path.join( details.topLevelDir, 'bin' )
 
         for filePath in files:
@@ -2103,27 +2129,34 @@ application, potentially causing data loss or inconsistent states.'''
 
                 try:
                     exitCalls = self.getExitCalls( code )
-                except SyntaxError:
-                    logging.error( 'PY04: %s: syntax error', filePath )
-                    failed += 1
+                except SyntaxError as e:
+                    logging.error( 'PY04: %s: syntax error in line %d',
+                                   filePath, e.lineno )
+                    syntaxErr += 1
                     continue
 
                 if not exitCalls:
-                    logging.debug( '%s: OK', filePath )
                     passed += 1
                 else:
                     for call in exitCalls:
-                        logging.info( 'PY04: %s:%s: found sys.exit() call', filePath, call[1] )
+                        logging.info( 'PY04: %s:%s: found sys.exit() call',
+                                      filePath, call[1] )
                     failed += len( exitCalls )
 
-        if failed == 0:
-            result = ( OK, passed, failed,
-                       'no call to sys.exit() found' )
-        else:
-            result = ( FAILED, passed, failed,
-                       'found %d calls to sys.exit()' % failed )
 
-        return result
+        if syntaxErr:
+            msg    = 'syntax error(s) in %d files' % syntaxErr
+            status = FAILED
+
+        elif failed:
+            msg    = 'found %d calls to sys.exit()' % failed
+            status = FAILED
+
+        else:
+            msg    = 'no calls to sys.exit() found'
+            status = OK
+
+        return status, passed, failed, msg
 
 
 class QualityRule_PY05( AbstractQualityRule ):
