@@ -235,6 +235,18 @@ class PackageDetector( object ) :
     # Content type
     #------------------------------------------------------------------------
 
+    def hasMainProgram( self ):
+        dirs = [ self.binDir, self.examplesDir, self.testDir ]
+
+        for directory in dirs:
+            hasCFile   = self._search( directory, '.c' )
+            hasCppFile = self._search( directory, '.cpp' )
+
+            if hasCFile or hasCppFile:
+                return True
+
+        return False
+
 
     def isMatlabPackage( self ):
         return self._hasSourceFiles( '.m' )
