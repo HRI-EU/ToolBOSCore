@@ -44,6 +44,7 @@ from __future__ import print_function
 
 import logging
 
+from ToolBOSCore.Settings.ToolBOSSettings import delUserConfigOption
 from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
 from ToolBOSCore.Settings.ToolBOSSettings import getConfigOptions
 from ToolBOSCore.Settings.ToolBOSSettings import setUserConfigOption
@@ -63,7 +64,10 @@ argman.addArgument( '-p', '--print', type=str, metavar='VAR',
                     help='show value of specified config option' )
 
 argman.addArgument( '-s', '--set', type=str, metavar='EXPR',
-                    help='set config option in Python syntax ("key=value")' )
+                    help='set config option in user conf in Python syntax ("key=value")' )
+
+argman.addArgument( '-r', '--remove', type=str, metavar='VAR',
+                    help='remove config option from user conf' )
 
 argman.addArgument( '-z', '--zen', action='store_true',
                     help='open configuration GUI' )
@@ -73,13 +77,15 @@ argman.addExample( '%(prog)s' )
 argman.addExample( '%(prog)s -p defaultPlatform' )
 argman.addExample( '%(prog)s -s "defaultPlatform = \'qnx\'"' )
 argman.addExample( '%(prog)s -s "foo=bar"' )
+argman.addExample( '%(prog)s -r "foo"' )
 argman.addExample( '%(prog)s -z                   # opens GUI' )
 
 args     = vars( argman.run() )
 
-printVar = args['print']
-setVar   = args['set']
-zen      = args['zen']
+printVar  = args['print']
+removeVar = args['remove']
+setVar    = args['set']
+zen       = args['zen']
 
 
 #----------------------------------------------------------------------------
@@ -116,6 +122,11 @@ elif setVar:
 
     Any.setDebugLevel( logging.DEBUG )
     setUserConfigOption( key, value )
+
+elif removeVar:
+
+    Any.setDebugLevel( logging.DEBUG )
+    delUserConfigOption( removeVar  )
 
 elif zen:
 
