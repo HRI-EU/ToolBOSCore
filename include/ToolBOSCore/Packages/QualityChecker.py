@@ -1791,6 +1791,24 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
+
+        if details.hasMainProgram():
+            # look-up executables bin/<platform>/ directory
+            binFiles = self._getBinFiles( details )
+            logging.debug( 'executable found in %s directory: %s',details.binDirArch, binFiles )
+
+            if not binFiles:
+                # only warn!! can be Python files
+                logging.warning('No executables found in %s directory.'
+                                'Is the package not compiled?', details.binDirArch)
+        else:
+            logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
+            result = ( OK, 0, 0,
+                       'check not applicable' )
+
+            return result
+
+
         # get SQ-settings from pkgInfo.py
         sqSettings = self._getSQSettings( details )
         logging.debug( 'SQ_C12 settings from pkgInfo.py: %s',sqSettings )
@@ -1801,14 +1819,6 @@ Specify an empty list if really nothing has to be executed.'''
 
             return result
 
-        # look-up executables bin/<platform>/ directory
-        binFiles = self._getBinFiles( details )
-        logging.debug( 'executable found in %s directory: %s',details.binDirArch, binFiles )
-
-        if not binFiles:
-            # only warn!! can be Python files
-            logging.warning('No executables found in %s directory. Is it a python package or '
-                            'Is the package not compiled?', details.binDirArch)
 
         # verify that we have:
         #     - one executable present for each setting (to check if compilation was forgotten)
@@ -1860,7 +1870,7 @@ Specify an empty list if really nothing has to be executed.'''
         binFiles = []
 
         if not binFilesTmp:
-            logging.error( 'No executables found in %s directory. Is it a python package or '
+            logging.error( 'No executables found in %s directory.'
                            'Is the package not compiled?', details.binDirArch )
 
             return binFiles
