@@ -41,7 +41,7 @@ import logging
 try:
     from PyQt5.QtCore             import QUrl, Qt
     from PyQt5.QtNetwork          import QNetworkReply, QNetworkProxy
-    from PyQt5.QtWidgets          import QApplication, QWidget, QLabel
+    from PyQt5.QtWidgets          import QApplication, QWidget, QLabel, QDialog
     from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 
     _qt = 5
@@ -57,19 +57,17 @@ from ToolBOSCore.Settings import ToolBOSSettings
 from ToolBOSCore.Util     import Any
 
 
-_browsers = set()
-
 
 if _qt == 4:
 
     class WebBrowser( QWidget ):
 
-        def __init__( self, windowTitle ):
+        def __init__( self, windowTitle, parent=None ):
             super( WebBrowser, self ).__init__()
 
             screen = QApplication.desktop().screenGeometry()
 
-            self._browser = QWebView()
+            self._browser = QWebView( parent=parent )
             self._browser.resize( screen.width( ) / 4 * 3,
                                   screen.height() / 4 * 3 )
 
@@ -103,10 +101,10 @@ elif _qt == 5:
             return True
 
 
-    class WebBrowser( QWidget ):
+    class WebBrowser( QDialog ):
 
-        def __init__( self, windowTitle ):
-            super( WebBrowser, self ).__init__()
+        def __init__( self, windowTitle, parent=None ):
+            super( WebBrowser, self ).__init__( parent=parent )
 
             screen = QApplication.desktop().screenGeometry()
 
@@ -114,7 +112,7 @@ elif _qt == 5:
 
             self._page = WebPage()
 
-            self._browser = QWebEngineView( )
+            self._browser = QWebEngineView( parent=self )
             self._browser.setPage( self._page )
             self._browser.resize( screen.width( ) / 4 * 3,
                                   screen.height() / 4 * 3 )
@@ -127,7 +125,7 @@ elif _qt == 5:
 
             self._page.load( QUrl( url ) )
 
-            self._browser.show()
+            self.show()
 
 
         def _setupProxy( self ):
@@ -157,12 +155,11 @@ else:
             self.show()
 
 
-def openDocumentation( canonicalPath ):
+def openDocumentation( canonicalPath, parent=None ):
     """
         Opens a webbrowser window which shows the documentation of the
         given SIT package.
     """
-    global _browsers
 
     Any.requireIsTextNonEmpty( canonicalPath )
 
@@ -172,8 +169,7 @@ def openDocumentation( canonicalPath ):
           canonicalPath + '/doc/html/index.html'
 
     title   = 'Documentation of %s' % canonicalPath
-    browser = WebBrowser( title )
-    _browsers.add( browser )
+    browser = WebBrowser( title, parent=parent )
     browser.open( url )
 
 
@@ -192,7 +188,6 @@ def openToolBOSDocumentation( fileName ):
           fileName + '.html'
 
     browser = WebBrowser( 'Documentation' )
-    _browsers.add( browser )
     browser.open( url )
 
 
