@@ -120,6 +120,9 @@ int main( int argc, char* argv[] )
     CuSuiteDetails( suite, output );
     fprintf( stderr, "%s\n", output->buffer );
 
+    CuStringDelete( output );
+    CuSuiteDelete( suite );
+
     return EXIT_SUCCESS;
 }
 
