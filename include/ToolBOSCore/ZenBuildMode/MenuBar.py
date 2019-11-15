@@ -150,7 +150,8 @@ class MenuBar( QMenuBar, object ):
 
 
     def helpOnlineDocumentation( self ):
-        WebBrowser.openToolBOSDocumentation( 'ToolBOS_Util_BuildSystemTools_ZenBuildMode' )
+        WebBrowser.openToolBOSDocumentation( 'ToolBOS_Util_BuildSystemTools_ZenBuildMode',
+                                             self )
 
 
 # EOF
