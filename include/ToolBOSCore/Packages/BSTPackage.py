@@ -70,14 +70,17 @@ class BSTPackage( AbstractPackage ):
 
         Any.requireIsSet( self.depSet, 'Please call .retrieveDependencies() first' )
 
-        deps = list( self.depSet )
-        deps.sort()
-
-        return Debian.getDepInstallCmd( deps )
+        if self.depSet:
+            deps = list( self.depSet )
+            deps.sort()
+            return Debian.getDepInstallCmd( deps )
+        else:
+            return None
 
 
     def open( self, topLevelDir ):
         self.detector = PackageDetector( topLevelDir )
+        self.detector.retrieveMakefileInfo()
         self.url      = 'sit://' + self.detector.canonicalPath
 
 
@@ -337,7 +340,6 @@ class BSTGloballyInstalledPackage( BSTInstalledPackage ):
         topLevelDir = os.path.join( SIT.getRootPath(), package )
 
         super( BSTGloballyInstalledPackage, self ).open( topLevelDir )
-
 
 
 # EOF

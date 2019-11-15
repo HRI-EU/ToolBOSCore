@@ -68,7 +68,11 @@ class MetaInfoWidget( QGroupBox, object ):
 
         buttonFont          = self._listDepButton.font()
         buttonFont.setPointSize( 8 )
+
+        msg = 'retrieving package dependencies... (this may take some time)'
         self._listDepButton.setFont( buttonFont )
+        self._listDepButton.setEnabled( False )
+        self._listDepButton.setToolTip( msg )
 
         self._layout = QGridLayout()
         self._layout.addWidget( self._labelName,         0, 0 )
@@ -87,21 +91,22 @@ class MetaInfoWidget( QGroupBox, object ):
         model.newVersion.connect( self.setVersion )
         model.newCategory.connect( self.setCategory )
         model.newRevision.connect( self.setRevision )
+        model.depsDetected.connect( self._enableListDepButton )
 
         self._listDepButton.clicked.connect( self._onListDepButtonPressed )
 
 
-    def _onListDepButtonPressed( self ):
-        if self._model.isDependencyDetectionFinished():
-            self._busyDialog.close()
-            self._busyDialog = None
-
-            self._listDepDialog = DependenciesDialog.DependenciesDialog( self._model )
-            self._listDepDialog.show()
+    def _enableListDepButton( self, val ):
+        self._listDepButton.setEnabled( val )
+        if val:
+            self._listDepButton.setToolTip( '' )
         else:
-            self._model.depsDetected.connect( self._onListDepButtonPressed )
+            self._listDepButton.setToolTip( 'unable to retrieve dependencies' )
 
-            self._busyDialog = BusyWaitDialog.BusyWaitDialog( 'retrieving reverse dependencies... (this may take some time)' )
+
+    def _onListDepButtonPressed( self ):
+        self._listDepDialog = DependenciesDialog.DependenciesDialog( self._model )
+        self._listDepDialog.show()
 
 
     def setName( self, name ):
