@@ -61,7 +61,7 @@ class BSTPackageModel( QObject, object ):
     newVersion       = pyqtSignal( str )
     newCategory      = pyqtSignal( str )
     newRevision      = pyqtSignal( str )
-    depsDetected     = pyqtSignal()
+    depsDetected     = pyqtSignal( bool )
     sqCheckPrepared  = pyqtSignal()
     updatesAvailable = pyqtSignal()
 
@@ -73,7 +73,6 @@ class BSTPackageModel( QObject, object ):
         self._bstpkg_global       = BSTPackage.BSTGloballyInstalledPackage()
         self._depDetector         = None
         self._depDetectorData     = None
-        self._depDetectionDone    = False
         self._globallyInstalled   = None
         self._sqPreparer          = None
         self._sqPreparationDone   = False
@@ -87,7 +86,6 @@ class BSTPackageModel( QObject, object ):
     def open( self, topLevelDir ):
         Any.requireIsDir( topLevelDir )
 
-        self._depDetectionDone  = False
         self._sqPreparationDone = False
 
         self._open_main()
@@ -234,10 +232,6 @@ class BSTPackageModel( QObject, object ):
         return result
 
 
-    def isDependencyDetectionFinished( self ):
-        return self._depDetectionDone
-
-
     def isQualityCheckPreparationFinished( self ):
         return self._sqPreparationDone
 
@@ -373,10 +367,19 @@ class BSTPackageModel( QObject, object ):
             logging.debug( 'no dependency data received' )
             return
 
-        if not Any.isInstance( base64payload, bytes ):
-            logging.debug( 'received dependency data of unexpected type' )
-            logging.debug( '(this could come from a ~/.bashrc which prints text)' )
-            return
+        if six.PY2:
+            if not Any.isInstance( base64payload, unicode ):
+                logging.debug( 'received dependency data of unexpected type' )
+                logging.debug( '(this could come from a ~/.bashrc which prints text)' )
+
+                return
+
+        else:
+            if not Any.isInstance( base64payload, bytes ):
+                logging.debug( 'received dependency data of unexpected type' )
+                logging.debug( '(this could come from a ~/.bashrc which prints text)' )
+
+                return
 
         dillPayload     = base64.b64decode( base64payload )
         dillPayloadSize = len(dillPayload)
@@ -414,9 +417,7 @@ class BSTPackageModel( QObject, object ):
         logging.debug( 'revDepSet:  %s', self._bstpkg_global.revDepSet )
         logging.debug( 'revDepTree: %s', self._bstpkg_global.revDepTree )
 
-        self._depDetectionDone = True
-        self.depsDetected.emit()
-
+        self.depsDetected.emit( True )
 
         # retrieving direct dependencies should work, consider an error if not
 
@@ -424,8 +425,8 @@ class BSTPackageModel( QObject, object ):
             Any.requireIsSet( self._bstpkg_src.depSet )
             Any.requireIsList( self._bstpkg_src.depTree )
         except AssertionError:
+            self.depsDetected.emit( False )
             logging.error( 'unable to retrieve dependencies' )
-
 
         # while for reverse dependencies it is significant if the package is
         # installed, yet

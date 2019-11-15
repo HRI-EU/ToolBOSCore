@@ -23,7 +23,7 @@
 * [In-tree- vs. out-of-tree builds](InTreeVsOutOfTreeBuilds.md)
 * [Macros documentation](Macros.md)
 * [FAQ (Windows)](FAQ_Windows.md)
-* [Clang/LLVM](Clang/LLVM)
+* [Clang/LLVM](ClangLLVM.md)
 
 
 ###  Post-build
@@ -38,7 +38,7 @@
 ###  Customization
 
 * [Custom scripts for compilation + installation](CustomCompilationInstallation.md)
-* [Environment variables]()
+* [Environment variables](EnviornmentVariables.md)
 * [Multi-platform support](MultiPlatformSupport.md)
 
 See also
