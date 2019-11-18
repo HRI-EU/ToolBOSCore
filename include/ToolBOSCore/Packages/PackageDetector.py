@@ -168,7 +168,12 @@ class PackageDetector( object ) :
         if self.hasCMakeLists:
             # source tree, C/C++ package
             self.cmakelistsContent  = FastScript.getFileContent( cmakePath )
-            self.packageCategory    = CMakeLists.getCategory( self.cmakelistsContent )
+
+            if self.cmakelistsContent:
+                self.packageCategory = CMakeLists.getCategory( self.cmakelistsContent )
+            else:
+                logging.debug( 'skipping empty %s', cmakePath )
+
         else:
             # source tree w/o CMakeLists.txt, or package installed in SIT
             try:
@@ -180,9 +185,6 @@ class PackageDetector( object ) :
             self.canonicalPath      = os.path.join( self.packageCategory,
                                                     self.packageName,
                                                     self.packageVersion )
-        else:
-            logging.error( 'unable to detect package category' )
-
 
         self._retrieveCurrentUser()
 
@@ -327,7 +329,9 @@ class PackageDetector( object ) :
             This function needs to be called before accessing the
             corresponding member fields.
         """
-        self._parseCMakeLists()
+        if self.cmakelistsContent:
+            self._parseCMakeLists()
+
         self._parsePkgInfo()
         self._getInheritedProjects()
 
