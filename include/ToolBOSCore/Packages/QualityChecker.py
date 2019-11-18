@@ -1797,17 +1797,12 @@ Specify an empty list if really nothing has to be executed.'''
             binFiles = self._getBinFiles( details )
             logging.debug( 'executable found in %s directory: %s',details.binDirArch, binFiles )
 
-            if not binFiles:
-                # only warn!! can be Python files
-                logging.warning('No executables found in %s directory.'
-                                'Is the package not compiled?', details.binDirArch)
         else:
             logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
             result = ( OK, 0, 0,
                        'check not applicable' )
 
             return result
-
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self._getSQSettings( details )
@@ -1818,7 +1813,6 @@ Specify an empty list if really nothing has to be executed.'''
                        'no SQ_12 settings found in pkgInfo.py' )
 
             return result
-
 
         # verify that we have:
         #     - one executable present for each setting (to check if compilation was forgotten)
