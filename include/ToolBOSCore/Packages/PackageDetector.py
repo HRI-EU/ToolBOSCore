@@ -75,6 +75,7 @@ class PackageDetector( object ) :
 
         # general meta-info
         self.canonicalPath     = None
+        self.cmakelistsContent = None
         self.hasCMakeLists     = None
         self.installRoot       = None
         self.isDeprecated      = None
@@ -167,7 +168,7 @@ class PackageDetector( object ) :
 
         if self.hasCMakeLists:
             # source tree, C/C++ package
-            self.cmakelistsContent  = FastScript.getFileContent( cmakePath )
+            self.cmakelistsContent = FastScript.getFileContent( cmakePath )
 
             if self.cmakelistsContent:
                 self.packageCategory = CMakeLists.getCategory( self.cmakelistsContent )
@@ -176,6 +177,8 @@ class PackageDetector( object ) :
 
         else:
             # source tree w/o CMakeLists.txt, or package installed in SIT
+            self.cmakelistsContent = None
+
             try:
                 self.packageCategory = ProjectProperties.getPackageCategoryFromPath( projectRoot )
             except AssertionError:
