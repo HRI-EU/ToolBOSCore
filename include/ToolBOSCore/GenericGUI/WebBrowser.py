@@ -173,7 +173,7 @@ def openDocumentation( canonicalPath, parent=None ):
     browser.open( url )
 
 
-def openToolBOSDocumentation( fileName ):
+def openToolBOSDocumentation( fileName, parent=None ):
     """
         Opens a webbrowser window which shows the particular HTML file
         within the ToolBOS SDK documentation (e.g. "index").
@@ -187,7 +187,7 @@ def openToolBOSDocumentation( fileName ):
     url = ToolBOSSettings.getConfigOption( 'documentationURL_dir' ) + \
           fileName + '.html'
 
-    browser = WebBrowser( 'Documentation' )
+    browser = WebBrowser( 'Documentation', parent )
     browser.open( url )
 
 
