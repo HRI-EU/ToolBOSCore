@@ -2436,17 +2436,14 @@ Hence a doxygen mainpage is not needed in such case.
             docDir     = os.path.join( details.topLevelDir, 'doc' )
             srcDir     = os.path.join( details.topLevelDir, 'src' )
 
-            if details.isPythonPackage():
-                search     = '@mainpage'
-                candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
-                               os.path.join( srcDir, '__init__.py' ) )
-
-            else:
-                search     = '\mainpage'
-                candidates = ( os.path.join( docDir, 'Mainpage.md' ),
-                               os.path.join( docDir, 'Mainpage.dox' ),
-                               os.path.join( srcDir, details.packageName + '.h' ),
-                               os.path.join( srcDir, 'documentation.h' ) )
+            search     = 'mainpage'
+            candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
+                           os.path.join( srcDir, '__init__.py' ),
+                           os.path.join( docDir, 'Mainpage.md' ),
+                           os.path.join( docDir, 'Mainpage.dox' ),
+                           os.path.join( docDir, 'documentation.h' ),
+                           os.path.join( srcDir, 'documentation.h' ),
+                           os.path.join( srcDir, details.packageName + '.h' ) )
 
 
             for filePath in candidates:
