@@ -40,6 +40,7 @@ import re
 import subprocess
 
 from ToolBOSCore.Packages        import ProjectProperties
+from ToolBOSCore.Platforms       import Platforms
 from ToolBOSCore.Storage         import CMakeLists
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
 from ToolBOSCore.Util            import Any
@@ -120,6 +121,7 @@ class PackageDetector( object ) :
         self.sqOptOutDirs      = []
         self.sqOptInFiles      = []
         self.sqOptOutFiles     = []
+        self.sqCheckExe        = None
         self.sqComments        = {}
         self.useClang          = None
 
@@ -165,6 +167,23 @@ class PackageDetector( object ) :
 
         Any.requireIsTextNonEmpty( self.packageName )
         Any.requireIsTextNonEmpty( self.packageVersion )
+
+
+        # compute typical directory names (may not be present!)
+        hostPlatform           = Platforms.getHostPlatform()
+        Any.requireIsTextNonEmpty( hostPlatform )
+
+        self.binDir            = os.path.join( self.topLevelDir, 'bin' )
+        self.binDirArch        = os.path.join( self.topLevelDir, 'bin', hostPlatform )
+        self.examplesDir       = os.path.join( self.topLevelDir, 'examples' )
+        self.examplesDirArch   = os.path.join( self.topLevelDir, 'examples', hostPlatform )
+        self.includeDir        = os.path.join( self.topLevelDir, 'include' )
+        self.installDir        = os.path.join( self.topLevelDir, 'install' )
+        self.libDir            = os.path.join( self.topLevelDir, 'lib' )
+        self.libDirArch        = os.path.join( self.topLevelDir, 'lib', hostPlatform )
+        self.srcDir            = os.path.join( self.topLevelDir, 'src' )
+        self.testDir           = os.path.join( self.topLevelDir, 'test' )
+        self.testDirArch       = os.path.join( self.topLevelDir, 'test', hostPlatform )
 
         if self.hasCMakeLists:
             # source tree, C/C++ package
@@ -220,6 +239,43 @@ class PackageDetector( object ) :
     #------------------------------------------------------------------------
     # Content type
     #------------------------------------------------------------------------
+
+
+    def hasMainProgram( self, files=None ):
+        """
+            Searches in the package for main program source code files,
+            typically located in 'bin/', 'examples/', and 'test/'.
+
+            Provide 'files' with absolute paths to skip (repetitive)
+            searching in the filesystem.
+        """
+        dirs = ( self.binDir, self.examplesDir, self.testDir )
+
+        if Any.isIterable( files ):
+
+            logging.info( 'searching provided fileList' )
+
+            for filePath in files:
+
+                if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ):
+
+                    if filePath.startswith( dirs ):
+                        logging.info( 'found main program: %s', filePath )
+                        return True
+
+            return False
+
+        else:
+            logging.info( 'searching in filesystem' )
+
+            for directory in dirs:
+                hasCFile   = self._search( directory, '.c' )
+                hasCppFile = self._search( directory, '.cpp' )
+
+                if hasCFile or hasCppFile:
+                    return True
+
+            return False
 
 
     def isMatlabPackage( self ):
@@ -491,6 +547,7 @@ class PackageDetector( object ) :
         self.gitOrigin         = getValue( 'origin',           self.gitOrigin )
         self.gitRelPath        = getValue( 'repoRelPath',      self.gitRelPath )
         self.packageName       = getValue( 'package',          self.packageName ) # legacy 2018-09-26
+        self.sqCheckExe        = getValue( 'SQ_12',            self.sqCheckExe )  # legacy 2019-10-08
 
         # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
@@ -538,6 +595,7 @@ class PackageDetector( object ) :
         self.svnRevision       = getValue( 'revision',         self.svnRevision )
         self.svnRevisionForCIA = getValue( 'revisionForCIA',   self.svnRevisionForCIA )
         self.sqComments        = getValue( 'sqComments',       self.sqComments )
+        self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )
         self.sqLevel           = getValue( 'sqLevel',          self.sqLevel )
         self.sqOptInRules      = getValue( 'sqOptInRules',     self.sqOptInRules )
         self.sqOptOutRules     = getValue( 'sqOptOutRules',    self.sqOptOutRules )

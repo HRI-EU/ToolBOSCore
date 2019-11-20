@@ -42,6 +42,8 @@ import inspect
 import logging
 import os
 import re
+import shlex
+import subprocess
 import sys
 import tempfile
 
@@ -56,8 +58,8 @@ from ToolBOSCore.Storage                          import PkgInfo
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
-from ToolBOSCore.Util                             import Any
-from ToolBOSCore.Util                             import FastScript
+from ToolBOSCore.Util                             import Any, FastScript, \
+                                                         VersionCompat
 
 
 OK                = 'OK'
@@ -138,12 +140,13 @@ class QualityCheckerRoutine( object ):
 
         logging.info( 'analyzing package... (this may take some time)' )
 
-        self.files           = set()
-        self.checkersEnabled = list()
+        self.files             = set()
+        self.checkersAvailable = list()
+        self.checkersEnabled   = list()
 
-        self._excludePattern = re.compile( '(build|external|klocwork|precompiled|sources|.svn)' )
-        self._extWhitelist   = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
-                                            '.py', '.java', '.m' ] )
+        self._excludePattern   = re.compile( '(build|external|klocwork|precompiled|sources|.svn)' )
+        self._extWhitelist     = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
+                                              '.py', '.java', '.m' ] )
 
         self._detectCheckers( enabled )
         self._detectFiles( enabled )
@@ -238,12 +241,14 @@ class QualityCheckerRoutine( object ):
         """
             Determine the list of checkers to be executed.
         """
-        all_dict = {}
-        all_list = getCheckersAvailable()
-        ruleIDs = []
-        sqLevel = self.details.sqLevel
-        sqOptInRules = self.details.sqOptInRules
+        all_dict      = {}
+        all_list      = getCheckersAvailable()
+        ruleIDs       = []
+        sqLevel       = self.details.sqLevel
+        sqOptInRules  = self.details.sqOptInRules
         sqOptOutRules = self.details.sqOptOutRules
+
+        self.checkersAvailable = all_list
 
         if sqLevel is None:                      # value not set in pkgInfo.py
             sqLevel = 'basic'
@@ -266,35 +271,39 @@ class QualityCheckerRoutine( object ):
         # if no matching string found then fallback to run all
 
         if not self.checkersEnabled:
-            self.checkersEnabled = []
-            for (ruleID, rule) in all_list:
 
-                logging.debug( '' )
-                logging.debug( 'PROCESSING RULE %s:', ruleID )
+            # user did not specify to run a particular checker,
+            # default to all (+/- opt-in/out ones, minus not implemented ones)
+
+            self.checkersEnabled = []
+            for ruleTuple in all_list:
+
+                ( ruleID, rule ) = ruleTuple
                 ruleIDs.append( ruleID )
 
                 if rule.sqLevel is None:
-                    logging.debug( 'not checked (removed)' )
+                    logging.debug( '%s: rule was removed', ruleID )
+
+                elif not hasattr( rule, 'run' ):
+                    logging.info( '%s: not implemented', ruleID )
+                    self.checkersAvailable.remove( ruleTuple )
 
                 elif ruleID in sqOptInRules:
-                    logging.debug( '%s checking (opted in via pkgInfo.py)',
-                                  ruleID )
+                    logging.debug( '%s: enabled (opt-in via pkgInfo.py)', ruleID )
                     self.checkersEnabled.append( (ruleID, rule) )
 
                 elif ruleID in sqOptOutRules:
-                    logging.debug( '%s not checked (opted out via pkgInfo.py)',
-                                  ruleID )
+                    logging.debug( '%s: disabled (opt-out via pkgInfo.py)', ruleID )
 
                 elif sqLevel not in rule.sqLevel:
                     logging.debug( "not checked (not required at level='%s')", sqLevel )
 
-                elif not hasattr( rule, 'run' ):
-                    logging.debug( 'not implemented' )
-
                 elif ruleID not in sqOptOutRules[:]:
                     self.checkersEnabled.append( (ruleID, rule) )
-                    logging.debug( 'checking rule %s :',
-                                  ruleID )
+                    logging.debug( "%s: enabled in level='%s'", ruleID, sqLevel )
+
+                else:
+                    logging.info( '%s: checkme', ruleID )
 
 
     def _detectFiles( self, argv ):
@@ -1813,45 +1822,169 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
+        if details.hasMainProgram( files ):
+            logging.info( 'main program(s) found' )
+
+            # look-up executables bin/<platform>/ directory
+            binFiles = self._getBinFiles( details )
+            logging.debug( 'executable(s) found in %s directory: %s',
+                           details.binDirArch, binFiles )
+
+        else:
+            logging.info( 'no main program(s) found' )
+
+            logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
+            result = ( OK, 0, 0,
+                       'check not applicable' )
+
+            return result
+
+        # get SQ-settings from pkgInfo.py
+        sqSettings = self._getSQSettings( details )
+        logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+
+        if sqSettings is None:
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py (please see C12 docs)"
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        # verify that we have:
+        #     - one executable present for each setting (to check if compilation was forgotten)
+        #     - one setting is present for each executable (to check if developer was lazy ;-)
+
+        validityCheck = self._validityCheck( binFiles, sqSettings )
+
+        if validityCheck[0] == FAILED:
+            shortText = validityCheck[3]
+            logging.debug( shortText )
+
+            return validityCheck
+
+        # finally run Valgrind
+        runValgrindResult = self._runValgrind( sqSettings, details )
+
+        return runValgrindResult
+
+
+    def _getSQSettings( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        try:
+            sqSettingsTmp = details.sqCheckExe
+            Any.requireIsNotNone( sqSettingsTmp )
+            Any.requireIsList( sqSettingsTmp )
+
+            sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
+
+            return sqSettings
+
+        except ( IOError, ValueError, TypeError, OSError ) as e:
+            logging.error( e )
+            logging.error( 'issue with retrieving SQ settings from pkgInfo')
+
+            return None
+
+        except AssertionError:
+            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
+
+            return None
+
+
+    def _getBinFiles( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        binFilesTmp = FastScript.getFilesInDir( details.binDirArch )
+        Any.requireIsList( binFilesTmp )
+        binFiles = []
+
+        if not binFilesTmp:
+            logging.error( 'no executables found in %s, forgot to compile?',
+                           details.binDirArch )
+
+            return binFiles
+
+        platform = getHostPlatform()
+
+        for binFile in binFilesTmp:
+            tmp = os.path.join( 'bin', platform, binFile )
+            binFiles.append(tmp)
+
+        return binFiles
+
+
+    def _validityCheck( self, binFiles, commandLines ):
+        Any.requireIsList( binFiles )
+        Any.requireIsList( commandLines )
+
+        commands = []
+
+        for cmdLine in commandLines:
+
+            tmp = shlex.split( cmdLine )
+            command = tmp[0]
+            commands.append( command )
+
+        # TODO: check matching
+
+        for command in commands:
+            if not os.path.exists( command ):
+                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'. "
+                               "Is the package compiled?", command )
+
+                result = ( FAILED, 0, 1,
+                         '%s specified in pkgInfo.py does not exist' % command )
+
+                return result
+
+        for binFile in binFiles:
+            if binFile not in commands:
+                logging.warning("%s executable was found. "
+                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
+
+                result = ( FAILED, 0, 1,
+                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
+
+                return result
+
+        return OK, 0, 0, 'validity check paas'
+
+
+    def _runValgrind( self, commandLines, details ):
         passedExecutables = 0
         failedExecutables = 0
         errorMessages     = []
 
-        try:
-            pkgInfo = PkgInfo.getPkgInfoContent()
-        except AssertionError:
-            logging.error( 'No pkgInfo file found, quitting.' )
-            return FAILED, 0, 1, 'Unable to run memory analysis.'
+        for command in commandLines:
 
-        binDirPath = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
+            logging.info( "C12: checking '%s'", command )
 
-        if not os.path.isdir( binDirPath ):
-            return ( OK, passedExecutables, failedExecutables,
-                     'package has no executables that could be checked' )
+            if Any.getDebugLevel() <= 3:
+                stdout = VersionCompat.StringIO()
+                stderr = VersionCompat.StringIO()
+            else:
+                stdout = None
+                stderr = None
 
-        binDirContents             = list( os.walk( binDirPath ) )
-        _dirpath, _dirnames, files = binDirContents[0]
-        if 'SQ_12' not in pkgInfo and files:
-            return ( FAILED, 0, 1,
-                     "executable source code was found in %s directory"
-                     " but no SQ_12 directive was specified in pkgInfo.py" % binDirPath )
-
-        executables    = pkgInfo.get( 'SQ_12', [] )
-        for path in executables:
-            executable     = os.path.expandvars( path )
-            executablePath = os.path.realpath( os.path.join( details.topLevelDir, executable ) )
-
-            logging.info( 'Analyzing %s', executablePath )
-
-            failed, errors = Valgrind.checkExecutable( executablePath, details )
+            try:
+                failed, errors = Valgrind.checkExecutable( command, details,
+                                                           stdout=stdout, stderr=stderr )
+            except subprocess.CalledProcessError as e:
+                failed = True
+                errors = []
 
             if failed:
                 failedExecutables += 1
 
                 for error in errors:
-                    errorMessages.append( 'C12: %s:%s - %s' % ( error.fname, error.lineno, error.description ) )
+                    errorMessages.append( 'C12: %s:%s - %s'
+                                          % ( error.fname, error.lineno, error.description ) )
+
+                logging.info( "C12: '%s' failed (see verbose-mode for details)", command )
+
             else:
                 passedExecutables += 1
+                logging.info( "C12: '%s successfully finished", command )
 
         for error in errorMessages:
             logging.error( error )
@@ -1868,6 +2001,7 @@ Specify an empty list if really nothing has to be executed.'''
                                                         's' if failedExecutables > 1 else '' ) )
 
         return result
+
 
 class QualityRule_C13( AbstractQualityRule ):
 
