@@ -235,17 +235,42 @@ class PackageDetector( object ) :
     # Content type
     #------------------------------------------------------------------------
 
-    def hasMainProgram( self ):
-        dirs = [ self.binDir, self.examplesDir, self.testDir ]
 
-        for directory in dirs:
-            hasCFile   = self._search( directory, '.c' )
-            hasCppFile = self._search( directory, '.cpp' )
+    def hasMainProgram( self, files=None ):
+        """
+            Searches in the package for main program source code files,
+            typically located in 'bin/', 'examples/', and 'test/'.
 
-            if hasCFile or hasCppFile:
-                return True
+            Provide 'files' with absolute paths to skip (repetitive)
+            searching in the filesystem.
+        """
+        dirs = ( self.binDir, self.examplesDir, self.testDir )
 
-        return False
+        if Any.isIterable( files ):
+
+            logging.info( 'searching provided fileList' )
+
+            for filePath in files:
+
+                if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ):
+
+                    if filePath.startswith( dirs ):
+                        logging.info( 'found main program: %s', filePath )
+                        return True
+
+            return False
+
+        else:
+            logging.info( 'searching in filesystem' )
+
+            for directory in dirs:
+                hasCFile   = self._search( directory, '.c' )
+                hasCppFile = self._search( directory, '.cpp' )
+
+                if hasCFile or hasCppFile:
+                    return True
+
+            return False
 
 
     def isMatlabPackage( self ):
