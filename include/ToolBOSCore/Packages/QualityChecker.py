@@ -140,12 +140,13 @@ class QualityCheckerRoutine( object ):
 
         logging.info( 'analyzing package... (this may take some time)' )
 
-        self.files           = set()
-        self.checkersEnabled = list()
+        self.files             = set()
+        self.checkersAvailable = list()
+        self.checkersEnabled   = list()
 
-        self._excludePattern = re.compile( '(build|external|klocwork|precompiled|sources|.svn)' )
-        self._extWhitelist   = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
-                                            '.py', '.java', '.m' ] )
+        self._excludePattern   = re.compile( '(build|external|klocwork|precompiled|sources|.svn)' )
+        self._extWhitelist     = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
+                                              '.py', '.java', '.m' ] )
 
         self._detectCheckers( enabled )
         self._detectFiles( enabled )
@@ -163,20 +164,28 @@ class QualityCheckerRoutine( object ):
         results       = {}
         overallResult = True
 
-        for (ruleID, rule) in self.checkersEnabled:
 
-            logging.info( 'checking rule: %s', ruleID )
-            result = rule.run( self.details, self.files )
 
-            if result is not None:          # None == checker not implemented
-                status    = result[0]
-                shortText = result[3]
-                logging.debug( shortText )
+        for (ruleID, rule) in self.checkersAvailable:
 
-                if status == FAILED:
-                    overallResult = False
+            if ruleID in self.checkersEnabled:
 
-                    results[ ruleID ] = result
+                logging.info( 'checking rule: %s', ruleID )
+                result = rule.run( self.details, self.files )
+
+                if result is not None:          # None == checker not implemented
+                    status    = result[0]
+                    shortText = result[3]
+                    logging.debug( shortText )
+
+                    if status == FAILED:
+                        overallResult = False
+
+                        results[ ruleID ] = result
+
+            else:
+
+                logging.info( 'not enabled: %s', ruleID )
 
 
         if showReport:
@@ -226,12 +235,14 @@ class QualityCheckerRoutine( object ):
         """
             Determine the list of checkers to be executed.
         """
-        all_dict = {}
-        all_list = getCheckersAvailable()
-        ruleIDs = []
-        sqLevel = self.details.sqLevel
-        sqOptInRules = self.details.sqOptInRules
+        all_dict      = {}
+        all_list      = getCheckersAvailable()
+        ruleIDs       = []
+        sqLevel       = self.details.sqLevel
+        sqOptInRules  = self.details.sqOptInRules
         sqOptOutRules = self.details.sqOptOutRules
+
+        self.checkersAvailable = all_list
 
         if sqLevel is None:                      # value not set in pkgInfo.py
             sqLevel = 'basic'
@@ -254,35 +265,39 @@ class QualityCheckerRoutine( object ):
         # if no matching string found then fallback to run all
 
         if not self.checkersEnabled:
-            self.checkersEnabled = []
-            for (ruleID, rule) in all_list:
 
-                logging.debug( '' )
-                logging.debug( 'PROCESSING RULE %s:', ruleID )
+            # user did not specify to run a particular checker,
+            # default to all (+/- opt-in/out ones, minus not implemented ones)
+
+            self.checkersEnabled = []
+            for ruleTuple in all_list:
+
+                ( ruleID, rule ) = ruleTuple
                 ruleIDs.append( ruleID )
 
-                if rule.sqLevel is None:
-                    logging.debug( 'not checked (removed)' )
+                if not hasattr( rule, 'run' ):
+                    logging.info( '%s: not implemented', ruleID )
+                    self.checkersAvailable.remove( ruleTuple )
+
+                elif rule.sqLevel is None:
+                    logging.debug( '%s: rule was removed', ruleID )
 
                 elif ruleID in sqOptInRules:
-                    logging.debug( '%s checking (opted in via pkgInfo.py)',
-                                  ruleID )
+                    logging.debug( '%s: enabled (opt-in via pkgInfo.py)', ruleID )
                     self.checkersEnabled.append( (ruleID, rule) )
 
                 elif ruleID in sqOptOutRules:
-                    logging.debug( '%s not checked (opted out via pkgInfo.py)',
-                                  ruleID )
+                    logging.debug( '%s: disabled (opt-out via pkgInfo.py)', ruleID )
 
                 elif sqLevel not in rule.sqLevel:
-                    logging.debug( "not checked (not required at level='%s')", sqLevel )
-
-                elif rule.run is None:
-                    logging.debug( 'not implemented' )
+                    logging.debug( "%s: skipped (not required at level='%s')", ruleID, sqLevel )
 
                 elif ruleID not in sqOptOutRules[:]:
                     self.checkersEnabled.append( (ruleID, rule) )
-                    logging.debug( 'checking rule %s :',
-                                  ruleID )
+                    logging.debug( "%s: enabled in level='%s'", ruleID, sqLevel )
+
+                else:
+                    logging.info( '%s: checkme', ruleID )
 
 
     def _detectFiles( self, argv ):
