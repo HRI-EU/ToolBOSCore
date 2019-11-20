@@ -77,5 +77,11 @@ sqComments       = { 'C03': 'many macro names are historic and cannot be changed
                      'GEN03': 'confirmed, to be fixed',
                      'GEN04': '3rd-party-files should somehow be excluded from SQ check, e.g. by leaving it under "External" and opt-out/blacklist such directory' }
 
+# ToolBOSCore does not get compiled, hence no executable exists for the
+# unittest.c examples or unittests that solely work on file level.
+# By suppressing the following directories the C12 checker (Valgrind) will
+# not attempt to run them. Also Klocwork (C10) shall not be invoked.
+sqOptOutRules    = [ 'C10', 'C12' ]
+
 
 # EOF
