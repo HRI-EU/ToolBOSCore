@@ -1791,13 +1791,17 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
+        if details.hasMainProgram( files ):
+            logging.info( 'main program(s) found' )
 
-        if details.hasMainProgram():
             # look-up executables bin/<platform>/ directory
             binFiles = self._getBinFiles( details )
-            logging.debug( 'executable found in %s directory: %s',details.binDirArch, binFiles )
+            logging.debug( 'executable(s) found in %s directory: %s',
+                           details.binDirArch, binFiles )
 
         else:
+            logging.info( 'no main program(s) found' )
+
             logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
             result = ( OK, 0, 0,
                        'check not applicable' )
@@ -1806,11 +1810,11 @@ Specify an empty list if really nothing has to be executed.'''
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self._getSQSettings( details )
-        logging.debug( 'SQ_C12 settings from pkgInfo.py: %s',sqSettings )
+        logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
 
         if sqSettings is None:
-            result = ( FAILED, 0, 1,
-                       'no SQ_12 settings found in pkgInfo.py' )
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py (please see C12 docs)"
+            result = ( FAILED, 0, 1, msg )
 
             return result
 
@@ -1850,8 +1854,8 @@ Specify an empty list if really nothing has to be executed.'''
 
             return None
 
-        except AssertionError as e:
-            logging.error( 'no sqCheckExe setting was specified in pkgInfo.py' )
+        except AssertionError:
+            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
 
             return None
 
@@ -1864,8 +1868,8 @@ Specify an empty list if really nothing has to be executed.'''
         binFiles = []
 
         if not binFilesTmp:
-            logging.error( 'No executables found in %s directory.'
-                           'Is the package not compiled?', details.binDirArch )
+            logging.error( 'no executables found in %s, forgot to compile?',
+                           details.binDirArch )
 
             return binFiles
 
