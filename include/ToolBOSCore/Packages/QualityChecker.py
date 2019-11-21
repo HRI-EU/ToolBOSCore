@@ -151,7 +151,14 @@ class QualityCheckerRoutine( object ):
         self._extWhitelist     = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
                                               '.py', '.java', '.m' ] )
 
-        self._detectCheckers( enabled )
+        if not enabled:
+            logging.debug( 'auto-detecting checkers to be executed' )
+            self._detectCheckers( self.checkersAvailable )
+        else:
+            logging.debug( 'enabled checkers: %s', enabled )
+            self._detectCheckers( enabled )
+
+
         self._detectFiles( enabled )
 
 
