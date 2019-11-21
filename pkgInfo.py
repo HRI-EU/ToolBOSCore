@@ -71,17 +71,19 @@ gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
 
 sqLevel          = 'advanced'
 
-sqComments       = { 'C03': 'many macro names are historic and cannot be changed without touching a lot of dependent packages\n\nsome macros are lowercase on purpose to replace non-existent functions on certain platforms',
-                     'C04': 'FP QualityChecker.py: contains documentation and implementation of this quality checker rule',
-                     'GEN01': 'few UTF8-characters (e.g. arrows) used in documentation',
-                     'GEN03': 'confirmed, to be fixed',
-                     'GEN04': '3rd-party-files should somehow be excluded from SQ check, e.g. by leaving it under "External" and opt-out/blacklist such directory' }
 
 # ToolBOSCore does not get compiled, hence no executable exists for the
 # unittest.c examples or unittests that solely work on file level.
 # By suppressing the following directories the C12 checker (Valgrind) will
 # not attempt to run them. Also Klocwork (C10) shall not be invoked.
-sqOptOutRules    = [ 'C10', 'C12' ]
+#
+# HRI-EU copyright header has been replaced by typical BSD 3-clause license preamble
+
+sqOptOutRules    = [ 'GEN04', 'C10', 'C12' ]
+
+sqComments       = { 'C10': 'do not invoke Klocwork on example files',
+                     'C12': 'do not invoke Valgrind on example files',
+                     'GEN04': 'package is published under BSD License' }
 
 
 # EOF
