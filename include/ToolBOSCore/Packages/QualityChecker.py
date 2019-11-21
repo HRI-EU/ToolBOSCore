@@ -37,6 +37,7 @@
 from __future__ import print_function
 
 import ast
+import copy
 import collections
 import inspect
 import logging
@@ -54,7 +55,6 @@ from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
 from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
-from ToolBOSCore.Storage                          import PkgInfo
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
@@ -64,7 +64,10 @@ from ToolBOSCore.Util                             import Any, FastScript, \
 
 OK                = 'OK'
 FAILED            = 'FAILED'
-NOT_AVAILABLE     = 'N/A'
+DISABLED          = 'disabled'
+NOT_APPLICABLE    = 'not applicable'
+NOT_IMPLEMENTED   = 'not implemented'
+NOT_REQUIRED      = 'not required'
 
 # do not use (frozen)set for sqLevelNames, to preserve a kind of "order"
 # even though the levels are independent and not based upon each other
@@ -161,78 +164,25 @@ class QualityCheckerRoutine( object ):
         """
         Any.requireIsBool( showReport )
 
+        Any.requireMsg( self.details.canonicalPath,
+                        'unable to detect package category, scan failed' )
+
         results       = {}
         overallResult = True
-        i             = 0
-        numEnabled    = len( self.checkersEnabled )
 
-        for (ruleID, rule) in self.checkersEnabled:
+        for ruleTuple in self.checkersAvailable:
+            logging.info( '' )
 
-            if hasattr( rule, 'run' ):
-                logging.info( 'checking rule: %s', ruleID )
-            else:
-                logging.info( 'checking rule: %s → not implemented', ruleID )
-                continue
+            ( ruleID, rule )  = ruleTuple
+            result            = self._runChecker( ruleTuple )
+            results[ ruleID ] = result
 
-            result = rule.run( self.details, self.files )
-
-            if result is None:
-                logging.debug( 'checking rule: %s → no result data (?)', ruleID )
-            else:
-                status    = result[0]
-                shortText = result[3]
-                logging.debug( shortText )
-                logging.info( 'checking rule: %s → %s', ruleID, status )
-
-                if status == FAILED:
-                    overallResult = False
-
-                    results[ ruleID ] = result
-
-            i += 1
-
-            if i < numEnabled:
-                logging.info( '' )
+            if result[0] is FAILED:
+                overallResult = False
 
         if showReport:
-            if not self.details.canonicalPath:
-                logging.error( 'unable to detect package category, scan failed' )
-                return False
-
             logging.info( '' )
-            logging.info( 'results for %s:', self.details.canonicalPath )
-
-            # "ruleID" is a string (e.g. C-01), "rule" is the instance to work with
-            for ( ruleID, rule ) in self.checkersEnabled:
-                try:
-                    result = results[ ruleID ]
-                except KeyError:                     # checker not implemented
-                    continue
-
-                status     = result[0]
-                passed     = result[1]
-                failed     = result[2]
-                shortText  = result[3]
-                total      = passed + failed
-
-                try:
-                    percent = float(passed) / float(total) * 100
-                except ZeroDivisionError:
-                    # Devision by zero can only happen in case the total number
-                    # is zero, f.i. the check did not apply to any file.
-                    # Set percentage to 100% in this case == success.
-                    percent = 100
-
-                evaluation = '%3d%%' % percent
-
-                logging.info( '%8s [%4s = %6s] %s', ruleID, evaluation,
-                              status.ljust(6), shortText )
-
-            logging.info( '' )
-
-            if overallResult is True:
-                logging.info( 'EXCELLENT!!! :-)' )
-                logging.info( '' )
+            self._showReport( results, overallResult )
 
         return overallResult
 
@@ -276,34 +226,35 @@ class QualityCheckerRoutine( object ):
             # default to all (+/- opt-in/out ones, minus not implemented ones)
 
             self.checkersEnabled = []
-            for ruleTuple in all_list:
+            for ruleTuple in copy.copy( all_list ):
 
                 ( ruleID, rule ) = ruleTuple
                 ruleIDs.append( ruleID )
 
                 if rule.sqLevel is None:
-                    logging.debug( '%s: rule was removed', ruleID )
+                    logging.debug( '%6s: rule was removed', ruleID )
+                    self.checkersAvailable.remove( ruleTuple )
 
                 elif not hasattr( rule, 'run' ):
-                    logging.info( '%s: not implemented', ruleID )
+                    logging.debug( '%6s: not implemented', ruleID )
                     self.checkersAvailable.remove( ruleTuple )
 
                 elif ruleID in sqOptInRules:
-                    logging.debug( '%s: enabled (opt-in via pkgInfo.py)', ruleID )
+                    logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
                     self.checkersEnabled.append( (ruleID, rule) )
 
                 elif ruleID in sqOptOutRules:
-                    logging.debug( '%s: disabled (opt-out via pkgInfo.py)', ruleID )
+                    logging.debug( '%6s: disabled (opt-out via pkgInfo.py)', ruleID )
 
                 elif sqLevel not in rule.sqLevel:
-                    logging.debug( "not checked (not required at level='%s')", sqLevel )
+                    logging.debug( "%6s: not checked (not required at level='%s')", ruleID, sqLevel )
 
                 elif ruleID not in sqOptOutRules[:]:
                     self.checkersEnabled.append( (ruleID, rule) )
-                    logging.debug( "%s: enabled in level='%s'", ruleID, sqLevel )
+                    logging.debug( "%6s: enabled in level='%s'", ruleID, sqLevel )
 
                 else:
-                    logging.info( '%s: checkme', ruleID )
+                    raise ValueError( 'unexpected case' )
 
 
     def _detectFiles( self, argv ):
@@ -460,6 +411,92 @@ class QualityCheckerRoutine( object ):
             self.files.remove( absPath )
         except KeyError:
             pass
+
+
+    def _runChecker( self, ruleTuple ):
+        Any.requireIsTuple( ruleTuple )
+
+        ( ruleID, rule ) = ruleTuple
+
+        if ruleTuple in self.checkersEnabled:
+
+            logging.info( 'checking rule: %s', ruleID )
+
+            result = rule.run( self.details, self.files )
+
+            status = result[0]
+            msg    = result[3]
+            logging.info( msg )
+            logging.info( 'checking rule: %s → %s', ruleID, status )
+
+        else:
+
+            if ruleID in self.details.sqOptOutRules:
+                status = DISABLED
+                msg    = 'explicitly disabled via pkgInfo.py'
+
+            elif ruleID not in self.checkersEnabled:
+                status = NOT_REQUIRED
+                msg    = "not required in level='%s'" % self.details.sqLevel
+
+            elif not hasattr( rule, 'run' ):
+                status = NOT_IMPLEMENTED
+                msg    = NOT_IMPLEMENTED
+
+            else:
+                raise ValueError( 'unexpected case' )
+
+            logging.info( 'skipping rule: %s → %s', ruleID, msg )
+
+            result = ( status, 0, 0, msg )
+
+        Any.requireIsTuple( result )
+        return result
+
+
+    def _showReport( self, results, overallResult ):
+        Any.requireIsDictNonEmpty( results )
+        Any.requireIsBool( overallResult )
+
+        logging.info( '' )
+        logging.info( 'results for %s:', self.details.canonicalPath )
+        logging.info( '' )
+
+        # "ruleID" is a string (e.g. C-01), "rule" is the instance to work with
+        for ( ruleID, rule ) in self.checkersAvailable:
+
+            ( status, passed, failed, shortText ) = results[ ruleID ]
+
+            total = passed + failed
+
+            if status is OK or status is FAILED:
+                displayStatus = status
+
+                try:
+                    percent = float(passed) / float(total) * 100
+                except ZeroDivisionError:
+                    # Devision by zero can only happen in case the total number
+                    # is zero, f.i. the check did not apply to any file.
+                    # Set percentage to 100% in this case == success.
+                    percent = 100
+
+                percentage = '%3d%%' % percent
+
+            else:
+                # in case of 'not implemented/required' do not display any
+                # arbitrary number like 0% or 100% (does not make sense)
+
+                displayStatus = ''
+                percentage    = ''
+
+            logging.info( '%6s | %4s | %6s | %s', ruleID, percentage,
+                          displayStatus.ljust(6), shortText )
+
+        logging.info( '' )
+
+        if overallResult is True:
+            logging.info( 'EXCELLENT!!! :-)' )
+            logging.info( '' )
 
 
 class AbstractQualityRule( object ):
@@ -1045,6 +1082,8 @@ class QualityRule_GEN11( AbstractQualityRule ):
     brief       = '''Consider managing bugs and feature requests via JIRA
 issue tracker.'''
 
+    sqLevel     = frozenset()
+
     def __init__( self ):
         super( AbstractQualityRule, self ).__init__()
 
@@ -1077,6 +1116,8 @@ result for equal input data) should be set into a deterministic mode. For
 example, when random numbers are involved, there should be a possibility to
 predefine the seed or to assign some fixed value that should be taken instead.
 '''
+
+    sqLevel     = frozenset()
 
 
 class QualityRule_C01( AbstractQualityRule ):
@@ -1620,6 +1661,8 @@ reasons. And consistency is a soft skill for good quality software.'''
                     'CERT ERR00-CPP':
                     'https://www.securecoding.cert.org/confluence/display/cplusplus/ERR00-CPP.+Adopt+and+implement+a+consistent+and+comprehensive+error-handling+policy' }
 
+    sqLevel     = frozenset()
+
 
 class QualityRule_C08( AbstractQualityRule ):
 
@@ -1654,6 +1697,8 @@ types, f.i. `BaseI16` or `BaseI64`, defined in `Base.h.`'''
 
                     'CERT INT08-C':
                     'https://www.securecoding.cert.org/confluence/display/seccode/INT08-C.+Verify+that+all+integer+values+are+in+range' }
+
+    sqLevel     = frozenset()
 
 
 class QualityRule_C09( AbstractQualityRule ):
@@ -2186,6 +2231,8 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
 
     seeAlso     = { 'Any.py API documentation':
                     'namespaceToolBOSCore_1_1Util_1_1Any' }
+
+    sqLevel     = frozenset()
 
 
 class QualityRule_PY04( AbstractQualityRule ):
@@ -3097,6 +3144,8 @@ without any sideeffects.'''
     }
 '''
 
+    sqLevel     = frozenset()
+
 
 class QualityRule_SPEC03( AbstractQualityRule ):
 
@@ -3117,6 +3166,8 @@ such purpose. They map to the underlying O.S.-specific functions with no cost
 
     seeAlso     = { 'AnyString.h API documentation':
                     'AnyString_About' }
+
+    sqLevel     = frozenset()
 
 
 class QualityRule_SPEC04( AbstractQualityRule ):
