@@ -122,6 +122,52 @@ def _createPackage( args ):
             return False
 
 
+def _parseSqArgs( qr, argv ):
+    from ToolBOSCore.Packages import QualityChecker
+
+    Any.requireIsInstance( qr, QualityChecker.QualityCheckerRoutine )
+    Any.requireIsList( argv )
+
+    try:
+        # ensure that script-name does not appear in this list
+        argv.remove( sys.argv[0] )
+    except ValueError:
+        pass
+
+
+    ruleIDs    = QualityChecker.getRuleIDs()
+    forceDirs  = set()
+    forceFiles = set()
+    forceRules = []
+
+    for arg in argv:
+
+        if arg in ruleIDs:
+            logging.debug( 'requested checking rule ID: %s', arg )
+            forceRules.append( arg )
+
+        elif os.path.isdir( arg ):
+            logging.debug( 'requested checking directory: %s', arg )
+            forceDirs.add( os.path.abspath( arg ) )
+
+        elif os.path.exists( arg ):
+            logging.debug( 'requested checking file: %s', arg )
+            forceFiles.add( os.path.abspath( arg ) )
+
+        else:
+            msg = '%s: No such file or directory, or rule ID' % arg
+            raise ValueError( msg )
+
+    if forceDirs:
+        qr.setDirs( forceDirs )
+
+    if forceFiles:
+        qr.setFiles( forceRules )
+
+    if forceRules:
+        qr.setRulesToRun( forceRules )
+
+
 def _showAvailableTemplates():
     """
         Lists all available templates on the console.
@@ -509,17 +555,26 @@ try:
     if quality:
         from ToolBOSCore.Packages.QualityChecker import QualityCheckerRoutine
 
-        enabled = unhandled
+        sqArgs = unhandled
 
         try:
             # ensure that script-name does not appear in this list
-            enabled.remove( sys.argv[0] )
+            sqArgs.remove( sys.argv[0] )
         except ValueError:
             pass
 
-        showReport = enabled == []  # show report if user did not specify anything
+        qr = QualityCheckerRoutine()
 
-        if not QualityCheckerRoutine( enabled=enabled ).run( showReport ):
+        if unhandled:
+            _parseSqArgs( qr, unhandled )
+            qr.setUseOptFlags( False )
+            qr.run()
+        else:
+            qr.setUseOptFlags( True )
+            qr.run()
+            qr.showReport()
+
+        if qr.overallResult() is not True:
             sys.exit( -5 )
 
 
