@@ -65,6 +65,8 @@ class PackageDetector( object ) :
 
     def __init__( self, projectRoot=None, pkgInfoContent=None ):
 
+        from ToolBOSCore.Packages.QualityChecker import sqLevelDefault
+
         if not projectRoot:
             projectRoot = ProjectProperties.detectTopLevelDir()
 
@@ -114,7 +116,7 @@ class PackageDetector( object ) :
         self.userSrcAlias      = ()
         self.userSrcBashCode   = ()
         self.userSrcCmdCode    = ()
-        self.sqLevel           = None
+        self.sqLevel           = sqLevelDefault
         self.sqOptInRules      = []
         self.sqOptOutRules     = []
         self.sqOptInDirs       = []
