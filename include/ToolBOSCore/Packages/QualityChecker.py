@@ -287,8 +287,8 @@ class QualityCheckerRoutine( object ):
         Any.requireIsDictNonEmpty( self.results )
 
         logging.info( '' )
-        logging.info( 'results for %s (quality level: %s):',
-                      self.details.canonicalPath, self.sqLevel )
+        logging.info( 'results for %s (level=%s):',
+                      self.details.canonicalPath, self.details.sqLevel )
         logging.info( '' )
 
         for ruleID in self.rulesToRun:
