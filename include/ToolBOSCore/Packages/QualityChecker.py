@@ -314,11 +314,12 @@ class QualityCheckerRoutine( object ):
             logging.info( 'comments by maintainer:' )
             logging.info( '' )
 
-            for ruleID in sorted( self.details.sqComments.keys() ):
-                comment = self.details.sqComments[ ruleID ]
+            for ruleID in self.rulesOrdered:
+                if ruleID in self.details.sqComments:
+                    comment = self.details.sqComments[ ruleID ]
 
-                logging.info( '%8s: "%s"', ruleID, comment )
-                logging.info( '' )
+                    logging.info( '%8s: "%s"', ruleID, comment )
+                    logging.info( '' )
 
 
     def _applySqSettings( self ):
