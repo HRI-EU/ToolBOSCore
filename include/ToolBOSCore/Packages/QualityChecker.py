@@ -142,6 +142,7 @@ class QualityCheckerRoutine( object ):
         self.ruleIDs          = set()  # IDs of all SQ rules, not ordered
         self.rulesOrdered     = []     # IDs of all SQ rules, sorted
         self.rulesImplemented = set()  # IDs of all implemented rules
+        self.rulesInLevel     = set()
         self.rulesToRun       = []     # IDs of rules to run this time, sorted
 
         self.results          = {}     # result data, filled by runParticular()
@@ -291,8 +292,11 @@ class QualityCheckerRoutine( object ):
                       self.details.canonicalPath, self.details.sqLevel )
         logging.info( '' )
 
-        for ruleID in self.rulesToRun:
+        for ruleID in self.rulesOrdered:
             if ruleID not in self.rulesImplemented:
+                continue
+
+            if ruleID not in self.rulesInLevel:
                 continue
 
             ( status, passed, failed, shortText ) = self.results[ ruleID ]
@@ -323,6 +327,29 @@ class QualityCheckerRoutine( object ):
         """
         Any.requireIsIterable( self.details.sqOptInRules )
         Any.requireIsIterable( self.details.sqOptOutRules )
+
+
+        for ruleID, rule in self.rules.items():
+            if ruleID not in self.rulesImplemented:
+                continue
+
+            rule = self.rules[ ruleID ]
+
+            Any.requireIsInstance( rule, AbstractQualityRule )
+            Any.requireIsInstance( rule.sqLevel, frozenset )
+
+            if self.details.sqLevel in rule.sqLevel:
+                self.rulesInLevel.add( ruleID )
+
+            else:
+                # filter-out rules not needed in the level at hand
+                # (don't filter-out if we force-run particular rules)
+                if self.useOptFlags:
+
+                    logging.debug( '%6s: no need to run at level=%s',
+                                   ruleID, self.details.sqLevel )
+                    self.rulesToRun.remove( ruleID )
+
 
         for ruleID in self.details.sqOptInRules:
             logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
