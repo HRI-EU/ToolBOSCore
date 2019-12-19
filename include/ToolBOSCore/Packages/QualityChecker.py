@@ -329,6 +329,10 @@ class QualityCheckerRoutine( object ):
         Any.requireIsIterable( self.details.sqOptInRules )
         Any.requireIsIterable( self.details.sqOptOutRules )
 
+        msg = '"%s": No such quality level (allowed: %s)' % \
+              ( self.details.sqLevel, ', '.join( sqLevelNames ) )
+        Any.requireMsg( self.details.sqLevel in sqLevelNames, msg )
+
 
         for ruleID, rule in self.rules.items():
             if ruleID not in self.rulesImplemented:
