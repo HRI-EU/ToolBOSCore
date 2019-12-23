@@ -285,41 +285,9 @@ class QualityCheckerRoutine( object ):
         """
             Shows a summary of the execution results.
         """
-        Any.requireIsDictNonEmpty( self.results )
-
-        logging.info( '' )
-        logging.info( 'results for %s (level=%s):',
-                      self.details.canonicalPath, self.details.sqLevel )
-        logging.info( '' )
-
-        for ruleID in self.rulesOrdered:
-            if ruleID not in self.rulesImplemented:
-                continue
-
-            if ruleID not in self.rulesInLevel:
-                continue
-
-            ( status, passed, failed, shortText ) = self.results[ ruleID ]
-
-            displayStatus = status if status in ( OK, FAILED, DISABLED ) else ''
-            successRate   = self._computeSuccessRate( ruleID )
-
-            logging.info( '%8s | %6s | %4s | %s', ruleID,
-                          displayStatus.ljust(8), successRate, shortText )
-
-        logging.info( '' )
-
-
-        if self.details.sqComments:
-            logging.info( 'comments by maintainer:' )
-            logging.info( '' )
-
-            for ruleID in self.rulesOrdered:
-                if ruleID in self.details.sqComments:
-                    comment = self.details.sqComments[ ruleID ]
-
-                    logging.info( '%8s: "%s"', ruleID, comment )
-                    logging.info( '' )
+        self._showReportHeadline()
+        self._showReportTable()
+        self._showReportComments()
 
 
     def _applySqSettings( self ):
@@ -533,6 +501,51 @@ class QualityCheckerRoutine( object ):
         Any.requireIsTuple( result )
 
         return result
+
+
+    def _showReportHeadline( self ):
+        Any.requireIsTextNonEmpty( self.details.canonicalPath )
+        Any.requireIsTextNonEmpty( self.details.sqLevel )
+
+        logging.info( '' )
+        logging.info( 'results for %s (level=%s):',
+                      self.details.canonicalPath, self.details.sqLevel )
+        logging.info( '' )
+
+
+    def _showReportTable( self ):
+        Any.requireIsDictNonEmpty( self.results )
+        Any.requireIsListNonEmpty( self.rulesOrdered )
+
+        for ruleID in self.rulesOrdered:
+            if ruleID not in self.rulesImplemented:
+                continue
+
+            if ruleID not in self.rulesInLevel:
+                continue
+
+            ( status, passed, failed, shortText ) = self.results[ ruleID ]
+
+            displayStatus = status if status in ( OK, FAILED, DISABLED ) else ''
+            successRate   = self._computeSuccessRate( ruleID )
+
+            logging.info( '%8s | %6s | %4s | %s', ruleID,
+                          displayStatus.ljust(8), successRate, shortText )
+
+        logging.info( '' )
+
+
+    def _showReportComments( self ):
+        if self.details.sqComments:
+            logging.info( 'comments by maintainer:' )
+            logging.info( '' )
+
+            for ruleID in self.rulesOrdered:
+                if ruleID in self.details.sqComments:
+                    comment = self.details.sqComments[ ruleID ]
+
+                    logging.info( '%8s: "%s"', ruleID, comment )
+                    logging.info( '' )
 
 
 class AbstractQualityRule( object ):
