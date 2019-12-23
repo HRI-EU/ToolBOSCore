@@ -1,4 +1,4 @@
-usage: ToolBOS-Setup.py [-h] [-r PATH] [-p PATH] [-v]
+usage: ToolBOS-Setup.py [-h] [-r PATH] [-p PATH] [-a] [-v]
 
 Configures your shell for using the ToolBOS SDK.
 
@@ -9,6 +9,11 @@ optional arguments:
   -p PATH, --proxyDir PATH
                         path to proxy SIT (default:
                         /home/<user>/.HRI/sit/latest)
+  -a, --advanced        advanced config with SIT proxy directory
   -v, --verbose         show debug messages
+
+examples:
+  ToolBOS-Setup.py
+  ToolBOS-Setup.py -a
 
 Please report bugs on JIRA (https://jira.honda-ri.de:8443).
