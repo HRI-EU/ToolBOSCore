@@ -294,9 +294,12 @@ class QualityCheckerRoutine( object ):
         """
             Considers the opt-in/out files/rules in the pkgInfo.py (if any).
         """
-        Any.requireIsIterable( self.details.sqOptInRules )
-        Any.requireIsIterable( self.details.sqOptOutRules )
+        self._applySqSettingsLevel()
+        self._applySqSettingsOptIn()
+        self._applySqSettingsOptOut()
 
+
+    def _applySqSettingsLevel( self ):
         msg = '"%s": No such quality level (allowed: %s)' % \
               ( self.details.sqLevel, ', '.join( sqLevelNames ) )
         Any.requireMsg( self.details.sqLevel in sqLevelNames, msg )
@@ -324,9 +327,16 @@ class QualityCheckerRoutine( object ):
                     self.rulesToRun.remove( ruleID )
 
 
+    def _applySqSettingsOptIn( self ):
+        Any.requireIsIterable( self.details.sqOptInRules )
+
         for ruleID in self.details.sqOptInRules:
             logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
             self.includeRule( ruleID )
+
+
+    def _applySqSettingsOptOut( self ):
+        Any.requireIsIterable( self.details.sqOptOutRules )
 
         for ruleID in self.details.sqOptOutRules:
             logging.debug( '%6s: disabled (opt-out via pkgInfo.py)', ruleID )
