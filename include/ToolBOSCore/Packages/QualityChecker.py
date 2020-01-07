@@ -2334,7 +2334,10 @@ application, potentially causing data loss or inconsistent states.'''
             self._name.clear()
 
         def visit_Attribute( self, node ):
-            if node.attr == 'exit' and node.value.id == 'sys':
+            if node.attr == 'exit' and node.value.id == 'sys' or \
+               node.attr == 'exit' and node.value.id == 'os' or \
+               node.attr == '_exit' and node.value.id == 'os':
+
                 self._name.appendleft( node.attr )
                 self._name.appendleft( node.value.id )
                 self.lineno = node.lineno
@@ -2355,7 +2358,7 @@ application, potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
-        logging.debug( "checking for calls to sys.exit()" )
+        logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
         passed    = 0
         failed    = 0
         syntaxErr = 0
@@ -2378,10 +2381,12 @@ application, potentially causing data loss or inconsistent states.'''
                 if not exitCalls:
                     passed += 1
                 else:
+                    # logging.info(exitCalls)
                     for call in exitCalls:
-                        logging.info( 'PY04: %s:%s: found sys.exit() call',
-                                      filePath, call[1] )
+                        logging.info( 'PY04: %s:%s: found %s() call',
+                                      filePath, call[1], call[0] )
                     failed += len( exitCalls )
+
 
 
         if syntaxErr:
@@ -2389,11 +2394,11 @@ application, potentially causing data loss or inconsistent states.'''
             status = FAILED
 
         elif failed:
-            msg    = 'found %d calls to sys.exit()' % failed
+            msg    = 'found %d exit() calls' % failed
             status = FAILED
 
         else:
-            msg    = 'no calls to sys.exit() found'
+            msg    = 'no exit() calls found'
             status = OK
 
         return status, passed, failed, msg
