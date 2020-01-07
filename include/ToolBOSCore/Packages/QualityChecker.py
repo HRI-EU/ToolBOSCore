@@ -2620,9 +2620,31 @@ be briefly documented.'''
 the package contains, and if it might be of interest for them.
 
 Basic documentation can also programmatically be searched for keywords, e.g.
-in case you don't precisely remember the name of a package anymore.'''
+in case you don't precisely remember the name of a package anymore.
 
-    goodExample = '''
+Depending on the project type the documentation should be maintained under one of the following locations:
+
+ <table>
+ <tr>
+ <th>Project type</th>
+ <th>Documentation locations</th>
+ </tr>
+ <tr>
+ <td>C or C++</td>
+ <td> <b>src/packageName.h</b> or src/documentation.h or doc/documentation.h or doc/Mainpage.dox or ./README.md</td>
+ </tr>
+  <tr>
+ <td>Python</td>
+ <td> doc/documentation.h or ./README.md or doc/Mainpage.md</td>
+ </tr>
+ <td>Open source</td>
+ <td>./README.md</td>
+ </tr>
+ </table>
+'''
+
+    goodExample = '''    
+    * for C / C++ projects:*
     /*!
      * \mainpage
      *
@@ -2650,7 +2672,7 @@ Hence a doxygen mainpage is not needed in such case.
     def run( self, details, files ):
         """
             Checks if package has doxygen mainpage in either
-            src/<PackageName>.h or src/documentation.h
+            src/<PackageName>.h or src/documentation.h or in the form of README.md
         """
         if details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
@@ -2678,6 +2700,7 @@ Hence a doxygen mainpage is not needed in such case.
 
             search     = 'mainpage'
             candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
+                           os.path.join( details.topLevelDir, 'README.md'),
                            os.path.join( srcDir, '__init__.py' ),
                            os.path.join( docDir, 'Mainpage.md' ),
                            os.path.join( docDir, 'Mainpage.dox' ),
@@ -2685,24 +2708,33 @@ Hence a doxygen mainpage is not needed in such case.
                            os.path.join( srcDir, 'documentation.h' ),
                            os.path.join( srcDir, details.packageName + '.h' ) )
 
+            fileList = ( os.path.join( docDir, 'Mainpage.md' ),
+                         os.path.join( docDir, 'Mainpage.dox' ),
+                         os.path.join( docDir, 'documentation.h' ),
+                         os.path.join( srcDir, 'documentation.h' ),
+                         os.path.join( srcDir, details.packageName + '.h' ) )
 
             for filePath in candidates:
                 logging.debug( 'looking for doxygen mainpage in: %s', filePath )
 
                 if os.path.exists( filePath ):
-                    content = FastScript.getFileContent( filePath )
+                    found = True
+                    if filePath in fileList:
 
-                    if content.find( search ) != -1:
-                        logging.debug( '%s: mainpage section found', filePath )
-                        found = True
-                        break
-                    else:
-                        logging.debug( '%s: mainpage section not found', filePath )
+                        content = FastScript.getFileContent( filePath )
+
+                        if content.find( search ) != -1:
+                            logging.debug( '%s: mainpage section found', filePath )
+                            found = True
+                            break
+                        else:
+                            found = False
+                            logging.debug( '%s: mainpage section not found', filePath )
 
             if found:
-                result = ( OK, 1, 0, 'doxygen mainpage found' )
+                result = ( OK, 1, 0, 'documentation found' )
             else:
-                result = ( FAILED, 0, 1, 'doxygen mainpage not found' )
+                result = ( FAILED, 0, 1, 'documentation not found' )
 
         return result
 
