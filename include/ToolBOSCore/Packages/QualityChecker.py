@@ -2296,8 +2296,8 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
 
 class QualityRule_PY04( AbstractQualityRule ):
 
-    brief       = '''Prefer throwing exceptions over sys.exit() within the
-code.'''
+    brief       = '''Prefer throwing exceptions over sys.exit(), os.exit()
+                     and os._exit() within the code.'''
 
     description = '''As a rule of thumb, Python functions should hardly
 directly terminate the application. Prefer throwing an exception
