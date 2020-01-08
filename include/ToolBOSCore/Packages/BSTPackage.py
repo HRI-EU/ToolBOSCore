@@ -189,8 +189,7 @@ class BSTSourcePackage( BSTPackage ):
 
     def prepareQualityCheck( self, enabled=None ):
         self.sqChecker = QualityChecker.QualityCheckerRoutine( self.detector.topLevelDir,
-                                                               self.detector,
-                                                               enabled )
+                                                               self.detector )
 
 
     def setSQLevel( self, level ):
