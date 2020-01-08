@@ -369,7 +369,7 @@ class QualityCheckerDialog( QDialog, object ):
         result = thread.result
 
         if result is None:                       # checker not implemented
-            status  = QualityChecker.NOT_AVAILABLE
+            status  = QualityChecker.NOT_IMPLEMENTED
             message = 'not implemented'
         else:
             status       = result[0]
@@ -648,8 +648,9 @@ class QualityCheckerDialog( QDialog, object ):
 
         def run( self ):
             logging.debug( 'executing rule checker' )
-            self.result = self._model.runSQCheck( self._rule )
-            logging.debug( 'rule checker finished' )
+            if hasattr( self._rule, 'run' ):
+                self.result = self._model.runSQCheck( self._rule )
+                logging.debug( 'rule checker finished' )
 
 
 # EOF
