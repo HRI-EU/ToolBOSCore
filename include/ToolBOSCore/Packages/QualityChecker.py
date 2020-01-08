@@ -2627,36 +2627,14 @@ the package contains, and if it might be of interest for them.
 Basic documentation can also programmatically be searched for keywords, e.g.
 in case you don't precisely remember the name of a package anymore.
 
-Depending on the project type the documentation should be maintained under
-one of the following locations:
+Documentation should be maintained under one of the following locations:
 
- <table>
- <tr>
- <th>Project type</th>
- <th>Documentation locations</th>
- </tr>
- <tr>
- <td>C or C++</td>
- <td><ul>
-     <li>src/packageName.h (recommended)</li>
-     <li>src/documentation.h</li>
-     <li>doc/documentation.h</li>
-     <li>doc/Mainpage.dox</li>
-     <li>./README.md</li>
- </ul></td>
- </tr>
- <tr>
- <td>Python</td>
- <td><ul>
-     <li>doc/documentation.h</li>
-     <li>doc/Mainpage.md</li>
-     <li>./README.md</li>
- </ul></td>
- </tr>
- <td>Open source</td>
- <td><ul><li>./README.md</li></ul></td>
- </tr>
- </table>
+* ./README.md (recommended)
+* src/packageName.h
+* src/documentation.h
+* doc/documentation.h
+* doc/Mainpage.dox
+* doc/Mainpage.md
 '''
 
     goodExample = '''
@@ -2688,11 +2666,11 @@ Hence a doxygen mainpage is not needed in such case.
     def run( self, details, files ):
         """
             Checks if package has documentation in either of the following locations:
-            src/<PackageName>.h
-            src/documentation.h
-            doc/documentation.h
-            doc/Mainpage.md
-            ./README.md
+              * src/<PackageName>.h
+              * src/documentation.h
+              * doc/documentation.h
+              * doc/Mainpage.md
+              * ./README.md
         """
         if details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
