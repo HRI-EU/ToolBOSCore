@@ -2627,7 +2627,8 @@ the package contains, and if it might be of interest for them.
 Basic documentation can also programmatically be searched for keywords, e.g.
 in case you don't precisely remember the name of a package anymore.
 
-Depending on the project type the documentation should be maintained under one of the following locations:
+Depending on the project type the documentation should be maintained under
+one of the following locations:
 
  <table>
  <tr>
@@ -2636,19 +2637,29 @@ Depending on the project type the documentation should be maintained under one o
  </tr>
  <tr>
  <td>C or C++</td>
- <td> <b>src/packageName.h</b> or src/documentation.h or doc/documentation.h or doc/Mainpage.dox or ./README.md</td>
+ <td><ul>
+     <li>src/packageName.h (recommended)</li>
+     <li>src/documentation.h</li>
+     <li>doc/documentation.h</li>
+     <li>doc/Mainpage.dox</li>
+     <li>./README.md</li>
+ </ul></td>
  </tr>
-  <tr>
+ <tr>
  <td>Python</td>
- <td> doc/documentation.h or ./README.md or doc/Mainpage.md</td>
+ <td><ul>
+     <li>doc/documentation.h</li>
+     <li>doc/Mainpage.md</li>
+     <li>./README.md</li>
+ </ul></td>
  </tr>
  <td>Open source</td>
- <td>./README.md</td>
+ <td><ul><li>./README.md</li></ul></td>
  </tr>
  </table>
 '''
 
-    goodExample = '''    
+    goodExample = '''
     * for C / C++ projects:*
     /*!
      * \mainpage
@@ -2676,8 +2687,12 @@ Hence a doxygen mainpage is not needed in such case.
 
     def run( self, details, files ):
         """
-            Checks if package has doxygen mainpage in either
-            src/<PackageName>.h or src/documentation.h or in the form of README.md
+            Checks if package has documentation in either of the following locations:
+            src/<PackageName>.h
+            src/documentation.h
+            doc/documentation.h
+            doc/Mainpage.md
+            ./README.md
         """
         if details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
@@ -2703,16 +2718,16 @@ Hence a doxygen mainpage is not needed in such case.
             docDir     = os.path.join( details.topLevelDir, 'doc' )
             srcDir     = os.path.join( details.topLevelDir, 'src' )
 
-            search     = 'mainpage'
             candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
-                           os.path.join( details.topLevelDir, 'README.md'),
                            os.path.join( srcDir, '__init__.py' ),
+                           os.path.join( srcDir, 'documentation.h' ),
+                           os.path.join( srcDir, details.packageName + '.h' ),
                            os.path.join( docDir, 'Mainpage.md' ),
                            os.path.join( docDir, 'Mainpage.dox' ),
                            os.path.join( docDir, 'documentation.h' ),
-                           os.path.join( srcDir, 'documentation.h' ),
-                           os.path.join( srcDir, details.packageName + '.h' ) )
+                           os.path.join( details.topLevelDir, 'README.md'),)
 
+            search     = 'mainpage'
             fileList = ( os.path.join( docDir, 'Mainpage.md' ),
                          os.path.join( docDir, 'Mainpage.dox' ),
                          os.path.join( docDir, 'documentation.h' ),
@@ -2720,7 +2735,7 @@ Hence a doxygen mainpage is not needed in such case.
                          os.path.join( srcDir, details.packageName + '.h' ) )
 
             for filePath in candidates:
-                logging.debug( 'looking for doxygen mainpage in: %s', filePath )
+                logging.debug( 'looking for documentation in: %s', filePath )
 
                 if os.path.exists( filePath ):
                     found = True
