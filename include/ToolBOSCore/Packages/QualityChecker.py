@@ -2666,11 +2666,12 @@ Hence a doxygen mainpage is not needed in such case.
     def run( self, details, files ):
         """
             Checks if package has documentation in either of the following locations:
+              * ./README.md
               * src/<PackageName>.h
               * src/documentation.h
               * doc/documentation.h
               * doc/Mainpage.md
-              * ./README.md
+              * doc/html/index.html
         """
         if details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
@@ -2703,6 +2704,7 @@ Hence a doxygen mainpage is not needed in such case.
                            os.path.join( docDir, 'Mainpage.md' ),
                            os.path.join( docDir, 'Mainpage.dox' ),
                            os.path.join( docDir, 'documentation.h' ),
+                           os.path.join( docDir, 'html', 'index.html' ),
                            os.path.join( details.topLevelDir, 'README.md'),)
 
             search     = 'mainpage'
