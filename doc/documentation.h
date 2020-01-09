@@ -2979,7 +2979,7 @@ make install
  *      <td><tt>sqLevel</tt></td>
  *      <td>string</td>
  *      <td>targeted SQ level, e.g. 'advanced',
- *          see \ref ToolBOSCore.Packages.QualityChecker.sqLevelNames </td>
+ *          see \ref ToolBOSCore.SoftwareQuality.Common.sqLevelNames </td>
  * </tr>
  * <tr>
  *      <td><tt>sqOptInRules</tt></td>
