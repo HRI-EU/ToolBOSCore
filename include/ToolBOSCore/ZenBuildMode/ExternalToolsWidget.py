@@ -40,7 +40,7 @@ import logging
 from PyQt5.QtCore    import QSize, Qt
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.ZenBuildMode import QualityCheckerDialog, QtPackageModel,\
+from ToolBOSCore.ZenBuildMode import CheckRoutineDialog, QtPackageModel,\
                                      SettingsDialog, UpdateDialog
 from ToolBOSCore.GenericGUI   import BusyWaitDialog, \
                                      IconProvider, PixmapProvider, \
@@ -146,7 +146,7 @@ class ExternalToolsWidget( QWidget, object ):
                 self._busyDialog.close()
                 self._busyDialog = None
 
-            self._sqDialog = QualityCheckerDialog.QualityCheckerDialog( self.model, self.parent )
+            self._sqDialog = CheckRoutineDialog.CheckRoutineDialog( self.model, self.parent )
             self._sqDialog.show()
         else:
             self.model.sqCheckPrepared.connect( self._onSoftwareQualityDialogPressed )

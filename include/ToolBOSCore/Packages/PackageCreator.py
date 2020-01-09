@@ -897,7 +897,7 @@ class PackageCreator_Quality_Guideline( PackageCreator ):
 
 
     def run( self ):
-        from ToolBOSCore.Packages import QualityChecker as SQ
+        from ToolBOSCore.SoftwareQuality import Common, Rules
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Intranet'
@@ -913,7 +913,7 @@ class PackageCreator_Quality_Guideline( PackageCreator ):
 
         # fill 'values' with content from actual SQ rules
 
-        rules = SQ.getCheckersAvailable()
+        rules = Rules.getRules()
 
         ruleIDs        = []
         level_cleanLab = []
@@ -947,13 +947,13 @@ class PackageCreator_Quality_Guideline( PackageCreator ):
         self.values[ 'level_advanced'    ] = level_advanced
         self.values[ 'level_safety'      ] = level_safety
 
-        self.values[ 'sectionKeys'       ] = SQ.sectionKeys
-        self.values[ 'sectionNames'      ] = SQ.sectionNames
-        self.values[ 'sectionObjectives' ] = SQ.sectionObjectives
-        self.values[ 'sqLevelDefault'    ] = SQ.sqLevelDefault
-        self.values[ 'sqLevelNames'      ] = SQ.sqLevelNames
-        self.values[ 'sqLevels'          ] = SQ.sqLevels
-        self.values[ 'rules'             ] = SQ.getCheckersAvailable()
+        self.values[ 'sectionKeys'       ] = Common.sectionKeys
+        self.values[ 'sectionNames'      ] = Common.sectionNames
+        self.values[ 'sectionObjectives' ] = Common.sectionObjectives
+        self.values[ 'sqLevelDefault'    ] = Common.sqLevelDefault
+        self.values[ 'sqLevelNames'      ] = Common.sqLevelNames
+        self.values[ 'sqLevels'          ] = Common.sqLevels
+        self.values[ 'rules'             ] = Rules.getRules()
         self.values[ 'ruleIDs'           ] = ruleIDs
 
         self.values[ 'documentationURL_dir' ] = ToolBOSSettings.getConfigOption( 'documentationURL_dir' )

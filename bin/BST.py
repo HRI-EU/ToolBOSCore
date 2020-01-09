@@ -122,10 +122,10 @@ def _createPackage( args ):
             return False
 
 
-def _parseSqArgs( qr, argv ):
-    from ToolBOSCore.Packages import QualityChecker
+def _parseSqArgs( cr, argv ):
+    from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
 
-    Any.requireIsInstance( qr, QualityChecker.QualityCheckerRoutine )
+    Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
     Any.requireIsList( argv )
 
     try:
@@ -135,7 +135,7 @@ def _parseSqArgs( qr, argv ):
         pass
 
 
-    ruleIDs    = QualityChecker.getRuleIDs()
+    ruleIDs    = Rules.getRuleIDs()
     forceDirs  = set()
     forceFiles = set()
     forceRules = []
@@ -159,13 +159,13 @@ def _parseSqArgs( qr, argv ):
             raise ValueError( msg )
 
     if forceDirs:
-        qr.setDirs( forceDirs )
+        cr.setDirs( forceDirs )
 
     if forceFiles:
-        qr.setFiles( forceRules )
+        cr.setFiles( forceRules )
 
     if forceRules:
-        qr.setRulesToRun( forceRules )
+        cr.setRulesToRun( forceRules )
 
 
 def _showAvailableTemplates():
@@ -553,7 +553,7 @@ try:
 
 
     if quality:
-        from ToolBOSCore.Packages.QualityChecker import QualityCheckerRoutine
+        from ToolBOSCore.SoftwareQuality import CheckRoutine
 
         sqArgs = unhandled
 
@@ -563,18 +563,18 @@ try:
         except ValueError:
             pass
 
-        qr = QualityCheckerRoutine()
+        cr = CheckRoutine.CheckRoutine()
 
         if unhandled:
-            _parseSqArgs( qr, unhandled )
-            qr.setUseOptFlags( False )
-            qr.run()
+            _parseSqArgs( cr, unhandled )
+            cr.setUseOptFlags( False )
+            cr.run()
         else:
-            qr.setUseOptFlags( True )
-            qr.run()
-            qr.showReport()
+            cr.setUseOptFlags( True )
+            cr.run()
+            cr.showReport()
 
-        if qr.overallResult() is not True:
+        if cr.overallResult() is not True:
             sys.exit( -5 )
 
 

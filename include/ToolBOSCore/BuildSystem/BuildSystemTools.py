@@ -227,12 +227,12 @@ class BuildSystemTools( object ):
             and/or a list of files to consider.
             The default is to run all checkers on all files of the package.
         """
-        from ToolBOSCore.Packages.QualityChecker import QualityCheckerRoutine
+        from ToolBOSCore.SoftwareQuality.CheckRoutine import CheckRoutine
 
-        qr = QualityCheckerRoutine()
-        qr.run()
+        cr = CheckRoutine()
+        cr.run()
 
-        return qr.overallResult()
+        return cr.overallResult()
 
 
     def runUnittest( self ):
