@@ -319,6 +319,10 @@ class AppConfig( object ):
             elif filePath is self._defaultFile:
                 self._defaultSettings = fileSettings
 
+            else:
+                logging.debug( 'merging default settings from: %s', filePath )
+                self._defaultSettings.update( fileSettings )
+
 
         Any.requireIsDictNonEmpty( self._allSettings )
 
