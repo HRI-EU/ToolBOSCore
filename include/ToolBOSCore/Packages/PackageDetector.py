@@ -280,6 +280,13 @@ class PackageDetector( object ) :
             return False
 
 
+    def isCppPackage( self ):
+        """
+            Returns True if package contains C++ code in source directory.
+        """
+        return self._hasSourceFiles( '.cpp' )
+
+
     def isMatlabPackage( self ):
         return self._hasSourceFiles( '.m' )
 

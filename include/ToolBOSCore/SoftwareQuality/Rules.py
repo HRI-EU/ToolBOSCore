@@ -828,6 +828,11 @@ Without these macros the code will not link in C++ context.'''
         platform = getHostPlatform()
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
 
+        if details.isCppPackage():
+            result = ( OK, passed, failed,
+                       'C++ package does not need linkage guards' )
+            return result
+
         try:
 
             for filePath in files:
