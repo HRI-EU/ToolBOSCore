@@ -829,7 +829,7 @@ Without these macros the code will not link in C++ context.'''
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
 
         if details.isCppPackage():
-            result = ( OK, passed, failed,
+            result = ( NOT_APPLICABLE, passed, failed,
                        'C++ package does not need linkage guards' )
             return result
 
@@ -839,15 +839,6 @@ Without these macros the code will not link in C++ context.'''
                 fname, fext = os.path.splitext( filePath )
 
                 if fext == '.h' and not filePath.startswith( binDir ):
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    # Is this check enough?
-                    if not parser.functions:
-                        logging.debug( 'Skipping file "%s" as it looks like a C++ only header file.', filePath )
-                        continue
 
                     contents = FastScript.getFileContent( filePath )
                     found    = False
