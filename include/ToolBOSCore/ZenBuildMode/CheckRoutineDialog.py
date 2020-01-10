@@ -52,21 +52,21 @@ from PyQt5.QtWidgets import *
 
 from six import StringIO
 
-from ToolBOSCore.GenericGUI import IconProvider
-from ToolBOSCore.Packages   import QualityChecker
-from ToolBOSCore.Util       import Any
+from ToolBOSCore.GenericGUI      import IconProvider
+from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
+from ToolBOSCore.Util            import Any
 
 
-class QualityCheckerDialog( QDialog, object ):
+class CheckRoutineDialog( QDialog, object ):
 
     def __init__( self, model, parent=None ):
-        super( QualityCheckerDialog, self ).__init__( parent )
+        super( CheckRoutineDialog, self ).__init__( parent )
 
         self.installEventFilter( self )
 
         self._model             = model
         self._logOutput         = StringIO()
-        self._allRules          = QualityChecker.getCheckersAvailable()
+        self._allRules          = Rules.getRules()
         self._allRulesDict      = {}
         self._checkSelected     = False
         self._checkBoxes        = {}
@@ -84,14 +84,14 @@ class QualityCheckerDialog( QDialog, object ):
         self._desiredLevelCombo = QComboBox()
         self._windowTitle       = 'Software Quality settings'
 
-        QualityChecker.addStreamLogger( self._logOutput )
+        CheckRoutine.addStreamLogger( self._logOutput )
 
-        for level in QualityChecker.sqLevelNames:
-            text  = QualityChecker.sqLevels[ level ]
+        for level in CheckRoutine.sqLevelNames:
+            text  = CheckRoutine.sqLevels[ level ]
             self._desiredLevelCombo.addItem( text, level )
 
-        self._defaultLevel = QualityChecker.sqLevelDefault
-        self._defaultIndex = QualityChecker.sqLevelNames.index( self._defaultLevel )
+        self._defaultLevel = CheckRoutine.sqLevelDefault
+        self._defaultIndex = CheckRoutine.sqLevelNames.index( self._defaultLevel )
         self._desiredLevelCombo.setCurrentIndex( self._model.getSQLevelIndex() )
 
         # do this only once after all entries have been added, otherwise each
@@ -110,7 +110,7 @@ class QualityCheckerDialog( QDialog, object ):
         columns = ( 'rule', 'description', 'required', 'verify', 'result', 'comments' )
         self._table = QTableWidget()
         self._table.setRowCount( len( self._allRules ) +
-                                 len( QualityChecker.sectionKeys ) )
+                                 len( CheckRoutine.sectionKeys ) )
         self._table.setColumnCount( len(columns) )
         self._table.setHorizontalHeaderLabels( columns )
         self._table.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding )
@@ -144,10 +144,10 @@ class QualityCheckerDialog( QDialog, object ):
             if key != prevKey:
                 prevKey = key
 
-                sectionName = QualityChecker.sectionNames[ key ]
+                sectionName = CheckRoutine.sectionNames[ key ]
                 Any.requireIsTextNonEmpty( sectionName )
 
-                sectionObjective = QualityChecker.sectionObjectives[ key ]
+                sectionObjective = CheckRoutine.sectionObjectives[ key ]
                 Any.requireIsTextNonEmpty( sectionObjective )
 
                 text = '<h2>%s</h2><i>Objective: %s</i>' % ( sectionName,
@@ -369,19 +369,19 @@ class QualityCheckerDialog( QDialog, object ):
         result = thread.result
 
         if result is None:                       # checker not implemented
-            status  = QualityChecker.NOT_AVAILABLE
+            status  = CheckRoutine.NOT_IMPLEMENTED
             message = 'not implemented'
         else:
             status       = result[0]
             message      = result[3]
 
         widget = self._resultWidgets[ ruleID ]
-        widget.setText( self._composeSummaryText( status == QualityChecker.OK,
+        widget.setText( self._composeSummaryText( status == CheckRoutine.OK,
                                                   message, ruleID ) )
 
-        if status == QualityChecker.OK:
+        if status == CheckRoutine.OK:
             color = QColor( 220, 255, 220 )                         # green
-        elif status == QualityChecker.FAILED:
+        elif status == CheckRoutine.FAILED:
             color = QColor( 255, 120, 120 )                         # red
         else:
             color = QColor( 240, 240, 240 )                         # grey
@@ -492,7 +492,7 @@ class QualityCheckerDialog( QDialog, object ):
         Any.requireIsInt( index )
         self._desiredLevelIndex = index
 
-        name = QualityChecker.sqLevelNames[ index ]
+        name = CheckRoutine.sqLevelNames[ index ]
         Any.requireIsTextNonEmpty( name )
         self._desiredLevelName = name
 
@@ -570,7 +570,7 @@ class QualityCheckerDialog( QDialog, object ):
         text = self._desiredLevelCombo.currentText()
         Any.requireIsTextNonEmpty( text )
 
-        sqLevel = QualityChecker.sqLevelNames[ index ]
+        sqLevel = CheckRoutine.sqLevelNames[ index ]
         Any.requireIsTextNonEmpty( sqLevel )
 
         logging.debug( 'changed desired level to level=%s ("%s")',
@@ -648,8 +648,9 @@ class QualityCheckerDialog( QDialog, object ):
 
         def run( self ):
             logging.debug( 'executing rule checker' )
-            self.result = self._model.runSQCheck( self._rule )
-            logging.debug( 'rule checker finished' )
+            if hasattr( self._rule, 'run' ):
+                self.result = self._model.runSQCheck( self._rule )
+                logging.debug( 'rule checker finished' )
 
 
 # EOF

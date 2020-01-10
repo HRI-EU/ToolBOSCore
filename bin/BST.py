@@ -122,6 +122,52 @@ def _createPackage( args ):
             return False
 
 
+def _parseSqArgs( cr, argv ):
+    from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
+
+    Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
+    Any.requireIsList( argv )
+
+    try:
+        # ensure that script-name does not appear in this list
+        argv.remove( sys.argv[0] )
+    except ValueError:
+        pass
+
+
+    ruleIDs    = Rules.getRuleIDs()
+    forceDirs  = set()
+    forceFiles = set()
+    forceRules = []
+
+    for arg in argv:
+
+        if arg in ruleIDs:
+            logging.debug( 'requested checking rule ID: %s', arg )
+            forceRules.append( arg )
+
+        elif os.path.isdir( arg ):
+            logging.debug( 'requested checking directory: %s', arg )
+            forceDirs.add( os.path.abspath( arg ) )
+
+        elif os.path.exists( arg ):
+            logging.debug( 'requested checking file: %s', arg )
+            forceFiles.add( os.path.abspath( arg ) )
+
+        else:
+            msg = '%s: No such file or directory, or rule ID' % arg
+            raise ValueError( msg )
+
+    if forceDirs:
+        cr.setDirs( forceDirs )
+
+    if forceFiles:
+        cr.setFiles( forceRules )
+
+    if forceRules:
+        cr.setRulesToRun( forceRules )
+
+
 def _showAvailableTemplates():
     """
         Lists all available templates on the console.
@@ -507,19 +553,28 @@ try:
 
 
     if quality:
-        from ToolBOSCore.Packages.QualityChecker import QualityCheckerRoutine
+        from ToolBOSCore.SoftwareQuality import CheckRoutine
 
-        enabled = unhandled
+        sqArgs = unhandled
 
         try:
             # ensure that script-name does not appear in this list
-            enabled.remove( sys.argv[0] )
+            sqArgs.remove( sys.argv[0] )
         except ValueError:
             pass
 
-        showReport = enabled == []  # show report if user did not specify anything
+        cr = CheckRoutine.CheckRoutine()
 
-        if not QualityCheckerRoutine( enabled=enabled ).run( showReport ):
+        if unhandled:
+            _parseSqArgs( cr, unhandled )
+            cr.setUseOptFlags( False )
+            cr.run()
+        else:
+            cr.setUseOptFlags( True )
+            cr.run()
+            cr.showReport()
+
+        if cr.overallResult() is not True:
             sys.exit( -5 )
 
 
