@@ -1660,7 +1660,20 @@ warnings of any sort.'''
     description = '''**Valgrind** is a tool which runs an executable and
 during this searches for memory leaks and other issues with memory management.
 
-No issues shall be found during execution of unittests.'''
+No issues shall be found during execution of unittests.
+
+The check function for this rule invokes Valgrind on all executables listed
+in the sqCheckExe variable in pkgInfo.py, e.g.:
+
+    sqCheckExe = [ 'test/${MAKEFILE_PLATFORM}/main',
+                   'test/${MAKEFILE_PLATFORM}/main foo --bar' ]
+
+Please specify a list of commands, including arguments (if any), that
+shall be analyzed by the check routine.
+
+The paths to the executables are interpreted as relative to the package root.
+
+Specify an empty list if really nothing has to be executed.'''
 
     seeAlso     = { 'Valgrind HowTo':
                     'ToolBOS_HowTo_Debugging_Memory',
@@ -1669,6 +1682,190 @@ No issues shall be found during execution of unittests.'''
                     'http://www.valgrind.org' }
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
+
+    def run( self, details, files ):
+        """
+            Check for memory leaks.
+        """
+        if details.hasMainProgram( files ):
+            logging.info( 'main program(s) found' )
+
+            # look-up executables test/<platform>/ directory
+            testFiles = self._getTestFiles( details )
+            logging.debug( 'executable(s) found in %s directory: %s',
+                           details.testDirArch, testFiles )
+
+        else:
+            logging.info( 'no main program(s) found' )
+
+            logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
+            result = ( OK, 0, 0,
+                       'check not applicable' )
+
+            return result
+
+        # get SQ-settings from pkgInfo.py
+        sqSettings = self._getSQSettings( details )
+        logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+
+        if sqSettings is None:
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py (please see C15 docs)"
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        # verify that we have:
+        #     - one executable present for each setting (to check if compilation was forgotten)
+        #     - one setting is present for each executable (to check if developer was lazy ;-)
+
+        validityCheck = self._validityCheck( testFiles, sqSettings )
+
+        if validityCheck[0] == FAILED:
+            shortText = validityCheck[3]
+            logging.debug( shortText )
+
+            return validityCheck
+
+    # finally run Valgrind
+        runValgrindResult = self._runValgrind( sqSettings, details )
+
+        return runValgrindResult
+
+
+    def _getSQSettings( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        try:
+            sqSettingsTmp = details.sqCheckExe
+            Any.requireIsNotNone( sqSettingsTmp )
+            Any.requireIsList( sqSettingsTmp )
+
+            sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
+
+            return sqSettings
+
+        except ( IOError, ValueError, TypeError, OSError ) as e:
+            logging.error( e )
+            logging.error( 'issue with retrieving SQ settings from pkgInfo')
+
+            return None
+
+        except AssertionError:
+            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C15 docs)" )
+
+            return None
+
+
+    def _getTestFiles( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        testFilesTmp = FastScript.getFilesInDir( details.testDirArch )
+        Any.requireIsList( testFilesTmp )
+        testFiles = []
+
+        if not testFilesTmp:
+            logging.error( 'no executables found in %s, forgot to compile?',
+                           details.testDirArch )
+
+            return testFiles
+
+        platform = getHostPlatform()
+
+        for testFile in testFilesTmp:
+            tmp = os.path.join( 'test', platform, testFile )
+            testFiles.append(tmp)
+
+        return testFiles
+
+
+    def _validityCheck( self, testFiles, commandLines ):
+        Any.requireIsList( testFiles )
+        Any.requireIsList( commandLines )
+
+        commands = []
+
+        for cmdLine in commandLines:
+
+            tmp = shlex.split( cmdLine )
+            command = tmp[0]
+            commands.append( command )
+
+        # TODO: check matching
+
+        for command in commands:
+            if not os.path.exists( command ):
+                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'. "
+                               "Is the package compiled?", command )
+
+                result = ( FAILED, 0, 1,
+                           '%s specified in pkgInfo.py does not exist' % command )
+
+                return result
+
+        for testFile in testFiles:
+            if testFile not in commands:
+                logging.warning("%s executable was found. "
+                                "but no sqCheckExe setting was specified in pkgInfo.py", testFile)
+
+                result = ( FAILED, 0, 1,
+                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % testFile )
+
+                return result
+
+        return OK, 0, 0, 'validity check paas'
+
+
+    def _runValgrind( self, commandLines, details ):
+        passedExecutables = 0
+        failedExecutables = 0
+        errorMessages     = []
+
+        for command in commandLines:
+
+            logging.info( "C15: checking '%s'", command )
+
+            if Any.getDebugLevel() <= 3:
+                stdout = VersionCompat.StringIO()
+                stderr = VersionCompat.StringIO()
+            else:
+                stdout = None
+                stderr = None
+
+            try:
+                failed, errors = Valgrind.checkExecutable( command, details,
+                                                           stdout=stdout, stderr=stderr )
+            except subprocess.CalledProcessError as e:
+                failed = True
+                errors = []
+
+            if failed:
+                failedExecutables += 1
+
+                for error in errors:
+                    errorMessages.append( 'C15: %s:%s - %s'
+                                          % ( error.fname, error.lineno, error.description ) )
+
+                logging.info( "C15: '%s' failed (see verbose-mode for details)", command )
+
+            else:
+                passedExecutables += 1
+                logging.info( "C15: '%s successfully finished", command )
+
+        for error in errorMessages:
+            logging.error( error )
+
+        if not passedExecutables and not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no executables were checked with Valgrind' )
+        elif not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no defects found by Valgrind' )
+        else:
+            result = ( FAILED, passedExecutables, failedExecutables,
+                       'Valgrind found %d defect%s' % ( failedExecutables,
+                                                        's' if failedExecutables > 1 else '' ) )
+
+        return result
 
 
 class QualityRule_PY01( AbstractQualityRule ):
