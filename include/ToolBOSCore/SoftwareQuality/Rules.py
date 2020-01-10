@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Checker functions for the HRI-EU Software Quality Guideline 2.0
+#  Rules and related check functions of Software Quality Guideline
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,8 +34,6 @@
 #
 
 
-from __future__ import print_function
-
 import ast
 import copy
 import collections
@@ -55,6 +53,7 @@ from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
 from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
+from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
@@ -62,448 +61,7 @@ from ToolBOSCore.Util                             import Any, FastScript, \
                                                          VersionCompat
 
 
-OK                = 'OK'
-FAILED            = 'FAILED'
-DISABLED          = 'disabled'
-NOT_APPLICABLE    = 'not applicable'
-NOT_IMPLEMENTED   = 'not implemented'
-NOT_REQUIRED      = 'not required'
-
-# do not use (frozen)set for sqLevelNames, to preserve a kind of "order"
-# even though the levels are independent and not based upon each other
-sqLevelNames      = [ 'cleanLab', 'basic', 'advanced', 'safety' ]
-
-sqLevels          = { 'cleanLab': 'clean-lab standard (essentials only)',
-                      'basic'   : 'basic set (HRI-EU standard)',
-                      'advanced': 'advanced set',
-                      'safety'  : 'safety-critical applications' }
-
-sqLevelDefault    = 'basic'
-
-sectionKeys       = [ 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE', 'SPEC' ]
-
-sectionNames      = { 'GEN' : 'General',
-                      'C'   : 'C and C++',
-                      'PY'  : 'Python',
-                      'MAT' : 'Matlab',
-                      'DOC' : 'Documentation',
-                      'SAFE': 'Safety-critical applications',
-                      'SPEC': 'Specific requirements' }
-
-sectionObjectives = { 'GEN' : 'Maintainability, compatibility',
-                      'C'   : 'Maintainability, compatibility',
-                      'PY'  : 'Maintainability, compatibility',
-                      'MAT' : 'Maintainability',
-                      'DOC' : 'User experience',
-                      'SAFE': 'Safety',
-                      'SPEC': 'Safety, portability' }
-
 C_CPP_FILE_EXTENSIONS = ( '.c', '.cpp', '.h', '.hpp' )
-
-
-class QualityCheckerRoutine( object ):
-
-    def __init__( self, projectRoot=None, details=None, enabled=None ):
-        """
-            Creates a QualityChecker instance for the package within the
-            current working directory.
-
-            Alternatively 'projectRoot' may be specified to point to any
-            other top-level directory of a source package.
-
-            If a PackageDetector instance is already at hand it can be
-            provided here to speed-up the things. In such case its
-            retrieveMakefileInfo() and retrieveVCSInfo() must have already
-            been called.
-
-            'enabled' might be a special list containing any of mixture:
-                a) files / directories to check only
-                b) rule ID's to run only
-
-            This list is intended to limit the check operations onto a
-            dedicated number of files / directories / rule IDs, e.g.:
-
-                enabled = [ 'SPEC-01', 'SPEC-02', 'SPEC-03',
-                            'src/ModuleA', 'src/ModuleB/Foo.c' ]
-        """
-        if details:
-            Any.requireIsInstance( details, PackageDetector )
-            self.details = details
-        else:
-            BuildSystemTools.requireTopLevelDir( projectRoot )
-
-            try:
-                self.details = PackageDetector( projectRoot )
-            except AssertionError as details:
-                raise AssertionError( details )
-
-            self.details.retrieveMakefileInfo()
-            self.details.retrieveVCSInfo()
-
-
-        logging.info( 'analyzing package... (this may take some time)' )
-
-        self.files             = set()
-        self.checkersAvailable = list()
-        self.checkersEnabled   = list()
-
-        self._excludePattern   = re.compile( '(build|external|klocwork|precompiled|sources|.svn)' )
-        self._extWhitelist     = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
-                                              '.py', '.java', '.m' ] )
-
-        if not enabled:
-            logging.debug( 'auto-detecting checkers to be executed' )
-            self._detectCheckers( self.checkersAvailable )
-        else:
-            logging.debug( 'enabled checkers: %s', enabled )
-            self._detectCheckers( enabled )
-
-
-        self._detectFiles( enabled )
-
-
-    def run( self, showReport=False ):
-        """
-            Executes all check routines in a sequence, and prints a short
-            report if desired.
-
-            The user may customize the checks to run via pkgInfo.py file.
-        """
-        Any.requireIsBool( showReport )
-
-        Any.requireMsg( self.details.canonicalPath,
-                        'unable to detect package category, scan failed' )
-
-        results       = {}
-        overallResult = True
-
-        for ruleTuple in self.checkersAvailable:
-            logging.info( '' )
-
-            ( ruleID, rule )  = ruleTuple
-            result            = self._runChecker( ruleTuple )
-            results[ ruleID ] = result
-
-            if result[0] is FAILED:
-                overallResult = False
-
-        if showReport:
-            logging.info( '' )
-            self._showReport( results, overallResult )
-
-        return overallResult
-
-
-    def _detectCheckers( self, argv ):
-        """
-            Determine the list of checkers to be executed.
-        """
-        all_dict      = {}
-        all_list      = getCheckersAvailable()
-        ruleIDs       = []
-        sqLevel       = self.details.sqLevel
-        sqOptInRules  = self.details.sqOptInRules
-        sqOptOutRules = self.details.sqOptOutRules
-
-        self.checkersAvailable = all_list
-
-        if sqLevel is None:                      # value not set in pkgInfo.py
-            sqLevel = 'basic'
-
-        Any.requireMsg( sqLevel in sqLevelNames,
-                        '"%s": Unknown software quality level defined in pkgInfo.py' % \
-                        sqLevel )
-
-        for key, value in getCheckersAvailable():
-            all_dict[ key ] = value
-
-
-        # user might have specified particular checker(s) to run
-        if argv:
-            for item in argv:
-                # search for strings matching rule ID
-                if item in all_dict.keys():
-                    self.checkersEnabled.append( ( item, all_dict[item] ) )
-
-        # if no matching string found then fallback to run all
-
-        if not self.checkersEnabled:
-
-            # user did not specify to run a particular checker,
-            # default to all (+/- opt-in/out ones, minus not implemented ones)
-
-            self.checkersEnabled = []
-            for ruleTuple in copy.copy( all_list ):
-
-                ( ruleID, rule ) = ruleTuple
-                ruleIDs.append( ruleID )
-
-                if rule.sqLevel is None:
-                    logging.debug( '%6s: rule was removed', ruleID )
-                    self.checkersAvailable.remove( ruleTuple )
-
-                elif not hasattr( rule, 'run' ):
-                    logging.debug( '%6s: not implemented', ruleID )
-                    self.checkersAvailable.remove( ruleTuple )
-
-                elif ruleID in sqOptInRules:
-                    logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
-                    self.checkersEnabled.append( (ruleID, rule) )
-
-                elif ruleID in sqOptOutRules:
-                    logging.debug( '%6s: disabled (opt-out via pkgInfo.py)', ruleID )
-
-                elif sqLevel not in rule.sqLevel:
-                    logging.debug( "%6s: not checked (not required at level='%s')", ruleID, sqLevel )
-
-                elif ruleID not in sqOptOutRules[:]:
-                    self.checkersEnabled.append( (ruleID, rule) )
-                    logging.debug( "%6s: enabled in level='%s'", ruleID, sqLevel )
-
-                else:
-                    raise ValueError( 'unexpected case' )
-
-
-    def _detectFiles( self, argv ):
-        """
-            Determine the list of files to be processed in the following
-            order:
-
-               * provided 'argv' array (list of strings)
-               * settings in pkgInfo.py
-               * auto-detect (fallback)
-        """
-        found = False
-
-        if argv:
-            found = self._addFilesFromArgv( argv )
-
-        if not found:
-            found = self._addFilesFromPkgInfo()
-
-        if not found:
-            self._addFilesFromPackage()
-
-        # at least the final auto-detection must have returned 'True'
-
-        # 2016-01-07  Marcus Stein
-        #
-        # No, in case of VirtualModule-packages there is no content
-        # that would be automatically detected, because it is
-        # generated at install time. Skip this check here.
-
-        # Any.requireMsg( found, 'script error' )
-
-        # apply opt-out settings
-        self._removeFilesFromPkgInfo()
-
-
-    def _addFilesFromArgv( self, argv ):
-        """
-            Checks each token specified on commandline (provided as array
-            of strings) if it is about a file or directory.
-
-            Returns a boolean whether or not files/directories have been
-            found.
-        """
-        cwd    = os.getcwd()
-        result = False
-
-        for item in argv:
-
-            if not os.path.isabs( item ):
-                item = os.path.join( cwd, item )
-
-            if os.path.isfile( item ):
-                self._addFile( item )
-
-            elif os.path.isdir( item ):
-                logging.debug( 'found dir: %s', item )
-
-                for filePath in FastScript.getFilesInDirRecursive( item,
-                                                                   self._excludePattern ):
-
-                    # only consider whitelisted extensions, f.i. do not analyze
-                    # binaries, bytecode files, PDFs etc.
-                    fileExt = os.path.splitext( filePath )[-1]
-
-                    if fileExt in self._extWhitelist:
-                        self._addFile( filePath )
-                        result = True
-
-        return result
-
-
-    def _addFilesFromPkgInfo( self ):
-        """
-            Sets the list of files/directories to be processed from settings
-            in pkgInfo.py.
-
-            Returns a boolean whether or not settings have been found there.
-        """
-        result = False
-
-        for filePath in self.details.sqOptInFiles:
-            self._addFile( filePath )
-            result = True
-
-        for dirPath in self.details.sqOptInDirs:
-            Any.requireIsDir( dirPath )
-
-            for filePath in FastScript.getFilesInDirRecursive( dirPath,
-                                                               self._excludePattern ):
-
-                # only consider whitelisted extensions, f.i. do not analyze
-                # binaries, bytecode files, PDFs etc.
-                fileExt = os.path.splitext( filePath )[-1]
-
-                if fileExt in self._extWhitelist:
-                    self._addFile( filePath )
-                    result = True
-
-        return result
-
-
-    def _addFilesFromPackage( self ):
-        """
-            Scans the entire package and auto-detects files to be analyzed.
-        """
-        searchPath = self.details.topLevelDir
-        result     = False
-
-        for filePath in FastScript.getFilesInDirRecursive( searchPath,
-                                                           self._excludePattern ):
-
-            # only consider whitelisted extensions, f.i. do not analyze
-            # binaries, bytecode files, PDFs etc.
-            fileExt = os.path.splitext( filePath )[-1]
-
-            if fileExt in self._extWhitelist:
-                if not os.path.islink( filePath ):
-                    self._addFile( filePath )
-                    result = True
-
-        return result
-
-
-    def _addFile( self, filePath ):
-        self.files.add( filePath )
-
-
-    def _removeFilesFromPkgInfo( self ):
-        """
-            Removes certain files/directories from being processed based
-            upon settings in pkgInfo.py.
-        """
-        for filePath in self.details.sqOptOutFiles:
-            self._removeFile( filePath )
-
-
-        for dirPath in self.details.sqOptOutDirs:
-            if os.path.isdir( dirPath ):
-
-                for filePath in FastScript.getFilesInDirRecursive( dirPath ):
-                    self._removeFile( filePath )
-
-            else:
-
-                logging.warning( 'invalid SQ setting in pkgInfo.py: %s: No such directory',
-                               dirPath )
-
-
-    def _removeFile( self, filePath ):
-        absPath = os.path.join( self.details.topLevelDir, filePath )
-
-        try:
-            self.files.remove( absPath )
-        except KeyError:
-            pass
-
-
-    def _runChecker( self, ruleTuple ):
-        Any.requireIsTuple( ruleTuple )
-
-        ( ruleID, rule ) = ruleTuple
-
-        if ruleTuple in self.checkersEnabled:
-
-            logging.info( 'checking rule: %s', ruleID )
-
-            result = rule.run( self.details, self.files )
-
-            status = result[0]
-            msg    = result[3]
-            logging.info( msg )
-            logging.info( 'checking rule: %s → %s', ruleID, status )
-
-        else:
-
-            if ruleID in self.details.sqOptOutRules:
-                status = DISABLED
-                msg    = 'explicitly disabled via pkgInfo.py'
-
-            elif ruleID not in self.checkersEnabled:
-                status = NOT_REQUIRED
-                msg    = "not required in level='%s'" % self.details.sqLevel
-
-            elif not hasattr( rule, 'run' ):
-                status = NOT_IMPLEMENTED
-                msg    = NOT_IMPLEMENTED
-
-            else:
-                raise ValueError( 'unexpected case' )
-
-            logging.info( 'skipping rule: %s → %s', ruleID, msg )
-
-            result = ( status, 0, 0, msg )
-
-        Any.requireIsTuple( result )
-        return result
-
-
-    def _showReport( self, results, overallResult ):
-        Any.requireIsDictNonEmpty( results )
-        Any.requireIsBool( overallResult )
-
-        logging.info( '' )
-        logging.info( 'results for %s:', self.details.canonicalPath )
-        logging.info( '' )
-
-        # "ruleID" is a string (e.g. C-01), "rule" is the instance to work with
-        for ( ruleID, rule ) in self.checkersAvailable:
-
-            ( status, passed, failed, shortText ) = results[ ruleID ]
-
-            total = passed + failed
-
-            if status is OK or status is FAILED:
-                displayStatus = status
-
-                try:
-                    percent = float(passed) / float(total) * 100
-                except ZeroDivisionError:
-                    # Devision by zero can only happen in case the total number
-                    # is zero, f.i. the check did not apply to any file.
-                    # Set percentage to 100% in this case == success.
-                    percent = 100
-
-                percentage = '%3d%%' % percent
-
-            else:
-                # in case of 'not implemented/required' do not display any
-                # arbitrary number like 0% or 100% (does not make sense)
-
-                displayStatus = ''
-                percentage    = ''
-
-            logging.info( '%6s | %4s | %6s | %s', ruleID, percentage,
-                          displayStatus.ljust(6), shortText )
-
-        logging.info( '' )
-
-        if overallResult is True:
-            logging.info( 'EXCELLENT!!! :-)' )
-            logging.info( '' )
 
 
 class AbstractQualityRule( object ):
@@ -577,7 +135,6 @@ Other languages such as German or Japanese should be avoided.'''
                        'files with Non-ASCII characters found' )
 
         return result
-
 
 
 class QualityRule_GEN02( AbstractQualityRule ):
@@ -1272,21 +829,17 @@ Without these macros the code will not link in C++ context.'''
         platform = getHostPlatform()
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
 
+        if details.isCppPackage():
+            result = ( NOT_APPLICABLE, passed, failed,
+                       'C++ package does not need linkage guards' )
+            return result
+
         try:
 
             for filePath in files:
                 fname, fext = os.path.splitext( filePath )
 
                 if fext == '.h' and not filePath.startswith( binDir ):
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    # Is this check enough?
-                    if not parser.functions:
-                        logging.debug( 'Skipping file "%s" as it looks like a C++ only header file.', filePath )
-                        continue
 
                     contents = FastScript.getFileContent( filePath )
                     found    = False
@@ -2244,8 +1797,8 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
 
 class QualityRule_PY04( AbstractQualityRule ):
 
-    brief       = '''Prefer throwing exceptions over sys.exit() within the
-code.'''
+    brief       = '''Prefer throwing exceptions over sys.exit(), os.exit()
+                     and os._exit() within the code.'''
 
     description = '''As a rule of thumb, Python functions should hardly
 directly terminate the application. Prefer throwing an exception
@@ -2282,7 +1835,10 @@ application, potentially causing data loss or inconsistent states.'''
             self._name.clear()
 
         def visit_Attribute( self, node ):
-            if node.attr == 'exit' and node.value.id == 'sys':
+            if node.attr == 'exit' and node.value.id == 'sys' or \
+               node.attr == 'exit' and node.value.id == 'os' or \
+               node.attr == '_exit' and node.value.id == 'os':
+
                 self._name.appendleft( node.attr )
                 self._name.appendleft( node.value.id )
                 self.lineno = node.lineno
@@ -2303,7 +1859,7 @@ application, potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
-        logging.debug( "checking for calls to sys.exit()" )
+        logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
         passed    = 0
         failed    = 0
         syntaxErr = 0
@@ -2326,10 +1882,12 @@ application, potentially causing data loss or inconsistent states.'''
                 if not exitCalls:
                     passed += 1
                 else:
+                    # logging.info(exitCalls)
                     for call in exitCalls:
-                        logging.info( 'PY04: %s:%s: found sys.exit() call',
-                                      filePath, call[1] )
+                        logging.info( 'PY04: %s:%s: found %s() call',
+                                      filePath, call[1], call[0] )
                     failed += len( exitCalls )
+
 
 
         if syntaxErr:
@@ -2337,11 +1895,11 @@ application, potentially causing data loss or inconsistent states.'''
             status = FAILED
 
         elif failed:
-            msg    = 'found %d calls to sys.exit()' % failed
+            msg    = 'found %d exit() calls' % failed
             status = FAILED
 
         else:
-            msg    = 'no calls to sys.exit() found'
+            msg    = 'no exit() calls found'
             status = OK
 
         return status, passed, failed, msg
@@ -2568,9 +2126,20 @@ be briefly documented.'''
 the package contains, and if it might be of interest for them.
 
 Basic documentation can also programmatically be searched for keywords, e.g.
-in case you don't precisely remember the name of a package anymore.'''
+in case you don't precisely remember the name of a package anymore.
+
+Documentation should be maintained under one of the following locations:
+
+* ./README.md (recommended)
+* src/packageName.h
+* src/documentation.h
+* doc/documentation.h
+* doc/Mainpage.dox
+* doc/Mainpage.md
+'''
 
     goodExample = '''
+    * for C / C++ projects:*
     /*!
      * \mainpage
      *
@@ -2597,8 +2166,13 @@ Hence a doxygen mainpage is not needed in such case.
 
     def run( self, details, files ):
         """
-            Checks if package has doxygen mainpage in either
-            src/<PackageName>.h or src/documentation.h
+            Checks if package has documentation in either of the following locations:
+              * ./README.md
+              * src/<PackageName>.h
+              * src/documentation.h
+              * doc/documentation.h
+              * doc/Mainpage.md
+              * doc/html/index.html
         """
         if details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
@@ -2624,36 +2198,44 @@ Hence a doxygen mainpage is not needed in such case.
             docDir     = os.path.join( details.topLevelDir, 'doc' )
             srcDir     = os.path.join( details.topLevelDir, 'src' )
 
-            if details.isPythonPackage():
-                search     = '@mainpage'
-                candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
-                               os.path.join( srcDir, '__init__.py' ) )
+            candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
+                           os.path.join( srcDir, '__init__.py' ),
+                           os.path.join( srcDir, 'documentation.h' ),
+                           os.path.join( srcDir, details.packageName + '.h' ),
+                           os.path.join( docDir, 'Mainpage.md' ),
+                           os.path.join( docDir, 'Mainpage.dox' ),
+                           os.path.join( docDir, 'documentation.h' ),
+                           os.path.join( docDir, 'html', 'index.html' ),
+                           os.path.join( details.topLevelDir, 'README.md'),)
 
-            else:
-                search     = '\mainpage'
-                candidates = ( os.path.join( docDir, 'Mainpage.md' ),
-                               os.path.join( docDir, 'Mainpage.dox' ),
-                               os.path.join( srcDir, details.packageName + '.h' ),
-                               os.path.join( srcDir, 'documentation.h' ) )
-
+            search     = 'mainpage'
+            fileList = ( os.path.join( docDir, 'Mainpage.md' ),
+                         os.path.join( docDir, 'Mainpage.dox' ),
+                         os.path.join( docDir, 'documentation.h' ),
+                         os.path.join( srcDir, 'documentation.h' ),
+                         os.path.join( srcDir, details.packageName + '.h' ) )
 
             for filePath in candidates:
-                logging.debug( 'looking for doxygen mainpage in: %s', filePath )
+                logging.debug( 'looking for documentation in: %s', filePath )
 
                 if os.path.exists( filePath ):
-                    content = FastScript.getFileContent( filePath )
+                    found = True
+                    if filePath in fileList:
 
-                    if content.find( search ) != -1:
-                        logging.debug( '%s: mainpage section found', filePath )
-                        found = True
-                        break
-                    else:
-                        logging.debug( '%s: mainpage section not found', filePath )
+                        content = FastScript.getFileContent( filePath )
+
+                        if content.find( search ) != -1:
+                            logging.debug( '%s: mainpage section found', filePath )
+                            found = True
+                            break
+                        else:
+                            found = False
+                            logging.debug( '%s: mainpage section not found', filePath )
 
             if found:
-                result = ( OK, 1, 0, 'doxygen mainpage found' )
+                result = ( OK, 1, 0, 'documentation found' )
             else:
-                result = ( FAILED, 0, 1, 'doxygen mainpage not found' )
+                result = ( FAILED, 0, 1, 'documentation not found' )
 
         return result
 
@@ -3237,58 +2819,6 @@ applications.'''
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-def getCheckersAvailable():
-    """
-        Returns a list of available rules/checkers. Each item in the list
-        is a tuple of (ruleID,instance). The ruleID is a string, and the
-        instance is a ready-to-use QualityRule representing one particular
-        SW Quality Guideline rule.
-    """
-    # retrieve all classes defined within this Python module,
-    # and create instances
-
-    result = []
-    ctors  = {}
-    tmp    = inspect.getmembers( sys.modules[__name__], inspect.isclass )
-
-    for className, constructor in tmp:
-        if className.startswith( 'QualityRule_' ):
-            ctors[ className ] = constructor
-
-
-    # keep sorting as appears in SQ Guideline
-
-    for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
-                      'MT', 'SPEC' ):
-        for i in range(50):
-
-            ruleID = '%s%02d' % ( category, i )
-
-            try:
-                func = ctors[ 'QualityRule_%s' % ruleID ]
-                Any.requireIsCallable( func )
-                instance = func()
-                result.append( ( ruleID, instance ) )
-            except KeyError:
-                pass               # no such rule, or rule not implemented
-
-    return result
-
-
-def addStreamLogger( stream ):
-    """
-        By providing a file-like object the log messages of the checkers
-        can be captured. 'stream' could be a StringIO instance.
-    """
-    logFormatter = logging.Formatter( "%(message)s" )
-    logHandler   = logging.StreamHandler( stream )
-    logHandler.setFormatter( logFormatter )
-    logHandler.setLevel( logging.DEBUG )
-
-    rootLogger   = logging.getLogger()
-    rootLogger.addHandler( logHandler )
-
-
 def findNonAsciiCharacters( filePath, rule ):
     content = FastScript.getFileContent( filePath, splitLines=True )
     passed  = 0
@@ -3418,6 +2948,58 @@ def createCParser( filePath, details, headerAndLanguageMap ):
                     args=args + [ stdSwitch ],
                     includepaths=includePaths,
                     defines=cflagsList )
+
+
+def getRules():
+    """
+        Returns a list of available rules/checkers. Each item in the list
+        is a tuple of (ruleID,instance). The ruleID is a string, and the
+        instance is a ready-to-use QualityRule representing one particular
+        SW Quality Guideline rule.
+    """
+    # retrieve all classes defined within this Python module,
+    # and create instances
+
+    result = []
+    ctors  = {}
+    tmp    = inspect.getmembers( sys.modules[__name__], inspect.isclass )
+
+    for className, constructor in tmp:
+        if className.startswith( 'QualityRule_' ):
+            ctors[ className ] = constructor
+
+
+    # keep sorting as appears in SQ Guideline
+
+    for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
+                      'MT', 'SPEC' ):
+        for i in range(50):
+
+            ruleID = '%s%02d' % ( category, i )
+
+            try:
+                func = ctors[ 'QualityRule_%s' % ruleID ]
+                Any.requireIsCallable( func )
+                instance = func()
+                result.append( ( ruleID, instance ) )
+            except KeyError:
+                pass               # no such rule, or rule not implemented
+
+    return result
+
+
+def getRuleIDs():
+    """
+        Returns a list of all SQ rule IDs in the order of appearance in the
+        Software Quality Guideline.
+    """
+    ruleTuples = getRules()
+    Any.requireIsListNonEmpty( ruleTuples )
+
+    result = [ rule[0] for rule in ruleTuples ]
+    Any.requireIsListNonEmpty( result )
+
+    return result
 
 
 # EOF
