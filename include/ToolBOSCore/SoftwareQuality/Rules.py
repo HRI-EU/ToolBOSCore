@@ -111,28 +111,51 @@ Other languages such as German or Japanese should be avoided.'''
             Look for specific characters such as German Umlauts, French
             accents, or Japanese characters.
         """
-        logging.debug( 'checking files for Non-English characters...' )
+        logging.debug( 'checking filenames for Non-English characters...' )
         passed = 0
         failed = 0
 
-        whitelist      = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m',
-                           '.py' )
+        whitelist = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m', '.py' )
 
         for filePath in files:
             if os.path.splitext( filePath )[-1] in whitelist:
 
                 logging.debug( 'checking %s', filePath )
 
-                passedInFile, failedInFile = findNonAsciiCharacters( filePath, 'GEN01' )
-                passed += passedInFile
-                failed += failedInFile
+
+                if six.PY2:
+
+                    try:
+                        filePath.decode( 'ascii' )
+                        passed += 1
+                    except UnicodeDecodeError as e:
+                        # PyCharm linter fails to recognize the start property
+                        # so we silence the warning.
+                        # noinspection PyUnresolvedReferences
+                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                      filePath )
+                        failed += 1
+
+                else:
+
+                    try:
+                        filePath.encode( 'ascii' )
+                        passed += 1
+                    except UnicodeEncodeError as e:
+                        # PyCharm linter fails to recognize the start property
+                        # so we silence the warning.
+                        # noinspection PyUnresolvedReferences
+                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                      filePath )
+                        failed += 1
+
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'all identifiers and comments OK' )
+                       'all filenames in ASCII characters' )
         else:
             result = ( FAILED, passed, failed,
-                       'files with Non-ASCII characters found' )
+                       'filenames with Non-ASCII characters found' )
 
         return result
 
