@@ -32,12 +32,12 @@
 ::
 ::
 ::  Example usage in Windows cmd.exe:
-::  S:\DevelopmentTools\ToolBOSCore\3.2\bin\buildVS2013.bat
+::  S:\DevelopmentTools\ToolBOSCore\3.3\bin\buildVS2013.bat
 ::
 ::  If you need to use a different location for the SIT than S:
 ::  just set the variable SIT_LOCATION before calling this batch script, e.g.
 ::  set SIT_LOCATION=C:\Users\Me\MyLocalSIT
-::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\3.2\bin\buildVS2013.bat
+::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\3.3\bin\buildVS2013.bat
 ::
 ::  With the -c|--config-only option only the package configuration is triggered,
 ::  thus you can compile by hand f.i. within your IDE.
@@ -56,7 +56,7 @@ set MAKEFILE_CC=vs2013
 
 set BST_CMAKE_OPTIONS=-G "Visual Studio 13"
 
-call %SIT_LOCATION%\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
+call %SIT_LOCATION%\DevelopmentTools\ToolBOSCore\3.3\CmdSrc.bat
 
 
 
