@@ -226,12 +226,10 @@ class AppConfig( object ):
         """
         Any.requireIsList( self._addFiles )
 
-        try:
-            tmpList = [ self._cwdFile,
-                        self._userFile,
-                        self._machineFile,
-                        self._defaultFile ]
+        resultList = []
 
+        try:
+            resultList.append( self._cwdFile )
         except OSError as details:
             # may be raised by os.getcwd() if there is a problem with the CWD
             # e.g. NFS problem or directory deleted by another process
@@ -243,14 +241,13 @@ class AppConfig( object ):
             raise SystemExit()
 
 
-        if self._addFiles:
-            resultList = [ tmpList[0] ]
-            resultList.append( self._addFiles )
-            resultList.append( tmpList[1:] )
-            resultList = FastScript.flattenList( resultList )
+        resultList.append( self._userFile )
+        resultList.append( self._machineFile )
 
-        else:
-            resultList = tmpList
+        for addFile in self._addFiles:
+            resultList.append( addFile )
+
+        resultList.append( self._defaultFile )
 
         return resultList
 
@@ -260,9 +257,10 @@ class AppConfig( object ):
 
             if os.path.isfile( filePath ):
                 try:
+                    logging.debug( 'evaluating %s', filePath )
+
                     result     = {}
                     allSymbols = FastScript.execFile( filePath )
-                    logging.debug( 'evaluating %s', filePath )
 
 
                     # remove Python modules, callables etc. from dict
@@ -318,6 +316,13 @@ class AppConfig( object ):
 
             elif filePath is self._defaultFile:
                 self._defaultSettings = fileSettings
+
+            elif filePath in self._addFiles:
+                logging.debug( 'merging default settings from: %s', filePath )
+                self._defaultSettings.update( fileSettings )
+
+            else:
+                logging.warning( 'unexpected config file: %s', filePath )
 
 
         Any.requireIsDictNonEmpty( self._allSettings )
