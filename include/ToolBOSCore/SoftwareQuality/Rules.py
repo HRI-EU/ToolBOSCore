@@ -726,26 +726,26 @@ show:
 
 class QualityRule_GEN08( AbstractQualityRule ):
 
-    brief       = '''Any 3rd party code must be clearly separated to avoid
+    brief       = '''Any 3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
 if needed.'''
 
-    description = '''Closely integrating 3rd party software such as compiling
+    description = '''Closely integrating 3rd-party-software such as compiling
 foreign source code into the own application very likely will violate the
-license of the 3rd party software. This can result in severe legal problems.
+license of the 3rd-party-software. This can result in severe legal problems.
 (There are some licenses which permit such usage, f.i. BSD License).
 
-Even putting 3rd party libraries into the own source code repository is within
+Even putting 3rd-party-libraries into the own source code repository is within
 a questionable grey zone. At least create a sub-directory named
-*external* and put all 3rd party modules inside. This makes obvious that you
-do not claim ownership on this material.
+*external* or *3rdParty* and put all 3rd-party-modules inside.
+This makes it obvious that you do not claim ownership on this material.
 
-Best approach is to install 3rd party software independently into SIT, and
+Best approach is to install 3rd-party-software independently into SIT, and
 interface with it.'''
 
     goodExample = '''\tMyPackage
 \t\t1.0
-\t\t\texternal
+\t\t\texternal (or "3rdParty")
 \t\t\t\tcmake.org
 \t\t\t\t\t[...]
 \t\t\t\tgnome.org
@@ -1632,7 +1632,7 @@ Specify an empty list if really nothing has to be executed.'''
         logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
 
         if sqSettings is None:
-            msg    = "no 'sqCheckExe' settings found in pkgInfo.py (please see C12 docs)"
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see C12 docs"
             result = ( FAILED, 0, 1, msg )
 
             return result
