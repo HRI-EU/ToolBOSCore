@@ -255,8 +255,6 @@ class PackageDetector( object ) :
 
         if Any.isIterable( files ):
 
-            logging.info( 'searching provided fileList' )
-
             for filePath in files:
 
                 if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ):
