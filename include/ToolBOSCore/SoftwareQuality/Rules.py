@@ -1041,7 +1041,7 @@ Without these macros the code will not link in C++ context.'''
                         logging.debug( 'passed: %s', filePath )
                         passed += 1
                     else:
-                        logging.info( 'linkage guard missing: %s', filePath )
+                        logging.info( 'C02: linkage guard missing: %s', filePath )
                         failed += 1
 
         except EnvironmentError as e:
@@ -1225,17 +1225,17 @@ updated and still passes parameters.'''
                         failed += 1
 
                         for proto, line in protos:
-                            logging.info( 'C04: %s:%d - function %s declared without information about the arguments',
-                                          filePath, line, proto )
+                            msg = 'C04: %s:%d - void-function with ambiguous argument list'
+                            logging.info( msg, filePath, line, proto )
                     else:
                         passed += 1
 
             if failed == 0:
                 result = ( OK, passed, failed,
-                           'all files OK' )
+                           'no void-functions with ambiguous arguments found' )
             else:
                 result = ( FAILED, passed, failed,
-                           'files with functions declared without parameters found' )
+                           'void-functions with ambiguous arguments found' )
 
         except EnvironmentError as e:
             logging.error( e )
@@ -2619,10 +2619,10 @@ literals their use in safety-critical application is highly discouraged.'''
 
             if failed == 0:
                 result = ( OK, passed, failed,
-                           'all files OK' )
+                           'No wchar-functions found' )
             else:
                 result = ( FAILED, passed, failed,
-                           'files with non ASCII characters or wide string functionality usage found' )
+                           'wchar-functions found' )
 
         except EnvironmentError as e:
             logging.error( e )
