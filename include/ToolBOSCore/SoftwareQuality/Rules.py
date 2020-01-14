@@ -61,6 +61,8 @@ from ToolBOSCore.Util                             import Any, FastScript, \
                                                          VersionCompat
 
 
+C_FILE_EXTENSIONS     = ( '.c', '.h', '.inc' )
+
 C_CPP_FILE_EXTENSIONS = ( '.c', '.cpp', '.h', '.hpp' )
 
 
@@ -1218,7 +1220,7 @@ updated and still passes parameters.'''
 
             for filePath in files:
                 _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
+                if ext in C_FILE_EXTENSIONS:
                     parser = createCParser( filePath, details, headerAndLanguageMap )
 
                     if not parser:
