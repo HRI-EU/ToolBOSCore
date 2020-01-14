@@ -35,7 +35,6 @@
 
 
 import ast
-import copy
 import collections
 import inspect
 import logging
