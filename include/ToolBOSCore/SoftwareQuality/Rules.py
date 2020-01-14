@@ -93,10 +93,6 @@ class AbstractQualityRule( object ):
 
 class AbstractValgrindRule( AbstractQualityRule ):
 
-    def __init__( self ):
-        super(AbstractValgrindRule, self).__init__()
-
-
     def getSQSettings( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
@@ -1612,10 +1608,6 @@ Specify an empty list if really nothing has to be executed.'''
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
-
-    def __init__( self ):
-        super(QualityRule_C12, self).__init__()
-
     def run( self, details, files ):
         """
             Check for memory leaks.
@@ -1741,11 +1733,6 @@ Specify an empty list if really nothing has to be executed.'''
                     'http://www.valgrind.org' }
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
-
-
-    def __init__( self ):
-        super(QualityRule_C15, self).__init__()
-
 
     def run( self, details, files ):
         """
