@@ -2524,43 +2524,7 @@ provide small, easy-to-understand example programs / showcases.
 
 class QualityRule_DOC04( AbstractQualityRule ):
 
-    brief       = '''Original authors and current maintainers should be
-documented.'''
-
-    description = '''**Author(s)** are those persons who originally
-implemented or later contributed major parts of the code. Authors of a
-software should be honored in the documentation. If multiple people modified
-the code over time, they should be ranked according to their contribution.
-
-The **maintainer** is the person mainly in charge of the software at the
-very moment. He or she may or may not be among the list of authors!
-Some maintainer might have taken over responsability without writing a
-single line of code.
-
-The filesystem ownership in the SIT is a good indicator who maintains the
-package at the moment. However, it is not reliable in case multiple people
-installed the package for various reasons (such as holidays) and most likely
-will not be preserved when transferring the SIT to other machines or sites.
-
-Therefore, when using BST.py for installing software, the maintainer
-information is automatically written into the auto-generated pkgInfo.py
-file.
-'''
-
-    goodExample = '''
-    /*!
-     * \mainpage
-     *
-     * [...]
-     *
-     * \\author Bill Gates
-     * \\author Linus Torvalds (current maintainer)
-     * \\author Steve Jobs
-     * \\author Lerry Page
-     */
-'''
-
-    sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
+    brief       = '*removed*'
 
 
 class QualityRule_SAFE01( AbstractQualityRule ):
