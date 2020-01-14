@@ -41,12 +41,12 @@ import clang.cindex as cidx
 from clang.cindex import CursorKind, TypeKind
 
 
-from ToolBOSCore.Platforms              import Platforms
-from ToolBOSCore.Util.CAnalyzerElements import MacroDefinition,\
-                                               MacroFnDefinition, \
-                                               Namespace
-from ToolBOSCore.Settings               import ToolBOSConf
-from ToolBOSCore.Util                   import Any
+from ToolBOSCore.Platforms                         import Platforms
+from ToolBOSCore.Settings                          import ToolBOSConf
+from ToolBOSCore.SoftwareQuality.CAnalyzerElements import MacroDefinition,\
+                                                          MacroFnDefinition, \
+                                                          Namespace
+from ToolBOSCore.Util                                     import Any
 
 
 class CParser( Namespace ):

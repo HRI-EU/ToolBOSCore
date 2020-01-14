@@ -2944,14 +2944,14 @@ def createCParser( filePath, details, headerAndLanguageMap ):
     if six.PY2:
 
         try:
-            from ToolBOSCore.Util.CAnalyzer import CParser
+            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
         except ImportError as e:
             raise EnvironmentError( e )
 
     else:
 
         try:
-            from ToolBOSCore.Util.CAnalyzer import CParser
+            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
         except ModuleNotFoundError as e:
             raise EnvironmentError( e )
 
