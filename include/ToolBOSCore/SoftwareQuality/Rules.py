@@ -2984,11 +2984,12 @@ def createCParser( filePath, details, headerAndLanguageMap ):
         cflagsList   = CMake.getCDefinesAsList( platform, targetName )
         cflags       = [ '-D' + cflag for cflag in cflagsList ]
         args         = includes + cflags
-    except ( AssertionError, IOError ):
+    except ( AssertionError, IOError ) as e:
         # most likely the depend.make does not exist for this target,
         # this might happen if there are no dependencies by the target
         # or if this is a pseudo-target such as "doc" coming from
         # FindDoxygen.cmake
+        logging.debug( e )
         logging.debug( 'ignoring target: %s', targetName )
         return None
 
