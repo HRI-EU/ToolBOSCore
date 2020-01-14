@@ -1011,8 +1011,6 @@ Without these macros the code will not link in C++ context.'''
                               ifdefinedExpr   : ifDefinedRegex,
                               toolbosMacroExpr: toolbosMacroRegex }
 
-        platform = getHostPlatform()
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
 
         if details.isCppPackage():
             result = ( NOT_APPLICABLE, passed, failed,
