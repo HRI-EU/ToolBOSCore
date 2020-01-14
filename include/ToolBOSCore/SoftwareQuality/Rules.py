@@ -1196,7 +1196,7 @@ unexpected parameters are supplied.
 If `void` isn't specified, the compiler does not make any assumptions.
 Hence the function could accidently be called with arguments.
 
-This might lead to error if a function that originally had taken parameters
+This might lead to an error if a function that originally had taken parameters
 has been changed (to not take parameters anymore) and the caller was not
 updated and still passes parameters.'''
 
