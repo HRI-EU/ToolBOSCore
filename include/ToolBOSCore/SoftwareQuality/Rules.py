@@ -1757,16 +1757,14 @@ Specify an empty list if really nothing has to be executed.'''
             # look-up executables test/<platform>/ directory
 
             testFiles = self.getTestFiles( details )
-            logging.info( testFiles )
             logging.debug( 'executable(s) found in %s directory: %s',
                            details.testDirArch, testFiles )
 
         else:
-            logging.info( 'no main program(s) found' )
-
-            logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
-            result = ( OK, 0, 0,
-                       'check not applicable' )
+            logging.debug( 'no main programs found' )
+            logging.debug( '%s: possibly not C/C++ package' % details.canonicalPath )
+            result = ( NOT_APPLICABLE, 0, 0,
+                       'no main programs found' )
 
             return result
 
