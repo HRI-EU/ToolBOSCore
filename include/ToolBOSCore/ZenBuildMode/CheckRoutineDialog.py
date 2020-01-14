@@ -84,7 +84,7 @@ class CheckRoutineDialog( QDialog, object ):
         self._desiredLevelCombo = QComboBox()
         self._windowTitle       = 'Software Quality settings'
 
-        CheckRoutine.addStreamLogger( self._logOutput )
+        Any.addStreamLogger( self._logOutput, logging.DEBUG, preamble=False )
 
         for level in CheckRoutine.sqLevelNames:
             text  = CheckRoutine.sqLevels[ level ]

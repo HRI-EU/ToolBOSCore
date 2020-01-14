@@ -499,18 +499,4 @@ class CheckRoutine( object ):
                     logging.info( '' )
 
 
-def addStreamLogger( stream ):
-    """
-        By providing a file-like object the log messages of the checkers
-        can be captured. 'stream' could be a StringIO instance.
-    """
-    logFormatter = logging.Formatter( "%(message)s" )
-    logHandler   = logging.StreamHandler( stream )
-    logHandler.setFormatter( logFormatter )
-    logHandler.setLevel( logging.DEBUG )
-
-    rootLogger   = logging.getLogger()
-    rootLogger.addHandler( logHandler )
-
-
 # EOF
