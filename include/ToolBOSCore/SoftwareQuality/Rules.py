@@ -1043,7 +1043,7 @@ Without these macros the code will not link in C++ context.'''
                         logging.debug( 'passed: %s', filePath )
                         passed += 1
                     else:
-                        logging.info( 'failed: %s', filePath )
+                        logging.info( 'linkage guard missing: %s', filePath )
                         failed += 1
 
         except EnvironmentError as e:
