@@ -93,6 +93,7 @@ class AbstractQualityRule( object ):
 
 class AbstractValgrindRule( AbstractQualityRule ):
 
+
     def getSQSettings( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
@@ -116,48 +117,40 @@ class AbstractValgrindRule( AbstractQualityRule ):
 
             return None
 
-    def getBinFiles( self, details ):
+
+    def getExecFiles( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
-        binFilesTmp = FastScript.getFilesInDir( details.binDirArch )
-        Any.requireIsList( binFilesTmp )
-        binFiles = []
+        ruleId = self.getRuleID()
 
-        if not binFilesTmp:
-            logging.error( 'no executables found in %s, forgot to compile?',
+        if ruleId == 'C12':
+            execFiles = FastScript.getFilesInDir( details.binDirArch )
+        else:
+            execFiles = FastScript.getFilesInDir( details.testDirArch )
+
+        Any.requireIsList( execFiles )
+        execFilesPath = []
+
+        if not execFiles:
+            if ruleId == 'C12':
+                logging.error( 'no executables found in %s, forgot to compile?',
                            details.binDirArch )
-
-            return binFiles
-
-        platform = getHostPlatform()
-
-        for binFile in binFilesTmp:
-            tmp = os.path.join( 'bin', platform, binFile )
-            binFiles.append(tmp)
-
-        return binFiles
-
-
-    def getTestFiles( self, details ):
-        Any.requireIsInstance( details, PackageDetector )
-
-        testFilesTmp = FastScript.getFilesInDir( details.testDirArch )
-        Any.requireIsList( testFilesTmp )
-        testFiles = []
-
-        if not testFilesTmp:
-            logging.error( 'no executables found in %s, forgot to compile?',
-                           details.testDirArch )
-
-            return testFiles
+            else:
+                logging.error( 'no executables found in %s, forgot to compile?',
+                               details.testDirArch )
+            return execFilesPath
 
         platform = getHostPlatform()
 
-        for testFile in testFilesTmp:
-            tmp = os.path.join( 'test', platform, testFile )
-            testFiles.append(tmp)
+        for execFile in execFiles:
+            if ruleId == 'C12':
+                tmp = os.path.join( 'bin', platform, execFile )
+            else:
+                tmp = os.path.join( 'test', platform, execFile )
 
-        return testFiles
+            execFilesPath.append(tmp)
+
+        return execFilesPath
 
 
     def validityCheck( self, binFiles, commandLines ):
@@ -1614,7 +1607,7 @@ Specify an empty list if really nothing has to be executed.'''
             logging.info( 'main program(s) found' )
 
             # look-up executables bin/<platform>/ directory
-            binFiles = self.getBinFiles( details )
+            binFiles = self.getExecFiles( details )
             logging.debug( 'executable(s) found in %s directory: %s',
                            details.binDirArch, binFiles )
 
@@ -1741,7 +1734,7 @@ Specify an empty list if really nothing has to be executed.'''
 
             # look-up executables test/<platform>/ directory
 
-            testFiles = self.getTestFiles( details )
+            testFiles =  self.getExecFiles( details )
             logging.debug( 'executable(s) found in %s directory: %s',
                            details.testDirArch, testFiles )
 
