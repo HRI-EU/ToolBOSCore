@@ -924,7 +924,7 @@ causing data loss or inconsistent states.'''
                filePath.find( '/examples/' ) != -1 or \
                 filePath.find( '/test/' ) != -1:
 
-                logging.debug( '%s: exit() in main programs permitted', filePath  )
+                logging.debug( '%s: found exit() within main program: OK', filePath  )
                 continue
 
             if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ) or \
@@ -947,7 +947,7 @@ causing data loss or inconsistent states.'''
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'no usage of exit() or abort() found' )
+                       'no invalid use of exit() or abort() found' )
         else:
             result = ( FAILED, passed, failed,
                        'exit() and/or abort() found' )
