@@ -278,6 +278,13 @@ class PackageDetector( object ) :
             return False
 
 
+    def isCPackage( self ):
+        """
+            Returns True if package contains C code in source directory.
+        """
+        return self._hasSourceFiles( '.c' )
+
+
     def isCppPackage( self ):
         """
             Returns True if package contains C++ code in source directory.
@@ -776,6 +783,8 @@ class PackageDetector( object ) :
 
             Note that a 'dot' needs to be provided if desired.
         """
+        logging.debug( 'searching in %s for *%s files', path, extension )
+
         for path, dirs, files in os.walk( path ):
             for fileName in files:
                 if fileName.endswith( extension ):

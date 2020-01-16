@@ -911,6 +911,9 @@ causing data loss or inconsistent states.'''
         """
             Checks if exit() and friends are used.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for direct exit() in code' )
         failed = 0
         passed = 0
@@ -988,6 +991,9 @@ Without these macros the code will not link in C++ context.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+
         logging.debug( 'checking C header files for linkage guards' )
 
         binDir            = os.path.join( details.topLevelDir, 'bin' )
@@ -1003,12 +1009,6 @@ Without these macros the code will not link in C++ context.'''
         patterns          = { ifdefExpr       : ifdefRegex,
                               ifdefinedExpr   : ifDefinedRegex,
                               toolbosMacroExpr: toolbosMacroRegex }
-
-
-        if details.isCppPackage():
-            result = ( NOT_APPLICABLE, passed, failed,
-                       'C++ package does not need linkage guards' )
-            return result
 
         try:
 
@@ -1093,6 +1093,9 @@ b, instead of being 33 like it should, would actually be replaced with
             fit to such conventions. Therefore we define a whitelist for such
             known macros here.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking C/C++ macro prefixes' )
         passed               = 0
         failed               = 0
@@ -1196,6 +1199,9 @@ updated and still passes parameters.'''
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+
         logging.debug( 'looking for function prototypes with no information about the arguments' )
         platform             = getHostPlatform( )
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
@@ -1273,6 +1279,9 @@ and other compile errors.'''
                 ...
                 #endif
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking header file inclusion guards' )
 
         blacklist = frozenset( [ 'documentation.h' ] )
@@ -1310,10 +1319,10 @@ and other compile errors.'''
 
         if self.failed == 0:
             result = ( OK, self.passed, self.failed,
-                       'C/C++ header file inclusion guards valid' )
+                       'multi-inclusion safeguards present' )
         else:
             result = ( FAILED, self.passed, self.failed,
-                       'C/C++ safeguards missing' )
+                       'multi-inclusion safeguards missing' )
 
         return result
 
@@ -1342,6 +1351,9 @@ of code variants.'''
         """
             Checks that public C/C++ functions are not exposed as 'inline'.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( "looking for public functions declared 'inline'" )
         passed = 0
         failed = 0
@@ -1516,7 +1528,8 @@ once in a while inspect your code using Klocwork.'''
         """
             Execute the Klocwork source code analyzer in CLI mode.
         """
-        from subprocess import CalledProcessError
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
 
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
@@ -1542,8 +1555,8 @@ once in a while inspect your code using Klocwork.'''
                     logging.info( 'C10: %s:%s: %s [%s]', *item )
                     failed += 1
 
-        except ( AssertionError, CalledProcessError, EnvironmentError,
-                 RuntimeError ) as details:
+        except ( AssertionError, subprocess.CalledProcessError,
+                 EnvironmentError, RuntimeError ) as details:
             logging.error( 'C10: %s', details )
             failed += 1
             error   = True
@@ -1603,22 +1616,13 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
-        if details.hasMainProgram( files ):
-            logging.info( 'main program(s) found' )
+        if not details.hasMainProgram( files ):
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
 
-            # look-up executables bin/<platform>/ directory
-            binFiles = self.getExecFiles( details )
-            logging.debug( 'executable(s) found in %s directory: %s',
-                           details.binDirArch, binFiles )
-
-        else:
-            logging.info( 'no main program(s) found' )
-
-            logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
-            result = ( OK, 0, 0,
-                       'check not applicable' )
-
-            return result
+        # look-up executables bin/<platform>/ directory
+        binFiles = self.getExecFiles( details )
+        logging.debug( 'executable(s) found in %s directory: %s',
+                       details.binDirArch, binFiles )
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self.getSQSettings( details )
@@ -1729,22 +1733,14 @@ Specify an empty list if really nothing has to be executed.'''
         """
             Check for memory leaks.
         """
-        if details.hasMainProgram( files ):
-            logging.info( 'main program(s) found' )
+        if not details.hasMainProgram( files ):
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
 
-            # look-up executables test/<platform>/ directory
+        # look-up executables test/<platform>/ directory
+        testFiles = self.getExecFiles( details )
+        logging.debug( 'executable(s) found in %s directory: %s',
+                       details.testDirArch, testFiles )
 
-            testFiles =  self.getExecFiles( details )
-            logging.debug( 'executable(s) found in %s directory: %s',
-                           details.testDirArch, testFiles )
-
-        else:
-            logging.debug( 'no main programs found' )
-            logging.debug( '%s: possibly not C/C++ package' % details.canonicalPath )
-            result = ( NOT_APPLICABLE, 0, 0,
-                       'no main programs found' )
-
-            return result
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self.getSQSettings( details )
@@ -1821,6 +1817,9 @@ called from the outside. Doing it must be considered as wrong usage.'''
         """
             Checks for access to private class members from outside.
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( "checking for access to private members from outside" )
         found  = 0
         regexp = re.compile( '(\w+)\._(\w+)' )
@@ -1961,6 +1960,9 @@ application, potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
         passed    = 0
         failed    = 0
@@ -1989,7 +1991,6 @@ application, potentially causing data loss or inconsistent states.'''
                         logging.info( 'PY04: %s:%s: found %s() call',
                                       filePath, call[1], call[0] )
                     failed += len( exitCalls )
-
 
 
         if syntaxErr:
@@ -2030,6 +2031,9 @@ under `${SIT}/External/PyCharmPro`.'''
             Execute the PyCharm source code analyzer in batch-mode for each
             *.py file.
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( 'performing source code analysis using PyCharm' )
         passed = 0
         failed = 0
@@ -2128,6 +2132,9 @@ specific case to follow the Matlab code-checker.'''
             Execute the Matlab source code analyzer in batch-mode for each
             *.m file.
         """
+        if not details.isMatlabPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Matlab code found'
+
         logging.debug( 'performing source code analysis using Matlab' )
         passed = 0
         failed = 0
@@ -2481,6 +2488,9 @@ label declared later in the same function.'''
         """
             Safety-critical applications shall hardly use 'goto'.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for "goto"-statement' )
         found  = 0
 
@@ -2565,6 +2575,9 @@ literals their use in safety-critical application is highly discouraged.'''
         """
             Checks if any of the files provided makes use of multi-byte characters.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for multibyte-characters usage' )
 
         platform  = getHostPlatform()
@@ -2690,6 +2703,9 @@ circumstances.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking C/C++ function-like macro presence' )
         passed   = 0
         failed   = 0
