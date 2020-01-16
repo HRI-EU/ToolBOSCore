@@ -93,7 +93,6 @@ class AbstractQualityRule( object ):
 
 class AbstractValgrindRule( AbstractQualityRule ):
 
-
     def getSQSettings( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
@@ -1626,10 +1625,18 @@ Specify an empty list if really nothing has to be executed.'''
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self.getSQSettings( details )
-        logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
 
-        if sqSettings is None:
-            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see C12 docs"
+        sqSettingsC12 = []
+
+        for setting in sqSettings:
+            if setting.startswith( 'bin' ):
+                sqSettingsC12.append( setting )
+
+        logging.debug( "'sqCheckExe' settings for C12 from pkgInfo.py: %s",sqSettingsC12 )
+
+        if not sqSettingsC12:
+            msg    = "no 'sqCheckExe' settings for C12 found in pkgInfo.py, please see C12 docs"
             result = ( FAILED, 0, 1, msg )
 
             return result
@@ -1638,7 +1645,7 @@ Specify an empty list if really nothing has to be executed.'''
         #     - one executable present for each setting (to check if compilation was forgotten)
         #     - one setting is present for each executable (to check if developer was lazy ;-)
 
-        validityCheck = self.validityCheck( binFiles, sqSettings )
+        validityCheck = self.validityCheck( binFiles, sqSettingsC12 )
 
         if validityCheck[0] == FAILED:
             shortText = validityCheck[3]
@@ -1647,7 +1654,7 @@ Specify an empty list if really nothing has to be executed.'''
             return validityCheck
 
         # finally run Valgrind
-        runValgrindResult = self.runValgrind( sqSettings, details )
+        runValgrindResult = self.runValgrind( sqSettingsC12, details )
 
         return runValgrindResult
 
@@ -1744,10 +1751,18 @@ Specify an empty list if really nothing has to be executed.'''
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self.getSQSettings( details )
-        logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
 
-        if sqSettings is None:
-            msg    = "no 'sqCheckExe' settings found in pkgInfo.py (please see C15 docs)"
+        sqSettingsC15 = []
+
+        for setting in sqSettings:
+            if setting.startswith( 'test' ):
+                sqSettingsC15.append( setting )
+
+        logging.debug( "'sqCheckExe' settings for C15 from pkgInfo.py: %s",sqSettingsC15 )
+
+        if not sqSettingsC15:
+            msg    = "no 'sqCheckExe' settings found for C15 in pkgInfo.py (please see C15 docs)"
             result = ( FAILED, 0, 1, msg )
 
             return result
@@ -1756,7 +1771,7 @@ Specify an empty list if really nothing has to be executed.'''
         #     - one executable present for each setting (to check if compilation was forgotten)
         #     - one setting is present for each executable (to check if developer was lazy ;-)
 
-        validityCheck = self.validityCheck( testFiles, sqSettings )
+        validityCheck = self.validityCheck( testFiles, sqSettingsC15 )
 
         if validityCheck[0] == FAILED:
             shortText = validityCheck[3]
@@ -1765,7 +1780,7 @@ Specify an empty list if really nothing has to be executed.'''
             return validityCheck
 
     # finally run Valgrind
-        runValgrindResult = self.runValgrind( sqSettings, details )
+        runValgrindResult = self.runValgrind( sqSettingsC15, details )
 
         return runValgrindResult
 
