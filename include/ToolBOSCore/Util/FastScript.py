@@ -930,7 +930,7 @@ def readOnlyChmod( path ):
     filePerms = 0o444
     dirPerms  = 0o555
 
-    chmodRecursive( path, dirPerms, dirPerms )
+    chmodRecursive( path, dirPerms, filePerms )
 
 
 def readWriteChmod( path ):
@@ -940,7 +940,7 @@ def readWriteChmod( path ):
     filePerms = 0o664
     dirPerms  = 0o775
 
-    chmodRecursive( path, dirPerms, dirPerms )
+    chmodRecursive( path, dirPerms, filePerms )
 
 
 def setGroupPermission( path, groupName, mode ):
@@ -1226,7 +1226,7 @@ def stopTiming( startTime ):
     import datetime
 
     Any.requireIsInstance( startTime, datetime.datetime )
-    
+
     stopTime = now()
     logging.debug( 'elapsed time: %s', stopTime - startTime )
 
