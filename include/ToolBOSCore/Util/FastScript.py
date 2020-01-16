@@ -927,8 +927,10 @@ def readOnlyChmod( path ):
     """
         Set read only permissions to the given path recursively.
     """
-    filePerms = 0o444
+    Any.requireIsTextNonEmpty( path )
+
     dirPerms  = 0o555
+    filePerms = 0o444
 
     chmodRecursive( path, dirPerms, filePerms )
 
@@ -937,8 +939,10 @@ def readWriteChmod( path ):
     """
         Set read-write permissions to the given path recursively.
     """
-    filePerms = 0o664
+    Any.requireIsTextNonEmpty( path )
+
     dirPerms  = 0o775
+    filePerms = 0o664
 
     chmodRecursive( path, dirPerms, filePerms )
 
