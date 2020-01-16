@@ -96,7 +96,7 @@ class CheckRoutine( object ):
 
 
     def excludeDir( self, dirPath ):
-        raise NotImplemented()
+        raise NotImplementedError()
 
 
     def excludeFile( self, filePath ):
