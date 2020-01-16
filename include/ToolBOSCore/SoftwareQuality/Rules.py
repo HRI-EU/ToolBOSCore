@@ -700,6 +700,9 @@ show:
         """
             Checks if the package provides a unittest.
         """
+        if details.isComponent():
+            return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
+
         logging.debug( 'looking for unittest.{sh,bak}' )
         found = False
 
@@ -2298,7 +2301,10 @@ Hence a doxygen mainpage is not needed in such case.
               * doc/Mainpage.md
               * doc/html/index.html
         """
-        if details.isMatlabPackage():
+        if details.isRTMapsPackage():
+            return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
+
+        elif details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
 
             # Matlab-packages do not contain a doxygen mainpage, hence only
@@ -2403,6 +2409,9 @@ provide small, easy-to-understand example programs / showcases.
             Test passes if there are any Non-SVN files within the
             "examples" subdirectory.
         """
+        if details.isComponent():
+            return NOT_APPLICABLE, 0, 0, 'examples not required for components'
+
         logging.debug( 'looking for example programs' )
         examplesDir = os.path.join( details.topLevelDir, 'examples' )
 
