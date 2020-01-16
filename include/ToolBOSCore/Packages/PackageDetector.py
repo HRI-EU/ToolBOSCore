@@ -260,7 +260,7 @@ class PackageDetector( object ) :
                 if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ):
 
                     if filePath.startswith( dirs ):
-                        logging.info( 'found main program: %s', filePath )
+                        logging.debug( 'found main program: %s', filePath )
                         return True
 
             return False
