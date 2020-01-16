@@ -93,6 +93,85 @@ class AbstractQualityRule( object ):
 
 class AbstractValgrindRule( AbstractQualityRule ):
 
+    def run( self, details, files ):
+        """
+            Check for memory leaks.
+        """
+        ruleId = self.getRuleID()
+
+        if not details.hasMainProgram( files ):
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
+
+        # look-up executables in e.g. bin/<platform>/ directory  (subclass-specific)
+
+        exeDir   = self.getExeDir( details )
+        exeFiles = self.getExeFiles( details )    # e.g. [ 'bin/bionic64/blah' ]
+
+        if not exeFiles:
+            logging.error( 'no executables found in %s, forgot to compile?', exeDir )
+            return FAILED, 0, 0, 'no executables found'
+
+        platform     = getHostPlatform()
+        exeFilesPath = []
+
+        for exeFile in exeFiles:
+            if ruleId == 'C12':
+                tmp = os.path.join( 'bin', platform, exeFile )
+                exeFilesPath.append(tmp)
+            elif ruleId == 'C15':
+                tmp = os.path.join( 'test', platform, exeFile )
+                exeFilesPath.append(tmp)
+            else:
+                continue
+
+        logging.debug( 'executable(s) found in %s directory: %s', exeDir, exeFiles )
+
+        # get SQ-settings from pkgInfo.py
+        sqSettings = self.getSQSettings( details )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+
+        if sqSettings is None:
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see %s docs" % ruleId
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        sqCheckExe = []
+
+        for setting in sqSettings:
+            if ruleId == 'C12'and setting.startswith( 'bin' ):
+                sqCheckExe.append( setting )
+            elif ruleId == 'C15'and setting.startswith( 'test' ):
+                sqCheckExe.append( setting )
+            else:
+                continue
+
+        logging.debug( "'sqCheckExe' settings for %s from pkgInfo.py: %s", ruleId, sqCheckExe )
+
+        if not sqCheckExe:
+            msg    = "no 'sqCheckExe' settings for %s found in pkgInfo.py, please see %s docs" % ( ruleId, ruleId )
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        # verify that we have:
+        #     - one executable present for each setting (to check if compilation was forgotten)
+        #     - one setting is present for each executable (to check if developer was lazy ;-)
+
+        validityCheck = self.validityCheck( exeFilesPath, sqCheckExe )
+
+        if validityCheck[0] == FAILED:
+            shortText = validityCheck[3]
+            logging.debug( shortText )
+
+            return validityCheck
+
+        # finally run Valgrind
+        runValgrindResult = self.runValgrind( sqCheckExe, details )
+
+        return runValgrindResult
+
+
     def getSQSettings( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
@@ -117,39 +196,23 @@ class AbstractValgrindRule( AbstractQualityRule ):
             return None
 
 
-    def getExecFiles( self, details ):
+    def getExeDir( self, details ):
+        raise NotImplementedError
+
+
+    def getExeFiles( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
         ruleId = self.getRuleID()
+        Any.requireIsTextNonEmpty( ruleId )
 
-        if ruleId == 'C12':
-            execFiles = FastScript.getFilesInDir( details.binDirArch )
-        else:
-            execFiles = FastScript.getFilesInDir( details.testDirArch )
+        exeDir = self.getExeDir( details )
+        Any.requireIsTextNonEmpty( exeDir )   # packages may not have "bin/<platform>" etc.!
 
-        Any.requireIsList( execFiles )
-        execFilesPath = []
+        exeFiles = FastScript.getFilesInDir( exeDir )
+        Any.requireIsList( exeFiles )
 
-        if not execFiles:
-            if ruleId == 'C12':
-                logging.error( 'no executables found in %s, forgot to compile?',
-                           details.binDirArch )
-            else:
-                logging.error( 'no executables found in %s, forgot to compile?',
-                               details.testDirArch )
-            return execFilesPath
-
-        platform = getHostPlatform()
-
-        for execFile in execFiles:
-            if ruleId == 'C12':
-                tmp = os.path.join( 'bin', platform, execFile )
-            else:
-                tmp = os.path.join( 'test', platform, execFile )
-
-            execFilesPath.append(tmp)
-
-        return execFilesPath
+        return exeFiles
 
 
     def validityCheck( self, binFiles, commandLines ):
@@ -1614,52 +1677,11 @@ Specify an empty list if really nothing has to be executed.'''
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
-    def run( self, details, files ):
-        """
-            Check for memory leaks.
-        """
-        if not details.hasMainProgram( files ):
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
 
-        # look-up executables bin/<platform>/ directory
-        binFiles = self.getExecFiles( details )
-        logging.debug( 'executable(s) found in %s directory: %s',
-                       details.binDirArch, binFiles )
+    def getExeDir( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
 
-        # get SQ-settings from pkgInfo.py
-        sqSettings = self.getSQSettings( details )
-        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
-
-        sqSettingsC12 = []
-
-        for setting in sqSettings:
-            if setting.startswith( 'bin' ):
-                sqSettingsC12.append( setting )
-
-        logging.debug( "'sqCheckExe' settings for C12 from pkgInfo.py: %s",sqSettingsC12 )
-
-        if not sqSettingsC12:
-            msg    = "no 'sqCheckExe' settings for C12 found in pkgInfo.py, please see C12 docs"
-            result = ( FAILED, 0, 1, msg )
-
-            return result
-
-        # verify that we have:
-        #     - one executable present for each setting (to check if compilation was forgotten)
-        #     - one setting is present for each executable (to check if developer was lazy ;-)
-
-        validityCheck = self.validityCheck( binFiles, sqSettingsC12 )
-
-        if validityCheck[0] == FAILED:
-            shortText = validityCheck[3]
-            logging.debug( shortText )
-
-            return validityCheck
-
-        # finally run Valgrind
-        runValgrindResult = self.runValgrind( sqSettingsC12, details )
-
-        return runValgrindResult
+        return details.binDirArch
 
 
 class QualityRule_C13( AbstractQualityRule ):
@@ -1739,53 +1761,11 @@ Specify an empty list if really nothing has to be executed.'''
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
-    def run( self, details, files ):
-        """
-            Check for memory leaks.
-        """
-        if not details.hasMainProgram( files ):
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
 
-        # look-up executables test/<platform>/ directory
-        testFiles = self.getExecFiles( details )
-        logging.debug( 'executable(s) found in %s directory: %s',
-                       details.testDirArch, testFiles )
+    def getExeDir( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
 
-
-        # get SQ-settings from pkgInfo.py
-        sqSettings = self.getSQSettings( details )
-        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
-
-        sqSettingsC15 = []
-
-        for setting in sqSettings:
-            if setting.startswith( 'test' ):
-                sqSettingsC15.append( setting )
-
-        logging.debug( "'sqCheckExe' settings for C15 from pkgInfo.py: %s",sqSettingsC15 )
-
-        if not sqSettingsC15:
-            msg    = "no 'sqCheckExe' settings found for C15 in pkgInfo.py (please see C15 docs)"
-            result = ( FAILED, 0, 1, msg )
-
-            return result
-
-        # verify that we have:
-        #     - one executable present for each setting (to check if compilation was forgotten)
-        #     - one setting is present for each executable (to check if developer was lazy ;-)
-
-        validityCheck = self.validityCheck( testFiles, sqSettingsC15 )
-
-        if validityCheck[0] == FAILED:
-            shortText = validityCheck[3]
-            logging.debug( shortText )
-
-            return validityCheck
-
-    # finally run Valgrind
-        runValgrindResult = self.runValgrind( sqSettingsC15, details )
-
-        return runValgrindResult
+        return details.testDirArch
 
 
 class QualityRule_PY01( AbstractQualityRule ):
