@@ -51,6 +51,7 @@ from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
+from ToolBOSCore.Settings.ProcessEnv              import source
 from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
@@ -165,6 +166,11 @@ class AbstractValgrindRule( AbstractQualityRule ):
             logging.debug( shortText )
 
             return validityCheck
+
+        # source the package before running Valgrind
+
+        source( details.canonicalPath )
+        logging.info( "sourcing %s", details.canonicalPath )
 
         # finally run Valgrind
         runValgrindResult = self.runValgrind( sqCheckExe, details )
