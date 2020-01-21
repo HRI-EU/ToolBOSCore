@@ -255,14 +255,12 @@ class PackageDetector( object ) :
 
         if Any.isIterable( files ):
 
-            logging.info( 'searching provided fileList' )
-
             for filePath in files:
 
                 if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ):
 
                     if filePath.startswith( dirs ):
-                        logging.info( 'found main program: %s', filePath )
+                        logging.debug( 'found main program: %s', filePath )
                         return True
 
             return False
@@ -278,6 +276,13 @@ class PackageDetector( object ) :
                     return True
 
             return False
+
+
+    def isCPackage( self ):
+        """
+            Returns True if package contains C code in source directory.
+        """
+        return self._hasSourceFiles( '.c' )
 
 
     def isCppPackage( self ):
@@ -778,6 +783,8 @@ class PackageDetector( object ) :
 
             Note that a 'dot' needs to be provided if desired.
         """
+        logging.debug( 'searching in %s for *%s files', path, extension )
+
         for path, dirs, files in os.walk( path ):
             for fileName in files:
                 if fileName.endswith( extension ):
