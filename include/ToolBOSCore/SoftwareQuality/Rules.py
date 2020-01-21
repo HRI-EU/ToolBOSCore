@@ -414,7 +414,12 @@ dialog.'''
         failed = 0
 
         for filePath in files:
-            content  = FastScript.getFileContent( filePath, asBinary=True )
+            try:
+                content = FastScript.getFileContent( filePath, asBinary=True )
+            except ( IOError, OSError ) as e:
+                logging.error( e )
+                failed += 1
+                continue
 
             encoding = chardet.detect( content )['encoding']
 
@@ -2287,73 +2292,87 @@ Hence a doxygen mainpage is not needed in such case.
               * doc/Mainpage.md
               * doc/html/index.html
         """
-        if details.isRTMapsPackage():
-            return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
+        if details.isMatlabPackage():
+            return self._searchMatlab( details )
 
-        elif details.isMatlabPackage():
-            logging.debug( 'Matlab package detected, looking for HTML documentation' )
-
-            # Matlab-packages do not contain a doxygen mainpage, hence only
-            # check for existence of index.html after doc-build
-
-            DocumentationCreator( details.topLevelDir ).generate()
-
-            indexPath = os.path.join( details.topLevelDir, 'doc/html/index.html' )
-            logging.debug( 'looking for documentation in: %s', indexPath )
-            found     = os.path.exists( indexPath )
-
-            if found:
-                result = ( OK, 1, 0, 'documentation (index.html) found' )
-            else:
-                result = ( FAILED, 0, 1, 'documentation (index.html) found' )
+        elif details.isRTMapsPackage():
+            return self._searchRTMaps( details )
 
         else:
-            # search for doxygen mainpage
+            return self._searchDoxygen( details )
 
-            found      = False
-            docDir     = os.path.join( details.topLevelDir, 'doc' )
-            srcDir     = os.path.join( details.topLevelDir, 'src' )
 
-            candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
-                           os.path.join( srcDir, '__init__.py' ),
-                           os.path.join( srcDir, 'documentation.h' ),
-                           os.path.join( srcDir, details.packageName + '.h' ),
-                           os.path.join( docDir, 'Mainpage.md' ),
-                           os.path.join( docDir, 'Mainpage.dox' ),
-                           os.path.join( docDir, 'documentation.h' ),
-                           os.path.join( docDir, 'html', 'index.html' ),
-                           os.path.join( details.topLevelDir, 'README.md'),)
+    def _searchDoxygen( self, details ):
+        found      = False
+        docDir     = os.path.relpath( os.path.join( details.topLevelDir, 'doc' ) )
+        srcDir     = os.path.relpath( os.path.join( details.topLevelDir, 'src' ) )
 
-            search     = 'mainpage'
-            fileList = ( os.path.join( docDir, 'Mainpage.md' ),
-                         os.path.join( docDir, 'Mainpage.dox' ),
-                         os.path.join( docDir, 'documentation.h' ),
-                         os.path.join( srcDir, 'documentation.h' ),
-                         os.path.join( srcDir, details.packageName + '.h' ) )
+        candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
+                       os.path.join( srcDir, '__init__.py' ),
+                       os.path.join( srcDir, 'documentation.h' ),
+                       os.path.join( srcDir, details.packageName + '.h' ),
+                       os.path.join( docDir, 'Mainpage.md' ),
+                       os.path.join( docDir, 'Mainpage.dox' ),
+                       os.path.join( docDir, 'documentation.h' ),
+                       os.path.join( docDir, 'html', 'index.html' ),
+                       os.path.join( details.topLevelDir, 'README.md'),)
 
-            for filePath in candidates:
-                logging.debug( 'looking for documentation in: %s', filePath )
+        search     = 'mainpage'
+        fileList = ( os.path.join( docDir, 'Mainpage.md' ),
+                     os.path.join( docDir, 'Mainpage.dox' ),
+                     os.path.join( docDir, 'documentation.h' ),
+                     os.path.join( srcDir, 'documentation.h' ),
+                     os.path.join( srcDir, details.packageName + '.h' ) )
 
-                if os.path.exists( filePath ):
-                    found = True
-                    if filePath in fileList:
+        for filePath in candidates:
+            logging.debug( 'looking for documentation in: %s', filePath )
 
-                        content = FastScript.getFileContent( filePath )
+            if os.path.exists( filePath ):
+                found = True
 
-                        if content.find( search ) != -1:
-                            logging.debug( '%s: mainpage section found', filePath )
-                            found = True
-                            break
-                        else:
-                            found = False
-                            logging.debug( '%s: mainpage section not found', filePath )
+                logging.info( 'DOC01: found: %s', filePath )
 
-            if found:
-                result = ( OK, 1, 0, 'documentation found' )
+                if filePath in fileList:
+                    content = FastScript.getFileContent( filePath )
+
+                    if content.find( search ) != -1:
+                        logging.debug( 'DOC01: %s: mainpage section found', filePath )
+                        found = True
+                        break
+                    else:
+                        found = False
+                        logging.debug( 'DOC01: %s: mainpage section not found', filePath )
             else:
-                result = ( FAILED, 0, 1, 'documentation not found' )
+                logging.debug( 'DOC01: not found: %s', filePath )
 
-        return result
+        if found:
+            return OK, 1, 0, 'documentation found'
+        else:
+            logging.info( 'DOC01: neither README.md nor doxygen mainpage found' )
+
+            return FAILED, 0, 1, 'documentation not found'
+
+
+    def _searchMatlab( self, details ):
+        logging.debug( 'Matlab package detected, looking for HTML documentation' )
+
+        # Matlab-packages do not contain a doxygen mainpage, hence only
+        # check for existence of index.html after doc-build
+
+        DocumentationCreator( details.topLevelDir ).generate()
+
+        indexPath = os.path.join( details.topLevelDir, 'doc/html/index.html' )
+        logging.debug( 'looking for documentation in: %s', indexPath )
+        found     = os.path.exists( indexPath )
+
+        if found:
+            return OK, 1, 0, 'documentation (index.html) found'
+        else:
+            return FAILED, 0, 1, 'documentation (index.html) found'
+
+
+    def _searchRTMaps( self, *kwargs ):
+        return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
 
 
 class QualityRule_DOC02( AbstractQualityRule ):
