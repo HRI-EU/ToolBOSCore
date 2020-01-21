@@ -128,6 +128,11 @@ elif removeVar:
     Any.setDebugLevel( logging.DEBUG )
     tconf.delUserConfigOption( removeVar  )
 
+elif removeVar:
+
+    Any.setDebugLevel( logging.DEBUG )
+    tconf.delUserConfigOption( removeVar  )
+
 elif zen:
 
     from ToolBOSCore.Settings import PreferencesDialog

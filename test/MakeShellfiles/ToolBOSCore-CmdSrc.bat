@@ -108,7 +108,7 @@ set PATH=%TOOLBOSCORE_ROOT%\lib\%MAKEFILE_PLATFORM%;%PATH%
 
 
 :: Load dependencies
-call "%SIT%\External\CMake\3.2\CmdSrc.bat"
+call "%SIT%\External\CMake\3.3\CmdSrc.bat"
 
 :: Python path
 set PYTHONPATH=%TOOLBOSCORE_ROOT%\include;%PYTHONPATH%
