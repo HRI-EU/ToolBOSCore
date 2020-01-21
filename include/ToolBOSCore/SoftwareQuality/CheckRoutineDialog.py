@@ -85,6 +85,7 @@ class CheckRoutineDialog( QDialog, object ):
         self._checkButtons      = {}
         self._commentFields     = {}
         self._dirty             = None
+        self._safeplace         = set()      # avoid garbage-collection
         self._threads           = {}
         self._textWidgets       = {}
         self._textStates        = {}
@@ -203,7 +204,7 @@ class CheckRoutineDialog( QDialog, object ):
             self._textStates[ ruleID ] = False       # False/True = short/long
 
 
-            # column 2: pre-selection
+            # column 2: pre-selection for desired SQ level
             cellWidget = QWidget()
             checkbox   = QCheckBox()
             checkbox.setChecked( False )
@@ -216,10 +217,15 @@ class CheckRoutineDialog( QDialog, object ):
             cellWidget.setLayout( cellLayout )
 
             self._table.setCellWidget( i, 2, cellWidget )
-            self._checkBoxes[ ruleID ] = checkbox
+
+            if rule.removed:
+                checkbox.setEnabled( False )
+                self._safeplace.add( checkbox )
+            else:
+                self._checkBoxes[ ruleID ] = checkbox
 
 
-            # column 3: verify-button
+            # column 3: check buttons
             button = QPushButton( 'Check' )
             button.clicked.connect( functools.partial( self._run, rule ) )
 
@@ -229,10 +235,15 @@ class CheckRoutineDialog( QDialog, object ):
             cellWidget = QWidget()
             cellWidget.setLayout( cellLayout )
             self._table.setCellWidget( i, 3, cellWidget )
-            self._checkButtons[ ruleID ] = button
+
+            if rule.removed:
+                button.setEnabled( False )
+                self._safeplace.add( button )
+            else:
+                self._checkButtons[ ruleID ] = button
 
 
-            # column 4: check result
+            # column 4: checker output / result
             cellWidget = QTextEdit()
             cellWidget.setReadOnly( True )
             cellWidget.setFrameStyle( QFrame.NoFrame )
@@ -437,10 +448,19 @@ class CheckRoutineDialog( QDialog, object ):
             the desired SQ level, and set the checkbox state accordingly.
         """
         for ruleID, rule in self._allRulesDict.items():
-            checkbox = self._checkBoxes[ ruleID ]
+            try:
+                checkbox = self._checkBoxes[ ruleID ]
+            except KeyError:
+                # checkbox is read-only (kept in safeplace to not get
+                # garbage-collected) and is not intended to be set
+                continue
 
             if rule.sqLevel is None:
                 checkbox.setChecked( False )                    # optional rule
+
+            elif rule.removed:
+                checkbox.setChecked( False )                    # removed rule
+
             else:
                 checkbox.setChecked( sqLevel in rule.sqLevel )  # regular rule
 

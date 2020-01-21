@@ -83,7 +83,8 @@ class CheckRoutine( object ):
         self.ruleIDs          = set()  # IDs of all SQ rules, not ordered
         self.rulesOrdered     = []     # IDs of all SQ rules, sorted
         self.rulesImplemented = set()  # IDs of all implemented rules
-        self.rulesInLevel     = set()
+        self.rulesInLevel     = set()  # IDs of rules required by selected SQ level
+        self.rulesRemoved     = set()  # IDs of outdated rules
         self.rulesToRun       = []     # IDs of rules to run this time, sorted
 
         self.results          = {}     # result data, filled by runParticular()
@@ -172,7 +173,11 @@ class CheckRoutine( object ):
         """
         for ruleID in self.rulesToRun:
 
-            if ruleID in self.rulesImplemented:
+            if ruleID in self.rulesRemoved:
+                logging.info( '' )
+                logging.info( '%s: Rule has been removed', ruleID )
+
+            elif ruleID in self.rulesImplemented:
                 logging.info( '' )
                 self._runCheck( ruleID )
             else:
@@ -381,6 +386,11 @@ class CheckRoutine( object ):
 
                 # will get overwritten below if 'forceRules' provided
                 self.rulesToRun.append( ruleID )
+
+            elif rule.removed:
+                self.rulesRemoved.add( ruleID )
+
+            # else: rule not implemented, yet
 
 
         if forceRules is not None:
