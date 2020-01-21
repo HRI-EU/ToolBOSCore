@@ -55,6 +55,18 @@ from six import StringIO
 from ToolBOSCore.GenericGUI      import IconProvider
 from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
 from ToolBOSCore.Util            import Any
+from ToolBOSCore.ZenBuildMode    import QtPackageModel
+
+
+def run( model ):
+    Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+
+    app = QApplication( [] )
+
+    window = CheckRoutineDialog( model )
+    window.show()
+
+    return app.exec_()
 
 
 class CheckRoutineDialog( QDialog, object ):
