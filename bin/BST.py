@@ -168,6 +168,37 @@ def _parseSqArgs( cr, argv ):
         cr.setRulesToRun( forceRules )
 
 
+def _runPatchSystemGUI():
+    logging.info( 'starting zen update' )
+
+    from ToolBOSCore.CIA import PatchSystemGUI
+
+    PatchSystemGUI.run()
+
+
+def _runCheckRoutineDialog():
+    from ToolBOSCore.ZenBuildMode    import QtPackageModel
+    from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
+
+    logging.info( 'starting software quality check GUI' )
+
+    projectRoot = os.getcwd()
+
+    model = QtPackageModel.BSTPackageModel()
+    model.open( projectRoot )
+
+    CheckRoutineDialog.run( model )
+
+
+def _runZenBuildModeGUI():
+    from ToolBOSCore.ZenBuildMode import MainWindow
+
+    logging.info( 'starting zen build mode' )
+
+    projectRoot = os.getcwd()
+    MainWindow.MainWindow( projectRoot ).main()
+
+
 def _showAvailableTemplates():
     """
         Lists all available templates on the console.
@@ -496,18 +527,16 @@ try:
 
 
     if zen:
-        if upgrade:
-            from ToolBOSCore.CIA import PatchSystemGUI
+        FastScript.tryImport( 'PyQt5' )
 
-            PatchSystemGUI.run()
-            sys.exit( 0 )
+        if upgrade:
+            _runPatchSystemGUI()
+
+        elif quality:
+            _runCheckRoutineDialog()
 
         else:
-            FastScript.tryImport( 'PyQt5' )
-            from ToolBOSCore.ZenBuildMode import MainWindow
-
-            logging.debug( 'starting zen build mode' )
-            MainWindow.MainWindow( os.getcwd() ).main()
+            _runZenBuildModeGUI()
 
         sys.exit( 0 )
 

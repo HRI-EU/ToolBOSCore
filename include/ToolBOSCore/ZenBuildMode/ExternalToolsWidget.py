@@ -40,8 +40,9 @@ import logging
 from PyQt5.QtCore    import QSize, Qt
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.ZenBuildMode import CheckRoutineDialog, QtPackageModel,\
+from ToolBOSCore.ZenBuildMode import QtPackageModel,\
                                      SettingsDialog, UpdateDialog
+from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
 from ToolBOSCore.GenericGUI   import BusyWaitDialog, \
                                      IconProvider, PixmapProvider, \
                                      ProcessExecutor
