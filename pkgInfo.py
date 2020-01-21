@@ -63,7 +63,7 @@ installMatching  = [ ('', '^useFromHere.+'),
                      ('doc', '\\.(png|jpg|txt)$'),
                      ('doc/BuildSystemTools', '\\.png$'),
                      ('doc/Concepts', '\\.png$'),
-                     ('doc/HowT', '\\.png$'),
+                     ('doc/HowTo', '\\.png$'),
                      ('doc/Logos', '\\.(jpg|png|svg)$'),
                      ('examples', '\\.(py|c|conf)$') ]
 
