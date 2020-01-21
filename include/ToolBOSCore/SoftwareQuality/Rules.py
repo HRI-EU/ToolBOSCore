@@ -75,6 +75,7 @@ class AbstractRule( object ):
     badExample  = None
     seeAlso     = {}
     sqLevel     = None
+    removed     = False
 
 
     def __init__( self ):
@@ -311,6 +312,12 @@ class AbstractValgrindRule( AbstractRule ):
                                                         's' if failedExecutables > 1 else '' ) )
 
         return result
+
+
+class RemovedRule( AbstractRule ):
+
+    brief   = '*removed*'
+    removed = True
 
 
 class Rule_GEN01( AbstractRule ):
@@ -745,10 +752,10 @@ tabs.'''
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'source files do not contain tabs' )
+                       'no tabs found' )
         else:
             result = ( FAILED, passed, failed,
-                       'source files contain tabs' )
+                       'tabs found' )
 
         return result
 
@@ -1654,9 +1661,8 @@ once in a while inspect your code using Klocwork.'''
         return result
 
 
-class Rule_C11( AbstractRule ):
-
-    brief       = '*removed*'
+class Rule_C11( RemovedRule ):
+    pass
 
 
 class Rule_C12( AbstractValgrindRule ):
@@ -1779,9 +1785,8 @@ Specify an empty list if really nothing has to be executed.'''
         return details.testDirArch
 
 
-class Rule_PY01( AbstractRule ):
-
-    brief       = '*removed*'
+class Rule_PY01( RemovedRule ):
+    pass
 
 
 class Rule_PY02( AbstractRule ):
@@ -2121,9 +2126,8 @@ certain versions of Python. The tool is installed under
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class Rule_MAT01( AbstractRule ):
-
-    brief       = '*removed*'
+class Rule_MAT01( RemovedRule ):
+    pass
 
 
 class Rule_MAT02( AbstractRule ):
@@ -2440,9 +2444,8 @@ provide small, easy-to-understand example programs / showcases.
         return result
 
 
-class Rule_DOC04( AbstractRule ):
-
-    brief       = '*removed*'
+class Rule_DOC04( RemovedRule ):
+    pass
 
 
 class Rule_SAFE01( AbstractRule ):
@@ -3066,8 +3069,8 @@ def getRules():
     """
         Returns a list of available rules/checkers. Each item in the list
         is a tuple of (ruleID,instance). The ruleID is a string, and the
-        instance is a ready-to-use QualityRule representing one particular
-        SW Quality Guideline rule.
+        instance is a class representing one particular SW Quality
+        Guideline rule.
     """
     # retrieve all classes defined within this Python module,
     # and create instances
