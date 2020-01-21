@@ -61,9 +61,16 @@ from ToolBOSCore.Util                             import Any, FastScript, \
                                                          VersionCompat
 
 
-C_FILE_EXTENSIONS     = ( '.c', '.h', '.inc' )
+ALL_FILE_EXTENSIONS     = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
+                            '.java', '.m', '.py' )
 
-C_CPP_FILE_EXTENSIONS = ( '.c', '.cpp', '.h', '.hpp' )
+C_FILE_EXTENSIONS       = ( '.c', '.h', '.inc' )
+
+C_CPP_FILE_EXTENSIONS   = ( '.c', '.cpp', '.h', '.hpp', '.inc' )
+
+C_HEADER_EXTENSIONS     = ( '.h', )
+
+C_CPP_HEADER_EXTENSIONS = ('.h', '.hpp', 'hh', 'hxx')
 
 
 class AbstractRule( object ):
@@ -345,7 +352,7 @@ Other languages such as German or Japanese should be avoided.'''
         passed = 0
         failed = 0
 
-        whitelist = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m', '.py' )
+        whitelist = ALL_FILE_EXTENSIONS
 
         for filePath in files:
             if os.path.splitext( filePath )[-1] in whitelist:
@@ -645,8 +652,7 @@ in the documentation.'''
         failed = 0
 
         copyrightLines = getCopyright()
-        whitelist      = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m',
-                           '.py', '.bat' )
+        whitelist      = ALL_FILE_EXTENSIONS
 
         for filePath in files:
             if os.path.splitext( filePath )[-1] in whitelist:
@@ -1013,8 +1019,8 @@ causing data loss or inconsistent states.'''
                 logging.debug( '%s: found exit() within main program: OK', filePath  )
                 continue
 
-            if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ) or \
-               filePath.endswith( '.hpp' ) or filePath.endswith( '.inc' ):
+            _, ext = os.path.splitext( filePath )
+            if ext in C_CPP_FILE_EXTENSIONS:
 
                 content = FastScript.getFileContent( filePath )
 
@@ -1096,9 +1102,9 @@ Without these macros the code will not link in C++ context.'''
         try:
 
             for filePath in files:
-                fname, fext = os.path.splitext( filePath )
+                fname, ext = os.path.splitext( filePath )
 
-                if fext == '.h' and not filePath.startswith( binDir ):
+                if ext in C_HEADER_EXTENSIONS and not filePath.startswith( binDir ):
 
                     contents = FastScript.getFileContent( filePath )
                     found    = False
@@ -1198,7 +1204,7 @@ b, instead of being 33 like it should, would actually be replaced with
         try:
             for filePath in files:
                 _, ext = os.path.splitext( filePath )
-                if ext.lower( ) in ('.h', '.hpp', 'hh', 'hxx'):
+                if ext in C_CPP_HEADER_EXTENSIONS:
                     basename     = os.path.basename( filePath )
                     module       = os.path.splitext( basename )[0]
                     moduleUpper  = module.upper()
@@ -1295,6 +1301,7 @@ updated and still passes parameters.'''
 
             for filePath in files:
                 _, ext = os.path.splitext( filePath )
+
                 if ext in C_FILE_EXTENSIONS:
                     parser = createCParser( filePath, details, headerAndLanguageMap )
 
@@ -1370,7 +1377,9 @@ and other compile errors.'''
         blacklist = frozenset( [ 'documentation.h' ] )
 
         for filePath in files:
-            if filePath.endswith( '.h' ) or filePath.endswith( '.hpp' ):
+            _, ext = os.path.splitext( filePath )
+
+            if ext in C_CPP_HEADER_EXTENSIONS:
                 fileName    = os.path.basename( filePath )
                 module      = os.path.splitext( fileName )[0]
                 moduleUpper = module.upper()
@@ -1442,7 +1451,9 @@ of code variants.'''
         failed = 0
 
         for filePath in files:
-            if filePath.endswith( '.h' ) or filePath.endswith( '.hpp' ):
+            _, ext = os.path.splitext( filePath )
+
+            if ext in C_CPP_HEADER_EXTENSIONS:
                 content = FastScript.getFileContent( filePath )
 
                 if content.find( 'inline' ) != -1:
@@ -2527,8 +2538,8 @@ label declared later in the same function.'''
         found  = 0
 
         for filePath in files:
-            if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ) or \
-               filePath.endswith( '.hpp' ) or filePath.endswith( '.inc' ):
+            _, ext = os.path.splitext( filePath )
+            if ext in C_CPP_FILE_EXTENSIONS:
 
                 content = FastScript.getFileContent( filePath )
 
