@@ -148,6 +148,7 @@ class PackageDetector( object ) :
         self.vcsURL            = None
         self.vcsRelPath        = None
         self.vcsRevision       = None
+        self.vcsRoot           = None
 
         # current user (likely the maintainer when working on source tree)
         self.userAccount       = None
@@ -423,6 +424,7 @@ class PackageDetector( object ) :
             self.vcsRevision = self.gitCommitIdLong
             self.vcsRelPath  = self.gitRelPath
             self.vcsURL      = self.gitOrigin
+            self.vcsRoot     = self.gitOrigin
 
             Any.requireIsTextNonEmpty( self.vcsURL )
             Any.requireIsTextNonEmpty( self.vcsRevision )
@@ -432,8 +434,16 @@ class PackageDetector( object ) :
             self.vcsURL      = self.svnRepositoryURL
             self.vcsRevision = self.svnRevision
             self.vcsRelPath  = self.svnRelPath
+            self.vcsRoot     = self.svnRepositoryRoot
+
+            # svnRelPath is not present in pkgInfo.py but solely computed
+            # from the svnRepositoryURL and svnRepositoryRoot
+            self.svnRelPath  = os.path.relpath( self.svnRepositoryURL,
+                                                self.svnRepositoryRoot )
+            self.vcsRelPath  = self.svnRelPath
 
             Any.requireIsTextNonEmpty( self.vcsURL )
+            Any.requireIsTextNonEmpty( self.vcsRoot )
             Any.requireIsIntNotZero( self.vcsRevision )
             Any.isOptional( self.vcsRelPath )
 
@@ -703,9 +713,10 @@ class PackageDetector( object ) :
             wc = SVN.WorkingCopy()
 
             self.svnRevision       = wc.getRevision()
-            self.svnRelPath        = None                       # TODO
             self.svnRepositoryURL  = wc.getRepositoryURL()
             self.svnRepositoryRoot = wc.getRepositoryRoot()
+            self.svnRelPath        = os.path.relpath( self.svnRepositoryURL,
+                                                      self.svnRepositoryRoot )
             self.svnFound          = True
 
         except ( subprocess.CalledProcessError, OSError ):

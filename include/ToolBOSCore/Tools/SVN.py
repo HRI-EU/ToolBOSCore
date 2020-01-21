@@ -58,6 +58,9 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         # get rid of legacy hostnames
         url = url.replace( 'svnhost', 'hri-svn' )
 
+        # use FQDN
+        url = url.replace( 'hri-svn/', 'hri-svn.honda-ri.de/' )
+
         super( SVNRepository, self ).__init__( url )
 
         self._allowedHosts = ToolBOSSettings.getConfigOption( 'SVN_allowedHosts' )
@@ -88,8 +91,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
 
         FastScript.setEnv( 'SVN_SSH', newValue )
 
-
-        cmd = "svn co -r %s %s" % ( revision, self.url )
+        cmd = self.getSourceCodeCommand( revision )
 
         return FastScript.execProgram( cmd, stdout=output, stderr=output )
 
@@ -198,8 +200,36 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         return hostName
 
 
+    def getRepositoryName( self ):
+        """
+            Returns the name of a repository which can be different from
+            the package name, e.g.:
+
+            URL = svn+ssh://user@host/path/to/Foo
+
+            returns: "Foo"
+        """
+        Any.requireIsTextNonEmpty( self.url )
+
+        repoName = os.path.basename( self.url )
+        Any.requireIsTextNonEmpty( repoName )
+
+        return repoName
+
+
     def getSourceCode( self, revision='HEAD' ):
         return self.checkout( revision)
+
+
+    def getSourceCodeCommand( self, revision='HEAD' ):
+        Any.requireIsTextNonEmpty( self.url )
+
+        if revision == 'HEAD':
+            cmd = "svn co %s" % self.url
+        else:
+            cmd = "svn co -r %s %s" % ( revision, self.url )
+
+        return cmd
 
 
     def exists( self ):

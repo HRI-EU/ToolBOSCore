@@ -170,10 +170,29 @@ class RemoteRepository( Repository ):
         raise NotImplementedError()
 
 
+    def getRepositoryName( self ):
+        """
+            Returns the name of a repository which can be different from
+            the package name.
+        """
+        raise NotImplementedError()
+
+
     def getSourceCode( self, revision ):
         """
             Get the source code from the repository onto local disk,
             no matter how this is achieved by the backend.
+        """
+        raise NotImplementedError()
+
+
+    def getSourceCodeCommand( self, *params ):
+        """
+            Returns the command the user would have to invoke on commandline
+            to fetch the source code from the repository, e.g.:
+
+            'git clone <url>'
+            'svn co <url>'
         """
         raise NotImplementedError()
 
