@@ -83,8 +83,6 @@ sqOptOutRules    = [ 'GEN04', 'C10', 'C12' ]
 
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'GEN04': 'package is published under BSD License',
-                     'C03'  : 'historic macro names would require huge effort to be renamed',
-                     'C04'  : 'FP: contains documentation and implementation of this SQ rule',
                      'C10'  : 'do not invoke Klocwork on example files',
                      'C12'  : 'do not invoke Valgrind on example files' }
 
