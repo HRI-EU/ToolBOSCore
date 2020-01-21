@@ -118,7 +118,15 @@ class CheckRoutine( object ):
     def includeDir( self, dirPath ):
         Any.requireIsTextNonEmpty( dirPath )
 
-        for filePath in FastScript.getFilesInDirRecursive( dirPath ):
+        # FastScript.getFilesInDirRecursive() returns:
+        #    * absolute file paths if absolute dir. path provided
+        #    * relative file paths if relative dir. Path provided
+        #
+        # shorten absolute path names to relative ones for shorter outputs:
+        searchPath = os.path.relpath( dirPath )
+
+
+        for filePath in FastScript.getFilesInDirRecursive( searchPath ):
 
             # only consider whitelisted extensions, f.i. do not analyze
             # binaries, bytecode files, PDFs etc.
