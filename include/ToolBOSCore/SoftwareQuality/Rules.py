@@ -66,7 +66,7 @@ C_FILE_EXTENSIONS     = ( '.c', '.h', '.inc' )
 C_CPP_FILE_EXTENSIONS = ( '.c', '.cpp', '.h', '.hpp' )
 
 
-class AbstractQualityRule( object ):
+class AbstractRule( object ):
 
     ruleID      = None
     brief       = None
@@ -92,7 +92,7 @@ class AbstractQualityRule( object ):
         return ruleID
 
 
-class AbstractValgrindRule( AbstractQualityRule ):
+class AbstractValgrindRule( AbstractRule ):
 
     def run( self, details, files ):
         """
@@ -313,7 +313,7 @@ class AbstractValgrindRule( AbstractQualityRule ):
         return result
 
 
-class QualityRule_GEN01( AbstractQualityRule ):
+class Rule_GEN01( AbstractRule ):
 
     brief       = '''All comments, documentation, identifier names (types,
 variables, functions, classes) and filenames must be English.'''
@@ -383,7 +383,7 @@ Other languages such as German or Japanese should be avoided.'''
         return result
 
 
-class QualityRule_GEN02( AbstractQualityRule ):
+class Rule_GEN02( AbstractRule ):
 
     brief       = '''Source code should be in ASCII or UTF-8 files.
 Filenames should only contain alphanumeric characters.'''
@@ -441,7 +441,7 @@ dialog.'''
         return result
 
 
-class QualityRule_GEN03( AbstractQualityRule ):
+class Rule_GEN03( AbstractRule ):
 
     brief       = '''Stick to 80 characters per line. Exceptions are fine
 when increasing readability.'''
@@ -503,7 +503,7 @@ when increasing readability.'''
         return result
 
 
-class QualityRule_GEN04( AbstractQualityRule ):
+class Rule_GEN04( AbstractRule ):
 
     brief       = '''All source code files and related artefacts, such as
 configfiles or documentation, must start with the HRI-EU copyright header.'''
@@ -667,7 +667,7 @@ in the documentation.'''
         return result
 
 
-class QualityRule_GEN05( AbstractQualityRule ):
+class Rule_GEN05( AbstractRule ):
 
     brief       = '''No type abbreviations must be added to identifiers
 ("Hungarian notation"), because types may change without updating the
@@ -690,7 +690,7 @@ hard-to-track bugs.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_GEN06( AbstractQualityRule ):
+class Rule_GEN06( AbstractRule ):
 
     brief       = 'Do not use tabs in code.'
 
@@ -753,7 +753,7 @@ tabs.'''
         return result
 
 
-class QualityRule_GEN07( AbstractQualityRule ):
+class Rule_GEN07( AbstractRule ):
 
     brief       = 'Libraries and applications should contain a unittest.'
 
@@ -793,7 +793,7 @@ show:
         return result
 
 
-class QualityRule_GEN08( AbstractQualityRule ):
+class Rule_GEN08( AbstractRule ):
 
     brief       = '''Any 3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
@@ -836,7 +836,7 @@ interface with it.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_GEN09( AbstractQualityRule ):
+class Rule_GEN09( AbstractRule ):
 
     brief       = '''If any 3rd party software is involved in the project,
 its usage or interfacing must be compliant with its license terms.'''
@@ -855,7 +855,7 @@ it with reasonable effort to an alternative software.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_GEN10( AbstractQualityRule ):
+class Rule_GEN10( AbstractRule ):
 
     brief       = '''Put package under version control system (Git/SVN).'''
 
@@ -895,7 +895,7 @@ Note: HRI-EU permits to use Git or Subversion (SVN).'''
         return result
 
 
-class QualityRule_GEN11( AbstractQualityRule ):
+class Rule_GEN11( AbstractRule ):
 
     brief       = '''Consider managing bugs and feature requests via JIRA
 issue tracker.'''
@@ -903,7 +903,7 @@ issue tracker.'''
     sqLevel     = frozenset()
 
     def __init__( self ):
-        super( AbstractQualityRule, self ).__init__()
+        super( AbstractRule, self ).__init__()
 
         url = getConfigOption( 'bugtrackURL' )
 
@@ -920,7 +920,7 @@ Remote access is also possible upon request, please contact system
 administration in this case.''' % { 'url': url }
 
 
-class QualityRule_GEN12( AbstractQualityRule ):
+class Rule_GEN12( AbstractRule ):
 
     brief       = '''Applications and library functions should have a
 deterministic mode, i.e. the possiblity to start with a defined random
@@ -938,7 +938,7 @@ predefine the seed or to assign some fixed value that should be taken instead.
     sqLevel     = frozenset()
 
 
-class QualityRule_C01( AbstractQualityRule ):
+class Rule_C01( AbstractRule ):
 
     brief       = '''Prefer returning status codes (or throwing exceptions
 in C++) over `exit()` within the code.'''
@@ -1034,7 +1034,7 @@ causing data loss or inconsistent states.'''
         return result
 
 
-class QualityRule_C02( AbstractQualityRule ):
+class Rule_C02( AbstractRule ):
 
     brief       = 'C header files should ensure C++ linkage compatibility.'
 
@@ -1128,7 +1128,7 @@ Without these macros the code will not link in C++ context.'''
         return result
 
 
-class QualityRule_C03( AbstractQualityRule ):
+class Rule_C03( AbstractRule ):
 
     brief       = '''Macro names must be uppercase and prefixed by the package
 name. The expression must be put in parentheses.'''
@@ -1249,7 +1249,7 @@ b, instead of being 33 like it should, would actually be replaced with
         return result
 
 
-class QualityRule_C04( AbstractQualityRule ):
+class Rule_C04( AbstractRule ):
 
     brief       = '''A function without parameters must be declared with a
 `void` argument list.'''
@@ -1320,7 +1320,7 @@ updated and still passes parameters.'''
         return result
 
 
-class QualityRule_C05( AbstractQualityRule ):
+class Rule_C05( AbstractRule ):
 
     brief       = '''Header files must be protected against multiple inclusion
 using inclusion guards.'''
@@ -1403,7 +1403,7 @@ and other compile errors.'''
         return result
 
 
-class QualityRule_C06( AbstractQualityRule ):
+class Rule_C06( AbstractRule ):
 
     brief       = '''Header files should not expose inline functions as
 public interface. The result after changing the implementation is undefined.'''
@@ -1455,7 +1455,7 @@ of code variants.'''
         return result
 
 
-class QualityRule_C07( AbstractQualityRule ):
+class Rule_C07( AbstractRule ):
 
     brief       = '''Logging should be done using `ANY_LOG()` macros.'''
 
@@ -1488,7 +1488,7 @@ reasons. And consistency is a soft skill for good quality software.'''
     sqLevel     = frozenset()
 
 
-class QualityRule_C08( AbstractQualityRule ):
+class Rule_C08( AbstractRule ):
 
     brief       = '''Use datatypes and functions which support both 32 and
 64 bit environments.'''
@@ -1525,7 +1525,7 @@ types, f.i. `BaseI16` or `BaseI64`, defined in `Base.h.`'''
     sqLevel     = frozenset()
 
 
-class QualityRule_C09( AbstractQualityRule ):
+class Rule_C09( AbstractRule ):
 
     brief       = '''Package can be built using `BST.py.`'''
 
@@ -1575,7 +1575,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         return result
 
 
-class QualityRule_C10( AbstractQualityRule ):
+class Rule_C10( AbstractRule ):
 
     brief       = '''Use a static source code analyzer (f.i. Klocwork
 Insight).'''
@@ -1654,12 +1654,12 @@ once in a while inspect your code using Klocwork.'''
         return result
 
 
-class QualityRule_C11( AbstractQualityRule ):
+class Rule_C11( AbstractRule ):
 
     brief       = '*removed*'
 
 
-class QualityRule_C12( AbstractValgrindRule ):
+class Rule_C12( AbstractValgrindRule ):
 
     brief       = '''Heap-memory explicitly allocated with `malloc()` or
 `new` (or wrappers thereof), must be explicitly released using `free()` or
@@ -1695,7 +1695,7 @@ Specify an empty list if really nothing has to be executed.'''
         return details.binDirArch
 
 
-class QualityRule_C13( AbstractQualityRule ):
+class Rule_C13( AbstractRule ):
 
     brief       = '''Code should compile without warnings, even at strict
 compiler settings.'''
@@ -1721,7 +1721,7 @@ ISO C compliant, or explicitly silence the compiler warning in question.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_C14( AbstractQualityRule ):
+class Rule_C14( AbstractRule ):
 
     brief       = '''Minimize the use of global variables.'''
 
@@ -1740,7 +1740,7 @@ accidentally (or intentionally) invoked from another compilation unit.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_C15( AbstractValgrindRule ):
+class Rule_C15( AbstractValgrindRule ):
 
 
     brief       = '''Unittests should be runnable under Valgrind without
@@ -1779,12 +1779,12 @@ Specify an empty list if really nothing has to be executed.'''
         return details.testDirArch
 
 
-class QualityRule_PY01( AbstractQualityRule ):
+class Rule_PY01( AbstractRule ):
 
     brief       = '*removed*'
 
 
-class QualityRule_PY02( AbstractQualityRule ):
+class Rule_PY02( AbstractRule ):
 
     brief       = '''Private class members and methods (name starting with
 underscore) must not be accessed from the outside.'''
@@ -1858,7 +1858,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
         return result
 
 
-class QualityRule_PY03( AbstractQualityRule ):
+class Rule_PY03( AbstractRule ):
 
     brief       = '''Logging should be done using Python's native `logging`
 module, evtl. supported by helpers from `Any.py.`'''
@@ -1905,7 +1905,7 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     sqLevel     = frozenset()
 
 
-class QualityRule_PY04( AbstractQualityRule ):
+class Rule_PY04( AbstractRule ):
 
     brief       = '''Prefer throwing exceptions over sys.exit(), os.exit()
                      and os._exit() within the code.'''
@@ -2017,7 +2017,7 @@ application, potentially causing data loss or inconsistent states.'''
         return status, passed, failed, msg
 
 
-class QualityRule_PY05( AbstractQualityRule ):
+class Rule_PY05( AbstractRule ):
 
     brief       = '''Use a static source code analyzer.'''
 
@@ -2099,7 +2099,7 @@ under `${SIT}/External/PyCharmPro`.'''
         return result
 
 
-class QualityRule_PY06( AbstractQualityRule ):
+class Rule_PY06( AbstractRule ):
 
     brief       = '''Mind compatibility with Python versions 2.6 to 3.x'''
 
@@ -2121,12 +2121,12 @@ certain versions of Python. The tool is installed under
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class QualityRule_MAT01( AbstractQualityRule ):
+class Rule_MAT01( AbstractRule ):
 
     brief       = '*removed*'
 
 
-class QualityRule_MAT02( AbstractQualityRule ):
+class Rule_MAT02( AbstractRule ):
 
     brief       = '''Follow the suggestions of the Matlab code-checker. Write
 a comment in case you have to diverge from the suggestion.'''
@@ -2191,7 +2191,7 @@ specific case to follow the Matlab code-checker.'''
         return result
 
 
-class QualityRule_MAT03( AbstractQualityRule ):
+class Rule_MAT03( AbstractRule ):
 
     brief       = '''Avoid unintentional shadowing, i.e. function names should
 be unique.'''
@@ -2202,7 +2202,7 @@ behavior. Check with `which -all` or `exist`.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_MAT04( AbstractQualityRule ):
+class Rule_MAT04( AbstractRule ):
 
     brief       = '''Loop variables should be initialized immediately before
 the loop.'''
@@ -2222,7 +2222,7 @@ loop does not execute for all possible indices.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_MAT05( AbstractQualityRule ):
+class Rule_MAT05( AbstractRule ):
 
     brief       = '''Function header comments should support the use of
 `help` and `lookfor`.
@@ -2235,7 +2235,7 @@ path.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_DOC01( AbstractQualityRule ):
+class Rule_DOC01( AbstractRule ):
 
     brief       = '''The main functionality (why this package exists) should
 be briefly documented.'''
@@ -2375,7 +2375,7 @@ Hence a doxygen mainpage is not needed in such case.
         return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
 
 
-class QualityRule_DOC02( AbstractQualityRule ):
+class Rule_DOC02( AbstractRule ):
 
     brief       = '''All public entities must be documented.'''
 
@@ -2392,7 +2392,7 @@ duplication (for consistency reasons).'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_DOC03( AbstractQualityRule ):
+class Rule_DOC03( AbstractRule ):
 
     brief       = '''Provide simple example programs to demonstrate basic
 usage.'''
@@ -2440,12 +2440,12 @@ provide small, easy-to-understand example programs / showcases.
         return result
 
 
-class QualityRule_DOC04( AbstractQualityRule ):
+class Rule_DOC04( AbstractRule ):
 
     brief       = '*removed*'
 
 
-class QualityRule_SAFE01( AbstractQualityRule ):
+class Rule_SAFE01( AbstractRule ):
 
     brief       = '''Only C90 and C99 are allowed.'''
 
@@ -2455,7 +2455,7 @@ language extensions.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE02( AbstractQualityRule ):
+class Rule_SAFE02( AbstractRule ):
 
     brief       = '''Functions must check their arguments for validity
 (valid pointers, numbers in range, existence of files).'''
@@ -2482,7 +2482,7 @@ causes for later errors.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE03( AbstractQualityRule ):
+class Rule_SAFE03( AbstractRule ):
 
     brief       = '''Memory must not be allocated after init phase (startup)
 of the application.'''
@@ -2497,7 +2497,7 @@ termination.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE04( AbstractQualityRule ):
+class Rule_SAFE04( AbstractRule ):
 
     brief       = '''The `goto`-statement should not be used.'''
 
@@ -2543,7 +2543,7 @@ label declared later in the same function.'''
         return result
 
 
-class QualityRule_SAFE05( AbstractQualityRule ):
+class Rule_SAFE05( AbstractRule ):
 
     brief       = '''Multi-byte characters (f.i. Unicode) shall not be
 used.'''
@@ -2667,7 +2667,7 @@ literals their use in safety-critical application is highly discouraged.'''
         return result
 
 
-class QualityRule_SAFE06( AbstractQualityRule ):
+class Rule_SAFE06( AbstractRule ):
 
     brief       = '''Recursion (directly or indirectly) must not be used.'''
 
@@ -2681,7 +2681,7 @@ MISRA-2012 rule 17.2 requires the absence of recursion.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE07( AbstractQualityRule ):
+class Rule_SAFE07( AbstractRule ):
 
     brief       = '''Use safe string-processing functions only.'''
 
@@ -2711,7 +2711,7 @@ terminating `\\0` must not be used.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE08( AbstractQualityRule ):
+class Rule_SAFE08( AbstractRule ):
 
     brief       = '''Functions should be preferred over function-like
 macros.'''
@@ -2783,7 +2783,7 @@ circumstances.'''
         return result
 
 
-class QualityRule_SPEC01( AbstractQualityRule ):
+class Rule_SPEC01( AbstractRule ):
 
     brief       = '''Safety-critical car applications are requested to use
 "state-of-the-art" tools (e.g. Klocwork) for checking code quality.'''
@@ -2803,7 +2803,7 @@ class QualityRule_SPEC01( AbstractQualityRule ):
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SPEC02( AbstractQualityRule ):
+class Rule_SPEC02( AbstractRule ):
 
     brief       = '''MSVC requires variables to be declared at the top of a
 function.'''
@@ -2847,7 +2847,7 @@ without any sideeffects.'''
     sqLevel     = frozenset()
 
 
-class QualityRule_SPEC03( AbstractQualityRule ):
+class Rule_SPEC03( AbstractRule ):
 
     brief       = '''Portable POSIX-like functions should be used, rather
 than platform-specific functions.'''
@@ -2870,7 +2870,7 @@ such purpose. They map to the underlying O.S.-specific functions with no cost
     sqLevel     = frozenset()
 
 
-class QualityRule_SPEC04( AbstractQualityRule ):
+class Rule_SPEC04( AbstractRule ):
 
     brief       = '''It is typically not foreseeable if code in the future
 might be re-used in a multi-threaded environment. Therefore all code should be
@@ -2904,7 +2904,7 @@ Do not rely on such implementation-specific side effects!'''
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class QualityRule_SPEC05( AbstractQualityRule ):
+class Rule_SPEC05( AbstractRule ):
 
     brief       = '''Functions should be re-entrant.'''
 
@@ -3077,7 +3077,7 @@ def getRules():
     tmp    = inspect.getmembers( sys.modules[__name__], inspect.isclass )
 
     for className, constructor in tmp:
-        if className.startswith( 'QualityRule_' ):
+        if className.startswith( 'Rule_' ):
             ctors[ className ] = constructor
 
 
@@ -3090,7 +3090,7 @@ def getRules():
             ruleID = '%s%02d' % ( category, i )
 
             try:
-                func = ctors[ 'QualityRule_%s' % ruleID ]
+                func = ctors[ 'Rule_%s' % ruleID ]
                 Any.requireIsCallable( func )
                 instance = func()
                 result.append( ( ruleID, instance ) )

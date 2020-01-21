@@ -260,7 +260,7 @@ class CheckRoutine( object ):
 
             rule = self.rules[ ruleID ]
 
-            Any.requireIsInstance( rule, Rules.AbstractQualityRule )
+            Any.requireIsInstance( rule, Rules.AbstractRule )
             Any.requireIsInstance( rule.sqLevel, frozenset )
 
             if self.details.sqLevel in rule.sqLevel:
@@ -368,7 +368,7 @@ class CheckRoutine( object ):
 
             ( ruleID, rule ) = elem
             Any.requireIsTextNonEmpty( ruleID )
-            Any.requireIsInstance( rule, Rules.AbstractQualityRule )
+            Any.requireIsInstance( rule, Rules.AbstractRule )
 
             self.ruleIDs.add( ruleID )
 
