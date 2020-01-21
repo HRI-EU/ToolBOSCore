@@ -35,7 +35,6 @@
 
 
 import ast
-import copy
 import collections
 import inspect
 import logging
@@ -52,6 +51,7 @@ from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
+from ToolBOSCore.Settings.ProcessEnv              import source
 from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
@@ -60,6 +60,8 @@ from ToolBOSCore.Tools                            import CMake, Klocwork,\
 from ToolBOSCore.Util                             import Any, FastScript, \
                                                          VersionCompat
 
+
+C_FILE_EXTENSIONS     = ( '.c', '.h', '.inc' )
 
 C_CPP_FILE_EXTENSIONS = ( '.c', '.cpp', '.h', '.hpp' )
 
@@ -90,6 +92,227 @@ class AbstractQualityRule( object ):
         return ruleID
 
 
+class AbstractValgrindRule( AbstractQualityRule ):
+
+    def run( self, details, files ):
+        """
+            Check for memory leaks.
+        """
+        ruleId = self.getRuleID()
+
+        if not details.hasMainProgram( files ):
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
+
+        # look-up executables in e.g. bin/<platform>/ directory  (subclass-specific)
+
+        exeDir   = self.getExeDir( details )
+        exeFiles = self.getExeFiles( details )    # e.g. [ 'bin/bionic64/blah' ]
+
+        if not exeFiles:
+            logging.error( 'no executables found in %s, forgot to compile?', exeDir )
+            return FAILED, 0, 0, 'no executables found'
+
+        platform     = getHostPlatform()
+        exeFilesPath = []
+
+        for exeFile in exeFiles:
+            if ruleId == 'C12':
+                tmp = os.path.join( 'bin', platform, exeFile )
+                exeFilesPath.append(tmp)
+            elif ruleId == 'C15':
+                tmp = os.path.join( 'test', platform, exeFile )
+                exeFilesPath.append(tmp)
+            else:
+                continue
+
+        logging.debug( 'executable(s) found in %s directory: %s', exeDir, exeFiles )
+
+        # get SQ-settings from pkgInfo.py
+        sqSettings = self.getSQSettings( details )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+
+        if sqSettings is None:
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see %s docs" % ruleId
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        sqCheckExe = []
+
+        for setting in sqSettings:
+            if ruleId == 'C12'and setting.startswith( 'bin' ):
+                sqCheckExe.append( setting )
+            elif ruleId == 'C15'and setting.startswith( 'test' ):
+                sqCheckExe.append( setting )
+            else:
+                continue
+
+        logging.debug( "'sqCheckExe' settings for %s from pkgInfo.py: %s", ruleId, sqCheckExe )
+
+        if not sqCheckExe:
+            msg    = "no 'sqCheckExe' settings for %s found in pkgInfo.py, please see %s docs" % ( ruleId, ruleId )
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        # verify that we have:
+        #     - one executable present for each setting (to check if compilation was forgotten)
+        #     - one setting is present for each executable (to check if developer was lazy ;-)
+
+        validityCheck = self.validityCheck( exeFilesPath, sqCheckExe )
+
+        if validityCheck[0] == FAILED:
+            shortText = validityCheck[3]
+            logging.debug( shortText )
+
+            return validityCheck
+
+        # source the package before running Valgrind
+
+        source( details.canonicalPath )
+        logging.info( "sourcing %s", details.canonicalPath )
+
+        # finally run Valgrind
+        runValgrindResult = self.runValgrind( sqCheckExe, details )
+
+        return runValgrindResult
+
+
+    def getSQSettings( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        try:
+            sqSettingsTmp = details.sqCheckExe
+            Any.requireIsNotNone( sqSettingsTmp )
+            Any.requireIsList( sqSettingsTmp )
+
+            sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
+
+            return sqSettings
+
+        except ( IOError, ValueError, TypeError, OSError ) as e:
+            logging.error( e )
+            logging.error( 'issue with retrieving SQ settings from pkgInfo')
+
+            return None
+
+        except AssertionError:
+            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
+
+            return None
+
+
+    def getExeDir( self, details ):
+        raise NotImplementedError
+
+
+    def getExeFiles( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        ruleId = self.getRuleID()
+        Any.requireIsTextNonEmpty( ruleId )
+
+        exeDir = self.getExeDir( details )
+        Any.requireIsTextNonEmpty( exeDir )   # packages may not have "bin/<platform>" etc.!
+
+        exeFiles = FastScript.getFilesInDir( exeDir )
+        Any.requireIsList( exeFiles )
+
+        return exeFiles
+
+
+    def validityCheck( self, binFiles, commandLines ):
+        Any.requireIsList( binFiles )
+        Any.requireIsList( commandLines )
+
+        commands = []
+
+        for cmdLine in commandLines:
+
+            tmp = shlex.split( cmdLine )
+            command = tmp[0]
+            commands.append( command )
+
+        # TODO: check matching
+
+        for command in commands:
+            if not os.path.exists( command ):
+                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'. "
+                               "Is the package compiled?", command )
+
+                result = ( FAILED, 0, 1,
+                           '%s specified in pkgInfo.py does not exist' % command )
+
+                return result
+
+        for binFile in binFiles:
+            if binFile not in commands:
+                logging.warning("%s executable was found. "
+                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
+
+                result = ( FAILED, 0, 1,
+                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
+
+                return result
+
+        return OK, 0, 0, 'validity check paas'
+
+
+    def runValgrind( self, commandLines, details ):
+        passedExecutables = 0
+        failedExecutables = 0
+        errorMessages     = []
+
+        ruleID            = self.getRuleID()
+
+        for command in commandLines:
+
+            logging.info( "%s: checking '%s'" % ( ruleID,command ) )
+
+            if Any.getDebugLevel() <= 3:
+                stdout = VersionCompat.StringIO()
+                stderr = VersionCompat.StringIO()
+            else:
+                stdout = None
+                stderr = None
+
+            try:
+                failed, errors = Valgrind.checkExecutable( command, details,
+                                                           stdout=stdout, stderr=stderr )
+            except subprocess.CalledProcessError as e:
+                failed = True
+                errors = []
+
+            if failed:
+                failedExecutables += 1
+
+                for error in errors:
+                    errorMessages.append( '%s: %s:%s - %s'
+                                          % ( ruleID, error.fname, error.lineno, error.description ) )
+
+                logging.info( "%s: '%s' failed (see verbose-mode for details)"% ( ruleID, command ) )
+
+            else:
+                passedExecutables += 1
+                logging.info( "%s: '%s successfully finished"% ( ruleID, command ) )
+
+        for error in errorMessages:
+            logging.error( error )
+
+        if not passedExecutables and not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no executables were checked with Valgrind' )
+        elif not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no defects found by Valgrind' )
+        else:
+            result = ( FAILED, passedExecutables, failedExecutables,
+                       'Valgrind found %d defect%s' % ( failedExecutables,
+                                                        's' if failedExecutables > 1 else '' ) )
+
+        return result
+
+
 class QualityRule_GEN01( AbstractQualityRule ):
 
     brief       = '''All comments, documentation, identifier names (types,
@@ -111,28 +334,51 @@ Other languages such as German or Japanese should be avoided.'''
             Look for specific characters such as German Umlauts, French
             accents, or Japanese characters.
         """
-        logging.debug( 'checking files for Non-English characters...' )
+        logging.debug( 'checking filenames for Non-English characters...' )
         passed = 0
         failed = 0
 
-        whitelist      = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m',
-                           '.py' )
+        whitelist = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m', '.py' )
 
         for filePath in files:
             if os.path.splitext( filePath )[-1] in whitelist:
 
                 logging.debug( 'checking %s', filePath )
 
-                passedInFile, failedInFile = findNonAsciiCharacters( filePath, 'GEN01' )
-                passed += passedInFile
-                failed += failedInFile
+
+                if six.PY2:
+
+                    try:
+                        filePath.decode( 'ascii' )
+                        passed += 1
+                    except UnicodeDecodeError as e:
+                        # PyCharm linter fails to recognize the start property
+                        # so we silence the warning.
+                        # noinspection PyUnresolvedReferences
+                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                      filePath )
+                        failed += 1
+
+                else:
+
+                    try:
+                        filePath.encode( 'ascii' )
+                        passed += 1
+                    except UnicodeEncodeError as e:
+                        # PyCharm linter fails to recognize the start property
+                        # so we silence the warning.
+                        # noinspection PyUnresolvedReferences
+                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                      filePath )
+                        failed += 1
+
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'all identifiers and comments OK' )
+                       'all filenames in ASCII characters' )
         else:
             result = ( FAILED, passed, failed,
-                       'files with Non-ASCII characters found' )
+                       'filenames with Non-ASCII characters found' )
 
         return result
 
@@ -523,6 +769,9 @@ show:
         """
             Checks if the package provides a unittest.
         """
+        if details.isComponent():
+            return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
+
         logging.debug( 'looking for unittest.{sh,bak}' )
         found = False
 
@@ -541,26 +790,26 @@ show:
 
 class QualityRule_GEN08( AbstractQualityRule ):
 
-    brief       = '''Any 3rd party code must be clearly separated to avoid
+    brief       = '''Any 3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
 if needed.'''
 
-    description = '''Closely integrating 3rd party software such as compiling
+    description = '''Closely integrating 3rd-party-software such as compiling
 foreign source code into the own application very likely will violate the
-license of the 3rd party software. This can result in severe legal problems.
+license of the 3rd-party-software. This can result in severe legal problems.
 (There are some licenses which permit such usage, f.i. BSD License).
 
-Even putting 3rd party libraries into the own source code repository is within
+Even putting 3rd-party-libraries into the own source code repository is within
 a questionable grey zone. At least create a sub-directory named
-*external* and put all 3rd party modules inside. This makes obvious that you
-do not claim ownership on this material.
+*external* or *3rdParty* and put all 3rd-party-modules inside.
+This makes it obvious that you do not claim ownership on this material.
 
-Best approach is to install 3rd party software independently into SIT, and
+Best approach is to install 3rd-party-software independently into SIT, and
 interface with it.'''
 
     goodExample = '''\tMyPackage
 \t\t1.0
-\t\t\texternal
+\t\t\texternal (or "3rdParty")
 \t\t\t\tcmake.org
 \t\t\t\t\t[...]
 \t\t\t\tgnome.org
@@ -733,6 +982,9 @@ causing data loss or inconsistent states.'''
         """
             Checks if exit() and friends are used.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for direct exit() in code' )
         failed = 0
         passed = 0
@@ -746,7 +998,7 @@ causing data loss or inconsistent states.'''
                filePath.find( '/examples/' ) != -1 or \
                 filePath.find( '/test/' ) != -1:
 
-                logging.debug( '%s: exit() in main programs permitted', filePath  )
+                logging.debug( '%s: found exit() within main program: OK', filePath  )
                 continue
 
             if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ) or \
@@ -769,7 +1021,7 @@ causing data loss or inconsistent states.'''
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'no usage of exit() or abort() found' )
+                       'no invalid use of exit() or abort() found' )
         else:
             result = ( FAILED, passed, failed,
                        'exit() and/or abort() found' )
@@ -810,6 +1062,9 @@ Without these macros the code will not link in C++ context.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+
         logging.debug( 'checking C header files for linkage guards' )
 
         binDir            = os.path.join( details.topLevelDir, 'bin' )
@@ -825,14 +1080,6 @@ Without these macros the code will not link in C++ context.'''
         patterns          = { ifdefExpr       : ifdefRegex,
                               ifdefinedExpr   : ifDefinedRegex,
                               toolbosMacroExpr: toolbosMacroRegex }
-
-        platform = getHostPlatform()
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-
-        if details.isCppPackage():
-            result = ( NOT_APPLICABLE, passed, failed,
-                       'C++ package does not need linkage guards' )
-            return result
 
         try:
 
@@ -858,7 +1105,7 @@ Without these macros the code will not link in C++ context.'''
                         logging.debug( 'passed: %s', filePath )
                         passed += 1
                     else:
-                        logging.info( 'failed: %s', filePath )
+                        logging.info( 'C02: linkage guard missing: %s', filePath )
                         failed += 1
 
         except EnvironmentError as e:
@@ -917,6 +1164,9 @@ b, instead of being 33 like it should, would actually be replaced with
             fit to such conventions. Therefore we define a whitelist for such
             known macros here.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking C/C++ macro prefixes' )
         passed               = 0
         failed               = 0
@@ -1006,7 +1256,7 @@ unexpected parameters are supplied.
 If `void` isn't specified, the compiler does not make any assumptions.
 Hence the function could accidently be called with arguments.
 
-This might lead to error if a function that originally had taken parameters
+This might lead to an error if a function that originally had taken parameters
 has been changed (to not take parameters anymore) and the caller was not
 updated and still passes parameters.'''
 
@@ -1020,6 +1270,9 @@ updated and still passes parameters.'''
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+
         logging.debug( 'looking for function prototypes with no information about the arguments' )
         platform             = getHostPlatform( )
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
@@ -1030,7 +1283,7 @@ updated and still passes parameters.'''
 
             for filePath in files:
                 _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
+                if ext in C_FILE_EXTENSIONS:
                     parser = createCParser( filePath, details, headerAndLanguageMap )
 
                     if not parser:
@@ -1042,17 +1295,17 @@ updated and still passes parameters.'''
                         failed += 1
 
                         for proto, line in protos:
-                            logging.info( 'C04: %s:%d - function %s declared without information about the arguments',
-                                          filePath, line, proto )
+                            msg = 'C04: %s:%d - void-function with ambiguous argument list'
+                            logging.info( msg, filePath, line, proto )
                     else:
                         passed += 1
 
             if failed == 0:
                 result = ( OK, passed, failed,
-                           'all files OK' )
+                           'no void-functions with ambiguous arguments found' )
             else:
                 result = ( FAILED, passed, failed,
-                           'files with functions declared without parameters found' )
+                           'void-functions with ambiguous arguments found' )
 
         except EnvironmentError as e:
             logging.error( e )
@@ -1097,6 +1350,9 @@ and other compile errors.'''
                 ...
                 #endif
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking header file inclusion guards' )
 
         blacklist = frozenset( [ 'documentation.h' ] )
@@ -1134,10 +1390,10 @@ and other compile errors.'''
 
         if self.failed == 0:
             result = ( OK, self.passed, self.failed,
-                       'C/C++ header file inclusion guards valid' )
+                       'multi-inclusion safeguards present' )
         else:
             result = ( FAILED, self.passed, self.failed,
-                       'C/C++ safeguards missing' )
+                       'multi-inclusion safeguards missing' )
 
         return result
 
@@ -1166,6 +1422,9 @@ of code variants.'''
         """
             Checks that public C/C++ functions are not exposed as 'inline'.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( "looking for public functions declared 'inline'" )
         passed = 0
         failed = 0
@@ -1340,7 +1599,8 @@ once in a while inspect your code using Klocwork.'''
         """
             Execute the Klocwork source code analyzer in CLI mode.
         """
-        from subprocess import CalledProcessError
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
 
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
@@ -1366,8 +1626,8 @@ once in a while inspect your code using Klocwork.'''
                     logging.info( 'C10: %s:%s: %s [%s]', *item )
                     failed += 1
 
-        except ( AssertionError, CalledProcessError, EnvironmentError,
-                 RuntimeError ) as details:
+        except ( AssertionError, subprocess.CalledProcessError,
+                 EnvironmentError, RuntimeError ) as details:
             logging.error( 'C10: %s', details )
             failed += 1
             error   = True
@@ -1394,7 +1654,7 @@ class QualityRule_C11( AbstractQualityRule ):
     brief       = '*removed*'
 
 
-class QualityRule_C12( AbstractQualityRule ):
+class QualityRule_C12( AbstractValgrindRule ):
 
     brief       = '''Heap-memory explicitly allocated with `malloc()` or
 `new` (or wrappers thereof), must be explicitly released using `free()` or
@@ -1423,189 +1683,11 @@ Specify an empty list if really nothing has to be executed.'''
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
-    def run( self, details, files ):
-        """
-            Check for memory leaks.
-        """
-        if details.hasMainProgram( files ):
-            logging.info( 'main program(s) found' )
 
-            # look-up executables bin/<platform>/ directory
-            binFiles = self._getBinFiles( details )
-            logging.debug( 'executable(s) found in %s directory: %s',
-                           details.binDirArch, binFiles )
-
-        else:
-            logging.info( 'no main program(s) found' )
-
-            logging.info( '%s: possibly not C/C++ package' % details.canonicalPath )
-            result = ( OK, 0, 0,
-                       'check not applicable' )
-
-            return result
-
-        # get SQ-settings from pkgInfo.py
-        sqSettings = self._getSQSettings( details )
-        logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
-
-        if sqSettings is None:
-            msg    = "no 'sqCheckExe' settings found in pkgInfo.py (please see C12 docs)"
-            result = ( FAILED, 0, 1, msg )
-
-            return result
-
-        # verify that we have:
-        #     - one executable present for each setting (to check if compilation was forgotten)
-        #     - one setting is present for each executable (to check if developer was lazy ;-)
-
-        validityCheck = self._validityCheck( binFiles, sqSettings )
-
-        if validityCheck[0] == FAILED:
-            shortText = validityCheck[3]
-            logging.debug( shortText )
-
-            return validityCheck
-
-        # finally run Valgrind
-        runValgrindResult = self._runValgrind( sqSettings, details )
-
-        return runValgrindResult
-
-
-    def _getSQSettings( self, details ):
+    def getExeDir( self, details ):
         Any.requireIsInstance( details, PackageDetector )
 
-        try:
-            sqSettingsTmp = details.sqCheckExe
-            Any.requireIsNotNone( sqSettingsTmp )
-            Any.requireIsList( sqSettingsTmp )
-
-            sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
-
-            return sqSettings
-
-        except ( IOError, ValueError, TypeError, OSError ) as e:
-            logging.error( e )
-            logging.error( 'issue with retrieving SQ settings from pkgInfo')
-
-            return None
-
-        except AssertionError:
-            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
-
-            return None
-
-
-    def _getBinFiles( self, details ):
-        Any.requireIsInstance( details, PackageDetector )
-
-        binFilesTmp = FastScript.getFilesInDir( details.binDirArch )
-        Any.requireIsList( binFilesTmp )
-        binFiles = []
-
-        if not binFilesTmp:
-            logging.error( 'no executables found in %s, forgot to compile?',
-                           details.binDirArch )
-
-            return binFiles
-
-        platform = getHostPlatform()
-
-        for binFile in binFilesTmp:
-            tmp = os.path.join( 'bin', platform, binFile )
-            binFiles.append(tmp)
-
-        return binFiles
-
-
-    def _validityCheck( self, binFiles, commandLines ):
-        Any.requireIsList( binFiles )
-        Any.requireIsList( commandLines )
-
-        commands = []
-
-        for cmdLine in commandLines:
-
-            tmp = shlex.split( cmdLine )
-            command = tmp[0]
-            commands.append( command )
-
-        # TODO: check matching
-
-        for command in commands:
-            if not os.path.exists( command ):
-                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'. "
-                               "Is the package compiled?", command )
-
-                result = ( FAILED, 0, 1,
-                         '%s specified in pkgInfo.py does not exist' % command )
-
-                return result
-
-        for binFile in binFiles:
-            if binFile not in commands:
-                logging.warning("%s executable was found. "
-                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
-
-                result = ( FAILED, 0, 1,
-                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
-
-                return result
-
-        return OK, 0, 0, 'validity check paas'
-
-
-    def _runValgrind( self, commandLines, details ):
-        passedExecutables = 0
-        failedExecutables = 0
-        errorMessages     = []
-
-        for command in commandLines:
-
-            logging.info( "C12: checking '%s'", command )
-
-            if Any.getDebugLevel() <= 3:
-                stdout = VersionCompat.StringIO()
-                stderr = VersionCompat.StringIO()
-            else:
-                stdout = None
-                stderr = None
-
-            try:
-                failed, errors = Valgrind.checkExecutable( command, details,
-                                                           stdout=stdout, stderr=stderr )
-            except subprocess.CalledProcessError as e:
-                failed = True
-                errors = []
-
-            if failed:
-                failedExecutables += 1
-
-                for error in errors:
-                    errorMessages.append( 'C12: %s:%s - %s'
-                                          % ( error.fname, error.lineno, error.description ) )
-
-                logging.info( "C12: '%s' failed (see verbose-mode for details)", command )
-
-            else:
-                passedExecutables += 1
-                logging.info( "C12: '%s successfully finished", command )
-
-        for error in errorMessages:
-            logging.error( error )
-
-        if not passedExecutables and not failedExecutables:
-            result = ( OK, passedExecutables, failedExecutables,
-                       'no executables were checked with Valgrind' )
-        elif not failedExecutables:
-            result = ( OK, passedExecutables, failedExecutables,
-                       'no defects found by Valgrind' )
-        else:
-            result = ( FAILED, passedExecutables, failedExecutables,
-                       'Valgrind found %d defect%s' % ( failedExecutables,
-                                                        's' if failedExecutables > 1 else '' ) )
-
-        return result
+        return details.binDirArch
 
 
 class QualityRule_C13( AbstractQualityRule ):
@@ -1653,7 +1735,8 @@ accidentally (or intentionally) invoked from another compilation unit.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_C15( AbstractQualityRule ):
+class QualityRule_C15( AbstractValgrindRule ):
+
 
     brief       = '''Unittests should be runnable under Valgrind without
 warnings of any sort.'''
@@ -1661,7 +1744,20 @@ warnings of any sort.'''
     description = '''**Valgrind** is a tool which runs an executable and
 during this searches for memory leaks and other issues with memory management.
 
-No issues shall be found during execution of unittests.'''
+No issues shall be found during execution of unittests.
+
+The check function for this rule invokes Valgrind on all executables listed
+in the sqCheckExe variable in pkgInfo.py, e.g.:
+
+    sqCheckExe = [ 'test/${MAKEFILE_PLATFORM}/main',
+                   'test/${MAKEFILE_PLATFORM}/main foo --bar' ]
+
+Please specify a list of commands, including arguments (if any), that
+shall be analyzed by the check routine.
+
+The paths to the executables are interpreted as relative to the package root.
+
+Specify an empty list if really nothing has to be executed.'''
 
     seeAlso     = { 'Valgrind HowTo':
                     'ToolBOS_HowTo_Debugging_Memory',
@@ -1670,6 +1766,12 @@ No issues shall be found during execution of unittests.'''
                     'http://www.valgrind.org' }
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
+
+
+    def getExeDir( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        return details.testDirArch
 
 
 class QualityRule_PY01( AbstractQualityRule ):
@@ -1719,6 +1821,9 @@ called from the outside. Doing it must be considered as wrong usage.'''
         """
             Checks for access to private class members from outside.
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( "checking for access to private members from outside" )
         found  = 0
         regexp = re.compile( '(\w+)\._(\w+)' )
@@ -1859,6 +1964,9 @@ application, potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
         passed    = 0
         failed    = 0
@@ -1887,7 +1995,6 @@ application, potentially causing data loss or inconsistent states.'''
                         logging.info( 'PY04: %s:%s: found %s() call',
                                       filePath, call[1], call[0] )
                     failed += len( exitCalls )
-
 
 
         if syntaxErr:
@@ -1928,6 +2035,9 @@ under `${SIT}/External/PyCharmPro`.'''
             Execute the PyCharm source code analyzer in batch-mode for each
             *.py file.
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( 'performing source code analysis using PyCharm' )
         passed = 0
         failed = 0
@@ -2026,6 +2136,9 @@ specific case to follow the Matlab code-checker.'''
             Execute the Matlab source code analyzer in batch-mode for each
             *.m file.
         """
+        if not details.isMatlabPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Matlab code found'
+
         logging.debug( 'performing source code analysis using Matlab' )
         passed = 0
         failed = 0
@@ -2174,7 +2287,10 @@ Hence a doxygen mainpage is not needed in such case.
               * doc/Mainpage.md
               * doc/html/index.html
         """
-        if details.isMatlabPackage():
+        if details.isRTMapsPackage():
+            return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
+
+        elif details.isMatlabPackage():
             logging.debug( 'Matlab package detected, looking for HTML documentation' )
 
             # Matlab-packages do not contain a doxygen mainpage, hence only
@@ -2279,6 +2395,9 @@ provide small, easy-to-understand example programs / showcases.
             Test passes if there are any Non-SVN files within the
             "examples" subdirectory.
         """
+        if details.isComponent():
+            return NOT_APPLICABLE, 0, 0, 'examples not required for components'
+
         logging.debug( 'looking for example programs' )
         examplesDir = os.path.join( details.topLevelDir, 'examples' )
 
@@ -2304,43 +2423,7 @@ provide small, easy-to-understand example programs / showcases.
 
 class QualityRule_DOC04( AbstractQualityRule ):
 
-    brief       = '''Original authors and current maintainers should be
-documented.'''
-
-    description = '''**Author(s)** are those persons who originally
-implemented or later contributed major parts of the code. Authors of a
-software should be honored in the documentation. If multiple people modified
-the code over time, they should be ranked according to their contribution.
-
-The **maintainer** is the person mainly in charge of the software at the
-very moment. He or she may or may not be among the list of authors!
-Some maintainer might have taken over responsability without writing a
-single line of code.
-
-The filesystem ownership in the SIT is a good indicator who maintains the
-package at the moment. However, it is not reliable in case multiple people
-installed the package for various reasons (such as holidays) and most likely
-will not be preserved when transferring the SIT to other machines or sites.
-
-Therefore, when using BST.py for installing software, the maintainer
-information is automatically written into the auto-generated pkgInfo.py
-file.
-'''
-
-    goodExample = '''
-    /*!
-     * \mainpage
-     *
-     * [...]
-     *
-     * \\author Bill Gates
-     * \\author Linus Torvalds (current maintainer)
-     * \\author Steve Jobs
-     * \\author Lerry Page
-     */
-'''
-
-    sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
+    brief       = '*removed*'
 
 
 class QualityRule_SAFE01( AbstractQualityRule ):
@@ -2415,6 +2498,9 @@ label declared later in the same function.'''
         """
             Safety-critical applications shall hardly use 'goto'.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for "goto"-statement' )
         found  = 0
 
@@ -2499,6 +2585,9 @@ literals their use in safety-critical application is highly discouraged.'''
         """
             Checks if any of the files provided makes use of multi-byte characters.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for multibyte-characters usage' )
 
         platform  = getHostPlatform()
@@ -2546,10 +2635,10 @@ literals their use in safety-critical application is highly discouraged.'''
 
             if failed == 0:
                 result = ( OK, passed, failed,
-                           'all files OK' )
+                           'No wchar-functions found' )
             else:
                 result = ( FAILED, passed, failed,
-                           'files with non ASCII characters or wide string functionality usage found' )
+                           'wchar-functions found' )
 
         except EnvironmentError as e:
             logging.error( e )
@@ -2624,6 +2713,9 @@ circumstances.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking C/C++ function-like macro presence' )
         passed   = 0
         failed   = 0
@@ -2871,14 +2963,14 @@ def createCParser( filePath, details, headerAndLanguageMap ):
     if six.PY2:
 
         try:
-            from ToolBOSCore.Util.CAnalyzer import CParser
+            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
         except ImportError as e:
             raise EnvironmentError( e )
 
     else:
 
         try:
-            from ToolBOSCore.Util.CAnalyzer import CParser
+            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
         except ModuleNotFoundError as e:
             raise EnvironmentError( e )
 
@@ -2893,11 +2985,12 @@ def createCParser( filePath, details, headerAndLanguageMap ):
         cflagsList   = CMake.getCDefinesAsList( platform, targetName )
         cflags       = [ '-D' + cflag for cflag in cflagsList ]
         args         = includes + cflags
-    except ( AssertionError, IOError ):
+    except ( AssertionError, IOError ) as e:
         # most likely the depend.make does not exist for this target,
         # this might happen if there are no dependencies by the target
         # or if this is a pseudo-target such as "doc" coming from
         # FindDoxygen.cmake
+        logging.debug( e )
         logging.debug( 'ignoring target: %s', targetName )
         return None
 

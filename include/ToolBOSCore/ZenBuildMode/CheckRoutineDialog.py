@@ -84,7 +84,7 @@ class CheckRoutineDialog( QDialog, object ):
         self._desiredLevelCombo = QComboBox()
         self._windowTitle       = 'Software Quality settings'
 
-        CheckRoutine.addStreamLogger( self._logOutput )
+        Any.addStreamLogger( self._logOutput, logging.DEBUG, preamble=False )
 
         for level in CheckRoutine.sqLevelNames:
             text  = CheckRoutine.sqLevels[ level ]
@@ -395,7 +395,7 @@ class CheckRoutineDialog( QDialog, object ):
         del thread
         self._threads[ ruleID ] = None
 
-        logging.info( 'finished check for rule %s', ruleID )
+        logging.debug( 'finished check for rule %s', ruleID )
 
         # restore button text
         self._checkButtons[ ruleID ].setText( 'Check' )
@@ -442,7 +442,7 @@ class CheckRoutineDialog( QDialog, object ):
 
     def _run( self, rule ):
         ruleID = rule.getRuleID()
-        logging.info( 'starting check for rule %s', ruleID )
+        logging.debug( 'starting check for rule %s', ruleID )
 
         # disable "Check" button and change its text to "Running"
         button = self._checkButtons[ ruleID ]
