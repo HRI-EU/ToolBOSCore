@@ -1828,6 +1828,80 @@ Specify an empty list if really nothing has to be executed.'''
         return details.testDirArch
 
 
+class Rule_C16( AbstractRule ):
+
+    brief       = '''Use the preprocessor only for inclusion of header-files
+and simple macros.'''
+
+    description = '''Complex and multiple levels of macros obfuscate the
+code and make reasoning about it or debugging difficult.
+
+In most circumstances, functions should be used instead of macros.
+Functions perform argument type-checking and evaluate their arguments once,
+thus avoiding problems with potential multiple side effects.
+
+In many debugging systems, it is easier to step through execution of a
+function than a macro. Nonetheless, macros may be useful in some
+circumstances.'''
+
+    seeAlso     = { 'MISRA-2012 rule 4.9':
+                    None,
+                    'CERT PRE00-C':
+                    'https://www.securecoding.cert.org/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
+
+    sqLevel     = frozenset( [ 'safety' ] )
+
+    def run( self, details, files ):
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
+        logging.debug( 'checking C/C++ function-like macro presence' )
+        passed   = 0
+        failed   = 0
+        platform = getHostPlatform()
+
+        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
+        logging.debug( 'language map: %s', headerAndLanguageMap )
+
+        try:
+
+            for filePath in files:
+                _, ext = os.path.splitext( filePath )
+                if ext in C_CPP_FILE_EXTENSIONS:
+
+                    parser = createCParser( filePath, details, headerAndLanguageMap )
+
+                    if not parser:
+                        continue
+
+                    for define in parser.localMacros.values():
+
+                        if not define.name.isupper():
+                            logging.info( 'C16: %s:%d - define "%s" is not uppercase',
+                                            filePath, define.location[ 1 ], define.name )
+                            failed += 1
+
+                    for define in parser.localFnMacros.values():
+
+                        logging.info( 'C16: %s:%d - function-like define "%s"',
+                                        filePath, define.location[ 1 ], define.name )
+
+                    failed += len( parser.localFnMacros )
+
+            if failed == 0:
+                result = ( OK, passed, failed,
+                           'No function-like defines found' )
+            else:
+                result = ( FAILED, passed, failed,
+                           'Function-like defines found' )
+
+        except EnvironmentError as e:
+            logging.error( e )
+            result = ( FAILED, passed, failed, e )
+
+        return result
+
+
 class Rule_PY01( RemovedRule ):
     pass
 
@@ -2754,78 +2828,6 @@ terminating `\\0` must not be used.'''
                     'AnyString_About' }
 
     sqLevel     = frozenset( [ 'safety' ] )
-
-
-class Rule_SAFE08( AbstractRule ):
-
-    brief       = '''Functions should be preferred over function-like
-macros.'''
-
-    description = '''In most circumstances, functions should be used instead
-of macros. Functions perform argument type-checking and evaluate their
-arguments once, thus avoiding problems with potential multiple side effects.
-
-In many debugging systems, it is easier to step through execution of a
-function than a macro. Nonetheless, macros may be useful in some
-circumstances.'''
-
-    seeAlso     = { 'MISRA-2012 rule 4.9':
-                    None,
-                    'CERT PRE00-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
-
-    sqLevel     = frozenset( [ 'safety' ] )
-
-    def run( self, details, files ):
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
-        logging.debug( 'checking C/C++ function-like macro presence' )
-        passed   = 0
-        failed   = 0
-        platform = getHostPlatform()
-
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-        logging.debug( 'language map: %s', headerAndLanguageMap )
-
-        try:
-
-            for filePath in files:
-                _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
-
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    for define in parser.localMacros.values():
-
-                        if not define.name.isupper():
-                            logging.info( 'SAFE08: %s:%d - define "%s" is not uppercase',
-                                            filePath, define.location[ 1 ], define.name )
-                            failed += 1
-
-                    for define in parser.localFnMacros.values():
-
-                        logging.info( 'SAFE08: %s:%d - function-like define "%s"',
-                                        filePath, define.location[ 1 ], define.name )
-
-                    failed += len( parser.localFnMacros )
-
-            if failed == 0:
-                result = ( OK, passed, failed,
-                           'No function-like defines found' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'Function-like defines found' )
-
-        except EnvironmentError as e:
-            logging.error( e )
-            result = ( FAILED, passed, failed, e )
-
-
-        return result
 
 
 class Rule_SPEC01( AbstractRule ):
