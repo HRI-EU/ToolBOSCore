@@ -335,7 +335,10 @@ variables, functions, classes) and filenames must be English.'''
 who might be using your source code in the future.
 
 English as corporate language should be reflected in the source code as well.
-Other languages such as German or Japanese should be avoided.'''
+Other languages such as German or Japanese should be avoided.
+
+Note that your application may well support various languages, e.g. print
+Japanese output on screen.'''
 
     goodExample = '''\tint result = 123;'''
 
@@ -460,11 +463,17 @@ class Rule_GEN03( AbstractRule ):
     brief       = '''Stick to 80 characters per line. Exceptions are fine
 when increasing readability.'''
 
-    description = '''Limiting to 80 characters eases editing / viewing:
+    description = '''Yes, monitors noawadays are huge and can display more
+characters per line. Instead the reason of limiting to 80 characters are:
 
-  * IDEs show add. widgets at left / right side
-  * xterm defaults to 80x25
-  * merging sources (side-by-side view)'''
+  * diff-ing two or three files next to each other, f.i. code comparison
+  * IDEs + debuggers + source code analyzers show many widgets around the code
+  * simpler editing / viewing
+  * terminals default to 80x25, widely used for "less" / "git show" / ...
+  * merging sources (side-by-side view)
+
+Where readability would be increased, we allow a few exceptions up to 120
+characters per line.'''
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -531,8 +540,11 @@ work for HRI-EU.
 This copyright header must also be applied by contractors and students working
 for HRI-EU.
 
-This rule does not need to be applied to auto-generated files, such as doxygen
-HTML documentation or generated SWIG code.
+This rule does not need to be applied to auto-generated files (such as doxygen
+HTML documentation or generated SWIG code).
+
+This rule shall not be applied to open-source code released under a particular
+license that most often requires a specific header.
 
 *Header for C / C++ / Java files:*
 
@@ -633,10 +645,7 @@ HTML documentation or generated SWIG code.
     #
     #-->
 
-Please replace *description* by a very short summary what this file is about.
-
-Note: Author names are not part of the header. Instead they should be listed
-in the documentation.'''
+Please replace *description* by a very short summary what this file is about.'''
 
     seeAlso     = { 'rule DOC-04': None }
 
@@ -777,7 +786,11 @@ show:
   * the code is compilable (f.i. on multiple platforms)
   * no broken dependencies, such as API changes
   * executables are runnable (no undefined symbols, missing files,...)
-  * tested code somehow behaves as expected'''
+  * tested code somehow behaves as expected
+
+Please provide a generic `unittest.sh` (Linux) and/or `unittest.bat`
+(Windows) in the top-level directory of the package. This shall invoke any
+package-specific testsuite.'''
 
     seeAlso     = { 'Unittest HowTo': 'ToolBOS_Util_BuildSystemTools_Unittesting' }
 
@@ -826,7 +839,7 @@ Best approach is to install 3rd-party-software independently into SIT, and
 interface with it.'''
 
     goodExample = '''\tMyPackage
-\t\t1.0
+\t\t1.0 (version directory is optional)
 \t\t\texternal (or "3rdParty")
 \t\t\t\tcmake.org
 \t\t\t\t\t[...]
@@ -880,7 +893,7 @@ class Rule_GEN10( AbstractRule ):
   * avoids chaos of various copies + patchfiles
   * central backup
 
-Note: HRI-EU permits to use Git or Subversion (SVN).'''
+Note: HRI-EU recommends to use Git.'''
 
     seeAlso     = { 'SVN HowTo': 'ToolBOS_HowTo_SVN',
                     'Git HowTo': 'ToolBOS_HowTo_Git' }
@@ -1267,7 +1280,9 @@ class Rule_C04( AbstractRule ):
     brief       = '''A function without parameters must be declared with a
 `void` argument list.'''
 
-    description = '''A `void` argument list indicates that the function does
+    description = '''This rule only applies to C code.
+
+A `void` argument list indicates that the function does
 not take arguments. Hence the compiler can check for invalid calls where
 unexpected parameters are supplied.
 
@@ -1900,15 +1915,15 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     # possibility A (native way):
 
     import logging
-    [...]
+
     logging.info( "Hello, World!" )
     logging.info( 'x=%d', x )
 
 
-    # possibility B (ANY-equivalent)
+    # possibility B (Any.h-equivalent)
 
     import ToolBOSCore.Util.Any
-    [...]
+
     Any.setDebugLevel( 3 )
     Any.log( 3, "Hello, World!" )
     Any.requireMsg( x == 123, "Oops..." )
@@ -1923,17 +1938,18 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
 
 class Rule_PY04( AbstractRule ):
 
-    brief       = '''Prefer throwing exceptions over sys.exit(), os.exit()
-                     and os._exit() within the code.'''
+    brief       = '''Prefer throwing exceptions over `exit()` within the
+code.'''
 
     description = '''As a rule of thumb, Python functions should hardly
 directly terminate the application. Prefer throwing an exception
 (`SystemExit` if necessary), so that the caller at least has a chance to
 appropriately handle it.
 
-Mind that the caller might be a C- or Java-program containing a Python
+Mind that the caller might be another program containing a Python
 interpreter. In such case the `sys.exit(0)` will terminate the whole
-application, potentially causing data loss or inconsistent states.'''
+application with no chance for the program to react to such situation,
+potentially causing data loss or inconsistent states.'''
 
     goodExample = '''
     if not foo:
@@ -2043,8 +2059,7 @@ analyzer for Python. The analyzer can also be used separately from commandline.
 It reports problems in your Python scripts, such as wrong API usage,
 incompatibility with certain Python versions, or questionable coding practics.
 
-Please regularly inspect your scripts using PyCharm. The tool is installed
-under `${SIT}/External/PyCharmPro`.'''
+Please regularly inspect your scripts using PyCharm.'''
 
     seeAlso     = { 'PyCharm Home':
                     'https://www.jetbrains.com/pycharm' }
@@ -2117,19 +2132,18 @@ under `${SIT}/External/PyCharmPro`.'''
 
 class Rule_PY06( AbstractRule ):
 
-    brief       = '''Mind compatibility with Python versions 2.6 to 3.x'''
+    brief       = '''Mind compatibility with Python versions 2.7 to 3.x'''
 
     description = '''Python comes in various language versions, featuring
 different included packages or language constructs. However the install base
 is quite heterogeneous.
 
 Hence developers should pro-actively care that scripts are compatible with a
-range of Python versions. At least compatibility with 2.6, 2.7 and 3.4 is
+range of Python versions. At least compatibility with 2.7 and latest 3.x is
 desired.
 
 The **PyCharm IDE** can be configured to annotate code incompatible with
-certain versions of Python. The tool is installed under
-`${SIT}/External/PyCharmPro`.'''
+certain versions of Python.'''
 
     seeAlso     = { 'PyCharm Home':
                     'https://www.jetbrains.com/pycharm' }
