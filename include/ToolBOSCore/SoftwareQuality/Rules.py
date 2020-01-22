@@ -976,6 +976,23 @@ and/or comment that it has been ignored on purpose.'''
     sqLevel     = frozenset()
 
 
+class Rule_GEN14( AbstractRule ):
+
+    brief       = '''Strive for simple control-flows and keep functions
+short'''
+
+    description = '''Complex control-flows and long functions make reasoning
+about and code-checking difficult, f.i. the cyclomatic complexity should be
+sufficiently low.
+
+Overly long functions are difficult to understand (especially if you have to
+scroll).
+
+Attempt to break-down functions longer than approximately 60 lines of code
+into smaller chunks, and review their responsabilities. A function shall
+perform one job only.'''
+
+
 class Rule_C01( AbstractRule ):
 
     brief       = '''Prefer returning status codes (or throwing exceptions
