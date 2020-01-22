@@ -964,6 +964,18 @@ predefine the seed or to assign some fixed value that should be taken instead.
     sqLevel     = frozenset()
 
 
+class Rule_GEN13( AbstractRule ):
+
+    brief       = '''Always check return-values of function'''
+
+    description = '''Return values, especially those indicating errors,
+should not be silently ignored. If some return value is not very useful
+(as could be those of `printf()` or `close()`), you should provide a cast
+and/or comment that it has been ignored on purpose.'''
+
+    sqLevel     = frozenset()
+
+
 class Rule_C01( AbstractRule ):
 
     brief       = '''Prefer returning status codes (or throwing exceptions
