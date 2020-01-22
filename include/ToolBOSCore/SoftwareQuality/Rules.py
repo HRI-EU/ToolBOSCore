@@ -1699,8 +1699,13 @@ once in a while inspect your code using Klocwork.'''
         return result
 
 
-class Rule_C11( RemovedRule ):
-    pass
+class Rule_C11( AbstractRule ):
+    brief       = '''`setjmp()` and `longjmp()` are forbidden'''
+
+    description = '''The two functions `setjmp()` and `longjmp()` make the
+execution paths through the code overly complicated. Do not use them.'''
+
+    sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
 class Rule_C12( AbstractValgrindRule ):
