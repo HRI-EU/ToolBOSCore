@@ -43,8 +43,7 @@ category         = 'DevelopmentTools'
 recommends       = [ 'deb://git-core',
                      'deb://git-svn',
                      'deb://graphviz',
-                     'deb://php5-mysql',
-                     'sit://External/CMake/3.3'
+                     'sit://External/CMake/3.3',
                      'sit://External/git/2.18',
                      'sit://External/subversion/2.18',
                      'sit://External/wine/3.5' ]

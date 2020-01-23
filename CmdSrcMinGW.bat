@@ -114,8 +114,4 @@ set PYTHONPATH=%TOOLBOSCORE_ROOT%\external;%PYTHONPATH%
 set PYTHONPATH=%TOOLBOSCORE_ROOT%\lib\%MAKEFILE_PLATFORM%;%PYTHONPATH%
 
 
-:: CMake requires forward slashes
-set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.3
-
-
 :: EOF
