@@ -75,7 +75,9 @@ class CheckRoutine( object ):
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
                                   '.java', '.m' }
 
-        self.useOptFlags      = True
+        self.sqLevelToRun     = None   # level to use for this SQ check run
+
+        self.useOptFlags      = True   # disabled when invoking setRules()
 
         self.files            = set()  # final list of files to check
 
@@ -89,11 +91,11 @@ class CheckRoutine( object ):
 
         self.results          = {}     # result data, filled by runParticular()
 
+        self._summaryEnabled  = True   # True/False, show stats after run
+
         self._populatePackage( projectRoot, details )
         self._populateFiles()
         self._populateRules()
-
-        self._applySqSettings()
 
 
     def excludeDir( self, dirPath ):
@@ -168,7 +170,7 @@ class CheckRoutine( object ):
             the maintainer.
 
             See also
-              * setRulesToRun()
+              * setRules()
               * setUseOptFlags()
         """
         for ruleID in self.rulesToRun:
@@ -185,6 +187,9 @@ class CheckRoutine( object ):
                 logging.info( '%s: Not implemented', ruleID )
 
         logging.info( '' )
+
+        if self._summaryEnabled:
+            self._showSummary()
 
 
     def setDirs( self, dirs ):
@@ -210,95 +215,51 @@ class CheckRoutine( object ):
         self.files = files
 
 
-    def setRulesToRun( self, ruleIDs ):
+    def setLevel( self, levelName ):
+        """
+            Performs the check using a particular pre-defined quality set.
+
+            This overrides the (optional) setting 'sqLevel' in the
+            pkgInfo.py of the package to test.
+        """
+        Any.requireIsTextNonEmpty( levelName )
+        Any.requireIsIn( levelName, sqLevelNames )
+
+        self.sqLevelToRun = levelName
+
+
+    def setRules( self, ruleIDs ):
         """
             Run only the given list of rules, instead of all.
+
+            This overrides the (optional) settings 'sqOptIn' and/or
+            'sqOptOut' in the pkgInfo.py of the package to test.
         """
         Any.requireIsListNonEmpty( ruleIDs )
 
         for ruleID in ruleIDs:
             Any.requireIsIn( ruleID, self.ruleIDs )
 
-        self.rulesToRun = ruleIDs
+        self.rulesToRun  = ruleIDs
+        self.useOptFlags = False
 
 
-    def setUseOptFlags( self, state ):
-        """
-            Consider opt-in/out flags (optionally) provided by the
-            maintainer in the pkgInfo.py?
-
-            True:   inform about opt-in rules, skip opt-out rules
-            False:  run checks anyway
-        """
-        Any.requireIsBool( state )
-
-        self.useOptFlags = state
-
-
-    def showReport( self ):
-        """
-            Shows a summary of the execution results.
-        """
-        self._showReportHeadline()
-        self._showReportTable()
-        self._showReportComments()
-
-
-    def _applySqSettings( self ):
+    def setup( self ):
         """
             Considers the opt-in/out files/rules in the pkgInfo.py (if any).
         """
-        self._applySqSettingsLevel()
-        self._applySqSettingsOptIn()
-        self._applySqSettingsOptOut()
+        self._setupSqLevel()
+        self._setupOptIn()
+        self._setupOptOut()
 
 
-    def _applySqSettingsLevel( self ):
-        msg = '"%s": No such quality level (allowed: %s)' % \
-              ( self.details.sqLevel, ', '.join( sqLevelNames ) )
-        Any.requireMsg( self.details.sqLevel in sqLevelNames, msg )
+    def showSummary( self, state ):
+        """
+            Force showing (or not) a summary at the end of run().
+        """
+        Any.requireIsBool( state )
 
-
-        for ruleID, rule in self.rules.items():
-            if ruleID not in self.rulesImplemented:
-                continue
-
-            rule = self.rules[ ruleID ]
-
-            Any.requireIsInstance( rule, Rules.AbstractRule )
-            Any.requireIsInstance( rule.sqLevel, frozenset )
-
-            if self.details.sqLevel in rule.sqLevel:
-                self.rulesInLevel.add( ruleID )
-
-            else:
-                # filter-out rules not needed in the level at hand
-                # (don't filter-out if we force-run particular rules)
-                if self.useOptFlags:
-
-                    logging.debug( '%6s: no need to run at level=%s',
-                                   ruleID, self.details.sqLevel )
-                    self.rulesToRun.remove( ruleID )
-
-
-    def _applySqSettingsOptIn( self ):
-        Any.requireIsIterable( self.details.sqOptInRules )
-
-        for ruleID in self.details.sqOptInRules:
-            logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
-            self.includeRule( ruleID )
-
-
-    def _applySqSettingsOptOut( self ):
-        Any.requireIsIterable( self.details.sqOptOutRules )
-
-        for ruleID in self.details.sqOptOutRules:
-            logging.debug( '%6s: disabled (opt-out via pkgInfo.py)', ruleID )
-
-            # Don't do that! it will hide a rule that is supposed to get
-            # executed from the normal progress log + report
-            #
-            # self.excludeRule( ruleID )
+        self._summaryEnabled = state
 
 
     def _computeSuccessRate( self, ruleID ):
@@ -472,17 +433,80 @@ class CheckRoutine( object ):
         return result
 
 
-    def _showReportHeadline( self ):
+    def _setupSqLevel( self ):
+        # force run under certain SQ level if provided, otherwise fallback
+        # to the pkgInfo.py setting
+
+        if not self.sqLevelToRun:
+            self.sqLevelToRun = self.details.sqLevel
+
+
+        msg = '"%s": No such quality level (allowed: %s)' % \
+              ( self.sqLevelToRun, ', '.join( sqLevelNames ) )
+        Any.requireMsg( self.sqLevelToRun in sqLevelNames, msg )
+
+        for ruleID, rule in self.rules.items():
+            if ruleID not in self.rulesImplemented:
+                continue
+
+            rule = self.rules[ ruleID ]
+
+            Any.requireIsInstance( rule, Rules.AbstractRule )
+            Any.requireIsInstance( rule.sqLevel, frozenset )
+
+            if self.sqLevelToRun in rule.sqLevel:
+                self.rulesInLevel.add( ruleID )
+
+            else:
+                # filter-out rules not needed in the level at hand
+                # (don't filter-out if we force-run particular rules)
+                if self.useOptFlags:
+
+                    logging.debug( '%6s: no need to run at level=%s',
+                                   ruleID, self.sqLevelToRun )
+                    self.rulesToRun.remove( ruleID )
+
+
+    def _setupOptIn( self ):
+        Any.requireIsIterable( self.details.sqOptInRules )
+
+        for ruleID in self.details.sqOptInRules:
+            logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
+            self.includeRule( ruleID )
+
+
+    def _setupOptOut( self ):
+        Any.requireIsIterable( self.details.sqOptOutRules )
+
+        for ruleID in self.details.sqOptOutRules:
+            logging.debug( '%6s: disabled (opt-out via pkgInfo.py)', ruleID )
+
+            # Don't do that! it will hide a rule that is supposed to get
+            # executed from the normal progress log + report
+            #
+            # self.excludeRule( ruleID )
+
+
+    def _showSummary( self ):
+        """
+            Shows a summary of the execution results.
+        """
+        self._showSummaryHeadline()
+        self._showSummaryTable()
+        self._showSummaryComments()
+
+
+    def _showSummaryHeadline( self ):
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
         Any.requireIsTextNonEmpty( self.details.sqLevel )
 
         logging.info( '' )
         logging.info( 'results for %s (level=%s):',
-                      self.details.canonicalPath, self.details.sqLevel )
+                      self.details.canonicalPath, self.sqLevelToRun )
         logging.info( '' )
 
 
-    def _showReportTable( self ):
+    def _showSummaryTable( self ):
         Any.requireIsDictNonEmpty( self.results )
         Any.requireIsListNonEmpty( self.rulesOrdered )
 
@@ -490,21 +514,20 @@ class CheckRoutine( object ):
             if ruleID not in self.rulesImplemented:
                 continue
 
-            if ruleID not in self.rulesInLevel:
+            if ruleID not in self.rulesToRun:
                 continue
 
             ( status, passed, failed, shortText ) = self.results[ ruleID ]
 
-            displayStatus = status if status in ( OK, FAILED, DISABLED ) else ''
-            successRate   = self._computeSuccessRate( ruleID )
+            successRate = self._computeSuccessRate( ruleID )
 
-            logging.info( '%8s | %6s | %4s | %s', ruleID,
-                          displayStatus.ljust(8), successRate, shortText )
+            logging.info( '%8s | %14s | %4s | %s', ruleID.ljust(6),
+                          status.ljust(14), successRate, shortText )
 
         logging.info( '' )
 
 
-    def _showReportComments( self ):
+    def _showSummaryComments( self ):
         if self.details.sqComments:
             logging.info( 'comments by maintainer:' )
             logging.info( '' )

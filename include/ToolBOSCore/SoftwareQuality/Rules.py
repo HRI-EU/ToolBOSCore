@@ -2117,7 +2117,7 @@ potentially causing data loss or inconsistent states.'''
         failed    = 0
         syntaxErr = 0
 
-        binDir = os.path.join( details.topLevelDir, 'bin' )
+        binDir = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
 
         for filePath in files:
             if filePath.endswith( '.py' ) and not filePath.startswith( binDir ):

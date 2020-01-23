@@ -123,6 +123,8 @@ def _createPackage( args ):
 
 
 def _parseSqArgs( cr, argv ):
+    import re
+
     from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
 
     Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
@@ -138,6 +140,7 @@ def _parseSqArgs( cr, argv ):
     ruleIDs    = Rules.getRuleIDs()
     forceDirs  = set()
     forceFiles = set()
+    forceLevel = None
     forceRules = []
 
     for arg in argv:
@@ -154,18 +157,35 @@ def _parseSqArgs( cr, argv ):
             logging.debug( 'requested checking file: %s', arg )
             forceFiles.add( os.path.abspath( arg ) )
 
+        elif arg.startswith( 'sqLevel=' ):
+            tmp = re.search( 'sqLevel=(\S+)', ' '.join(argv) )
+
+            if tmp:
+                forceLevel = tmp.group(1)
+
         else:
             msg = '%s: No such file or directory, or rule ID' % arg
             raise ValueError( msg )
 
+
     if forceDirs:
+        logging.debug( 'check directories: %s', forceDirs )
         cr.setDirs( forceDirs )
 
     if forceFiles:
+        logging.debug( 'check files: %s', forceFiles )
         cr.setFiles( forceRules )
 
+    if forceLevel:
+        logging.debug( 'check level: %s', forceLevel )
+        cr.setLevel( forceLevel )
+
     if forceRules:
-        cr.setRulesToRun( forceRules )
+        logging.debug( 'check rules: %s', forceRules )
+        cr.setRules( forceRules )
+        cr.showSummary( False )
+    else:
+        cr.showSummary( True )
 
 
 def _runPatchSystemGUI():
@@ -348,6 +368,7 @@ argman.addExample( '%(prog)s -n help                 # show available templates'
 argman.addExample( '%(prog)s -n C_Library Foo 1.0    # create new C library named Foo/1.0' )
 argman.addExample( '%(prog)s -q                      # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03      # run specified checks on "src" only' )
+argman.addExample( '%(prog)s -q sqLevel=advanced     # check with specified quality level' )
 argman.addExample( '%(prog)s -u                      # check for updates / apply patches' )
 argman.addExample( '%(prog)s --uninstall             # remove package from SIT' )
 argman.addExample( '%(prog)s --deprecate             # deprecate this package' )
@@ -596,12 +617,9 @@ try:
 
         if unhandled:
             _parseSqArgs( cr, unhandled )
-            cr.setUseOptFlags( False )
-            cr.run()
-        else:
-            cr.setUseOptFlags( True )
-            cr.run()
-            cr.showReport()
+
+        cr.setup()
+        cr.run()
 
         if cr.overallResult() is not True:
             sys.exit( -5 )
