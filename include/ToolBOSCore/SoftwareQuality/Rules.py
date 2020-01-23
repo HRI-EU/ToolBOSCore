@@ -1434,21 +1434,28 @@ and other compile errors.'''
                     continue
 
                 # Note that we are searching with regexp for a more relaxed
-                # string with possible leading namespace name, but we print
-                # a stricter safeguard name in case it was not found,
-                # see JIRA ticket TBCORE-918
+                # string with possible pre-/postfix namespace name, but we
+                # print a stricter safeguard name in case it was not found,
+                # see JIRA tickets TBCORE-918 and TBCORE-2060
                 #
-                # allowed:  #ifndef DOT_PACKAGENAME_H
-                #
-                # where "DOT_" is an optional namespace prefix
+                # allowed:      PACKAGENAME_H
+                #           FOO_PACKAGENAME_H
+                #           FOO_PACKAGENAME_H_BAR
+                #               PACKAGENAME_H_BAR
+                #           FOO_PACKAGENAME_BAZ_H_BAR
+                #               PACKAGENAME_BAZ_H
 
                 safeguard   = '#ifndef %s_H' % moduleUpper
-                regexp      = re.compile( '#ifndef\s\S*?%s_H' % moduleUpper )
+                regexp      = re.compile( '#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
 
-                if regexp.search( content ):
+                tmp = regexp.search( content )
+
+                if tmp:
+                    logging.info( "C05: %s: safeguard %s found",
+                                  filePath, tmp.group(1) )
                     self.passed += 1
                 else:
-                    logging.info( "C05: %s: safeguard '%s' not found",
+                    logging.info( "C05: %s: safeguard %s not found",
                                   filePath, safeguard )
                     self.failed += 1
 
