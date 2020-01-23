@@ -70,7 +70,8 @@ sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 sourced = False
 
 for directory in sys.path:
-    if directory.endswith( 'ToolBOSCore/3.3/include' ):
+    if directory.endswith( 'ToolBOSCore/3.3/include' ) or \
+       directory.endswith( 'ToolBOSCore/include' ):
         sourced = True
 
 if not sourced:
@@ -202,7 +203,6 @@ logging.info( '  | %s ' % line2 + ' ' * (length-len(line2)) + '|' )
 logging.info( '  |' + ' ' * (length+2) + '|' )
 logging.info( '  | %s ' % line3 + ' ' * (length-len(line3)) + '|' )
 logging.info( '  |' + '_' * (length+2) + '|' )
-
 logging.info( '' )
 logging.info( '' )
 logging.info( 'Have a lot of fun with ToolBOS %s :-)' % version )
