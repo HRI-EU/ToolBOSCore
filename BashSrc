@@ -213,47 +213,10 @@ then
 
 
     #------------------------------------------------------------------------
-    # Auxilliary packages
-    #------------------------------------------------------------------------
-
-    # make use of the following packages (if present)
-
-    OPTIONAL="External/CMake/3.2
-External/git/2.18
-External/subversion/1.8"
-
-
-    for PACKAGE in ${OPTIONAL}
-    do
-
-        FILE="${SIT}/${PACKAGE}/BashSrc"
-
-        if [[ "${VERBOSE}" == "TRUE" ]]
-        then
-            echo "${TOOLBOSCORE_ROOT}/BashSrc: sourcing ${FILE}"
-        fi
-
-
-        if [[ -r "${FILE}" ]]
-        then
-            source "${FILE}"
-        else
-            if [[ "${VERBOSE}" == "TRUE" ]]
-            then
-                echo "${FILE}: No such file"
-            fi
-        fi
-
-    done
-
-
-    #------------------------------------------------------------------------
     # Clean-up
     #------------------------------------------------------------------------
 
     unset FILE
-    unset OPTIONAL
-    unset PACKAGE
     unset SCRIPT_PATH
     unset SIT_DEPENDENCIES
     unset SIT_PROXY
