@@ -1,30 +1,44 @@
 
-                     RELEASE NOTES FOR <PACKAGE> <VERSION>
-                     (to be populated in release branches)
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.0
 
 
 NEW FEATURES
 =============
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - SQ routine: major re-implementation with improved API, logging, summary,...
+  - most SQ rules received some polishing, clean-up, improved logging,...
+  - [TBCORE-2053] launch standalone SQ check GUI using "BST.py -qz"
+  - [TBCORE-2052] perform SQ checks with different level: BST.py -q sqLevel=NAME
+  - [TBCORE-2027] added ThreadPool class
+  - [TBCORE-1996] initial ToolBOS workspaces support
+  - [TBCORE-1907] added SQ GEN13 (check return-values of functions)
+  - [TBCORE-1907] added SQ GEN14 (function length + cyclomatic complexity)
+  - [TBCORE-1907] added SQ C11 (do not use setjmp() and longjmp())
+  - [TBCORE-1907] renamed + generalized SAFE08 --> C16 (simple headers + macros)
+  - ToolBOS-Setup.py can be invoked from Git repo, no more need for SIT
 
 
 CHANGES
 =======
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [TBCORE-2062] ToolBOSCore no longer sources any other SIT packages
+  - SQ GEN01 only checks filenames for validity, no longer the file content
+  - SQ C04 skipped in case of C++
+  - SQ C05 permits any pre-/postfixes to inclusion safeguard names
+  - SQ C12 re-implemented
+  - SQ DOC01 recognizes many more documentation systems, not only doxygen
+  - SQ DOC04 dropped (no longer desired)
+  - SQ PY04 extended to catch os.exit() and os._exit()
+  - SQ checks now ignore ./external and ./3rdParty by default
+  - updated default versions of PyCharm + CLion to 2019.3
+  - updated URLs to CERT C Coding Standard descriptions
+  - moved ToolBOSCore.Util.CAnalyzerElements.py --> ToolBOSCore.SoftwareQuality
 
 
 FIXED BUGS
 ==========
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - FastScript.*chmod() applied wrong file permissions
 
 
 # EOF
