@@ -26,7 +26,6 @@ This package contains:
 * [Installation conventions](doc/ToolBOSCore/Concepts/InstallationConventions.md)
 * [ToolBOS.conf](doc/ToolBOSCore/Concepts/ToolBOSConf.md)
 * [SIT builds](doc/ToolBOSCore/How%20To's/SITBuilds.md)
-* [Rolling releases](doc/ToolBOSCore/Concepts/RollingReleases.md)
 
 
 #### Tools

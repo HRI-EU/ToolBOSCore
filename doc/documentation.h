@@ -89,7 +89,6 @@
             <li><a href="ToolBOS_Concept_InstallationConventions.html">Installation conventions</a></li>
             <li><a href="ToolBOS_Concept_ToolBOSconf.html">ToolBOS.conf</a></li>
             <li><a href="ToolBOS_HowTo_SITSwitch.html">SIT builds</a></li>
-            <li><a href="ToolBOS_Concept_RollingReleases.html">Rolling releases</a></li>
             </ul>
         </td>
 
@@ -307,7 +306,6 @@
  * \li \subpage ToolBOS_Concept_SourceTreeConventions
  * \li \subpage ToolBOS_Concept_InstallationConventions
  * \li \subpage ToolBOS_Concept_ToolBOSconf
- * \li \subpage ToolBOS_Concept_RollingReleases
  */
 
 
@@ -1142,32 +1140,6 @@ Project
  * </table>
  *
  * \example ToolBOS.conf
- */
-
-
-/*!
- * \page ToolBOS_Concept_RollingReleases Rolling releases
- *
- * ToolBOS and the majority of SIT packages do not follow traditional point
- * release cycles. Since there is no "final" state in software there is also
- * no physical installation media of ToolBOS or the SIT. Instead, you'll get
- * a snapshot of the software at any time. Then fairly continuous small
- * updates of the individual SIT packages will evolve the overall
- * functionality over time.
- *
- * <h2>Major benefits</h2>
- * \li avoid efforts on maintaining old versions (backporting patches,
- *     managing various customer branches → single source base)
- * \li short time-to-market for new features (no need to wait next
- *     scheduled point release)
- * \li easy rollback in case of trouble (few changes)
- * \li smooth transition / upgrade over time
- * \li no re-installation of ToolBOS or the SIT, just sync to the latest
- *     software snapshot
- *
- * \see http://en.wikipedia.org/wiki/Rolling_Release
- * \see http://www.techrepublic.com/blog/security/point-release-vs-rolling-release-developer-user-and-security-considerations/4150
- * \see \ref ToolBOS_HowTo_SITSwitch
  */
 
 
@@ -3673,7 +3645,6 @@ make install
  * </table>
  *
  * \see http://www.debian.org/releases
- * \see \ref ToolBOS_Concept_RollingReleases
  *
  * <h3>How to switch?</h3>
  *
