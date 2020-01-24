@@ -53,6 +53,7 @@ examples:
   BST.py -n C_Library Foo 1.0    # create new C library named Foo/1.0
   BST.py -q                      # run all quality checks
   BST.py -q src C01 C02 C03      # run specified checks on "src" only
+  BST.py -q sqLevel=advanced     # check with specified quality level
   BST.py -u                      # check for updates / apply patches
   BST.py --uninstall             # remove package from SIT
   BST.py --deprecate             # deprecate this package
