@@ -1327,7 +1327,7 @@ updated and still passes parameters.'''
     badExample  = '''   int Foo_run();'''
 
     seeAlso     = { 'CERT DCL20-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/DCL20-C.+Explicitly+specify+void+when+a+function+accepts+no+arguments' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/DCL20-C.+Explicitly+specify+void+when+a+function+accepts+no+arguments' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -1400,7 +1400,7 @@ and other compile errors.'''
 '''
 
     seeAlso     = { 'CERT PRE06-CPP':
-                    'https://www.securecoding.cert.org/confluence/display/cplusplus/PRE06-CPP.+Enclose+header+files+in+an+inclusion+guard' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/PRE06-C.+Enclose+header+files+in+an+include+guard' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -1552,7 +1552,7 @@ reasons. And consistency is a soft skill for good quality software.'''
                     'Any_About',
 
                     'CERT ERR00-CPP':
-                    'https://www.securecoding.cert.org/confluence/display/cplusplus/ERR00-CPP.+Adopt+and+implement+a+consistent+and+comprehensive+error-handling+policy' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/ERR00-C.+Adopt+and+implement+a+consistent+and+comprehensive+error-handling+policy' }
 
     sqLevel     = frozenset()
 
@@ -1583,13 +1583,13 @@ types, f.i. `BaseI16` or `BaseI64`, defined in `Base.h.`'''
                     'Base_About',
 
                     'CERT NUM03-J':
-                    'https://www.securecoding.cert.org/confluence/display/java/NUM03-J.+Use+integer+types+that+can+fully+represent+the+possible+range+of++unsigned+data',
+                    'https://wiki.sei.cmu.edu/confluence/display/java/NUM03-J.+Use+integer+types+that+can+fully+represent+the+possible+range+of++unsigned+data',
 
                     'CERT INT31-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/INT31-C.+Ensure+that+integer+conversions+do+not+result+in+lost+or+misinterpreted+data',
+                    'https://wiki.sei.cmu.edu/confluence/display/c/INT31-C.+Ensure+that+integer+conversions+do+not+result+in+lost+or+misinterpreted+data',
 
                     'CERT INT08-C':
-                    'https://www.securecoding.cert.org/confluence/display/seccode/INT08-C.+Verify+that+all+integer+values+are+in+range' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/INT08-C.+Verify+that+all+integer+values+are+in+range' }
 
     sqLevel     = frozenset()
 
@@ -1808,7 +1808,7 @@ Avoiding cluttering the global name space prevents the variable from being
 accidentally (or intentionally) invoked from another compilation unit.'''
 
     seeAlso     = { 'CERT DCL19-C':
-                    'https://www.securecoding.cert.org/confluence/display/CINT/DCL19-C.+Minimize+the+scope+of+variables+and+functions' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/DCL19-C.+Minimize+the+scope+of+variables+and+functions' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
@@ -1871,7 +1871,7 @@ circumstances.'''
     seeAlso     = { 'MISRA-2012 rule 4.9':
                     None,
                     'CERT PRE00-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
 
     sqLevel     = frozenset( [ 'safety' ] )
 
@@ -2699,7 +2699,7 @@ To avoid any risks arising from usage of wide characters multi-byte string
 literals their use in safety-critical application is highly discouraged.'''
 
     seeAlso      = { 'CERT STR38-C':
-                     'https://www.securecoding.cert.org/confluence/display/CINT/STR38-C.+Do+not+confuse+narrow+and+wide+character+strings+and+functions' }
+                     'https://wiki.sei.cmu.edu/confluence/display/c/STR38-C.+Do+not+confuse+narrow+and+wide+character+strings+and+functions' }
 
     sqLevel      = frozenset( [ 'safety' ] )
 
