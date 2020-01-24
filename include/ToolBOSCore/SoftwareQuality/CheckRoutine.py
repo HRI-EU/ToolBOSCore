@@ -34,6 +34,7 @@
 #
 
 
+import copy
 import logging
 import os
 
@@ -99,7 +100,16 @@ class CheckRoutine( object ):
 
 
     def excludeDir( self, dirPath ):
-        raise NotImplementedError()
+        Any.requireIsTextNonEmpty( dirPath )
+
+        if os.path.exists( dirPath ):
+            logging.debug( 'ignoring 3rd-party content in %s', dirPath )
+
+            origFiles = copy.copy( self.files )
+
+            for filePath in origFiles:
+                if filePath.startswith( dirPath ):
+                    self.files.remove( filePath )
 
 
     def excludeFile( self, filePath ):
