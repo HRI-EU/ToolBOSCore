@@ -405,7 +405,7 @@ class CheckRoutine( object ):
             result = self._runCheck_worker( ruleID )
 
         status = result[0]
-        msg    = '(' + result[3] + ')' if result[3] else ''
+        msg    = '(' + str(result[3]) + ')' if result[3] else ''
 
         logging.info( 'checking rule: %s → %s %s', ruleID, status, msg )
 
