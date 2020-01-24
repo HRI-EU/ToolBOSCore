@@ -618,6 +618,10 @@ try:
         if unhandled:
             _parseSqArgs( cr, unhandled )
 
+        # exclude 3rd-party content from being checked:
+        cr.excludeDir( './external' )
+        cr.excludeDir( './3rdParty' )
+
         cr.setup()
         cr.run()
 
