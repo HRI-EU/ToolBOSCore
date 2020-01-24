@@ -19,7 +19,6 @@ import os
 import tempfile
 import unittest
 
-from ToolBOSCore.Storage import CopyTreeFilter
 from ToolBOSCore.Storage import SIT
 from ToolBOSCore.Storage import CopyTreeFilter
 from ToolBOSCore.Util    import FastScript

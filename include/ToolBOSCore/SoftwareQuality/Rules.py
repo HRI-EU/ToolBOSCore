@@ -1451,8 +1451,8 @@ and other compile errors.'''
                 tmp = regexp.search( content )
 
                 if tmp:
-                    logging.info( "C05: %s: safeguard %s found",
-                                  filePath, tmp.group(1) )
+                    logging.debug( "C05: %s: safeguard %s found",
+                                   filePath, tmp.group(1) )
                     self.passed += 1
                 else:
                     logging.info( "C05: %s: safeguard %s not found",
