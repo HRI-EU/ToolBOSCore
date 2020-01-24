@@ -1,0 +1,30 @@
+
+                     RELEASE NOTES FOR <PACKAGE> <VERSION>
+                     (to be populated in release branches)
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-xxx] Description
+  - [TBCORE-xxx] Description
+  - [TBCORE-xxx] Description
+
+
+CHANGES
+=======
+
+  - [TBCORE-xxx] Description
+  - [TBCORE-xxx] Description
+  - [TBCORE-xxx] Description
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-xxx] Description
+  - [TBCORE-xxx] Description
+  - [TBCORE-xxx] Description
+
+
+# EOF
