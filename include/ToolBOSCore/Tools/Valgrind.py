@@ -76,13 +76,13 @@ KIND_MAP = {
 
 Error = namedtuple( 'Error', [ 'kind', 'description', 'fname', 'lineno' ] )
 
-def checkExecutable( executablePath, details ):
+def checkExecutable( executablePath, details, stdout=None, stderr=None ):
 
     tmpFile = tempfile.mktemp()
 
     cmd = VALGRIND % ( tmpFile, executablePath )
 
-    FastScript.execProgram( cmd )
+    FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
 
     failed, numErrors = parseOutput( tmpFile, details )
 

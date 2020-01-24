@@ -219,6 +219,22 @@ class BuildSystemTools( object ):
         return ProxyInstallProcedure( self._sourceTree, self._binaryTree ).run()
 
 
+    def qualityCheck( self ):
+        """
+            Performs quality checks on the package.
+
+            You may optionally specify list of rule IDs to run,
+            and/or a list of files to consider.
+            The default is to run all checkers on all files of the package.
+        """
+        from ToolBOSCore.SoftwareQuality.CheckRoutine import CheckRoutine
+
+        cr = CheckRoutine()
+        cr.run()
+
+        return cr.overallResult()
+
+
     def runUnittest( self ):
         """
             There is no default Python-implementation for unittest.

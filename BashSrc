@@ -44,12 +44,12 @@
 
 # This fix creates trouble when re-sourcing ToolBOS as a dependency of other
 # packages. In this case, regardless what TOOLBOSCORE_ROOT was being set to
-# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/3.2 :-/
+# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/3.3 :-/
 #
 ## workaround for LD_LIBRARY_PATH being emptied for security reasons
 ## at "newgrp" command while all other variables survive
 #if [[ ! -z ${TOOLBOSCORE_SOURCED} &&
-#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/3.2" ]]
+#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/3.3" ]]
 #then
 #    unset TOOLBOSCORE_SOURCED
 #fi
@@ -57,7 +57,7 @@
 
 
 # avoid multiple inclusion
-if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/3.2" ]]
+if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/3.3" ]]
 then
 
     # auto-detect location of this BashSrc file
@@ -84,7 +84,7 @@ then
       TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
     fi
 
-    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/3.2 ${TOOLBOSCORE_SOURCED}"
+    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/3.3 ${TOOLBOSCORE_SOURCED}"
 
 
     #------------------------------------------------------------------------
@@ -213,47 +213,10 @@ then
 
 
     #------------------------------------------------------------------------
-    # Auxilliary packages
-    #------------------------------------------------------------------------
-
-    # make use of the following packages (if present)
-
-    OPTIONAL="External/CMake/3.2
-External/git/2.18
-External/subversion/1.8"
-
-
-    for PACKAGE in ${OPTIONAL}
-    do
-
-        FILE="${SIT}/${PACKAGE}/BashSrc"
-
-        if [[ "${VERBOSE}" == "TRUE" ]]
-        then
-            echo "${TOOLBOSCORE_ROOT}/BashSrc: sourcing ${FILE}"
-        fi
-
-
-        if [[ -r "${FILE}" ]]
-        then
-            source "${FILE}"
-        else
-            if [[ "${VERBOSE}" == "TRUE" ]]
-            then
-                echo "${FILE}: No such file"
-            fi
-        fi
-
-    done
-
-
-    #------------------------------------------------------------------------
     # Clean-up
     #------------------------------------------------------------------------
 
     unset FILE
-    unset OPTIONAL
-    unset PACKAGE
     unset SCRIPT_PATH
     unset SIT_DEPENDENCIES
     unset SIT_PROXY

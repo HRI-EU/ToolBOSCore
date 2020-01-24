@@ -16,7 +16,7 @@ import itertools
 import sys
 import unittest
 
-from ToolBOSCore.Util.CAnalyzer import CParser
+from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
 from ToolBOSCore.Util.CAnalyzerElements import Enum, Field, FunctionDefinition, FunctionPrototype, MacroDefinition, \
     MacroFnDefinition, Struct, TemplateFunctionDefinition, TemplateParameter, Typedef, Variable, Namespace
 

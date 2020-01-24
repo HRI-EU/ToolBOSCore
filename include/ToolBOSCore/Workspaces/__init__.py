@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: utf-8 -*-
 #
-#  Version update by maintainer
+#  ToolBOS workspaces
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -32,21 +32,6 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-
-
-OLD_VERSION=3[.]2
-NEW_VERSION=3.3
-
-
-sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
-                                          bin/*.bat \
-                                          bin/ToolBOS-Setup.py \
-                                          etc/ToolBOS.conf \
-                                          doc/documentation.h \
-                                          doc/ToolBOSCore/Setup/ShellConfig.md \
-                                          include/ToolBOSCore/Settings/ToolBOSSettings.py \
-                                          test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
-                                          useFromHere.bat
 
 
 # EOF

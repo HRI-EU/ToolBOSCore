@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Checker functions for the HRI-EU Software Quality Guideline 2.0
+#  Rules and related check functions of Software Quality Guideline
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,14 +34,14 @@
 #
 
 
-from __future__ import print_function
-
 import ast
 import collections
 import inspect
 import logging
 import os
 import re
+import shlex
+import subprocess
 import sys
 import tempfile
 
@@ -51,409 +51,29 @@ from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
+from ToolBOSCore.Settings.ProcessEnv              import source
 from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
-from ToolBOSCore.Storage                          import PkgInfo
+from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
-from ToolBOSCore.Util                             import Any
-from ToolBOSCore.Util                             import FastScript
+from ToolBOSCore.Util                             import Any, FastScript, \
+                                                         VersionCompat
 
 
-OK                = 'OK'
-FAILED            = 'FAILED'
-NOT_AVAILABLE     = 'N/A'
+ALL_FILE_EXTENSIONS     = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
+                            '.java', '.m', '.py' )
 
-# do not use (frozen)set for sqLevelNames, to preserve a kind of "order"
-# even though the levels are independent and not based upon each other
-sqLevelNames      = [ 'cleanLab', 'basic', 'advanced', 'safety' ]
+C_FILE_EXTENSIONS       = ( '.c', '.h', '.inc' )
 
-sqLevels          = { 'cleanLab': 'clean-lab standard (essentials only)',
-                      'basic'   : 'basic set (HRI-EU standard)',
-                      'advanced': 'advanced set',
-                      'safety'  : 'safety-critical applications' }
+C_CPP_FILE_EXTENSIONS   = ( '.c', '.cpp', '.h', '.hpp', '.inc' )
 
-sqLevelDefault    = 'basic'
+C_HEADER_EXTENSIONS     = ( '.h', )
 
-sectionKeys       = [ 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE', 'SPEC' ]
+C_CPP_HEADER_EXTENSIONS = ('.h', '.hpp', 'hh', 'hxx')
 
-sectionNames      = { 'GEN' : 'General',
-                      'C'   : 'C and C++',
-                      'PY'  : 'Python',
-                      'MAT' : 'Matlab',
-                      'DOC' : 'Documentation',
-                      'SAFE': 'Safety-critical applications',
-                      'SPEC': 'Specific requirements' }
 
-sectionObjectives = { 'GEN' : 'Maintainability, compatibility',
-                      'C'   : 'Maintainability, compatibility',
-                      'PY'  : 'Maintainability, compatibility',
-                      'MAT' : 'Maintainability',
-                      'DOC' : 'User experience',
-                      'SAFE': 'Safety',
-                      'SPEC': 'Safety, portability' }
-
-C_CPP_FILE_EXTENSIONS = ( '.c', '.cpp', '.h', '.hpp' )
-
-
-class QualityCheckerRoutine( object ):
-
-    def __init__( self, projectRoot=None, details=None, enabled=None ):
-        """
-            Creates a QualityChecker instance for the package within the
-            current working directory.
-
-            Alternatively 'projectRoot' may be specified to point to any
-            other top-level directory of a source package.
-
-            If a PackageDetector instance is already at hand it can be
-            provided here to speed-up the things. In such case its
-            retrieveMakefileInfo() and retrieveVCSInfo() must have already
-            been called.
-
-            'enabled' might be a special list containing any of mixture:
-                a) files / directories to check only
-                b) rule ID's to run only
-
-            This list is intended to limit the check operations onto a
-            dedicated number of files / directories / rule IDs, e.g.:
-
-                enabled = [ 'SPEC-01', 'SPEC-02', 'SPEC-03',
-                            'src/ModuleA', 'src/ModuleB/Foo.c' ]
-        """
-        if details:
-            Any.requireIsInstance( details, PackageDetector )
-            self.details = details
-        else:
-            BuildSystemTools.requireTopLevelDir( projectRoot )
-
-            try:
-                self.details = PackageDetector( projectRoot )
-            except AssertionError as details:
-                raise AssertionError( details )
-
-            self.details.retrieveMakefileInfo()
-            self.details.retrieveVCSInfo()
-
-
-        logging.info( 'analyzing package... (this may take some time)' )
-
-        self.files           = set()
-        self.checkersEnabled = list()
-
-        self._excludePattern = re.compile( '(build|external|klocwork|precompiled|sources|.svn)' )
-        self._extWhitelist   = frozenset( [ '.c', '.h', '.cpp', '.hpp', '.inc',
-                                            '.py', '.java', '.m' ] )
-
-        self._detectCheckers( enabled )
-        self._detectFiles( enabled )
-
-
-    def run( self, showReport=False ):
-        """
-            Executes all check routines in a sequence, and prints a short
-            report if desired.
-
-            The user may customize the checks to run via pkgInfo.py file.
-        """
-        Any.requireIsBool( showReport )
-
-        results       = {}
-        overallResult = True
-        i             = 0
-        numEnabled    = len( self.checkersEnabled )
-
-        for (ruleID, rule) in self.checkersEnabled:
-
-            if hasattr( rule, 'run' ):
-                logging.info( 'checking rule: %s', ruleID )
-            else:
-                logging.info( 'checking rule: %s → not implemented', ruleID )
-                continue
-
-            result = rule.run( self.details, self.files )
-
-            if result is None:
-                logging.debug( 'checking rule: %s → no result data (?)', ruleID )
-            else:
-                status    = result[0]
-                shortText = result[3]
-                logging.debug( shortText )
-                logging.info( 'checking rule: %s → %s', ruleID, status )
-
-                if status == FAILED:
-                    overallResult = False
-
-                    results[ ruleID ] = result
-
-            i += 1
-
-            if i < numEnabled:
-                logging.info( '' )
-
-        if showReport:
-            if not self.details.canonicalPath:
-                logging.error( 'unable to detect package category, scan failed' )
-                return False
-
-            logging.info( '' )
-            logging.info( 'results for %s:', self.details.canonicalPath )
-
-            # "ruleID" is a string (e.g. C-01), "rule" is the instance to work with
-            for ( ruleID, rule ) in self.checkersEnabled:
-                try:
-                    result = results[ ruleID ]
-                except KeyError:                     # checker not implemented
-                    continue
-
-                status     = result[0]
-                passed     = result[1]
-                failed     = result[2]
-                shortText  = result[3]
-                total      = passed + failed
-
-                try:
-                    percent = float(passed) / float(total) * 100
-                except ZeroDivisionError:
-                    # Devision by zero can only happen in case the total number
-                    # is zero, f.i. the check did not apply to any file.
-                    # Set percentage to 100% in this case == success.
-                    percent = 100
-
-                evaluation = '%3d%%' % percent
-
-                logging.info( '%8s [%4s = %6s] %s', ruleID, evaluation,
-                              status.ljust(6), shortText )
-
-            logging.info( '' )
-
-            if overallResult is True:
-                logging.info( 'EXCELLENT!!! :-)' )
-                logging.info( '' )
-
-        return overallResult
-
-
-    def _detectCheckers( self, argv ):
-        """
-            Determine the list of checkers to be executed.
-        """
-        all_dict = {}
-        all_list = getCheckersAvailable()
-        ruleIDs = []
-        sqLevel = self.details.sqLevel
-        sqOptInRules = self.details.sqOptInRules
-        sqOptOutRules = self.details.sqOptOutRules
-
-        if sqLevel is None:                      # value not set in pkgInfo.py
-            sqLevel = 'basic'
-
-        Any.requireMsg( sqLevel in sqLevelNames,
-                        '"%s": Unknown software quality level defined in pkgInfo.py' % \
-                        sqLevel )
-
-        for key, value in getCheckersAvailable():
-            all_dict[ key ] = value
-
-
-        # user might have specified particular checker(s) to run
-        if argv:
-            for item in argv:
-                # search for strings matching rule ID
-                if item in all_dict.keys():
-                    self.checkersEnabled.append( ( item, all_dict[item] ) )
-
-        # if no matching string found then fallback to run all
-
-        if not self.checkersEnabled:
-            self.checkersEnabled = []
-            for (ruleID, rule) in all_list:
-
-                logging.debug( '' )
-                logging.debug( 'PROCESSING RULE %s:', ruleID )
-                ruleIDs.append( ruleID )
-
-                if rule.sqLevel is None:
-                    logging.debug( 'not checked (removed)' )
-
-                elif ruleID in sqOptInRules:
-                    logging.debug( '%s checking (opted in via pkgInfo.py)',
-                                  ruleID )
-                    self.checkersEnabled.append( (ruleID, rule) )
-
-                elif ruleID in sqOptOutRules:
-                    logging.debug( '%s not checked (opted out via pkgInfo.py)',
-                                  ruleID )
-
-                elif sqLevel not in rule.sqLevel:
-                    logging.debug( "not checked (not required at level='%s')", sqLevel )
-
-                elif not hasattr( rule, 'run' ):
-                    logging.debug( 'not implemented' )
-
-                elif ruleID not in sqOptOutRules[:]:
-                    self.checkersEnabled.append( (ruleID, rule) )
-                    logging.debug( 'checking rule %s :',
-                                  ruleID )
-
-
-    def _detectFiles( self, argv ):
-        """
-            Determine the list of files to be processed in the following
-            order:
-
-               * provided 'argv' array (list of strings)
-               * settings in pkgInfo.py
-               * auto-detect (fallback)
-        """
-        found = False
-
-        if argv:
-            found = self._addFilesFromArgv( argv )
-
-        if not found:
-            found = self._addFilesFromPkgInfo()
-
-        if not found:
-            self._addFilesFromPackage()
-
-        # at least the final auto-detection must have returned 'True'
-
-        # 2016-01-07  Marcus Stein
-        #
-        # No, in case of VirtualModule-packages there is no content
-        # that would be automatically detected, because it is
-        # generated at install time. Skip this check here.
-
-        # Any.requireMsg( found, 'script error' )
-
-        # apply opt-out settings
-        self._removeFilesFromPkgInfo()
-
-
-    def _addFilesFromArgv( self, argv ):
-        """
-            Checks each token specified on commandline (provided as array
-            of strings) if it is about a file or directory.
-
-            Returns a boolean whether or not files/directories have been
-            found.
-        """
-        cwd    = os.getcwd()
-        result = False
-
-        for item in argv:
-
-            if not os.path.isabs( item ):
-                item = os.path.join( cwd, item )
-
-            if os.path.isfile( item ):
-                self._addFile( item )
-
-            elif os.path.isdir( item ):
-                logging.debug( 'found dir: %s', item )
-
-                for filePath in FastScript.getFilesInDirRecursive( item,
-                                                                   self._excludePattern ):
-
-                    # only consider whitelisted extensions, f.i. do not analyze
-                    # binaries, bytecode files, PDFs etc.
-                    fileExt = os.path.splitext( filePath )[-1]
-
-                    if fileExt in self._extWhitelist:
-                        self._addFile( filePath )
-                        result = True
-
-        return result
-
-
-    def _addFilesFromPkgInfo( self ):
-        """
-            Sets the list of files/directories to be processed from settings
-            in pkgInfo.py.
-
-            Returns a boolean whether or not settings have been found there.
-        """
-        result = False
-
-        for filePath in self.details.sqOptInFiles:
-            self._addFile( filePath )
-            result = True
-
-        for dirPath in self.details.sqOptInDirs:
-            Any.requireIsDir( dirPath )
-
-            for filePath in FastScript.getFilesInDirRecursive( dirPath,
-                                                               self._excludePattern ):
-
-                # only consider whitelisted extensions, f.i. do not analyze
-                # binaries, bytecode files, PDFs etc.
-                fileExt = os.path.splitext( filePath )[-1]
-
-                if fileExt in self._extWhitelist:
-                    self._addFile( filePath )
-                    result = True
-
-        return result
-
-
-    def _addFilesFromPackage( self ):
-        """
-            Scans the entire package and auto-detects files to be analyzed.
-        """
-        searchPath = self.details.topLevelDir
-        result     = False
-
-        for filePath in FastScript.getFilesInDirRecursive( searchPath,
-                                                           self._excludePattern ):
-
-            # only consider whitelisted extensions, f.i. do not analyze
-            # binaries, bytecode files, PDFs etc.
-            fileExt = os.path.splitext( filePath )[-1]
-
-            if fileExt in self._extWhitelist:
-                if not os.path.islink( filePath ):
-                    self._addFile( filePath )
-                    result = True
-
-        return result
-
-
-    def _addFile( self, filePath ):
-        self.files.add( filePath )
-
-
-    def _removeFilesFromPkgInfo( self ):
-        """
-            Removes certain files/directories from being processed based
-            upon settings in pkgInfo.py.
-        """
-        for filePath in self.details.sqOptOutFiles:
-            self._removeFile( filePath )
-
-
-        for dirPath in self.details.sqOptOutDirs:
-            if os.path.isdir( dirPath ):
-
-                for filePath in FastScript.getFilesInDirRecursive( dirPath ):
-                    self._removeFile( filePath )
-
-            else:
-
-                logging.warning( 'invalid SQ setting in pkgInfo.py: %s: No such directory',
-                               dirPath )
-
-
-    def _removeFile( self, filePath ):
-        absPath = os.path.join( self.details.topLevelDir, filePath )
-
-        try:
-            self.files.remove( absPath )
-        except KeyError:
-            pass
-
-
-class AbstractQualityRule( object ):
+class AbstractRule( object ):
 
     ruleID      = None
     brief       = None
@@ -462,6 +82,7 @@ class AbstractQualityRule( object ):
     badExample  = None
     seeAlso     = {}
     sqLevel     = None
+    removed     = False
 
 
     def __init__( self ):
@@ -479,7 +100,234 @@ class AbstractQualityRule( object ):
         return ruleID
 
 
-class QualityRule_GEN01( AbstractQualityRule ):
+class AbstractValgrindRule( AbstractRule ):
+
+    def run( self, details, files ):
+        """
+            Check for memory leaks.
+        """
+        ruleId = self.getRuleID()
+
+        if not details.hasMainProgram( files ):
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
+
+        # look-up executables in e.g. bin/<platform>/ directory  (subclass-specific)
+
+        exeDir   = self.getExeDir( details )
+        exeFiles = self.getExeFiles( details )    # e.g. [ 'bin/bionic64/blah' ]
+
+        if not exeFiles:
+            logging.error( 'no executables found in %s, forgot to compile?', exeDir )
+            return FAILED, 0, 0, 'no executables found'
+
+        platform     = getHostPlatform()
+        exeFilesPath = []
+
+        for exeFile in exeFiles:
+            if ruleId == 'C12':
+                tmp = os.path.join( 'bin', platform, exeFile )
+                exeFilesPath.append(tmp)
+            elif ruleId == 'C15':
+                tmp = os.path.join( 'test', platform, exeFile )
+                exeFilesPath.append(tmp)
+            else:
+                continue
+
+        logging.debug( 'executable(s) found in %s directory: %s', exeDir, exeFiles )
+
+        # get SQ-settings from pkgInfo.py
+        sqSettings = self.getSQSettings( details )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+
+        if sqSettings is None:
+            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see %s docs" % ruleId
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        sqCheckExe = []
+
+        for setting in sqSettings:
+            if ruleId == 'C12'and setting.startswith( 'bin' ):
+                sqCheckExe.append( setting )
+            elif ruleId == 'C15'and setting.startswith( 'test' ):
+                sqCheckExe.append( setting )
+            else:
+                continue
+
+        logging.debug( "'sqCheckExe' settings for %s from pkgInfo.py: %s", ruleId, sqCheckExe )
+
+        if not sqCheckExe:
+            msg    = "no 'sqCheckExe' settings for %s found in pkgInfo.py, please see %s docs" % ( ruleId, ruleId )
+            result = ( FAILED, 0, 1, msg )
+
+            return result
+
+        # verify that we have:
+        #     - one executable present for each setting (to check if compilation was forgotten)
+        #     - one setting is present for each executable (to check if developer was lazy ;-)
+
+        validityCheck = self.validityCheck( exeFilesPath, sqCheckExe )
+
+        if validityCheck[0] == FAILED:
+            shortText = validityCheck[3]
+            logging.debug( shortText )
+
+            return validityCheck
+
+        # source the package before running Valgrind
+
+        source( details.canonicalPath )
+        logging.info( "sourcing %s", details.canonicalPath )
+
+        # finally run Valgrind
+        runValgrindResult = self.runValgrind( sqCheckExe, details )
+
+        return runValgrindResult
+
+
+    def getSQSettings( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        try:
+            sqSettingsTmp = details.sqCheckExe
+            Any.requireIsNotNone( sqSettingsTmp )
+            Any.requireIsList( sqSettingsTmp )
+
+            sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
+
+            return sqSettings
+
+        except ( IOError, ValueError, TypeError, OSError ) as e:
+            logging.error( e )
+            logging.error( 'issue with retrieving SQ settings from pkgInfo')
+
+            return None
+
+        except AssertionError:
+            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
+
+            return None
+
+
+    def getExeDir( self, details ):
+        raise NotImplementedError
+
+
+    def getExeFiles( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
+
+        ruleId = self.getRuleID()
+        Any.requireIsTextNonEmpty( ruleId )
+
+        exeDir = self.getExeDir( details )
+        Any.requireIsTextNonEmpty( exeDir )   # packages may not have "bin/<platform>" etc.!
+
+        exeFiles = FastScript.getFilesInDir( exeDir )
+        Any.requireIsList( exeFiles )
+
+        return exeFiles
+
+
+    def validityCheck( self, binFiles, commandLines ):
+        Any.requireIsList( binFiles )
+        Any.requireIsList( commandLines )
+
+        commands = []
+
+        for cmdLine in commandLines:
+
+            tmp = shlex.split( cmdLine )
+            command = tmp[0]
+            commands.append( command )
+
+        # TODO: check matching
+
+        for command in commands:
+            if not os.path.exists( command ):
+                logging.error( "The path specified in pkgInfo.py 'sqCheckExe' key does not exist: %s'. "
+                               "Is the package compiled?", command )
+
+                result = ( FAILED, 0, 1,
+                           '%s specified in pkgInfo.py does not exist' % command )
+
+                return result
+
+        for binFile in binFiles:
+            if binFile not in commands:
+                logging.warning("%s executable was found. "
+                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
+
+                result = ( FAILED, 0, 1,
+                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
+
+                return result
+
+        return OK, 0, 0, 'validity check paas'
+
+
+    def runValgrind( self, commandLines, details ):
+        passedExecutables = 0
+        failedExecutables = 0
+        errorMessages     = []
+
+        ruleID            = self.getRuleID()
+
+        for command in commandLines:
+
+            logging.info( "%s: checking '%s'" % ( ruleID,command ) )
+
+            if Any.getDebugLevel() <= 3:
+                stdout = VersionCompat.StringIO()
+                stderr = VersionCompat.StringIO()
+            else:
+                stdout = None
+                stderr = None
+
+            try:
+                failed, errors = Valgrind.checkExecutable( command, details,
+                                                           stdout=stdout, stderr=stderr )
+            except subprocess.CalledProcessError as e:
+                failed = True
+                errors = []
+
+            if failed:
+                failedExecutables += 1
+
+                for error in errors:
+                    errorMessages.append( '%s: %s:%s - %s'
+                                          % ( ruleID, error.fname, error.lineno, error.description ) )
+
+                logging.info( "%s: '%s' failed (see verbose-mode for details)"% ( ruleID, command ) )
+
+            else:
+                passedExecutables += 1
+                logging.info( "%s: '%s successfully finished"% ( ruleID, command ) )
+
+        for error in errorMessages:
+            logging.error( error )
+
+        if not passedExecutables and not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no executables were checked with Valgrind' )
+        elif not failedExecutables:
+            result = ( OK, passedExecutables, failedExecutables,
+                       'no defects found by Valgrind' )
+        else:
+            result = ( FAILED, passedExecutables, failedExecutables,
+                       'Valgrind found %d defect%s' % ( failedExecutables,
+                                                        's' if failedExecutables > 1 else '' ) )
+
+        return result
+
+
+class RemovedRule( AbstractRule ):
+
+    brief   = '*removed*'
+    removed = True
+
+
+class Rule_GEN01( AbstractRule ):
 
     brief       = '''All comments, documentation, identifier names (types,
 variables, functions, classes) and filenames must be English.'''
@@ -487,7 +335,10 @@ variables, functions, classes) and filenames must be English.'''
 who might be using your source code in the future.
 
 English as corporate language should be reflected in the source code as well.
-Other languages such as German or Japanese should be avoided.'''
+Other languages such as German or Japanese should be avoided.
+
+Note that your application may well support various languages, e.g. print
+Japanese output on screen.'''
 
     goodExample = '''\tint result = 123;'''
 
@@ -500,34 +351,56 @@ Other languages such as German or Japanese should be avoided.'''
             Look for specific characters such as German Umlauts, French
             accents, or Japanese characters.
         """
-        logging.debug( 'checking files for Non-English characters...' )
+        logging.debug( 'checking filenames for Non-English characters...' )
         passed = 0
         failed = 0
 
-        whitelist      = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m',
-                           '.py' )
+        whitelist = ALL_FILE_EXTENSIONS
 
         for filePath in files:
             if os.path.splitext( filePath )[-1] in whitelist:
 
                 logging.debug( 'checking %s', filePath )
 
-                passedInFile, failedInFile = findNonAsciiCharacters( filePath, 'GEN01' )
-                passed += passedInFile
-                failed += failedInFile
+
+                if six.PY2:
+
+                    try:
+                        filePath.decode( 'ascii' )
+                        passed += 1
+                    except UnicodeDecodeError as e:
+                        # PyCharm linter fails to recognize the start property
+                        # so we silence the warning.
+                        # noinspection PyUnresolvedReferences
+                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                      filePath )
+                        failed += 1
+
+                else:
+
+                    try:
+                        filePath.encode( 'ascii' )
+                        passed += 1
+                    except UnicodeEncodeError as e:
+                        # PyCharm linter fails to recognize the start property
+                        # so we silence the warning.
+                        # noinspection PyUnresolvedReferences
+                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                      filePath )
+                        failed += 1
+
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'all identifiers and comments OK' )
+                       'all filenames in ASCII characters' )
         else:
             result = ( FAILED, passed, failed,
-                       'files with Non-ASCII characters found' )
+                       'filenames with Non-ASCII characters found' )
 
         return result
 
 
-
-class QualityRule_GEN02( AbstractQualityRule ):
+class Rule_GEN02( AbstractRule ):
 
     brief       = '''Source code should be in ASCII or UTF-8 files.
 Filenames should only contain alphanumeric characters.'''
@@ -558,7 +431,12 @@ dialog.'''
         failed = 0
 
         for filePath in files:
-            content  = FastScript.getFileContent( filePath, asBinary=True )
+            try:
+                content = FastScript.getFileContent( filePath, asBinary=True )
+            except ( IOError, OSError ) as e:
+                logging.error( e )
+                failed += 1
+                continue
 
             encoding = chardet.detect( content )['encoding']
 
@@ -580,16 +458,22 @@ dialog.'''
         return result
 
 
-class QualityRule_GEN03( AbstractQualityRule ):
+class Rule_GEN03( AbstractRule ):
 
     brief       = '''Stick to 80 characters per line. Exceptions are fine
 when increasing readability.'''
 
-    description = '''Limiting to 80 characters eases editing / viewing:
+    description = '''Yes, monitors noawadays are huge and can display more
+characters per line. Instead the reason of limiting to 80 characters are:
 
-  * IDEs show add. widgets at left / right side
-  * xterm defaults to 80x25
-  * merging sources (side-by-side view)'''
+  * diff-ing two or three files next to each other, f.i. code comparison
+  * IDEs + debuggers + source code analyzers show many widgets around the code
+  * simpler editing / viewing
+  * terminals default to 80x25, widely used for "less" / "git show" / ...
+  * merging sources (side-by-side view)
+
+Where readability would be increased, we allow a few exceptions up to 120
+characters per line.'''
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -642,7 +526,7 @@ when increasing readability.'''
         return result
 
 
-class QualityRule_GEN04( AbstractQualityRule ):
+class Rule_GEN04( AbstractRule ):
 
     brief       = '''All source code files and related artefacts, such as
 configfiles or documentation, must start with the HRI-EU copyright header.'''
@@ -656,8 +540,11 @@ work for HRI-EU.
 This copyright header must also be applied by contractors and students working
 for HRI-EU.
 
-This rule does not need to be applied to auto-generated files, such as doxygen
-HTML documentation or generated SWIG code.
+This rule does not need to be applied to auto-generated files (such as doxygen
+HTML documentation or generated SWIG code).
+
+This rule shall not be applied to open-source code released under a particular
+license that most often requires a specific header.
 
 *Header for C / C++ / Java files:*
 
@@ -758,10 +645,7 @@ HTML documentation or generated SWIG code.
     #
     #-->
 
-Please replace *description* by a very short summary what this file is about.
-
-Note: Author names are not part of the header. Instead they should be listed
-in the documentation.'''
+Please replace *description* by a very short summary what this file is about.'''
 
     seeAlso     = { 'rule DOC-04': None }
 
@@ -777,8 +661,7 @@ in the documentation.'''
         failed = 0
 
         copyrightLines = getCopyright()
-        whitelist      = ( '.c', '.cpp', '.h', '.hpp', '.inc', '.java', '.m',
-                           '.py', '.bat' )
+        whitelist      = ALL_FILE_EXTENSIONS
 
         for filePath in files:
             if os.path.splitext( filePath )[-1] in whitelist:
@@ -806,7 +689,7 @@ in the documentation.'''
         return result
 
 
-class QualityRule_GEN05( AbstractQualityRule ):
+class Rule_GEN05( AbstractRule ):
 
     brief       = '''No type abbreviations must be added to identifiers
 ("Hungarian notation"), because types may change without updating the
@@ -829,7 +712,7 @@ hard-to-track bugs.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_GEN06( AbstractQualityRule ):
+class Rule_GEN06( AbstractRule ):
 
     brief       = 'Do not use tabs in code.'
 
@@ -884,15 +767,15 @@ tabs.'''
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'source files do not contain tabs' )
+                       'no tabs found' )
         else:
             result = ( FAILED, passed, failed,
-                       'source files contain tabs' )
+                       'tabs found' )
 
         return result
 
 
-class QualityRule_GEN07( AbstractQualityRule ):
+class Rule_GEN07( AbstractRule ):
 
     brief       = 'Libraries and applications should contain a unittest.'
 
@@ -903,7 +786,11 @@ show:
   * the code is compilable (f.i. on multiple platforms)
   * no broken dependencies, such as API changes
   * executables are runnable (no undefined symbols, missing files,...)
-  * tested code somehow behaves as expected'''
+  * tested code somehow behaves as expected
+
+Please provide a generic `unittest.sh` (Linux) and/or `unittest.bat`
+(Windows) in the top-level directory of the package. This shall invoke any
+package-specific testsuite.'''
 
     seeAlso     = { 'Unittest HowTo': 'ToolBOS_Util_BuildSystemTools_Unittesting' }
 
@@ -913,6 +800,9 @@ show:
         """
             Checks if the package provides a unittest.
         """
+        if details.isComponent():
+            return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
+
         logging.debug( 'looking for unittest.{sh,bak}' )
         found = False
 
@@ -929,28 +819,28 @@ show:
         return result
 
 
-class QualityRule_GEN08( AbstractQualityRule ):
+class Rule_GEN08( AbstractRule ):
 
-    brief       = '''Any 3rd party code must be clearly separated to avoid
+    brief       = '''Any 3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
 if needed.'''
 
-    description = '''Closely integrating 3rd party software such as compiling
+    description = '''Closely integrating 3rd-party-software such as compiling
 foreign source code into the own application very likely will violate the
-license of the 3rd party software. This can result in severe legal problems.
+license of the 3rd-party-software. This can result in severe legal problems.
 (There are some licenses which permit such usage, f.i. BSD License).
 
-Even putting 3rd party libraries into the own source code repository is within
+Even putting 3rd-party-libraries into the own source code repository is within
 a questionable grey zone. At least create a sub-directory named
-*external* and put all 3rd party modules inside. This makes obvious that you
-do not claim ownership on this material.
+*external* or *3rdParty* and put all 3rd-party-modules inside.
+This makes it obvious that you do not claim ownership on this material.
 
-Best approach is to install 3rd party software independently into SIT, and
+Best approach is to install 3rd-party-software independently into SIT, and
 interface with it.'''
 
     goodExample = '''\tMyPackage
-\t\t1.0
-\t\t\texternal
+\t\t1.0 (version directory is optional)
+\t\t\texternal (or "3rdParty")
 \t\t\t\tcmake.org
 \t\t\t\t\t[...]
 \t\t\t\tgnome.org
@@ -972,7 +862,7 @@ interface with it.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_GEN09( AbstractQualityRule ):
+class Rule_GEN09( AbstractRule ):
 
     brief       = '''If any 3rd party software is involved in the project,
 its usage or interfacing must be compliant with its license terms.'''
@@ -991,7 +881,7 @@ it with reasonable effort to an alternative software.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_GEN10( AbstractQualityRule ):
+class Rule_GEN10( AbstractRule ):
 
     brief       = '''Put package under version control system (Git/SVN).'''
 
@@ -1003,7 +893,7 @@ class QualityRule_GEN10( AbstractQualityRule ):
   * avoids chaos of various copies + patchfiles
   * central backup
 
-Note: HRI-EU permits to use Git or Subversion (SVN).'''
+Note: HRI-EU recommends to use Git.'''
 
     seeAlso     = { 'SVN HowTo': 'ToolBOS_HowTo_SVN',
                     'Git HowTo': 'ToolBOS_HowTo_Git' }
@@ -1031,13 +921,15 @@ Note: HRI-EU permits to use Git or Subversion (SVN).'''
         return result
 
 
-class QualityRule_GEN11( AbstractQualityRule ):
+class Rule_GEN11( AbstractRule ):
 
     brief       = '''Consider managing bugs and feature requests via JIRA
 issue tracker.'''
 
+    sqLevel     = frozenset()
+
     def __init__( self ):
-        super( AbstractQualityRule, self ).__init__()
+        super( AbstractRule, self ).__init__()
 
         url = getConfigOption( 'bugtrackURL' )
 
@@ -1054,7 +946,7 @@ Remote access is also possible upon request, please contact system
 administration in this case.''' % { 'url': url }
 
 
-class QualityRule_GEN12( AbstractQualityRule ):
+class Rule_GEN12( AbstractRule ):
 
     brief       = '''Applications and library functions should have a
 deterministic mode, i.e. the possiblity to start with a defined random
@@ -1069,8 +961,39 @@ example, when random numbers are involved, there should be a possibility to
 predefine the seed or to assign some fixed value that should be taken instead.
 '''
 
+    sqLevel     = frozenset()
 
-class QualityRule_C01( AbstractQualityRule ):
+
+class Rule_GEN13( AbstractRule ):
+
+    brief       = '''Always check return-values of function'''
+
+    description = '''Return values, especially those indicating errors,
+should not be silently ignored. If some return value is not very useful
+(as could be those of `printf()` or `close()`), you should provide a cast
+and/or comment that it has been ignored on purpose.'''
+
+    sqLevel     = frozenset()
+
+
+class Rule_GEN14( AbstractRule ):
+
+    brief       = '''Strive for simple control-flows and keep functions
+short'''
+
+    description = '''Complex control-flows and long functions make reasoning
+about and code-checking difficult, f.i. the cyclomatic complexity should be
+sufficiently low.
+
+Overly long functions are difficult to understand (especially if you have to
+scroll).
+
+Attempt to break-down functions longer than approximately 60 lines of code
+into smaller chunks, and review their responsabilities. A function shall
+perform one job only.'''
+
+
+class Rule_C01( AbstractRule ):
 
     brief       = '''Prefer returning status codes (or throwing exceptions
 in C++) over `exit()` within the code.'''
@@ -1119,6 +1042,9 @@ causing data loss or inconsistent states.'''
         """
             Checks if exit() and friends are used.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for direct exit() in code' )
         failed = 0
         passed = 0
@@ -1132,11 +1058,11 @@ causing data loss or inconsistent states.'''
                filePath.find( '/examples/' ) != -1 or \
                 filePath.find( '/test/' ) != -1:
 
-                logging.debug( '%s: exit() in main programs permitted', filePath  )
+                logging.debug( '%s: found exit() within main program: OK', filePath  )
                 continue
 
-            if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ) or \
-               filePath.endswith( '.hpp' ) or filePath.endswith( '.inc' ):
+            _, ext = os.path.splitext( filePath )
+            if ext in C_CPP_FILE_EXTENSIONS:
 
                 content = FastScript.getFileContent( filePath )
 
@@ -1155,7 +1081,7 @@ causing data loss or inconsistent states.'''
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'no usage of exit() or abort() found' )
+                       'no invalid use of exit() or abort() found' )
         else:
             result = ( FAILED, passed, failed,
                        'exit() and/or abort() found' )
@@ -1163,7 +1089,7 @@ causing data loss or inconsistent states.'''
         return result
 
 
-class QualityRule_C02( AbstractQualityRule ):
+class Rule_C02( AbstractRule ):
 
     brief       = 'C header files should ensure C++ linkage compatibility.'
 
@@ -1196,6 +1122,9 @@ Without these macros the code will not link in C++ context.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+
         logging.debug( 'checking C header files for linkage guards' )
 
         binDir            = os.path.join( details.topLevelDir, 'bin' )
@@ -1212,24 +1141,12 @@ Without these macros the code will not link in C++ context.'''
                               ifdefinedExpr   : ifDefinedRegex,
                               toolbosMacroExpr: toolbosMacroRegex }
 
-        platform = getHostPlatform()
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-
         try:
 
             for filePath in files:
-                fname, fext = os.path.splitext( filePath )
+                fname, ext = os.path.splitext( filePath )
 
-                if fext == '.h' and not filePath.startswith( binDir ):
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    # Is this check enough?
-                    if not parser.functions:
-                        logging.debug( 'Skipping file "%s" as it looks like a C++ only header file.', filePath )
-                        continue
+                if ext in C_HEADER_EXTENSIONS and not filePath.startswith( binDir ):
 
                     contents = FastScript.getFileContent( filePath )
                     found    = False
@@ -1248,7 +1165,7 @@ Without these macros the code will not link in C++ context.'''
                         logging.debug( 'passed: %s', filePath )
                         passed += 1
                     else:
-                        logging.info( 'failed: %s', filePath )
+                        logging.info( 'C02: linkage guard missing: %s', filePath )
                         failed += 1
 
         except EnvironmentError as e:
@@ -1266,7 +1183,7 @@ Without these macros the code will not link in C++ context.'''
         return result
 
 
-class QualityRule_C03( AbstractQualityRule ):
+class Rule_C03( AbstractRule ):
 
     brief       = '''Macro names must be uppercase and prefixed by the package
 name. The expression must be put in parentheses.'''
@@ -1307,6 +1224,9 @@ b, instead of being 33 like it should, would actually be replaced with
             fit to such conventions. Therefore we define a whitelist for such
             known macros here.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking C/C++ macro prefixes' )
         passed               = 0
         failed               = 0
@@ -1326,7 +1246,7 @@ b, instead of being 33 like it should, would actually be replaced with
         try:
             for filePath in files:
                 _, ext = os.path.splitext( filePath )
-                if ext.lower( ) in ('.h', '.hpp', 'hh', 'hxx'):
+                if ext in C_CPP_HEADER_EXTENSIONS:
                     basename     = os.path.basename( filePath )
                     module       = os.path.splitext( basename )[0]
                     moduleUpper  = module.upper()
@@ -1384,19 +1304,21 @@ b, instead of being 33 like it should, would actually be replaced with
         return result
 
 
-class QualityRule_C04( AbstractQualityRule ):
+class Rule_C04( AbstractRule ):
 
     brief       = '''A function without parameters must be declared with a
 `void` argument list.'''
 
-    description = '''A `void` argument list indicates that the function does
+    description = '''This rule only applies to C code.
+
+A `void` argument list indicates that the function does
 not take arguments. Hence the compiler can check for invalid calls where
 unexpected parameters are supplied.
 
 If `void` isn't specified, the compiler does not make any assumptions.
 Hence the function could accidently be called with arguments.
 
-This might lead to error if a function that originally had taken parameters
+This might lead to an error if a function that originally had taken parameters
 has been changed (to not take parameters anymore) and the caller was not
 updated and still passes parameters.'''
 
@@ -1405,11 +1327,14 @@ updated and still passes parameters.'''
     badExample  = '''   int Foo_run();'''
 
     seeAlso     = { 'CERT DCL20-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/DCL20-C.+Explicitly+specify+void+when+a+function+accepts+no+arguments' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/DCL20-C.+Explicitly+specify+void+when+a+function+accepts+no+arguments' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
+        if not details.isCPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+
         logging.debug( 'looking for function prototypes with no information about the arguments' )
         platform             = getHostPlatform( )
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
@@ -1420,7 +1345,8 @@ updated and still passes parameters.'''
 
             for filePath in files:
                 _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
+
+                if ext in C_FILE_EXTENSIONS:
                     parser = createCParser( filePath, details, headerAndLanguageMap )
 
                     if not parser:
@@ -1432,17 +1358,17 @@ updated and still passes parameters.'''
                         failed += 1
 
                         for proto, line in protos:
-                            logging.info( 'C04: %s:%d - function %s declared without information about the arguments',
-                                          filePath, line, proto )
+                            msg = 'C04: %s:%d - void-function with ambiguous argument list'
+                            logging.info( msg, filePath, line, proto )
                     else:
                         passed += 1
 
             if failed == 0:
                 result = ( OK, passed, failed,
-                           'all files OK' )
+                           'no void-functions with ambiguous arguments found' )
             else:
                 result = ( FAILED, passed, failed,
-                           'files with functions declared without parameters found' )
+                           'void-functions with ambiguous arguments found' )
 
         except EnvironmentError as e:
             logging.error( e )
@@ -1452,7 +1378,7 @@ updated and still passes parameters.'''
         return result
 
 
-class QualityRule_C05( AbstractQualityRule ):
+class Rule_C05( AbstractRule ):
 
     brief       = '''Header files must be protected against multiple inclusion
 using inclusion guards.'''
@@ -1474,7 +1400,7 @@ and other compile errors.'''
 '''
 
     seeAlso     = { 'CERT PRE06-CPP':
-                    'https://www.securecoding.cert.org/confluence/display/cplusplus/PRE06-CPP.+Enclose+header+files+in+an+inclusion+guard' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/PRE06-C.+Enclose+header+files+in+an+include+guard' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -1487,12 +1413,17 @@ and other compile errors.'''
                 ...
                 #endif
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'checking header file inclusion guards' )
 
         blacklist = frozenset( [ 'documentation.h' ] )
 
         for filePath in files:
-            if filePath.endswith( '.h' ) or filePath.endswith( '.hpp' ):
+            _, ext = os.path.splitext( filePath )
+
+            if ext in C_CPP_HEADER_EXTENSIONS:
                 fileName    = os.path.basename( filePath )
                 module      = os.path.splitext( fileName )[0]
                 moduleUpper = module.upper()
@@ -1503,36 +1434,43 @@ and other compile errors.'''
                     continue
 
                 # Note that we are searching with regexp for a more relaxed
-                # string with possible leading namespace name, but we print
-                # a stricter safeguard name in case it was not found,
-                # see JIRA ticket TBCORE-918
+                # string with possible pre-/postfix namespace name, but we
+                # print a stricter safeguard name in case it was not found,
+                # see JIRA tickets TBCORE-918 and TBCORE-2060
                 #
-                # allowed:  #ifndef DOT_PACKAGENAME_H
-                #
-                # where "DOT_" is an optional namespace prefix
+                # allowed:      PACKAGENAME_H
+                #           FOO_PACKAGENAME_H
+                #           FOO_PACKAGENAME_H_BAR
+                #               PACKAGENAME_H_BAR
+                #           FOO_PACKAGENAME_BAZ_H_BAR
+                #               PACKAGENAME_BAZ_H
 
                 safeguard   = '#ifndef %s_H' % moduleUpper
-                regexp      = re.compile( '#ifndef\s\S*?%s_H' % moduleUpper )
+                regexp      = re.compile( '#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
 
-                if regexp.search( content ):
+                tmp = regexp.search( content )
+
+                if tmp:
+                    logging.debug( "C05: %s: safeguard %s found",
+                                   filePath, tmp.group(1) )
                     self.passed += 1
                 else:
-                    logging.info( "C05: %s: safeguard '%s' not found",
+                    logging.info( "C05: %s: safeguard %s not found",
                                   filePath, safeguard )
                     self.failed += 1
 
 
         if self.failed == 0:
             result = ( OK, self.passed, self.failed,
-                       'C/C++ header file inclusion guards valid' )
+                       'multi-inclusion safeguards present' )
         else:
             result = ( FAILED, self.passed, self.failed,
-                       'C/C++ safeguards missing' )
+                       'multi-inclusion safeguards missing' )
 
         return result
 
 
-class QualityRule_C06( AbstractQualityRule ):
+class Rule_C06( AbstractRule ):
 
     brief       = '''Header files should not expose inline functions as
 public interface. The result after changing the implementation is undefined.'''
@@ -1556,12 +1494,17 @@ of code variants.'''
         """
             Checks that public C/C++ functions are not exposed as 'inline'.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( "looking for public functions declared 'inline'" )
         passed = 0
         failed = 0
 
         for filePath in files:
-            if filePath.endswith( '.h' ) or filePath.endswith( '.hpp' ):
+            _, ext = os.path.splitext( filePath )
+
+            if ext in C_CPP_HEADER_EXTENSIONS:
                 content = FastScript.getFileContent( filePath )
 
                 if content.find( 'inline' ) != -1:
@@ -1581,7 +1524,7 @@ of code variants.'''
         return result
 
 
-class QualityRule_C07( AbstractQualityRule ):
+class Rule_C07( AbstractRule ):
 
     brief       = '''Logging should be done using `ANY_LOG()` macros.'''
 
@@ -1609,10 +1552,12 @@ reasons. And consistency is a soft skill for good quality software.'''
                     'Any_About',
 
                     'CERT ERR00-CPP':
-                    'https://www.securecoding.cert.org/confluence/display/cplusplus/ERR00-CPP.+Adopt+and+implement+a+consistent+and+comprehensive+error-handling+policy' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/ERR00-C.+Adopt+and+implement+a+consistent+and+comprehensive+error-handling+policy' }
+
+    sqLevel     = frozenset()
 
 
-class QualityRule_C08( AbstractQualityRule ):
+class Rule_C08( AbstractRule ):
 
     brief       = '''Use datatypes and functions which support both 32 and
 64 bit environments.'''
@@ -1638,16 +1583,18 @@ types, f.i. `BaseI16` or `BaseI64`, defined in `Base.h.`'''
                     'Base_About',
 
                     'CERT NUM03-J':
-                    'https://www.securecoding.cert.org/confluence/display/java/NUM03-J.+Use+integer+types+that+can+fully+represent+the+possible+range+of++unsigned+data',
+                    'https://wiki.sei.cmu.edu/confluence/display/java/NUM03-J.+Use+integer+types+that+can+fully+represent+the+possible+range+of++unsigned+data',
 
                     'CERT INT31-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/INT31-C.+Ensure+that+integer+conversions+do+not+result+in+lost+or+misinterpreted+data',
+                    'https://wiki.sei.cmu.edu/confluence/display/c/INT31-C.+Ensure+that+integer+conversions+do+not+result+in+lost+or+misinterpreted+data',
 
                     'CERT INT08-C':
-                    'https://www.securecoding.cert.org/confluence/display/seccode/INT08-C.+Verify+that+all+integer+values+are+in+range' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/INT08-C.+Verify+that+all+integer+values+are+in+range' }
+
+    sqLevel     = frozenset()
 
 
-class QualityRule_C09( AbstractQualityRule ):
+class Rule_C09( AbstractRule ):
 
     brief       = '''Package can be built using `BST.py.`'''
 
@@ -1697,7 +1644,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         return result
 
 
-class QualityRule_C10( AbstractQualityRule ):
+class Rule_C10( AbstractRule ):
 
     brief       = '''Use a static source code analyzer (f.i. Klocwork
 Insight).'''
@@ -1726,7 +1673,8 @@ once in a while inspect your code using Klocwork.'''
         """
             Execute the Klocwork source code analyzer in CLI mode.
         """
-        from subprocess import CalledProcessError
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
 
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
@@ -1752,8 +1700,8 @@ once in a while inspect your code using Klocwork.'''
                     logging.info( 'C10: %s:%s: %s [%s]', *item )
                     failed += 1
 
-        except ( AssertionError, CalledProcessError, EnvironmentError,
-                 RuntimeError ) as details:
+        except ( AssertionError, subprocess.CalledProcessError,
+                 EnvironmentError, RuntimeError ) as details:
             logging.error( 'C10: %s', details )
             failed += 1
             error   = True
@@ -1775,12 +1723,16 @@ once in a while inspect your code using Klocwork.'''
         return result
 
 
-class QualityRule_C11( AbstractQualityRule ):
+class Rule_C11( AbstractRule ):
+    brief       = '''`setjmp()` and `longjmp()` are forbidden'''
 
-    brief       = '*removed*'
+    description = '''The two functions `setjmp()` and `longjmp()` make the
+execution paths through the code overly complicated. Do not use them.'''
+
+    sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class QualityRule_C12( AbstractQualityRule ):
+class Rule_C12( AbstractValgrindRule ):
 
     brief       = '''Heap-memory explicitly allocated with `malloc()` or
 `new` (or wrappers thereof), must be explicitly released using `free()` or
@@ -1809,67 +1761,14 @@ Specify an empty list if really nothing has to be executed.'''
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
-    def run( self, details, files ):
-        """
-            Check for memory leaks.
-        """
-        passedExecutables = 0
-        failedExecutables = 0
-        errorMessages     = []
 
-        try:
-            pkgInfo = PkgInfo.getPkgInfoContent()
-        except AssertionError:
-            logging.error( 'No pkgInfo file found, quitting.' )
-            return FAILED, 0, 1, 'Unable to run memory analysis.'
+    def getExeDir( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
 
-        binDirPath = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
+        return details.binDirArch
 
-        if not os.path.isdir( binDirPath ):
-            return ( OK, passedExecutables, failedExecutables,
-                     'package has no executables that could be checked' )
 
-        binDirContents             = list( os.walk( binDirPath ) )
-        _dirpath, _dirnames, files = binDirContents[0]
-        if 'SQ_12' not in pkgInfo and files:
-            return ( FAILED, 0, 1,
-                     "executable source code was found in %s directory"
-                     " but no SQ_12 directive was specified in pkgInfo.py" % binDirPath )
-
-        executables    = pkgInfo.get( 'SQ_12', [] )
-        for path in executables:
-            executable     = os.path.expandvars( path )
-            executablePath = os.path.realpath( os.path.join( details.topLevelDir, executable ) )
-
-            logging.info( 'Analyzing %s', executablePath )
-
-            failed, errors = Valgrind.checkExecutable( executablePath, details )
-
-            if failed:
-                failedExecutables += 1
-
-                for error in errors:
-                    errorMessages.append( 'C12: %s:%s - %s' % ( error.fname, error.lineno, error.description ) )
-            else:
-                passedExecutables += 1
-
-        for error in errorMessages:
-            logging.error( error )
-
-        if not passedExecutables and not failedExecutables:
-            result = ( OK, passedExecutables, failedExecutables,
-                       'no executables were checked with Valgrind' )
-        elif not failedExecutables:
-            result = ( OK, passedExecutables, failedExecutables,
-                       'no defects found by Valgrind' )
-        else:
-            result = ( FAILED, passedExecutables, failedExecutables,
-                       'Valgrind found %d defect%s' % ( failedExecutables,
-                                                        's' if failedExecutables > 1 else '' ) )
-
-        return result
-
-class QualityRule_C13( AbstractQualityRule ):
+class Rule_C13( AbstractRule ):
 
     brief       = '''Code should compile without warnings, even at strict
 compiler settings.'''
@@ -1895,7 +1794,7 @@ ISO C compliant, or explicitly silence the compiler warning in question.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_C14( AbstractQualityRule ):
+class Rule_C14( AbstractRule ):
 
     brief       = '''Minimize the use of global variables.'''
 
@@ -1909,12 +1808,13 @@ Avoiding cluttering the global name space prevents the variable from being
 accidentally (or intentionally) invoked from another compilation unit.'''
 
     seeAlso     = { 'CERT DCL19-C':
-                    'https://www.securecoding.cert.org/confluence/display/CINT/DCL19-C.+Minimize+the+scope+of+variables+and+functions' }
+                    'https://wiki.sei.cmu.edu/confluence/display/c/DCL19-C.+Minimize+the+scope+of+variables+and+functions' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_C15( AbstractQualityRule ):
+class Rule_C15( AbstractValgrindRule ):
+
 
     brief       = '''Unittests should be runnable under Valgrind without
 warnings of any sort.'''
@@ -1922,7 +1822,20 @@ warnings of any sort.'''
     description = '''**Valgrind** is a tool which runs an executable and
 during this searches for memory leaks and other issues with memory management.
 
-No issues shall be found during execution of unittests.'''
+No issues shall be found during execution of unittests.
+
+The check function for this rule invokes Valgrind on all executables listed
+in the sqCheckExe variable in pkgInfo.py, e.g.:
+
+    sqCheckExe = [ 'test/${MAKEFILE_PLATFORM}/main',
+                   'test/${MAKEFILE_PLATFORM}/main foo --bar' ]
+
+Please specify a list of commands, including arguments (if any), that
+shall be analyzed by the check routine.
+
+The paths to the executables are interpreted as relative to the package root.
+
+Specify an empty list if really nothing has to be executed.'''
 
     seeAlso     = { 'Valgrind HowTo':
                     'ToolBOS_HowTo_Debugging_Memory',
@@ -1933,12 +1846,91 @@ No issues shall be found during execution of unittests.'''
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class QualityRule_PY01( AbstractQualityRule ):
+    def getExeDir( self, details ):
+        Any.requireIsInstance( details, PackageDetector )
 
-    brief       = '*removed*'
+        return details.testDirArch
 
 
-class QualityRule_PY02( AbstractQualityRule ):
+class Rule_C16( AbstractRule ):
+
+    brief       = '''Use the preprocessor only for inclusion of header-files
+and simple macros.'''
+
+    description = '''Complex and multiple levels of macros obfuscate the
+code and make reasoning about it or debugging difficult.
+
+In most circumstances, functions should be used instead of macros.
+Functions perform argument type-checking and evaluate their arguments once,
+thus avoiding problems with potential multiple side effects.
+
+In many debugging systems, it is easier to step through execution of a
+function than a macro. Nonetheless, macros may be useful in some
+circumstances.'''
+
+    seeAlso     = { 'MISRA-2012 rule 4.9':
+                    None,
+                    'CERT PRE00-C':
+                    'https://wiki.sei.cmu.edu/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
+
+    sqLevel     = frozenset( [ 'safety' ] )
+
+    def run( self, details, files ):
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
+        logging.debug( 'checking C/C++ function-like macro presence' )
+        passed   = 0
+        failed   = 0
+        platform = getHostPlatform()
+
+        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
+        logging.debug( 'language map: %s', headerAndLanguageMap )
+
+        try:
+
+            for filePath in files:
+                _, ext = os.path.splitext( filePath )
+                if ext in C_CPP_FILE_EXTENSIONS:
+
+                    parser = createCParser( filePath, details, headerAndLanguageMap )
+
+                    if not parser:
+                        continue
+
+                    for define in parser.localMacros.values():
+
+                        if not define.name.isupper():
+                            logging.info( 'C16: %s:%d - define "%s" is not uppercase',
+                                            filePath, define.location[ 1 ], define.name )
+                            failed += 1
+
+                    for define in parser.localFnMacros.values():
+
+                        logging.info( 'C16: %s:%d - function-like define "%s"',
+                                        filePath, define.location[ 1 ], define.name )
+
+                    failed += len( parser.localFnMacros )
+
+            if failed == 0:
+                result = ( OK, passed, failed,
+                           'No function-like defines found' )
+            else:
+                result = ( FAILED, passed, failed,
+                           'Function-like defines found' )
+
+        except EnvironmentError as e:
+            logging.error( e )
+            result = ( FAILED, passed, failed, e )
+
+        return result
+
+
+class Rule_PY01( RemovedRule ):
+    pass
+
+
+class Rule_PY02( AbstractRule ):
 
     brief       = '''Private class members and methods (name starting with
 underscore) must not be accessed from the outside.'''
@@ -1980,6 +1972,9 @@ called from the outside. Doing it must be considered as wrong usage.'''
         """
             Checks for access to private class members from outside.
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( "checking for access to private members from outside" )
         found  = 0
         regexp = re.compile( '(\w+)\._(\w+)' )
@@ -2009,7 +2004,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
         return result
 
 
-class QualityRule_PY03( AbstractQualityRule ):
+class Rule_PY03( AbstractRule ):
 
     brief       = '''Logging should be done using Python's native `logging`
 module, evtl. supported by helpers from `Any.py.`'''
@@ -2035,15 +2030,15 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     # possibility A (native way):
 
     import logging
-    [...]
+
     logging.info( "Hello, World!" )
     logging.info( 'x=%d', x )
 
 
-    # possibility B (ANY-equivalent)
+    # possibility B (Any.h-equivalent)
 
     import ToolBOSCore.Util.Any
-    [...]
+
     Any.setDebugLevel( 3 )
     Any.log( 3, "Hello, World!" )
     Any.requireMsg( x == 123, "Oops..." )
@@ -2053,10 +2048,12 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     seeAlso     = { 'Any.py API documentation':
                     'namespaceToolBOSCore_1_1Util_1_1Any' }
 
+    sqLevel     = frozenset()
 
-class QualityRule_PY04( AbstractQualityRule ):
 
-    brief       = '''Prefer throwing exceptions over sys.exit() within the
+class Rule_PY04( AbstractRule ):
+
+    brief       = '''Prefer throwing exceptions over `exit()` within the
 code.'''
 
     description = '''As a rule of thumb, Python functions should hardly
@@ -2064,9 +2061,10 @@ directly terminate the application. Prefer throwing an exception
 (`SystemExit` if necessary), so that the caller at least has a chance to
 appropriately handle it.
 
-Mind that the caller might be a C- or Java-program containing a Python
+Mind that the caller might be another program containing a Python
 interpreter. In such case the `sys.exit(0)` will terminate the whole
-application, potentially causing data loss or inconsistent states.'''
+application with no chance for the program to react to such situation,
+potentially causing data loss or inconsistent states.'''
 
     goodExample = '''
     if not foo:
@@ -2094,7 +2092,10 @@ application, potentially causing data loss or inconsistent states.'''
             self._name.clear()
 
         def visit_Attribute( self, node ):
-            if node.attr == 'exit' and node.value.id == 'sys':
+            if node.attr == 'exit' and node.value.id == 'sys' or \
+               node.attr == 'exit' and node.value.id == 'os' or \
+               node.attr == '_exit' and node.value.id == 'os':
+
                 self._name.appendleft( node.attr )
                 self._name.appendleft( node.value.id )
                 self.lineno = node.lineno
@@ -2115,12 +2116,15 @@ application, potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
-        logging.debug( "checking for calls to sys.exit()" )
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
+        logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
         passed    = 0
         failed    = 0
         syntaxErr = 0
 
-        binDir = os.path.join( details.topLevelDir, 'bin' )
+        binDir = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
 
         for filePath in files:
             if filePath.endswith( '.py' ) and not filePath.startswith( binDir ):
@@ -2138,9 +2142,10 @@ application, potentially causing data loss or inconsistent states.'''
                 if not exitCalls:
                     passed += 1
                 else:
+                    # logging.info(exitCalls)
                     for call in exitCalls:
-                        logging.info( 'PY04: %s:%s: found sys.exit() call',
-                                      filePath, call[1] )
+                        logging.info( 'PY04: %s:%s: found %s() call',
+                                      filePath, call[1], call[0] )
                     failed += len( exitCalls )
 
 
@@ -2149,17 +2154,17 @@ application, potentially causing data loss or inconsistent states.'''
             status = FAILED
 
         elif failed:
-            msg    = 'found %d calls to sys.exit()' % failed
+            msg    = 'found %d exit() calls' % failed
             status = FAILED
 
         else:
-            msg    = 'no calls to sys.exit() found'
+            msg    = 'no exit() calls found'
             status = OK
 
         return status, passed, failed, msg
 
 
-class QualityRule_PY05( AbstractQualityRule ):
+class Rule_PY05( AbstractRule ):
 
     brief       = '''Use a static source code analyzer.'''
 
@@ -2169,8 +2174,7 @@ analyzer for Python. The analyzer can also be used separately from commandline.
 It reports problems in your Python scripts, such as wrong API usage,
 incompatibility with certain Python versions, or questionable coding practics.
 
-Please regularly inspect your scripts using PyCharm. The tool is installed
-under `${SIT}/External/PyCharmPro`.'''
+Please regularly inspect your scripts using PyCharm.'''
 
     seeAlso     = { 'PyCharm Home':
                     'https://www.jetbrains.com/pycharm' }
@@ -2182,6 +2186,9 @@ under `${SIT}/External/PyCharmPro`.'''
             Execute the PyCharm source code analyzer in batch-mode for each
             *.py file.
         """
+        if not details.isPythonPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Python code found'
+
         logging.debug( 'performing source code analysis using PyCharm' )
         passed = 0
         failed = 0
@@ -2238,21 +2245,20 @@ under `${SIT}/External/PyCharmPro`.'''
         return result
 
 
-class QualityRule_PY06( AbstractQualityRule ):
+class Rule_PY06( AbstractRule ):
 
-    brief       = '''Mind compatibility with Python versions 2.6 to 3.x'''
+    brief       = '''Mind compatibility with Python versions 2.7 to 3.x'''
 
     description = '''Python comes in various language versions, featuring
 different included packages or language constructs. However the install base
 is quite heterogeneous.
 
 Hence developers should pro-actively care that scripts are compatible with a
-range of Python versions. At least compatibility with 2.6, 2.7 and 3.4 is
+range of Python versions. At least compatibility with 2.7 and latest 3.x is
 desired.
 
 The **PyCharm IDE** can be configured to annotate code incompatible with
-certain versions of Python. The tool is installed under
-`${SIT}/External/PyCharmPro`.'''
+certain versions of Python.'''
 
     seeAlso     = { 'PyCharm Home':
                     'https://www.jetbrains.com/pycharm' }
@@ -2260,12 +2266,11 @@ certain versions of Python. The tool is installed under
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class QualityRule_MAT01( AbstractQualityRule ):
+class Rule_MAT01( RemovedRule ):
+    pass
 
-    brief       = '*removed*'
 
-
-class QualityRule_MAT02( AbstractQualityRule ):
+class Rule_MAT02( AbstractRule ):
 
     brief       = '''Follow the suggestions of the Matlab code-checker. Write
 a comment in case you have to diverge from the suggestion.'''
@@ -2280,6 +2285,9 @@ specific case to follow the Matlab code-checker.'''
             Execute the Matlab source code analyzer in batch-mode for each
             *.m file.
         """
+        if not details.isMatlabPackage():
+            return NOT_APPLICABLE, 0, 0, 'no Matlab code found'
+
         logging.debug( 'performing source code analysis using Matlab' )
         passed = 0
         failed = 0
@@ -2327,7 +2335,7 @@ specific case to follow the Matlab code-checker.'''
         return result
 
 
-class QualityRule_MAT03( AbstractQualityRule ):
+class Rule_MAT03( AbstractRule ):
 
     brief       = '''Avoid unintentional shadowing, i.e. function names should
 be unique.'''
@@ -2338,7 +2346,7 @@ behavior. Check with `which -all` or `exist`.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_MAT04( AbstractQualityRule ):
+class Rule_MAT04( AbstractRule ):
 
     brief       = '''Loop variables should be initialized immediately before
 the loop.'''
@@ -2358,7 +2366,7 @@ loop does not execute for all possible indices.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_MAT05( AbstractQualityRule ):
+class Rule_MAT05( AbstractRule ):
 
     brief       = '''Function header comments should support the use of
 `help` and `lookfor`.
@@ -2371,7 +2379,7 @@ path.'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_DOC01( AbstractQualityRule ):
+class Rule_DOC01( AbstractRule ):
 
     brief       = '''The main functionality (why this package exists) should
 be briefly documented.'''
@@ -2380,9 +2388,20 @@ be briefly documented.'''
 the package contains, and if it might be of interest for them.
 
 Basic documentation can also programmatically be searched for keywords, e.g.
-in case you don't precisely remember the name of a package anymore.'''
+in case you don't precisely remember the name of a package anymore.
+
+Documentation should be maintained under one of the following locations:
+
+* ./README.md (recommended)
+* src/packageName.h
+* src/documentation.h
+* doc/documentation.h
+* doc/Mainpage.dox
+* doc/Mainpage.md
+'''
 
     goodExample = '''
+    * for C / C++ projects:*
     /*!
      * \mainpage
      *
@@ -2409,68 +2428,98 @@ Hence a doxygen mainpage is not needed in such case.
 
     def run( self, details, files ):
         """
-            Checks if package has doxygen mainpage in either
-            src/<PackageName>.h or src/documentation.h
+            Checks if package has documentation in either of the following locations:
+              * ./README.md
+              * src/<PackageName>.h
+              * src/documentation.h
+              * doc/documentation.h
+              * doc/Mainpage.md
+              * doc/html/index.html
         """
         if details.isMatlabPackage():
-            logging.debug( 'Matlab package detected, looking for HTML documentation' )
+            return self._searchMatlab( details )
 
-            # Matlab-packages do not contain a doxygen mainpage, hence only
-            # check for existence of index.html after doc-build
-
-            DocumentationCreator( details.topLevelDir ).generate()
-
-            indexPath = os.path.join( details.topLevelDir, 'doc/html/index.html' )
-            logging.debug( 'looking for documentation in: %s', indexPath )
-            found     = os.path.exists( indexPath )
-
-            if found:
-                result = ( OK, 1, 0, 'documentation (index.html) found' )
-            else:
-                result = ( FAILED, 0, 1, 'documentation (index.html) found' )
+        elif details.isRTMapsPackage():
+            return self._searchRTMaps( details )
 
         else:
-            # search for doxygen mainpage
-
-            found      = False
-            docDir     = os.path.join( details.topLevelDir, 'doc' )
-            srcDir     = os.path.join( details.topLevelDir, 'src' )
-
-            if details.isPythonPackage():
-                search     = '@mainpage'
-                candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
-                               os.path.join( srcDir, '__init__.py' ) )
-
-            else:
-                search     = '\mainpage'
-                candidates = ( os.path.join( docDir, 'Mainpage.md' ),
-                               os.path.join( docDir, 'Mainpage.dox' ),
-                               os.path.join( srcDir, details.packageName + '.h' ),
-                               os.path.join( srcDir, 'documentation.h' ) )
+            return self._searchDoxygen( details )
 
 
-            for filePath in candidates:
-                logging.debug( 'looking for doxygen mainpage in: %s', filePath )
+    def _searchDoxygen( self, details ):
+        found      = False
+        docDir     = os.path.relpath( os.path.join( details.topLevelDir, 'doc' ) )
+        srcDir     = os.path.relpath( os.path.join( details.topLevelDir, 'src' ) )
 
-                if os.path.exists( filePath ):
+        candidates = ( os.path.join( srcDir, details.packageName, '__init__.py' ),
+                       os.path.join( srcDir, '__init__.py' ),
+                       os.path.join( srcDir, 'documentation.h' ),
+                       os.path.join( srcDir, details.packageName + '.h' ),
+                       os.path.join( docDir, 'Mainpage.md' ),
+                       os.path.join( docDir, 'Mainpage.dox' ),
+                       os.path.join( docDir, 'documentation.h' ),
+                       os.path.join( docDir, 'html', 'index.html' ),
+                       os.path.join( details.topLevelDir, 'README.md'),)
+
+        search     = 'mainpage'
+        fileList = ( os.path.join( docDir, 'Mainpage.md' ),
+                     os.path.join( docDir, 'Mainpage.dox' ),
+                     os.path.join( docDir, 'documentation.h' ),
+                     os.path.join( srcDir, 'documentation.h' ),
+                     os.path.join( srcDir, details.packageName + '.h' ) )
+
+        for filePath in candidates:
+            logging.debug( 'looking for documentation in: %s', filePath )
+
+            if os.path.exists( filePath ):
+                found = True
+
+                logging.info( 'DOC01: found: %s', filePath )
+
+                if filePath in fileList:
                     content = FastScript.getFileContent( filePath )
 
                     if content.find( search ) != -1:
-                        logging.debug( '%s: mainpage section found', filePath )
+                        logging.debug( 'DOC01: %s: mainpage section found', filePath )
                         found = True
                         break
                     else:
-                        logging.debug( '%s: mainpage section not found', filePath )
-
-            if found:
-                result = ( OK, 1, 0, 'doxygen mainpage found' )
+                        found = False
+                        logging.debug( 'DOC01: %s: mainpage section not found', filePath )
             else:
-                result = ( FAILED, 0, 1, 'doxygen mainpage not found' )
+                logging.debug( 'DOC01: not found: %s', filePath )
 
-        return result
+        if found:
+            return OK, 1, 0, 'documentation found'
+        else:
+            logging.info( 'DOC01: neither README.md nor doxygen mainpage found' )
+
+            return FAILED, 0, 1, 'documentation not found'
 
 
-class QualityRule_DOC02( AbstractQualityRule ):
+    def _searchMatlab( self, details ):
+        logging.debug( 'Matlab package detected, looking for HTML documentation' )
+
+        # Matlab-packages do not contain a doxygen mainpage, hence only
+        # check for existence of index.html after doc-build
+
+        DocumentationCreator( details.topLevelDir ).generate()
+
+        indexPath = os.path.join( details.topLevelDir, 'doc/html/index.html' )
+        logging.debug( 'looking for documentation in: %s', indexPath )
+        found     = os.path.exists( indexPath )
+
+        if found:
+            return OK, 1, 0, 'documentation (index.html) found'
+        else:
+            return FAILED, 0, 1, 'documentation (index.html) found'
+
+
+    def _searchRTMaps( self, *kwargs ):
+        return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
+
+
+class Rule_DOC02( AbstractRule ):
 
     brief       = '''All public entities must be documented.'''
 
@@ -2487,7 +2536,7 @@ duplication (for consistency reasons).'''
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
-class QualityRule_DOC03( AbstractQualityRule ):
+class Rule_DOC03( AbstractRule ):
 
     brief       = '''Provide simple example programs to demonstrate basic
 usage.'''
@@ -2509,6 +2558,9 @@ provide small, easy-to-understand example programs / showcases.
             Test passes if there are any Non-SVN files within the
             "examples" subdirectory.
         """
+        if details.isComponent():
+            return NOT_APPLICABLE, 0, 0, 'examples not required for components'
+
         logging.debug( 'looking for example programs' )
         examplesDir = os.path.join( details.topLevelDir, 'examples' )
 
@@ -2532,48 +2584,11 @@ provide small, easy-to-understand example programs / showcases.
         return result
 
 
-class QualityRule_DOC04( AbstractQualityRule ):
-
-    brief       = '''Original authors and current maintainers should be
-documented.'''
-
-    description = '''**Author(s)** are those persons who originally
-implemented or later contributed major parts of the code. Authors of a
-software should be honored in the documentation. If multiple people modified
-the code over time, they should be ranked according to their contribution.
-
-The **maintainer** is the person mainly in charge of the software at the
-very moment. He or she may or may not be among the list of authors!
-Some maintainer might have taken over responsability without writing a
-single line of code.
-
-The filesystem ownership in the SIT is a good indicator who maintains the
-package at the moment. However, it is not reliable in case multiple people
-installed the package for various reasons (such as holidays) and most likely
-will not be preserved when transferring the SIT to other machines or sites.
-
-Therefore, when using BST.py for installing software, the maintainer
-information is automatically written into the auto-generated pkgInfo.py
-file.
-'''
-
-    goodExample = '''
-    /*!
-     * \mainpage
-     *
-     * [...]
-     *
-     * \\author Bill Gates
-     * \\author Linus Torvalds (current maintainer)
-     * \\author Steve Jobs
-     * \\author Lerry Page
-     */
-'''
-
-    sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
+class Rule_DOC04( RemovedRule ):
+    pass
 
 
-class QualityRule_SAFE01( AbstractQualityRule ):
+class Rule_SAFE01( AbstractRule ):
 
     brief       = '''Only C90 and C99 are allowed.'''
 
@@ -2583,7 +2598,7 @@ language extensions.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE02( AbstractQualityRule ):
+class Rule_SAFE02( AbstractRule ):
 
     brief       = '''Functions must check their arguments for validity
 (valid pointers, numbers in range, existence of files).'''
@@ -2610,7 +2625,7 @@ causes for later errors.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE03( AbstractQualityRule ):
+class Rule_SAFE03( AbstractRule ):
 
     brief       = '''Memory must not be allocated after init phase (startup)
 of the application.'''
@@ -2625,7 +2640,7 @@ termination.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE04( AbstractQualityRule ):
+class Rule_SAFE04( AbstractRule ):
 
     brief       = '''The `goto`-statement should not be used.'''
 
@@ -2645,12 +2660,15 @@ label declared later in the same function.'''
         """
             Safety-critical applications shall hardly use 'goto'.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for "goto"-statement' )
         found  = 0
 
         for filePath in files:
-            if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ) or \
-               filePath.endswith( '.hpp' ) or filePath.endswith( '.inc' ):
+            _, ext = os.path.splitext( filePath )
+            if ext in C_CPP_FILE_EXTENSIONS:
 
                 content = FastScript.getFileContent( filePath )
 
@@ -2668,7 +2686,7 @@ label declared later in the same function.'''
         return result
 
 
-class QualityRule_SAFE05( AbstractQualityRule ):
+class Rule_SAFE05( AbstractRule ):
 
     brief       = '''Multi-byte characters (f.i. Unicode) shall not be
 used.'''
@@ -2681,7 +2699,7 @@ To avoid any risks arising from usage of wide characters multi-byte string
 literals their use in safety-critical application is highly discouraged.'''
 
     seeAlso      = { 'CERT STR38-C':
-                     'https://www.securecoding.cert.org/confluence/display/CINT/STR38-C.+Do+not+confuse+narrow+and+wide+character+strings+and+functions' }
+                     'https://wiki.sei.cmu.edu/confluence/display/c/STR38-C.+Do+not+confuse+narrow+and+wide+character+strings+and+functions' }
 
     sqLevel      = frozenset( [ 'safety' ] )
 
@@ -2729,6 +2747,9 @@ literals their use in safety-critical application is highly discouraged.'''
         """
             Checks if any of the files provided makes use of multi-byte characters.
         """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
         logging.debug( 'looking for multibyte-characters usage' )
 
         platform  = getHostPlatform()
@@ -2776,10 +2797,10 @@ literals their use in safety-critical application is highly discouraged.'''
 
             if failed == 0:
                 result = ( OK, passed, failed,
-                           'all files OK' )
+                           'No wchar-functions found' )
             else:
                 result = ( FAILED, passed, failed,
-                           'files with non ASCII characters or wide string functionality usage found' )
+                           'wchar-functions found' )
 
         except EnvironmentError as e:
             logging.error( e )
@@ -2789,7 +2810,7 @@ literals their use in safety-critical application is highly discouraged.'''
         return result
 
 
-class QualityRule_SAFE06( AbstractQualityRule ):
+class Rule_SAFE06( AbstractRule ):
 
     brief       = '''Recursion (directly or indirectly) must not be used.'''
 
@@ -2803,7 +2824,7 @@ MISRA-2012 rule 17.2 requires the absence of recursion.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE07( AbstractQualityRule ):
+class Rule_SAFE07( AbstractRule ):
 
     brief       = '''Use safe string-processing functions only.'''
 
@@ -2833,76 +2854,7 @@ terminating `\\0` must not be used.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SAFE08( AbstractQualityRule ):
-
-    brief       = '''Functions should be preferred over function-like
-macros.'''
-
-    description = '''In most circumstances, functions should be used instead
-of macros. Functions perform argument type-checking and evaluate their
-arguments once, thus avoiding problems with potential multiple side effects.
-
-In many debugging systems, it is easier to step through execution of a
-function than a macro. Nonetheless, macros may be useful in some
-circumstances.'''
-
-    seeAlso     = { 'MISRA-2012 rule 4.9':
-                    None,
-                    'CERT PRE00-C':
-                    'https://www.securecoding.cert.org/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
-
-    sqLevel     = frozenset( [ 'safety' ] )
-
-    def run( self, details, files ):
-        logging.debug( 'checking C/C++ function-like macro presence' )
-        passed   = 0
-        failed   = 0
-        platform = getHostPlatform()
-
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-        logging.debug( 'language map: %s', headerAndLanguageMap )
-
-        try:
-
-            for filePath in files:
-                _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
-
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    for define in parser.localMacros.values():
-
-                        if not define.name.isupper():
-                            logging.info( 'SAFE08: %s:%d - define "%s" is not uppercase',
-                                            filePath, define.location[ 1 ], define.name )
-                            failed += 1
-
-                    for define in parser.localFnMacros.values():
-
-                        logging.info( 'SAFE08: %s:%d - function-like define "%s"',
-                                        filePath, define.location[ 1 ], define.name )
-
-                    failed += len( parser.localFnMacros )
-
-            if failed == 0:
-                result = ( OK, passed, failed,
-                           'No function-like defines found' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'Function-like defines found' )
-
-        except EnvironmentError as e:
-            logging.error( e )
-            result = ( FAILED, passed, failed, e )
-
-
-        return result
-
-
-class QualityRule_SPEC01( AbstractQualityRule ):
+class Rule_SPEC01( AbstractRule ):
 
     brief       = '''Safety-critical car applications are requested to use
 "state-of-the-art" tools (e.g. Klocwork) for checking code quality.'''
@@ -2922,7 +2874,7 @@ class QualityRule_SPEC01( AbstractQualityRule ):
     sqLevel     = frozenset( [ 'safety' ] )
 
 
-class QualityRule_SPEC02( AbstractQualityRule ):
+class Rule_SPEC02( AbstractRule ):
 
     brief       = '''MSVC requires variables to be declared at the top of a
 function.'''
@@ -2963,8 +2915,10 @@ without any sideeffects.'''
     }
 '''
 
+    sqLevel     = frozenset()
 
-class QualityRule_SPEC03( AbstractQualityRule ):
+
+class Rule_SPEC03( AbstractRule ):
 
     brief       = '''Portable POSIX-like functions should be used, rather
 than platform-specific functions.'''
@@ -2984,8 +2938,10 @@ such purpose. They map to the underlying O.S.-specific functions with no cost
     seeAlso     = { 'AnyString.h API documentation':
                     'AnyString_About' }
 
+    sqLevel     = frozenset()
 
-class QualityRule_SPEC04( AbstractQualityRule ):
+
+class Rule_SPEC04( AbstractRule ):
 
     brief       = '''It is typically not foreseeable if code in the future
 might be re-used in a multi-threaded environment. Therefore all code should be
@@ -3019,7 +2975,7 @@ Do not rely on such implementation-specific side effects!'''
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
-class QualityRule_SPEC05( AbstractQualityRule ):
+class Rule_SPEC05( AbstractRule ):
 
     brief       = '''Functions should be re-entrant.'''
 
@@ -3043,58 +2999,6 @@ applications.'''
                     'https://en.wikipedia.org/wiki/Thread_safety' }
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
-
-
-def getCheckersAvailable():
-    """
-        Returns a list of available rules/checkers. Each item in the list
-        is a tuple of (ruleID,instance). The ruleID is a string, and the
-        instance is a ready-to-use QualityRule representing one particular
-        SW Quality Guideline rule.
-    """
-    # retrieve all classes defined within this Python module,
-    # and create instances
-
-    result = []
-    ctors  = {}
-    tmp    = inspect.getmembers( sys.modules[__name__], inspect.isclass )
-
-    for className, constructor in tmp:
-        if className.startswith( 'QualityRule_' ):
-            ctors[ className ] = constructor
-
-
-    # keep sorting as appears in SQ Guideline
-
-    for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
-                      'MT', 'SPEC' ):
-        for i in range(50):
-
-            ruleID = '%s%02d' % ( category, i )
-
-            try:
-                func = ctors[ 'QualityRule_%s' % ruleID ]
-                Any.requireIsCallable( func )
-                instance = func()
-                result.append( ( ruleID, instance ) )
-            except KeyError:
-                pass               # no such rule, or rule not implemented
-
-    return result
-
-
-def addStreamLogger( stream ):
-    """
-        By providing a file-like object the log messages of the checkers
-        can be captured. 'stream' could be a StringIO instance.
-    """
-    logFormatter = logging.Formatter( "%(message)s" )
-    logHandler   = logging.StreamHandler( stream )
-    logHandler.setFormatter( logFormatter )
-    logHandler.setLevel( logging.DEBUG )
-
-    rootLogger   = logging.getLogger()
-    rootLogger.addHandler( logHandler )
 
 
 def findNonAsciiCharacters( filePath, rule ):
@@ -3149,14 +3053,14 @@ def createCParser( filePath, details, headerAndLanguageMap ):
     if six.PY2:
 
         try:
-            from ToolBOSCore.Util.CAnalyzer import CParser
+            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
         except ImportError as e:
             raise EnvironmentError( e )
 
     else:
 
         try:
-            from ToolBOSCore.Util.CAnalyzer import CParser
+            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
         except ModuleNotFoundError as e:
             raise EnvironmentError( e )
 
@@ -3171,11 +3075,12 @@ def createCParser( filePath, details, headerAndLanguageMap ):
         cflagsList   = CMake.getCDefinesAsList( platform, targetName )
         cflags       = [ '-D' + cflag for cflag in cflagsList ]
         args         = includes + cflags
-    except ( AssertionError, IOError ):
+    except ( AssertionError, IOError ) as e:
         # most likely the depend.make does not exist for this target,
         # this might happen if there are no dependencies by the target
         # or if this is a pseudo-target such as "doc" coming from
         # FindDoxygen.cmake
+        logging.debug( e )
         logging.debug( 'ignoring target: %s', targetName )
         return None
 
@@ -3226,6 +3131,58 @@ def createCParser( filePath, details, headerAndLanguageMap ):
                     args=args + [ stdSwitch ],
                     includepaths=includePaths,
                     defines=cflagsList )
+
+
+def getRules():
+    """
+        Returns a list of available rules/checkers. Each item in the list
+        is a tuple of (ruleID,instance). The ruleID is a string, and the
+        instance is a class representing one particular SW Quality
+        Guideline rule.
+    """
+    # retrieve all classes defined within this Python module,
+    # and create instances
+
+    result = []
+    ctors  = {}
+    tmp    = inspect.getmembers( sys.modules[__name__], inspect.isclass )
+
+    for className, constructor in tmp:
+        if className.startswith( 'Rule_' ):
+            ctors[ className ] = constructor
+
+
+    # keep sorting as appears in SQ Guideline
+
+    for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
+                      'MT', 'SPEC' ):
+        for i in range(50):
+
+            ruleID = '%s%02d' % ( category, i )
+
+            try:
+                func = ctors[ 'Rule_%s' % ruleID ]
+                Any.requireIsCallable( func )
+                instance = func()
+                result.append( ( ruleID, instance ) )
+            except KeyError:
+                pass               # no such rule, or rule not implemented
+
+    return result
+
+
+def getRuleIDs():
+    """
+        Returns a list of all SQ rule IDs in the order of appearance in the
+        Software Quality Guideline.
+    """
+    ruleTuples = getRules()
+    Any.requireIsListNonEmpty( ruleTuples )
+
+    result = [ rule[0] for rule in ruleTuples ]
+    Any.requireIsListNonEmpty( result )
+
+    return result
 
 
 # EOF

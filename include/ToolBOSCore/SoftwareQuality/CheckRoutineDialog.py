@@ -52,27 +52,40 @@ from PyQt5.QtWidgets import *
 
 from six import StringIO
 
-from ToolBOSCore.GenericGUI import IconProvider
-from ToolBOSCore.Packages   import QualityChecker
-from ToolBOSCore.Util       import Any
+from ToolBOSCore.GenericGUI      import IconProvider
+from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
+from ToolBOSCore.Util            import Any
+from ToolBOSCore.ZenBuildMode    import QtPackageModel
 
 
-class QualityCheckerDialog( QDialog, object ):
+def run( model ):
+    Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+
+    app = QApplication( [] )
+
+    window = CheckRoutineDialog( model )
+    window.show()
+
+    return app.exec_()
+
+
+class CheckRoutineDialog( QDialog, object ):
 
     def __init__( self, model, parent=None ):
-        super( QualityCheckerDialog, self ).__init__( parent )
+        super( CheckRoutineDialog, self ).__init__( parent )
 
         self.installEventFilter( self )
 
         self._model             = model
         self._logOutput         = StringIO()
-        self._allRules          = QualityChecker.getCheckersAvailable()
+        self._allRules          = Rules.getRules()
         self._allRulesDict      = {}
         self._checkSelected     = False
         self._checkBoxes        = {}
         self._checkButtons      = {}
         self._commentFields     = {}
         self._dirty             = None
+        self._safeplace         = set()      # avoid garbage-collection
         self._threads           = {}
         self._textWidgets       = {}
         self._textStates        = {}
@@ -84,14 +97,14 @@ class QualityCheckerDialog( QDialog, object ):
         self._desiredLevelCombo = QComboBox()
         self._windowTitle       = 'Software Quality settings'
 
-        QualityChecker.addStreamLogger( self._logOutput )
+        Any.addStreamLogger( self._logOutput, logging.DEBUG, preamble=False )
 
-        for level in QualityChecker.sqLevelNames:
-            text  = QualityChecker.sqLevels[ level ]
+        for level in CheckRoutine.sqLevelNames:
+            text  = CheckRoutine.sqLevels[ level ]
             self._desiredLevelCombo.addItem( text, level )
 
-        self._defaultLevel = QualityChecker.sqLevelDefault
-        self._defaultIndex = QualityChecker.sqLevelNames.index( self._defaultLevel )
+        self._defaultLevel = CheckRoutine.sqLevelDefault
+        self._defaultIndex = CheckRoutine.sqLevelNames.index( self._defaultLevel )
         self._desiredLevelCombo.setCurrentIndex( self._model.getSQLevelIndex() )
 
         # do this only once after all entries have been added, otherwise each
@@ -110,7 +123,7 @@ class QualityCheckerDialog( QDialog, object ):
         columns = ( 'rule', 'description', 'required', 'verify', 'result', 'comments' )
         self._table = QTableWidget()
         self._table.setRowCount( len( self._allRules ) +
-                                 len( QualityChecker.sectionKeys ) )
+                                 len( CheckRoutine.sectionKeys ) )
         self._table.setColumnCount( len(columns) )
         self._table.setHorizontalHeaderLabels( columns )
         self._table.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding )
@@ -144,10 +157,10 @@ class QualityCheckerDialog( QDialog, object ):
             if key != prevKey:
                 prevKey = key
 
-                sectionName = QualityChecker.sectionNames[ key ]
+                sectionName = CheckRoutine.sectionNames[ key ]
                 Any.requireIsTextNonEmpty( sectionName )
 
-                sectionObjective = QualityChecker.sectionObjectives[ key ]
+                sectionObjective = CheckRoutine.sectionObjectives[ key ]
                 Any.requireIsTextNonEmpty( sectionObjective )
 
                 text = '<h2>%s</h2><i>Objective: %s</i>' % ( sectionName,
@@ -191,7 +204,7 @@ class QualityCheckerDialog( QDialog, object ):
             self._textStates[ ruleID ] = False       # False/True = short/long
 
 
-            # column 2: pre-selection
+            # column 2: pre-selection for desired SQ level
             cellWidget = QWidget()
             checkbox   = QCheckBox()
             checkbox.setChecked( False )
@@ -204,10 +217,15 @@ class QualityCheckerDialog( QDialog, object ):
             cellWidget.setLayout( cellLayout )
 
             self._table.setCellWidget( i, 2, cellWidget )
-            self._checkBoxes[ ruleID ] = checkbox
+
+            if rule.removed:
+                checkbox.setEnabled( False )
+                self._safeplace.add( checkbox )
+            else:
+                self._checkBoxes[ ruleID ] = checkbox
 
 
-            # column 3: verify-button
+            # column 3: check buttons
             button = QPushButton( 'Check' )
             button.clicked.connect( functools.partial( self._run, rule ) )
 
@@ -217,10 +235,15 @@ class QualityCheckerDialog( QDialog, object ):
             cellWidget = QWidget()
             cellWidget.setLayout( cellLayout )
             self._table.setCellWidget( i, 3, cellWidget )
-            self._checkButtons[ ruleID ] = button
+
+            if rule.removed:
+                button.setEnabled( False )
+                self._safeplace.add( button )
+            else:
+                self._checkButtons[ ruleID ] = button
 
 
-            # column 4: check result
+            # column 4: checker output / result
             cellWidget = QTextEdit()
             cellWidget.setReadOnly( True )
             cellWidget.setFrameStyle( QFrame.NoFrame )
@@ -369,19 +392,19 @@ class QualityCheckerDialog( QDialog, object ):
         result = thread.result
 
         if result is None:                       # checker not implemented
-            status  = QualityChecker.NOT_AVAILABLE
+            status  = CheckRoutine.NOT_IMPLEMENTED
             message = 'not implemented'
         else:
             status       = result[0]
             message      = result[3]
 
         widget = self._resultWidgets[ ruleID ]
-        widget.setText( self._composeSummaryText( status == QualityChecker.OK,
+        widget.setText( self._composeSummaryText( status == CheckRoutine.OK,
                                                   message, ruleID ) )
 
-        if status == QualityChecker.OK:
+        if status == CheckRoutine.OK:
             color = QColor( 220, 255, 220 )                         # green
-        elif status == QualityChecker.FAILED:
+        elif status == CheckRoutine.FAILED:
             color = QColor( 255, 120, 120 )                         # red
         else:
             color = QColor( 240, 240, 240 )                         # grey
@@ -395,7 +418,7 @@ class QualityCheckerDialog( QDialog, object ):
         del thread
         self._threads[ ruleID ] = None
 
-        logging.info( 'finished check for rule %s', ruleID )
+        logging.debug( 'finished check for rule %s', ruleID )
 
         # restore button text
         self._checkButtons[ ruleID ].setText( 'Check' )
@@ -425,10 +448,19 @@ class QualityCheckerDialog( QDialog, object ):
             the desired SQ level, and set the checkbox state accordingly.
         """
         for ruleID, rule in self._allRulesDict.items():
-            checkbox = self._checkBoxes[ ruleID ]
+            try:
+                checkbox = self._checkBoxes[ ruleID ]
+            except KeyError:
+                # checkbox is read-only (kept in safeplace to not get
+                # garbage-collected) and is not intended to be set
+                continue
 
             if rule.sqLevel is None:
                 checkbox.setChecked( False )                    # optional rule
+
+            elif rule.removed:
+                checkbox.setChecked( False )                    # removed rule
+
             else:
                 checkbox.setChecked( sqLevel in rule.sqLevel )  # regular rule
 
@@ -442,7 +474,7 @@ class QualityCheckerDialog( QDialog, object ):
 
     def _run( self, rule ):
         ruleID = rule.getRuleID()
-        logging.info( 'starting check for rule %s', ruleID )
+        logging.debug( 'starting check for rule %s', ruleID )
 
         # disable "Check" button and change its text to "Running"
         button = self._checkButtons[ ruleID ]
@@ -492,7 +524,7 @@ class QualityCheckerDialog( QDialog, object ):
         Any.requireIsInt( index )
         self._desiredLevelIndex = index
 
-        name = QualityChecker.sqLevelNames[ index ]
+        name = CheckRoutine.sqLevelNames[ index ]
         Any.requireIsTextNonEmpty( name )
         self._desiredLevelName = name
 
@@ -570,7 +602,7 @@ class QualityCheckerDialog( QDialog, object ):
         text = self._desiredLevelCombo.currentText()
         Any.requireIsTextNonEmpty( text )
 
-        sqLevel = QualityChecker.sqLevelNames[ index ]
+        sqLevel = CheckRoutine.sqLevelNames[ index ]
         Any.requireIsTextNonEmpty( sqLevel )
 
         logging.debug( 'changed desired level to level=%s ("%s")',
@@ -648,8 +680,9 @@ class QualityCheckerDialog( QDialog, object ):
 
         def run( self ):
             logging.debug( 'executing rule checker' )
-            self.result = self._model.runSQCheck( self._rule )
-            logging.debug( 'rule checker finished' )
+            if hasattr( self._rule, 'run' ):
+                self.result = self._model.runSQCheck( self._rule )
+                logging.debug( 'rule checker finished' )
 
 
 # EOF

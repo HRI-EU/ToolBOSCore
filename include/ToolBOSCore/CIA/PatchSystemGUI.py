@@ -44,10 +44,12 @@ from PyQt5.QtWidgets import *
 
 
 def run():
-    app    = QApplication( [] )
+    app = QApplication( [] )
+
     window = PatchSystemWidget()
     window.show()
-    window.setFixedSize(window.sizeHint())
+    window.setFixedSize( window.sizeHint() )
+
     return app.exec_()
 
 

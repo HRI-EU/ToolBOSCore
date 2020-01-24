@@ -122,6 +122,103 @@ def _createPackage( args ):
             return False
 
 
+def _parseSqArgs( cr, argv ):
+    import re
+
+    from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
+
+    Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
+    Any.requireIsList( argv )
+
+    try:
+        # ensure that script-name does not appear in this list
+        argv.remove( sys.argv[0] )
+    except ValueError:
+        pass
+
+
+    ruleIDs    = Rules.getRuleIDs()
+    forceDirs  = set()
+    forceFiles = set()
+    forceLevel = None
+    forceRules = []
+
+    for arg in argv:
+
+        if arg in ruleIDs:
+            logging.debug( 'requested checking rule ID: %s', arg )
+            forceRules.append( arg )
+
+        elif os.path.isdir( arg ):
+            logging.debug( 'requested checking directory: %s', arg )
+            forceDirs.add( os.path.abspath( arg ) )
+
+        elif os.path.exists( arg ):
+            logging.debug( 'requested checking file: %s', arg )
+            forceFiles.add( os.path.abspath( arg ) )
+
+        elif arg.startswith( 'sqLevel=' ):
+            tmp = re.search( 'sqLevel=(\S+)', ' '.join(argv) )
+
+            if tmp:
+                forceLevel = tmp.group(1)
+
+        else:
+            msg = '%s: No such file or directory, or rule ID' % arg
+            raise ValueError( msg )
+
+
+    if forceDirs:
+        logging.debug( 'check directories: %s', forceDirs )
+        cr.setDirs( forceDirs )
+
+    if forceFiles:
+        logging.debug( 'check files: %s', forceFiles )
+        cr.setFiles( forceRules )
+
+    if forceLevel:
+        logging.debug( 'check level: %s', forceLevel )
+        cr.setLevel( forceLevel )
+
+    if forceRules:
+        logging.debug( 'check rules: %s', forceRules )
+        cr.setRules( forceRules )
+        cr.showSummary( False )
+    else:
+        cr.showSummary( True )
+
+
+def _runPatchSystemGUI():
+    logging.info( 'starting zen update' )
+
+    from ToolBOSCore.CIA import PatchSystemGUI
+
+    PatchSystemGUI.run()
+
+
+def _runCheckRoutineDialog():
+    from ToolBOSCore.ZenBuildMode    import QtPackageModel
+    from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
+
+    logging.info( 'starting software quality check GUI' )
+
+    projectRoot = os.getcwd()
+
+    model = QtPackageModel.BSTPackageModel()
+    model.open( projectRoot )
+
+    CheckRoutineDialog.run( model )
+
+
+def _runZenBuildModeGUI():
+    from ToolBOSCore.ZenBuildMode import MainWindow
+
+    logging.info( 'starting zen build mode' )
+
+    projectRoot = os.getcwd()
+    MainWindow.MainWindow( projectRoot ).main()
+
+
 def _showAvailableTemplates():
     """
         Lists all available templates on the console.
@@ -271,6 +368,7 @@ argman.addExample( '%(prog)s -n help                 # show available templates'
 argman.addExample( '%(prog)s -n C_Library Foo 1.0    # create new C library named Foo/1.0' )
 argman.addExample( '%(prog)s -q                      # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03      # run specified checks on "src" only' )
+argman.addExample( '%(prog)s -q sqLevel=advanced     # check with specified quality level' )
 argman.addExample( '%(prog)s -u                      # check for updates / apply patches' )
 argman.addExample( '%(prog)s --uninstall             # remove package from SIT' )
 argman.addExample( '%(prog)s --deprecate             # deprecate this package' )
@@ -450,18 +548,16 @@ try:
 
 
     if zen:
-        if upgrade:
-            from ToolBOSCore.CIA import PatchSystemGUI
+        FastScript.tryImport( 'PyQt5' )
 
-            PatchSystemGUI.run()
-            sys.exit( 0 )
+        if upgrade:
+            _runPatchSystemGUI()
+
+        elif quality:
+            _runCheckRoutineDialog()
 
         else:
-            FastScript.tryImport( 'PyQt5' )
-            from ToolBOSCore.ZenBuildMode import MainWindow
-
-            logging.debug( 'starting zen build mode' )
-            MainWindow.MainWindow( os.getcwd() ).main()
+            _runZenBuildModeGUI()
 
         sys.exit( 0 )
 
@@ -507,19 +603,29 @@ try:
 
 
     if quality:
-        from ToolBOSCore.Packages.QualityChecker import QualityCheckerRoutine
+        from ToolBOSCore.SoftwareQuality import CheckRoutine
 
-        enabled = unhandled
+        sqArgs = unhandled
 
         try:
             # ensure that script-name does not appear in this list
-            enabled.remove( sys.argv[0] )
+            sqArgs.remove( sys.argv[0] )
         except ValueError:
             pass
 
-        showReport = enabled == []  # show report if user did not specify anything
+        cr = CheckRoutine.CheckRoutine()
 
-        if not QualityCheckerRoutine( enabled=enabled ).run( showReport ):
+        if unhandled:
+            _parseSqArgs( cr, unhandled )
+
+        # exclude 3rd-party content from being checked:
+        cr.excludeDir( './external' )
+        cr.excludeDir( './3rdParty' )
+
+        cr.setup()
+        cr.run()
+
+        if cr.overallResult() is not True:
             sys.exit( -5 )
 
 

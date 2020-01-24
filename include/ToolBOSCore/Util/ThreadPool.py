@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
-#  Version update by maintainer
+#  Run multiple threads at once
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -33,20 +34,49 @@
 #
 #
 
+import threading
 
-OLD_VERSION=3[.]2
-NEW_VERSION=3.3
+from ToolBOSCore.Util import Any
 
 
-sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
-                                          bin/*.bat \
-                                          bin/ToolBOS-Setup.py \
-                                          etc/ToolBOS.conf \
-                                          doc/documentation.h \
-                                          doc/ToolBOSCore/Setup/ShellConfig.md \
-                                          include/ToolBOSCore/Settings/ToolBOSSettings.py \
-                                          test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
-                                          useFromHere.bat
+class ThreadPool( object ):
+    """
+        Class for creating and handling a group of threads.
+        It is meant to simplify usage of multiple threads at once and reduce
+        off-topic code.
+
+        Py3k
+        Python3 offers the same functionality with the
+        concurrent.futures package and its subclass ThreadPoolExecutor.
+    """
+
+    def __init__( self ):
+        """
+            Creates a new ThreadPool instance.
+        """
+        self._threads = set()
+
+
+    def add( self, task, *args, **kwargs ):
+        """
+            Add new tasks as threads to the ThreadPool.
+        """
+        Any.requireIsCallable( task )
+
+        _thread = threading.Thread( target=task, args=args, kwargs=kwargs )
+        self._threads.add( _thread )
+
+
+    def run( self ):
+        """
+            Starts all threads of the ThreadPool and joins them afterwards,
+            meaning this function will run until all threads are finished.
+        """
+        for thread in self._threads:
+            thread.start()
+
+        for thread in self._threads:
+            thread.join()
 
 
 # EOF
