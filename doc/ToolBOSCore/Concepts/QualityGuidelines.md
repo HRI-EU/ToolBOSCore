@@ -12,7 +12,7 @@
  <table border="0" width="100%">
  <tr>
       <th width="50%" style="background: #3d578c; color: white;">online</th>
-      <th width="50%" style="background: #3d578c; color: white;">in Zen Build Mode</th>
+      <th width="50%" style="background: #3d578c; color: white;">desktop utility</th>
  </tr>
  <tr>
       <td>
@@ -36,9 +36,9 @@
                width="361" height="232"
                alt="Screenshot: SQ requirement definition in Zen Build Mode"/>
       <ol>
-          <li>Launch "Zen Build Mode"
-              <div style="font-family: Monospace;">$ BST.py -z</div></li>
-          <li>Open the "Software Quality" dialog. Choose a desired
+          <li>Launch application:
+              <div style="font-family: Monospace;">$ BST.py -qz</div></li>
+          <li>Choose a desired
               quality level from the dropdown menu, and in case opt-in/out
               further rules using the checkboxes.</li>
           <li>Finally press "Save settings".</li>
@@ -54,14 +54,13 @@
   <table border="0" width="100%">
   <tr>
        <th width="50%" style="background: #3d578c; color: white;">command-line</th>
-       <th width="50%" style="background: #3d578c; color: white;">in Zen Build Mode</th>
+       <th width="50%" style="background: #3d578c; color: white;">desktop utility</th>
   </tr>
   <tr>
        <td style="border-style: solid; border-width: 1px; border-color: #ced6e9;
                   vertical-align: top;">
-       Run the following command:
-       <div style="font-family: Monospace;">$ cd MyPackage/1.0<br/>
-                                            $ BST.py -q</div>
+       Run the following command within your package:
+       <div style="font-family: Monospace;">$ BST.py -q</div>
        It is also possible to specify selected rules and/or
        files/directories, e.g. the following command will only validate
        rules C01,C02,C03 on the "src" subdirectory:

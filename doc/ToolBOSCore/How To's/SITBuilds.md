@@ -49,7 +49,6 @@ such more recent release the new "latest" stable SIT. The former "latest" become
  
 **See also**  
     http://www.debian.org/releases 
-    [Rolling releases](../Concepts/RollingReleases.md)
     
 
 ####  How to switch?

@@ -44,12 +44,9 @@ from __future__ import print_function
 
 import logging
 
-from ToolBOSCore.Settings.ToolBOSSettings import delUserConfigOption
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOptions
-from ToolBOSCore.Settings.ToolBOSSettings import setUserConfigOption
-from ToolBOSCore.Util import Any
-from ToolBOSCore.Util import ArgsManagerV2
+from ToolBOSCore.Settings import ToolBOSConf
+from ToolBOSCore.Util     import Any, ArgsManagerV2
+
 
 #----------------------------------------------------------------------------
 # Commandline parsing
@@ -93,9 +90,12 @@ zen       = args['zen']
 #----------------------------------------------------------------------------
 
 
+tconf = ToolBOSConf.ToolBOSConf()
+
+
 if printVar:
     try:
-        value = getConfigOption( printVar )
+        value = tconf.getConfigOption( printVar )
     except KeyError:
         value = '<not set>'
 
@@ -121,12 +121,17 @@ elif setVar:
     value      = value.strip()
 
     Any.setDebugLevel( logging.DEBUG )
-    setUserConfigOption( key, value )
+    tconf.setUserConfigOption( key, value )
 
 elif removeVar:
 
     Any.setDebugLevel( logging.DEBUG )
-    delUserConfigOption( removeVar  )
+    tconf.delUserConfigOption( removeVar  )
+
+elif removeVar:
+
+    Any.setDebugLevel( logging.DEBUG )
+    tconf.delUserConfigOption( removeVar  )
 
 elif zen:
 
@@ -136,7 +141,7 @@ elif zen:
 
 else:
     # read ground-truth of available config options
-    config = getConfigOptions()
+    config = tconf.getConfigOptions()
 
     # show sorted by key
     keys = list( config.keys() )

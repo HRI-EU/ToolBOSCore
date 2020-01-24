@@ -1,19 +1,22 @@
-usage: ToolBOS-Config.py [-h] [-p VAR] [-s EXPR] [-z] [-v]
+usage: ToolBOS-Config.py [-h] [-p VAR] [-s EXPR] [-r VAR] [-z] [-v]
 
 Configure ToolBOS SDK preferences.
 
 optional arguments:
-  -h, --help           show this help message and exit
-  -p VAR, --print VAR  show value of specified config option
-  -s EXPR, --set EXPR  set config option in Python syntax ("key=value")
-  -z, --zen            open configuration GUI
-  -v, --verbose        show debug messages
+  -h, --help            show this help message and exit
+  -p VAR, --print VAR   show value of specified config option
+  -s EXPR, --set EXPR   set config option in user conf in Python syntax
+                        ("key=value")
+  -r VAR, --remove VAR  remove config option from user conf
+  -z, --zen             open configuration GUI
+  -v, --verbose         show debug messages
 
 examples:
   ToolBOS-Config.py
   ToolBOS-Config.py -p defaultPlatform
   ToolBOS-Config.py -s "defaultPlatform = 'qnx'"
   ToolBOS-Config.py -s "foo=bar"
+  ToolBOS-Config.py -r "foo"
   ToolBOS-Config.py -z                   # opens GUI
 
 Please report bugs on JIRA (https://jira.honda-ri.de:8443).

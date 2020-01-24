@@ -32,12 +32,12 @@
 ::
 ::
 ::  Example usage in Windows cmd.exe:
-::  C:\>S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
+::  C:\>S:\DevelopmentTools\ToolBOSCore\3.3\CmdSrc.bat
 ::
 ::  If you need to use a different location for the SIT than S:
 ::  just set the variable SIT_LOCATION before calling this batch script, e.g.
 ::  set SIT_LOCATION=C:\Users\Me\MyLocalSIT
-::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
+::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\3.3\CmdSrc.bat
 
 
 
@@ -50,7 +50,7 @@
 
 
 :: avoid multiple inclusion
-echo %PATH% | find "DevelopmentTools/ToolBOSCore/3.2" > null
+echo %PATH% | find "DevelopmentTools/ToolBOSCore/3.3" > null
 if %errorlevel% equ 0 ( goto :EOF )
 
 
@@ -99,16 +99,12 @@ if defined SIT_LOCATION (
     set SIT=S:
 )
 
-set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.2
+set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/3.3
 
 :: Run-time libraries paths
 set PATH=%TOOLBOSCORE_ROOT%\bin;%PATH%
 set PATH=%TOOLBOSCORE_ROOT%\bin\%MAKEFILE_PLATFORM%;%PATH%
 set PATH=%TOOLBOSCORE_ROOT%\lib\%MAKEFILE_PLATFORM%;%PATH%
-
-
-:: Load dependencies
-call "%SIT%\External\CMake\3.2\CmdSrc.bat"
 
 :: Python path
 set PYTHONPATH=%TOOLBOSCORE_ROOT%\include;%PYTHONPATH%

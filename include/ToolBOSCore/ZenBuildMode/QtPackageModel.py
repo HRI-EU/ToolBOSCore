@@ -47,7 +47,7 @@ from PyQt5.QtCore import pyqtSignal, QByteArray, QObject, QThread
 from ToolBOSCore.CIA.PatchSystem import PatchSystem
 from ToolBOSCore.GenericGUI      import ProcessExecutor, UnicodeSupport
 from ToolBOSCore.Packages        import BSTPackage
-from ToolBOSCore.Packages        import QualityChecker
+from ToolBOSCore.SoftwareQuality import CheckRoutine
 from ToolBOSCore.Util            import Any, FastScript
 
 
@@ -161,7 +161,7 @@ class BSTPackageModel( QObject, object ):
         name  = self.getSQLevelName()
         Any.requireIsTextNonEmpty( name )
 
-        index = QualityChecker.sqLevelNames.index( name )
+        index = CheckRoutine.sqLevelNames.index( name )
         Any.requireIsInt( index )
 
         return index
@@ -173,7 +173,7 @@ class BSTPackageModel( QObject, object ):
         if name:
             return name
         else:
-            return QualityChecker.sqLevelDefault
+            return CheckRoutine.sqLevelDefault
 
 
     def getSQOptInRules( self ):
@@ -188,7 +188,7 @@ class BSTPackageModel( QObject, object ):
         return self._bstpkg_src.detector.sqComments
 
 
-    def getQualityChecker( self ):
+    def getCheckRoutine( self ):
         return self._bstpkg_src.sqChecker
 
 
@@ -243,7 +243,7 @@ class BSTPackageModel( QObject, object ):
     def setSQLevel( self, level ):
         Any.requireIsTextNonEmpty( level )
 
-        if level == QualityChecker.sqLevelDefault:
+        if level == CheckRoutine.sqLevelDefault:
             self._bstpkg_src.pkgInfo_remove('sqLevel')
         else:
             self._bstpkg_src.pkgInfo_set('sqLevel', level)
@@ -466,7 +466,7 @@ class BSTPackageModel( QObject, object ):
     def _onSQPreparerFinished( self ):
         Any.requireIsNotNone( self._bstpkg_src.sqChecker )
         Any.requireIsInstance( self._bstpkg_src.sqChecker,
-                               QualityChecker.QualityCheckerRoutine )
+                               CheckRoutine.CheckRoutine )
 
         Any.requireIsSet( self._bstpkg_src.sqChecker.files )
 

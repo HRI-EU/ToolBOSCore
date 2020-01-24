@@ -39,12 +39,12 @@ import logging
 import os
 
 from ToolBOSCore.Packages                 import ProjectProperties
-from ToolBOSCore.Packages                 import QualityChecker
 from ToolBOSCore.Packages.AbstractPackage import AbstractPackage
 from ToolBOSCore.Packages.DebianPackage   import DebianPackage
 from ToolBOSCore.Packages.MetaInfoCache   import MetaInfoCache
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms.Platforms      import getHostPlatform
+from ToolBOSCore.SoftwareQuality          import CheckRoutine
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Storage.PkgInfoInterface import PkgInfoInterface
 from ToolBOSCore.Util                     import Any
@@ -188,15 +188,14 @@ class BSTSourcePackage( BSTPackage ):
 
 
     def prepareQualityCheck( self, enabled=None ):
-        self.sqChecker = QualityChecker.QualityCheckerRoutine( self.detector.topLevelDir,
-                                                               self.detector,
-                                                               enabled )
+        self.sqChecker = CheckRoutine.CheckRoutine( self.detector.topLevelDir,
+                                                    self.detector )
 
 
     def setSQLevel( self, level ):
         Any.requireIsTextNonEmpty( level )
 
-        if level == QualityChecker.sqLevelDefault:
+        if level == CheckRoutine.sqLevelDefault:
             self.pkgInfo_remove( 'sqLevel' )     # no need to store
         else:
             self.pkgInfo_set( 'sqLevel', level )

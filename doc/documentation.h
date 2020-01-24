@@ -89,7 +89,6 @@
             <li><a href="ToolBOS_Concept_InstallationConventions.html">Installation conventions</a></li>
             <li><a href="ToolBOS_Concept_ToolBOSconf.html">ToolBOS.conf</a></li>
             <li><a href="ToolBOS_HowTo_SITSwitch.html">SIT builds</a></li>
-            <li><a href="ToolBOS_Concept_RollingReleases.html">Rolling releases</a></li>
             </ul>
         </td>
 
@@ -236,16 +235,16 @@
  * Please execute the following commands and follow their instructions:
  *
  * \code
-   $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+   $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/BashSrc
 
-   $ /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/bin/ToolBOS-Setup.py
+   $ /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/bin/ToolBOS-Setup.py
    \endcode
  *
  * As mentioned by the script, please add a line like this to your
  * ~/.bashrc, and then logout and login again.
  *
  * \code
-   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/BashSrc
    \endcode
  *
  * <hr>
@@ -255,7 +254,7 @@
  * script:
  *
  * \verbatim
-   S:\DevelopmentTools\ToolBOSCore\3.2\CmdSrc.bat
+   S:\DevelopmentTools\ToolBOSCore\3.3\CmdSrc.bat
    \endverbatim
  *
  * \image html BuildSystemTools/WindowsSetEnv.png
@@ -264,13 +263,13 @@
  * \page ToolBOS_Setup_AddOns Sourcing additional packages
  *
  * To always have additional packages sourced, please do so directly in
- * your ~/.bashrc (after the sourcing of ToolBOSCore/3.2/BashSrc).
+ * your ~/.bashrc (after the sourcing of ToolBOSCore/3.3/BashSrc).
  *
  * \note At this point you may make use of ${SIT}.
  *
  * \verbatim
    # mandatory:
-   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3/BashSrc
 
    # optional:
    source ${SIT}/Applications/ABC/1.0/BashSrc
@@ -307,7 +306,6 @@
  * \li \subpage ToolBOS_Concept_SourceTreeConventions
  * \li \subpage ToolBOS_Concept_InstallationConventions
  * \li \subpage ToolBOS_Concept_ToolBOSconf
- * \li \subpage ToolBOS_Concept_RollingReleases
  */
 
 
@@ -470,7 +468,7 @@
 \endcode
  * for example:
  * \code
- * ${SIT}/DevelopmentTools/ToolBOSCore/3.2
+ * ${SIT}/DevelopmentTools/ToolBOSCore/3.3
 \endcode
  *
  * A package name must start with an alphabetic character (A-Z, a-z).
@@ -484,7 +482,7 @@
  * e.g.:
  * \code
  * 1.0
- * 3.2.12
+ * 3.3.12
  * 2012.0
  * 42.0.1337-rc1
 \endcode
@@ -687,7 +685,7 @@ Project
  * <table border="0" width="100%">
  * <tr>
  *      <th width="50%" style="background: #3d578c; color: white;">online</th>
- *      <th width="50%" style="background: #3d578c; color: white;">in Zen Build Mode</th>
+ *      <th width="50%" style="background: #3d578c; color: white;">desktop utility</th>
  * </tr>
  * <tr>
  *      <td style="border-style: solid; border-width: 1px; border-color: #ced6e9;
@@ -716,14 +714,14 @@ Project
  *      <center>
  *          <img src="../BuildSystemTools/ZenBuildMode-SQCheck1-small.png"
  *               width="361" height="232"
- *               alt="Screenshot: SQ requirement definition in Zen Build Mode"/>
+ *               alt="Screenshot: SQ requirement definition via application"/>
  *      </center>
  *
  *      <ol>
- *          <li>Launch "Zen Build Mode"
- *              <div style="font-family: Monospace;">$ BST.py -z</div></li>
+ *          <li>Launch application:
+ *              <div style="font-family: Monospace;">$ BST.py -qz</div></li>
  *
- *          <li>Open the "Software Quality" dialog. Choose a desired
+ *          <li>Choose a desired
  *              quality level from the dropdown menu, and in case opt-in/out
  *              further rules using the checkboxes.</li>
  *          <li>Finally press "Save settings".</li>
@@ -738,14 +736,13 @@ Project
  * <table border="0" width="100%">
  * <tr>
  *      <th width="50%" style="background: #3d578c; color: white;">command-line</th>
- *      <th width="50%" style="background: #3d578c; color: white;">in Zen Build Mode</th>
+ *      <th width="50%" style="background: #3d578c; color: white;">desktop utility</th>
  * </tr>
  * <tr>
  *      <td style="border-style: solid; border-width: 1px; border-color: #ced6e9;
  *                 vertical-align: top;">
- *      Run the following command:
- *      <div style="font-family: Monospace;">$ cd MyPackage/1.0<br/>
- *                                           $ BST.py -q</div>
+ *      Run the following command within your package:
+ *      <div style="font-family: Monospace;">$ BST.py -q</div>
  *
  *      It is also possible to specify selected rules and/or
  *      files/directories, e.g. the following command will only validate
@@ -1147,32 +1144,6 @@ Project
 
 
 /*!
- * \page ToolBOS_Concept_RollingReleases Rolling releases
- *
- * ToolBOS and the majority of SIT packages do not follow traditional point
- * release cycles. Since there is no "final" state in software there is also
- * no physical installation media of ToolBOS or the SIT. Instead, you'll get
- * a snapshot of the software at any time. Then fairly continuous small
- * updates of the individual SIT packages will evolve the overall
- * functionality over time.
- *
- * <h2>Major benefits</h2>
- * \li avoid efforts on maintaining old versions (backporting patches,
- *     managing various customer branches → single source base)
- * \li short time-to-market for new features (no need to wait next
- *     scheduled point release)
- * \li easy rollback in case of trouble (few changes)
- * \li smooth transition / upgrade over time
- * \li no re-installation of ToolBOS or the SIT, just sync to the latest
- *     software snapshot
- *
- * \see http://en.wikipedia.org/wiki/Rolling_Release
- * \see http://www.techrepublic.com/blog/security/point-release-vs-rolling-release-developer-user-and-security-considerations/4150
- * \see \ref ToolBOS_HowTo_SITSwitch
- */
-
-
-/*!
  * \page ToolBOS_Util Tools
  *
  * \image html ToolBOS-Logo.png
@@ -1506,11 +1477,11 @@ Project
  * <tr>
  *   <td>\b Example:
  *       \code
-         bst_find_package(DevelopmentTools/ToolBOSCore/3.2)
+         bst_find_package(DevelopmentTools/ToolBOSCore/3.3)
          bst_find_package(Libraries/MasterClock/1.6)
          \endcode
  *
- *       This includes both packages ToolBOSCore 3.2 and MasterClock 1.6
+ *       This includes both packages ToolBOSCore 3.3 and MasterClock 1.6
  *       (and recursively all of their dependencies) from the SIT.
  *
  *       The \c packageVar.cmake inside each of these packages is
@@ -2254,7 +2225,7 @@ Project
  * CMakeLists.txt:
  *
  * \verbatim
-   bst_find_package(DevelopmentTools/ToolBOSCore/3.2)
+   bst_find_package(DevelopmentTools/ToolBOSCore/3.3)
    bst_find_package(Libraries/MasterClock/1.6)
    \endverbatim
  *
@@ -2495,7 +2466,7 @@ Project
    Major version:          1
    Minor version:          6
    CMake generator:        Unix Makefiles
-   including package:      sit://DevelopmentTools/ToolBOSCore/3.2
+   including package:      sit://DevelopmentTools/ToolBOSCore/3.3
    including package:      sit://Libraries/MasterClockCore/1.2
    -- Configuring done
    -- Generating done
@@ -2979,7 +2950,7 @@ make install
  *      <td><tt>sqLevel</tt></td>
  *      <td>string</td>
  *      <td>targeted SQ level, e.g. 'advanced',
- *          see \ref ToolBOSCore.Packages.QualityChecker.sqLevelNames </td>
+ *          see \ref ToolBOSCore.SoftwareQuality.Common.sqLevelNames </td>
  * </tr>
  * <tr>
  *      <td><tt>sqOptInRules</tt></td>
@@ -3022,6 +2993,12 @@ make install
  *      <td>dict { string: list of strings }</td>
  *      <td>comments + annotations to SQ rules, e.g. why opt-in/out or
  *          justification why a rule cannot be fulfilled</td>
+ * </tr>
+ * <tr>
+ *      <td><tt>sqCheckExe</tt></td>
+ *      <td>list of strings</td>
+ *      <td>paths to the executables, including arguments (if any), that
+ *          shall be analyzed by the valgrind check routine</td>
  * </tr>
  * <tr>
  *   <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
@@ -3204,7 +3181,7 @@ make install
 
    # explicitly state dependencies (otherwise extracted from CMakeLists.txt)
 
-   depends       = [ 'sit://DevelopmentTools/ToolBOSCore/3.2',
+   depends       = [ 'sit://DevelopmentTools/ToolBOSCore/3.3',
                      'deb://libjpeg62' ]
 
    buildDepends  = [ 'sit://External/pthreads/1.0',
@@ -3668,7 +3645,6 @@ make install
  * </table>
  *
  * \see http://www.debian.org/releases
- * \see \ref ToolBOS_Concept_RollingReleases
  *
  * <h3>How to switch?</h3>
  *
@@ -3677,7 +3653,7 @@ make install
  *
  * \code
  * export SIT_VERSION=oldstable
- * source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/3.2/BashSrc
+ * source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/3.3/BashSrc
 \endcode
  *
  * To work permanently with this build you should set this in your
@@ -3714,7 +3690,7 @@ make install
  * Set this in your ~/.bashrc:
  * \code
  * export TOOLBOSCORE_AUTO_VERSION=FALSE
- * source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.2.1234
+ * source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.3.1234
 \endcode
  * where "2.0.1234" is the particular version you are interested in.
  *

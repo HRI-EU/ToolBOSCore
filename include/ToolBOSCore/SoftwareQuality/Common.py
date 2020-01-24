@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: utf-8 -*-
 #
-#  Version update by maintainer
+#  Common constants for Software Quality Guideline
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,19 +34,42 @@
 #
 
 
-OLD_VERSION=3[.]2
-NEW_VERSION=3.3
+OK                = 'OK'
+FAILED            = 'FAILED'
+DISABLED          = 'DISABLED'
+NOT_APPLICABLE    = 'not applicable'
+NOT_EXECUTED      = 'not executed'
+NOT_IMPLEMENTED   = 'not implemented'
+NOT_REQUIRED      = 'not required'
 
+# do not use (frozen)set for sqLevelNames, to preserve a kind of "order"
+# even though the levels are independent and not based upon each other
+sqLevelNames      = [ 'cleanLab', 'basic', 'advanced', 'safety' ]
 
-sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
-                                          bin/*.bat \
-                                          bin/ToolBOS-Setup.py \
-                                          etc/ToolBOS.conf \
-                                          doc/documentation.h \
-                                          doc/ToolBOSCore/Setup/ShellConfig.md \
-                                          include/ToolBOSCore/Settings/ToolBOSSettings.py \
-                                          test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
-                                          useFromHere.bat
+sqLevels          = { 'cleanLab': 'clean-lab standard (essentials only)',
+                      'basic'   : 'basic set (HRI-EU standard)',
+                      'advanced': 'advanced set',
+                      'safety'  : 'safety-critical applications' }
+
+sqLevelDefault    = 'basic'
+
+sectionKeys       = [ 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE', 'SPEC' ]
+
+sectionNames      = { 'GEN' : 'General',
+                      'C'   : 'C and C++',
+                      'PY'  : 'Python',
+                      'MAT' : 'Matlab',
+                      'DOC' : 'Documentation',
+                      'SAFE': 'Safety-critical applications',
+                      'SPEC': 'Specific requirements' }
+
+sectionObjectives = { 'GEN' : 'Maintainability, compatibility',
+                      'C'   : 'Maintainability, compatibility',
+                      'PY'  : 'Maintainability, compatibility',
+                      'MAT' : 'Maintainability',
+                      'DOC' : 'User experience',
+                      'SAFE': 'Safety',
+                      'SPEC': 'Safety, portability' }
 
 
 # EOF

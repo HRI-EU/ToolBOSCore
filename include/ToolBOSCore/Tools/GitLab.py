@@ -37,8 +37,9 @@
 import logging
 import re
 
-from ToolBOSCore.Util import Any, VersionCompat
+from ToolBOSCore.Util import Any, FastScript, VersionCompat
 
+FastScript.tryImport( 'gitlab' )
 import gitlab
 
 # suppress SSL certification check warnings
@@ -82,18 +83,21 @@ class GitLabServer( object ):
 
         return result
 
+
     def getProject( self, path ):
         """
             Returns a dict with plenty of information about a certain
             GitLab repository.
         """
+        Any.requireIsTextNonEmpty( path )
+
         try:
             result = self._gl.projects.get( path )
             Any.requireIsInstance( result, gitlab.v4.objects.Project )
             return result
 
         except gitlab.GitlabGetError as e:
-            raise ValueError( e )
+            raise ValueError( '%s: %s' % ( path, e ) )
 
 
 class GitLabRepo( object ):

@@ -45,11 +45,9 @@ import os
 import os.path
 import re
 import stat
-import threading
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import Any
-from ToolBOSCore.Util    import FastScript
+from ToolBOSCore.Util    import Any, FastScript, ThreadPool
 
 
 #----------------------------------------------------------------------------
@@ -272,17 +270,12 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     # *.def files laying around
     pluginsEnabled.append( _checkDefFiles )
 
+    tp = ThreadPool.ThreadPool()
 
-    parentScanner = threading.Thread( target=SIT.getProjectsWithErrorHandling,
-                                      args=( sitRoot, sitRootPkgList ) )
+    tp.add( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
+    tp.add( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
 
-    proxyScanner  = threading.Thread( target=SIT.getProjectsWithErrorHandling,
-                                    args=( sitProxy, sitProxyPkgList ) )
-    parentScanner.start()
-    proxyScanner.start()
-
-    parentScanner.join()
-    proxyScanner.join()
+    tp.run()
 
 
     if removeProxyInstallations:

@@ -387,7 +387,7 @@ def getFileOwner( path ):
 
 
 def printPermissionDenied( path ):
-    logging.warning( '%s: Permission denied' % path )
+    logging.warning( '%s: Permission denied', path )
 
 
 def ignore( path ):
@@ -619,7 +619,7 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
             # See discussion on TBCORE-1496
             cmd   = split( cmd, posix=posix )   # array of parameters
     except ValueError as details:
-        logging.error( 'parsing command line failed: %s' % cmd )
+        logging.error( 'parsing command line failed: %s', cmd )
         logging.error( details )
         raise ValueError( details )
 
@@ -784,7 +784,7 @@ def setEnv( varNameOrMap, varValue = '' ):
            type 'str' to assign a value to this environment variable.
     """
     if Any.isText( varNameOrMap ):                # set single variable
-        logging.debug( 'export %s="%s"' % ( varNameOrMap, varValue ) )
+        logging.debug( 'export %s="%s"', varNameOrMap, varValue )
         os.environ[ varNameOrMap ] = varValue
     else:                                         # set whole map
         os.environ.clear()
@@ -840,7 +840,7 @@ def unsetEnv( varName = False ):
     """
     if isinstance( varName, str ):                # remove single variable
         try:
-            logging.debug( 'unset %s' % varName )
+            logging.debug( 'unset %s', varName )
             del os.environ[ varName ]
         except KeyError:
             pass
@@ -927,20 +927,24 @@ def readOnlyChmod( path ):
     """
         Set read only permissions to the given path recursively.
     """
-    filePerms = 0o444
-    dirPerms  = 0o555
+    Any.requireIsTextNonEmpty( path )
 
-    chmodRecursive( path, dirPerms, dirPerms )
+    dirPerms  = 0o555
+    filePerms = 0o444
+
+    chmodRecursive( path, dirPerms, filePerms )
 
 
 def readWriteChmod( path ):
     """
         Set read-write permissions to the given path recursively.
     """
-    filePerms = 0o664
-    dirPerms  = 0o775
+    Any.requireIsTextNonEmpty( path )
 
-    chmodRecursive( path, dirPerms, dirPerms )
+    dirPerms  = 0o775
+    filePerms = 0o664
+
+    chmodRecursive( path, dirPerms, filePerms )
 
 
 def setGroupPermission( path, groupName, mode ):
@@ -1223,8 +1227,12 @@ def stopTiming( startTime ):
         Prints the elapsed time from 'startTime' to now.
         Useful for measuring code execution times.
     """
+    import datetime
+
+    Any.requireIsInstance( startTime, datetime.datetime )
+
     stopTime = now()
-    logging.debug( 'elapsed time: %s' % str( stopTime - startTime ) )
+    logging.debug( 'elapsed time: %s', stopTime - startTime )
 
 
 #----------------------------------------------------------------------------
