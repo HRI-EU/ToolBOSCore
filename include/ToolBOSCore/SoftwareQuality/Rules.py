@@ -49,6 +49,7 @@ import six
 
 from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
+from ToolBOSCore.Packages.BSTPackage              import BSTProxyInstalledPackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
 from ToolBOSCore.Settings.ProcessEnv              import source
@@ -179,6 +180,20 @@ class AbstractValgrindRule( AbstractRule ):
 
         source( details.canonicalPath )
         logging.info( "sourcing %s", details.canonicalPath )
+
+        bstProxyPackage = BSTProxyInstalledPackage()
+
+        bstProxyPackage.open( details.canonicalPath )
+        bstProxyPackage.retrieveDependencies( True )
+
+        deps = bstProxyPackage.depSet
+        logging.debug( "Package dependencies: %s", deps )
+
+        if deps:
+            logging.info( "sourcing dependencies of %s", details.canonicalPath )
+            for dep in deps:
+                source( dep )
+                logging.info( "sourcing %s", dep )
 
         # finally run Valgrind
         runValgrindResult = self.runValgrind( sqCheckExe, details )
