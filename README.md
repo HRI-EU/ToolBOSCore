@@ -48,6 +48,7 @@ ___
 
 Authors:
 
+* <a href="https://https://github.com/antonelloceravola">Antonello Ceravola</a> (creator)
 * <a href="https://github.com/MarcusStein">Marcus Stein</a> (maintainer)
 * <a href="https://github.com/robyf70">Roberto Fichera</a>
 * <a href="https://github.com/laynor">Alessandro Piras</a>
