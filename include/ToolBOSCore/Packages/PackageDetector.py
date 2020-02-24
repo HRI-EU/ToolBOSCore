@@ -257,6 +257,7 @@ class PackageDetector( object ) :
         if Any.isIterable( files ):
 
             for filePath in files:
+                filePath = os.path.abspath( filePath )
 
                 if filePath.endswith( '.c' ) or filePath.endswith( '.cpp' ):
 
