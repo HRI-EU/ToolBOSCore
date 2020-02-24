@@ -44,7 +44,6 @@ from ToolBOSCore.Packages.DebianPackage   import DebianPackage
 from ToolBOSCore.Packages.MetaInfoCache   import MetaInfoCache
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms.Platforms      import getHostPlatform
-from ToolBOSCore.SoftwareQuality          import CheckRoutine
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Storage.PkgInfoInterface import PkgInfoInterface
 from ToolBOSCore.Util                     import Any
@@ -188,11 +187,15 @@ class BSTSourcePackage( BSTPackage ):
 
 
     def prepareQualityCheck( self, enabled=None ):
+        from ToolBOSCore.SoftwareQuality import CheckRoutine
+
         self.sqChecker = CheckRoutine.CheckRoutine( self.detector.topLevelDir,
                                                     self.detector )
 
 
     def setSQLevel( self, level ):
+        from ToolBOSCore.SoftwareQuality import CheckRoutine
+
         Any.requireIsTextNonEmpty( level )
 
         if level == CheckRoutine.sqLevelDefault:
