@@ -46,11 +46,52 @@ This package contains:
 
 ___
 
-Authors:
+The ToolBOS SDK was developed as teamwork by several people.
 
-* <a href="https://github.com/MarcusStein">Marcus Stein</a> (maintainer)
-* <a href="https://github.com/robyf70">Roberto Fichera</a>
+We would like to honor
+all contributors but do not have a written confirmation by everyone to do so,
+therefore most names are abbreviated for data privacy reasons.
+
+Authors (in alphabetical order):
+
 * <a href="https://github.com/laynor">Alessandro Piras</a>
+* <a href="https://github.com/antonelloceravola">Antonello Ceravola</a>
+* Axel J.
+* Benjamin D.
+* Bram B.
+* Burkhard Z.
+* Christophe L.
+* Ciro S.
+* Daniele P.
+* Davide P.
+* Enrico A.
+* Fabrizio A.
+* Francesco M.
+* Henning F.
+* Herbert J.
+* Hideaki O.
+* Joachim Z.
+* Julian E.
+* Lars G.
+* Lorena P.
+* Luca S.
+* <a href="https://github.com/MarcusStein">Marcus Stein</a> *(maintainer)*
+* Mark D.
+* Martin W.
+* Matthias G.
 * <a href="https://github.com/mrz">Mattia Ziulu</a>
+* Mauro C.
+* <a href="https://github.com/Ol-Sc">Oliver Schön</a>
+* <a href="https://github.com/robyf70">Roberto Fichera</a>
+* Rocco P.
+* Sebastian M.
+* Sebastian S.
 * <a href="https://github.com/NaikS8">Siddhata Naik</a>
-* and contributions by several other people
+* Simone B.
+* Stephan H.
+* Sven T.
+* Thomas L.
+* Timo F.
+* Traian S.
+
+Should somebody be missing please bring it to our attention.
