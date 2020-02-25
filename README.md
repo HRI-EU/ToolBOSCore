@@ -58,17 +58,17 @@ Authors (in alphabetical order):
 * <a href="https://github.com/antonelloceravola">Antonello Ceravola</a>
 * Axel J.
 * Benjamin D.
-* Bram B.
+* Bram Bolder
 * Burkhard Z.
 * Christophe L.
 * Ciro S.
 * Daniele P.
 * Davide P.
-* Enrico A.
+* Enrico Agnoli
 * Fabrizio A.
 * Francesco M.
 * Henning F.
-* Herbert J.
+* Herbert Janssen
 * Hideaki O.
 * Joachim Z.
 * Julian E.
@@ -91,7 +91,7 @@ Authors (in alphabetical order):
 * Stephan H.
 * Sven T.
 * Thomas L.
-* Timo F.
+* <a href="https://github.com/TimoFriedri">Timo Friedrich</a>
 * Traian S.
 
 Should somebody be missing please bring it to our attention.
