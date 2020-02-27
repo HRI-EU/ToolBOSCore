@@ -58,29 +58,29 @@ Authors (in alphabetical order):
 * <a href="https://github.com/antonelloceravola">Antonello Ceravola</a>
 * Axel J.
 * Benjamin D.
-* Bram B.
+* Bram Bolder
 * Burkhard Z.
 * Christophe L.
 * Ciro S.
 * Daniele P.
 * Davide P.
-* Enrico A.
+* Enrico Agnoli
 * Fabrizio A.
 * Francesco M.
 * Henning F.
-* Herbert J.
+* Herbert Janssen
 * Hideaki O.
 * Joachim Z.
 * Julian E.
-* Lars G.
+* Lars Graening
 * Lorena P.
 * Luca S.
 * <a href="https://github.com/MarcusStein">Marcus Stein</a> *(maintainer)*
-* Mark D.
+* Mark Dunn
 * Martin W.
 * Matthias G.
 * <a href="https://github.com/mrz">Mattia Ziulu</a>
-* Mauro C.
+* Mauro Chiado' Caponet
 * <a href="https://github.com/Ol-Sc">Oliver Schön</a>
 * <a href="https://github.com/robyf70">Roberto Fichera</a>
 * Rocco P.
@@ -88,10 +88,10 @@ Authors (in alphabetical order):
 * Sebastian S.
 * <a href="https://github.com/NaikS8">Siddhata Naik</a>
 * Simone B.
-* Stephan H.
+* Stephan Hasler
 * Sven T.
 * Thomas L.
-* Timo F.
-* Traian S.
+* <a href="https://github.com/TimoFriedri">Timo Friedrich</a>
+* <a href="https://www.linkedin.com/in/traian-stefanescu-7b54383">Traian Stefanescu</a>
 
 Should somebody be missing please bring it to our attention.
