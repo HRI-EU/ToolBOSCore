@@ -63,10 +63,10 @@ Authors (in alphabetical order):
 * Christophe L.
 * Ciro S.
 * Daniele P.
-* Davide P.
+* <a href="https://github.com/davidey">Davide Petrillo</a>
 * Enrico Agnoli
 * Fabrizio A.
-* Francesco M.
+* Francesco Masia
 * Henning F.
 * Herbert Janssen
 * Hideaki O.
@@ -75,7 +75,7 @@ Authors (in alphabetical order):
 * Lars Graening
 * Lorena P.
 * Luca S.
-* <a href="https://github.com/MarcusStein">Marcus Stein</a> *(maintainer)*
+* <a href="https://github.com/MarcusStein">Marcus Stein</a> **(maintainer)**
 * Mark Dunn
 * Martin W.
 * Matthias G.
@@ -84,6 +84,7 @@ Authors (in alphabetical order):
 * <a href="https://github.com/Ol-Sc">Oliver Schön</a>
 * <a href="https://github.com/robyf70">Roberto Fichera</a>
 * Rocco P.
+* Samuel J.
 * Sebastian M.
 * Sebastian S.
 * <a href="https://github.com/NaikS8">Siddhata Naik</a>
