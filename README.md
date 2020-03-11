@@ -52,7 +52,7 @@ We would like to honor
 all contributors but do not have a written confirmation by everyone to do so,
 therefore most names are abbreviated for data privacy reasons.
 
-Authors (in alphabetical order):
+#### Authors (in alphabetical order):
 
 * <a href="https://github.com/laynor">Alessandro Piras</a>
 * <a href="https://github.com/antonelloceravola">Antonello Ceravola</a>
@@ -95,7 +95,9 @@ Authors (in alphabetical order):
 * <a href="https://github.com/TimoFriedri">Timo Friedrich</a>
 * <a href="https://www.linkedin.com/in/traian-stefanescu-7b54383">Traian Stefanescu</a>
 
-Special thanks (contributions other than code):
+Should somebody be missing please bring it to our attention.
+
+#### Special thanks (contributions other than code):
 
 * Andreas R.
 * Bernhard S.
@@ -104,10 +106,10 @@ Special thanks (contributions other than code):
 * Frank J.
 * Heiko W.
 * Inna M.
+* Jens S.
 * Michael G.
 * Nico S.
 * Stephan K.
 * Thomas W.
 * Tobias R.
 
-Should somebody be missing please bring it to our attention.
