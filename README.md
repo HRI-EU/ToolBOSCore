@@ -86,7 +86,7 @@ Authors (in alphabetical order):
 * Rocco P.
 * Samuel J.
 * Sebastian M.
-* Sebastian S.
+* Sebastian Schmitt
 * <a href="https://github.com/NaikS8">Siddhata Naik</a>
 * Simone B.
 * Stephan Hasler
@@ -94,5 +94,20 @@ Authors (in alphabetical order):
 * Thomas L.
 * <a href="https://github.com/TimoFriedri">Timo Friedrich</a>
 * <a href="https://www.linkedin.com/in/traian-stefanescu-7b54383">Traian Stefanescu</a>
+
+Special thanks (contributions other than code):
+
+* Andreas R.
+* Bernhard S.
+* Christian G.
+* Edgar K.
+* Frank J.
+* Heiko W.
+* Inna M.
+* Michael G.
+* Nico S.
+* Stephan K.
+* Thomas W.
+* Tobias R.
 
 Should somebody be missing please bring it to our attention.
