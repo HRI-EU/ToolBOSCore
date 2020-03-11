@@ -101,15 +101,15 @@ Should somebody be missing please bring it to our attention.
 
 * Andreas R.
 * Bernhard S.
-* Christian G.
+* Christian Goerick
 * Edgar K.
 * Frank J.
-* Heiko W.
+* Heiko Wersing
 * Inna M.
 * Jens S.
-* Michael G.
-* Nico S.
+* Michael Gienger
+* Nico Steinhardt
 * Stephan K.
-* Thomas W.
+* Thomas Weisswange
 * Tobias R.
 
