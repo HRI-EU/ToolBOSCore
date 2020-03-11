@@ -100,7 +100,7 @@ Should somebody be missing please bring it to our attention.
 #### Special thanks (contributions other than code):
 
 * Andreas R.
-* Bernhard S.
+* Bernhard Sendhoff
 * Christian Goerick
 * Edgar K.
 * Frank J.
