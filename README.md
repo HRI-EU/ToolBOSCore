@@ -75,7 +75,7 @@ therefore most names are abbreviated for data privacy reasons.
 * Lars Graening
 * Lorena P.
 * Luca S.
-* <a href="https://github.com/MarcusStein">Marcus Stein</a> **(maintainer)**
+* <a href="https://github.com/MarijkeStein">Marijke Stein</a> **(maintainer)**
 * Mark Dunn
 * Martin W.
 * Matthias G.
@@ -106,7 +106,7 @@ Should somebody be missing please bring it to our attention.
 * Frank J.
 * Heiko Wersing
 * Inna M.
-* Jens S.
+* Jens Schmüdderich
 * Michael Gienger
 * Nico Steinhardt
 * Stephan K.
