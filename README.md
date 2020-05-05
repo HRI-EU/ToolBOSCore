@@ -52,7 +52,7 @@ We would like to honor
 all contributors but do not have a written confirmation by everyone to do so,
 therefore most names are abbreviated for data privacy reasons.
 
-Authors (in alphabetical order):
+#### Authors (in alphabetical order):
 
 * <a href="https://github.com/laynor">Alessandro Piras</a>
 * <a href="https://github.com/antonelloceravola">Antonello Ceravola</a>
@@ -75,7 +75,7 @@ Authors (in alphabetical order):
 * Lars Graening
 * Lorena P.
 * Luca S.
-* <a href="https://github.com/MarcusStein">Marcus Stein</a> **(maintainer)**
+* <a href="https://github.com/MarijkeStein">Marijke Stein</a> **(maintainer)**
 * Mark Dunn
 * Martin W.
 * Matthias G.
@@ -86,7 +86,7 @@ Authors (in alphabetical order):
 * Rocco P.
 * Samuel J.
 * Sebastian M.
-* Sebastian S.
+* Sebastian Schmitt
 * <a href="https://github.com/NaikS8">Siddhata Naik</a>
 * Simone B.
 * Stephan Hasler
@@ -96,3 +96,20 @@ Authors (in alphabetical order):
 * <a href="https://www.linkedin.com/in/traian-stefanescu-7b54383">Traian Stefanescu</a>
 
 Should somebody be missing please bring it to our attention.
+
+#### Special thanks (contributions other than code):
+
+* Andreas R.
+* Bernhard Sendhoff
+* Christian Goerick
+* Edgar K.
+* Frank Joublin
+* Heiko Wersing
+* Inna M.
+* Jens Schmüdderich
+* Michael Gienger
+* Nico Steinhardt
+* Stephan K.
+* Thomas Weisswange
+* Tobias Rodemann
+
