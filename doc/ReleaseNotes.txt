@@ -5,6 +5,23 @@
 CHANGES
 =======
 
+  - [TBCORE-2066] extended former contributors in author list + special thanks
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2061] BST.py: handle exception in case of regexp-error in pkgInfo.py
+
+
+-----------------------------------------------------------------------------
+
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.1
+
+
+CHANGES
+=======
+
   - [TBCORE-2066] honor former contributors in author list
   - [TBCORE-1934] SQ C12: source package dependencies before executing Valgrind
 
