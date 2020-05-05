@@ -668,7 +668,15 @@ class InstallProcedure( object ):
         Any.requireIsText( dstDir )      # can be empty
 
         fileList = os.listdir( srcDir )
-        regexp   = re.compile( srcPattern )
+        try:
+            regexp   = re.compile( srcPattern )
+        except re.error as reError:
+            logging.error( 'Message: %s', reError )
+            logging.error( 'Pattern: \"%s\"', srcPattern )
+            logging.error( 'Did you forget to escape the dot?' )
+            logging.error( 'Did you provide a shell-wildcard?' )
+            raise ValueError
+
         matching = list( filter( regexp.search, fileList ) )
         logging.debug( '%d items(s) in "%s", %d match expression' % \
                        ( len(fileList), srcDir, len(matching) ) )
