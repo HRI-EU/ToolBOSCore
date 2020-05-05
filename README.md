@@ -103,7 +103,7 @@ Should somebody be missing please bring it to our attention.
 * Bernhard Sendhoff
 * Christian Goerick
 * Edgar K.
-* Frank J.
+* Frank Joublin
 * Heiko Wersing
 * Inna M.
 * Jens Schmüdderich
@@ -111,5 +111,5 @@ Should somebody be missing please bring it to our attention.
 * Nico Steinhardt
 * Stephan K.
 * Thomas Weisswange
-* Tobias R.
+* Tobias Rodemann
 
