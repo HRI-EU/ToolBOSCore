@@ -1,6 +1,9 @@
-PROJECT_NAME   = "ToolBOS (Core)"
-INPUT          = .
+PROJECT_NAME   = "ToolBOSCore"
+INPUT          = ../
+FILE_PATTERNS  = *.md
+RECURSIVE      = YES
 SEARCHENGINE   = NO
 HAVE_DOT       = NO
 CLASS_DIAGRAMS = NO
 SHOW_FILES     = NO
+USE_MDFILE_AS_MAINPAGE = README.md
