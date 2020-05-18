@@ -69,8 +69,9 @@ class CheckRoutine( object ):
         self.includeDirs      = set()
         self.includeFiles     = set()
 
-        self.excludeDirs      = { 'build', 'external', 'klocwork',
-                                  'precompiled', 'sources', '.git', '.svn' }
+        self.excludeDirs      = { '3rdParty', 'build', 'cmake-build-debug',
+                                  'external', 'klocwork', 'precompiled',
+                                  'sources', '.git', '.svn' }
         self.excludeFiles     = set()
 
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
@@ -102,8 +103,12 @@ class CheckRoutine( object ):
     def excludeDir( self, dirPath ):
         Any.requireIsTextNonEmpty( dirPath )
 
+        # all files in self.files start with relative path "./", in order
+        # to filter-out some we need to prepend this in the search pattern
+        dirPath = os.path.join( '.', dirPath )
+
         if os.path.exists( dirPath ):
-            logging.debug( 'ignoring 3rd-party content in %s', dirPath )
+            logging.debug( 'ignoring content in %s', dirPath )
 
             origFiles = copy.copy( self.files )
 
@@ -311,6 +316,9 @@ class CheckRoutine( object ):
             corresponding functions.
         """
         self.includeDir( self.details.topLevelDir )
+
+        for path in self.excludeDirs:
+            self.excludeDir( path )
 
 
     def _populatePackage( self, projectRoot, details ):
