@@ -290,7 +290,7 @@ class AbstractValgrindRule( AbstractRule ):
 
         for command in commandLines:
 
-            logging.info( "%s: checking '%s'" % ( ruleID,command ) )
+            logging.info( "%s: checking '%s'", ruleID,command )
 
             if Any.getDebugLevel() <= 3:
                 stdout = VersionCompat.StringIO()
@@ -313,11 +313,11 @@ class AbstractValgrindRule( AbstractRule ):
                     errorMessages.append( '%s: %s:%s - %s'
                                           % ( ruleID, error.fname, error.lineno, error.description ) )
 
-                logging.info( "%s: '%s' failed (see verbose-mode for details)"% ( ruleID, command ) )
+                logging.info( "%s: '%s' failed (see verbose-mode for details)", ruleID, command )
 
             else:
                 passedExecutables += 1
-                logging.info( "%s: '%s successfully finished"% ( ruleID, command ) )
+                logging.info( "%s: '%s successfully finished", ruleID, command )
 
         for error in errorMessages:
             logging.error( error )

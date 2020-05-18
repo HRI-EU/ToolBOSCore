@@ -142,11 +142,11 @@ Any.requireIsTextNonEmpty( packageName   )
 Any.requireIsTextNonEmpty( category      )
 Any.requireIsTextNonEmpty( repositoryURL )
 
-logging.info( 'server:       %s' % server        )
-logging.info( 'location:     %s' % reposPath     )
-logging.info( 'category:     %s' % category      )
-logging.info( 'package name: %s' % packageName   )
-logging.info( 'repository:   %s' % repositoryURL )
+logging.info( 'server:       %s', server        )
+logging.info( 'location:     %s', reposPath     )
+logging.info( 'category:     %s', category      )
+logging.info( 'package name: %s', packageName   )
+logging.info( 'repository:   %s', repositoryURL )
 
 
 # prevent importing an existing working copy (by looking for ".svn"
@@ -191,7 +191,7 @@ FastScript.changeDirectory( '..' )
 
 oldName = os.path.basename( cwd )
 bakName = oldName + '.bak'
-logging.info( 'renaming %s --> %s' % ( oldName, bakName ) )
+logging.info( 'renaming %s --> %s', oldName, bakName )
 os.rename( oldName, bakName )
 
 logging.info( 'downloading working copy...' )

@@ -194,6 +194,9 @@ line3    = 'Then login again.'
 length   = max( len(line1), len(line2) )
 
 
+# The following is not performance-critical and would become
+# too complex if written in a lazy way...
+# pylint: disable=logging-not-lazy
 logging.info( '' )
 logging.info( '' )
 logging.info( '   ' + '_' * (length+2) )

@@ -218,7 +218,7 @@ class PatchSystem( object ):
         try:
             content = FastScript.getFileContent( fileName )
         except IOError:
-            logging.debug( '%s: No such file' % fileName )
+            logging.debug( '%s: No such file', fileName )
             return False
 
 
@@ -887,7 +887,7 @@ class PatchSystem( object ):
         logging.info( descrLen * '-' )
 
         for patch in available:
-            logging.info( 'EXECUTING PATCH: %s' % patch[0] )
+            logging.info( 'EXECUTING PATCH: %s', patch[0] )
             result = patch[1]( dryRun )
 
             if result:
@@ -896,7 +896,7 @@ class PatchSystem( object ):
                 fileList.sort()
 
                 for item in fileList:
-                    logging.info( 'patching %s' % item )
+                    logging.info( 'patching %s', item )
 
                 logging.info( patch[2] )
 
@@ -945,8 +945,8 @@ class PatchSystem( object ):
 
         logging.debug( '%s: searching for "%s"', fileName, check.strip() )
         needed = content.find( check ) > 0
-        logging.debug( 'patch "%s" --> "%s" needed: %s' % \
-                       ( old.strip(), new.strip(), str(needed) ) )
+        logging.debug( 'patch "%s" --> "%s" needed: %s', \
+                       old.strip(), new.strip(), str(needed) )
 
         if needed and not dryRun:
 

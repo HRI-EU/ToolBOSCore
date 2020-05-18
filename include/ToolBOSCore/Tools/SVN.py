@@ -169,7 +169,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         if server:
             groupName = FastScript.getCurrentGroupName()
 
-            logging.info( 'granting group read-permission (%s)' % groupName )
+            logging.info( 'granting group read-permission (%s)', groupName )
             cmd = "chmod 2770 db db/transactions db/revs db/revprops && " + \
                 "chmod 660 db/write-lock && chmod 750 hooks && "        + \
                 "chmod 770 locks && chmod o-r * && chmod o-w * && "     + \
@@ -435,7 +435,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
         if self._dryRun:
             logging.warning( "DRY-RUN: won't commit anything" )
-            logging.debug( "command: %s" % cmd )
+            logging.debug( "command: %s", cmd )
         else:
             FastScript.execProgram( cmd, stdout=output, stderr=output )
 
@@ -567,7 +567,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
         if self._dryRun:
             logging.warning( "DRY-RUN: won't alter working copy" )
-            logging.debug( "cmd: %s" % cmd )
+            logging.debug( "cmd: %s", cmd )
         else:
             FastScript.execProgram( cmd, stdout=output, stderr=output )
 

@@ -410,7 +410,7 @@ def getDirSize( path ):
             try:
                 size +=  os.path.getsize( fullPath )
             except OSError:
-                logging.debug( "can't stat: %s" % fullPath )
+                logging.debug( "can't stat: %s", fullPath )
 
     return size
 

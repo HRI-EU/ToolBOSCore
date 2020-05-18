@@ -61,7 +61,7 @@ class DocumentationCreator( object ):
         Any.requireIsDir( projectRoot )
 
         self.projectRoot = projectRoot
-        logging.debug( 'topLevelDir=%s' % projectRoot )
+        logging.debug( 'topLevelDir=%s', projectRoot )
 
         if details is None:
             details = PackageDetector( projectRoot )

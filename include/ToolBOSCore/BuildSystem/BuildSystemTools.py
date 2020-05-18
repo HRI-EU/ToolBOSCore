@@ -296,7 +296,7 @@ class BuildSystemTools( object ):
         if platform != self._hostPlatform:
             self._crossCompiling = True
             self._targetPlatform = platform
-            logging.info( 'targetPlatform=%s' % self._targetPlatform )
+            logging.info( 'targetPlatform=%s', self._targetPlatform )
 
             self._detectBuildDir()
 
@@ -601,7 +601,7 @@ class BuildSystemTools( object ):
             except subprocess.CalledProcessError:
                 status = False
             except OSError as details:
-                logging.error( '%s: %s' % ( cmd, str(details) ) )
+                logging.error( '%s: %s', cmd, str(details) )
                 status = False
 
         return status
@@ -864,9 +864,9 @@ def _getDistcleanPatterns():
     try:
         for elem in content['delete']:
             resultList.append( elem )
-            logging.debug( 'distclean opt-in: %s' % elem )
+            logging.debug( 'distclean opt-in: %s', elem )
     except TypeError as details:
-        logging.error( 'error in %s: %s' % ( filename, details ) )
+        logging.error( 'error in %s: %s', filename, details )
     except KeyError:
         pass
 
@@ -875,11 +875,11 @@ def _getDistcleanPatterns():
         for elem in content['doNotDelete']:
             try:
                 resultList.remove( elem )
-                logging.debug( 'distclean opt-out: %s' % elem )
+                logging.debug( 'distclean opt-out: %s', elem )
             except ValueError:
-                logging.debug( 'not in distclean-whitelist: %s' % elem )
+                logging.debug( 'not in distclean-whitelist: %s', elem )
     except TypeError as details:
-        logging.error( 'error in %s: %s' % ( filename, details ) )
+        logging.error( 'error in %s: %s', filename, details )
     except KeyError:
         pass
 
@@ -901,7 +901,7 @@ def _removeList( pathList, verbose, dryRun ):
     # in case of broken links)
     for path in pathList:
         if dryRun:
-            logging.info( '-- DRY RUN --   not really deleting %s' % path )
+            logging.info( '-- DRY RUN --   not really deleting %s', path )
         else:
             FastScript.remove( path )
 
