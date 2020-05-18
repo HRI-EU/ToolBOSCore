@@ -156,7 +156,7 @@ def _copyBasePackage( src, dst, verbose, ignore = None, resolveLTS = None ):
         'ignore'-callback to the underlying shutil.copytree() function.
     """
     if verbose:
-        logging.info( 'copying %s' % strip( src ) )
+        logging.info( 'copying %s', strip( src ) )
 
     if os.path.islink( src ):
 
@@ -623,7 +623,7 @@ def getProjectsWithErrorHandling( path, resultList ):
     Any.requireIsDir( path )
     Any.requireIsList( resultList )
 
-    logging.info( 'scanning %s...' % path )
+    logging.info( 'scanning %s...', path )
 
     resultList.extend( getProjects( path, keepPath=False,
                                     onError=FastScript.printPermissionDenied ) )
@@ -753,10 +753,10 @@ def showStatistics():
         if regexp.match( version ):
             pkgVersions += 1
 
-    logging.info( 'path:                                  %s' % path )
-    logging.info( 'number of distinct packages:           %d' % len(pkgRoots) )
-    logging.info( 'number of 2-digit-versions:            %d' % pkgVersions )
-    logging.info( 'number of 3-digit-versions (= total):  %d' % len(total) )
+    logging.info( 'path:                                  %s', path )
+    logging.info( 'number of distinct packages:           %d', len(pkgRoots) )
+    logging.info( 'number of 2-digit-versions:            %d', pkgVersions )
+    logging.info( 'number of 3-digit-versions (= total):  %d', len(total) )
 
 
 # EOF

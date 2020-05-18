@@ -106,7 +106,7 @@ class LibIndex( object ):
             logging.info( 'processing %s', canonicalPath )
 
         if os.path.exists( installRoot + os.sep + 'SkipLibIndex' ):
-            logging.debug( '%s: SkipLibIndex found' % canonicalPath )
+            logging.debug( '%s: SkipLibIndex found', canonicalPath )
         else:
             filterFunc( self, canonicalPath )
 
@@ -219,14 +219,14 @@ class LibIndex( object ):
             Copies all previously added / detected files to the output
             directory.
         """
-        logging.debug( 'copying %d files... (this may take some time)' % \
+        logging.debug( 'copying %d files... (this may take some time)', \
                        len( self.fileDict.keys() ) )
 
         for original, target in self.fileDict.items():
             srcFile = original
             dstFile = self.path + os.sep + target
 
-            logging.debug( 'copying %s -> %s' % ( srcFile, dstFile ) )
+            logging.debug( 'copying %s -> %s', srcFile, dstFile )
 
             FastScript.mkdir( os.path.dirname( dstFile ) )
 
@@ -242,14 +242,14 @@ class LibIndex( object ):
             Symlinks all previously added / detected files within the output
             directory.
         """
-        logging.debug( 'linking %d files... (this may take some time)' % \
+        logging.debug( 'linking %d files... (this may take some time)', \
                        len( self.fileDict.keys() ) )
 
         for original, target in self.fileDict.items():
             srcFile = original
             dstFile = self.path + os.sep + target
 
-            logging.debug( 'linking %s -> %s' % ( dstFile, srcFile ) )
+            logging.debug( 'linking %s -> %s', dstFile, srcFile )
 
             FastScript.mkdir( os.path.dirname( dstFile ) )
             try:
@@ -263,9 +263,9 @@ class LibIndex( object ):
                    os.path.realpath( linkTargetSupposed ):
 
                     logging.warning( '' )
-                    logging.warning( 'library name clash: %s' % fileName )
-                    logging.warning( 'symlink exists: %s (pointing to %s)' % ( dstFile, linkTargetActual ) )
-                    logging.warning( 'attempting to create link %s pointing to %s' % ( dstFile, linkTargetSupposed ) )
+                    logging.warning( 'library name clash: %s', fileName )
+                    logging.warning( 'symlink exists: %s (pointing to %s)', dstFile, linkTargetActual )
+                    logging.warning( 'attempting to create link %s pointing to %s', dstFile, linkTargetSupposed )
                     logging.warning( '' )
 
 
@@ -298,7 +298,7 @@ class LibIndex( object ):
         Any.requireIsListNonEmpty( platformList )
 
         self.platforms = platformList
-        logging.debug( 'limiting platforms to: %s' % ' '.join( self.platforms ) )
+        logging.debug( 'limiting platforms to: %s', ' '.join( self.platforms ) )
 
 
     def showProgress( self, boolean ):
@@ -333,10 +333,10 @@ def addLibraries( index, canonicalPath ):
     Any.requireIsList( index.platforms )
 
     if canonicalPath in index.pkgList:
-        logging.debug( 'skipping %s (already added)' % canonicalPath )
+        logging.debug( 'skipping %s (already added)', canonicalPath )
         return
     else:
-        logging.debug( 'adding %s' % canonicalPath )
+        logging.debug( 'adding %s', canonicalPath )
         index.pkgList.append( canonicalPath )
 
     installRoot = index.sitPath + os.sep + canonicalPath
@@ -348,7 +348,7 @@ def addLibraries( index, canonicalPath ):
     linkAll          = os.path.exists( linkAll_fileName )
 
     if linkAll:
-        logging.debug( "%s: LinkAllLibraries found" % canonicalPath )
+        logging.debug( "%s: LinkAllLibraries found", canonicalPath )
 
 
     # standard directory layout (lib/<platform>)
@@ -423,10 +423,10 @@ def fuseIntoSingleDirectory( index, canonicalPath ):
     Any.requireIsList( index.platforms )
 
     if canonicalPath in index.pkgList:
-        logging.debug( 'skipping %s (already added)' % canonicalPath )
+        logging.debug( 'skipping %s (already added)', canonicalPath )
         return
     else:
-        logging.debug( 'adding %s' % canonicalPath )
+        logging.debug( 'adding %s', canonicalPath )
         index.pkgList.append( canonicalPath )
 
     installRoot = index.sitPath + os.sep + canonicalPath
@@ -501,10 +501,10 @@ def addMainPackage( index, canonicalPath ):
     Any.requireIsList( index.platforms )
 
     if canonicalPath in index.pkgList:
-        logging.debug( 'skipping %s (already added)' % canonicalPath )
+        logging.debug( 'skipping %s (already added)', canonicalPath )
         return
     else:
-        logging.debug( 'adding %s' % canonicalPath )
+        logging.debug( 'adding %s', canonicalPath )
         index.pkgList.append( canonicalPath )
 
     installRoot = index.sitPath + os.sep + canonicalPath
@@ -517,7 +517,7 @@ def addMainPackage( index, canonicalPath ):
     match            = fnmatch.fnmatch
 
     if linkAll:
-        logging.debug( "%s: LinkAllLibraries found" % canonicalPath )
+        logging.debug( "%s: LinkAllLibraries found", canonicalPath )
 
     for platform in index.platforms:
         tail     = 'lib'       + os.sep + platform

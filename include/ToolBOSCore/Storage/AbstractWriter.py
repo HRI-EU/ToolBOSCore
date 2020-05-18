@@ -107,7 +107,7 @@ class AbstractWriter( object ):
 
     def write( self, outputFile ):
         self._deploy()
-        logging.info( 'generating %s' % os.path.relpath( outputFile, os.getcwd() ) )
+        logging.info( 'generating %s', os.path.relpath( outputFile, os.getcwd() ) )
         FastScript.setFileContent( outputFile, self.content )
 
 
