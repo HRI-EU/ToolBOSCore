@@ -138,10 +138,10 @@ class AbstractValgrindRule( AbstractRule ):
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self.getSQSettings( details )
-        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s", sqSettings )
 
         if sqSettings is None:
-            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see %s docs" % ruleId
+            msg    = "executables for valgrind check stated in pkgInfo.py 'sqCheckExe' field not found, please see %s documentation" % ruleId
             result = ( FAILED, 0, 1, msg )
 
             return result
@@ -159,7 +159,7 @@ class AbstractValgrindRule( AbstractRule ):
         logging.debug( "'sqCheckExe' settings for %s from pkgInfo.py: %s", ruleId, sqCheckExe )
 
         if not sqCheckExe:
-            msg    = "no 'sqCheckExe' settings for %s found in pkgInfo.py, please see %s docs" % ( ruleId, ruleId )
+            msg    = "executables for valgrind check stated in pkgInfo.py 'sqCheckExe' field not found, please see %s documentation" % ruleId
             result = ( FAILED, 0, 1, msg )
 
             return result
@@ -220,7 +220,9 @@ class AbstractValgrindRule( AbstractRule ):
             return None
 
         except AssertionError:
-            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
+            ruleId = self.getRuleID()
+            Any.requireIsTextNonEmpty( ruleId )
+            logging.error( "executables for valgrind check stated in pkgInfo.py 'sqCheckExe' field not found, please see %s documentation", ruleId )
 
             return None
 
@@ -270,11 +272,10 @@ class AbstractValgrindRule( AbstractRule ):
 
         for binFile in binFiles:
             if binFile not in commands:
-                logging.warning("%s executable was found. "
-                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
+                logging.warning( "'sqCheckExe' setting for executable '%s' not specified in pkgInfo.py" % binFile )
 
                 result = ( FAILED, 0, 1,
-                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
+                           "'sqCheckExe' setting for executable '%s' not specified in pkgInfo.py" % binFile )
 
                 return result
 
@@ -1708,10 +1709,10 @@ Releasing resources as soon as possible reduces the possibility that
 exhaustion will occur.
 
 The check function for this rule invokes Valgrind on all executables listed
-in the SQ_12 variable in pkgInfo.py, e.g.:
+in the sqCheckExe variable in pkgInfo.py, e.g.:
 
-    SQ_12 = [ 'bin/${MAKEFILE_PLATFORM}/main',
-              'bin/${MAKEFILE_PLATFORM}/main foo --bar' ]
+    sqCheckExe = [ 'bin/${MAKEFILE_PLATFORM}/main',
+                   'bin/${MAKEFILE_PLATFORM}/main foo --bar' ]
 
 Please specify a list of commands, including arguments (if any), that
 shall be analyzed by the check routine.
