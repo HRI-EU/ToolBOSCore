@@ -1483,58 +1483,8 @@ and other compile errors.'''
         return result
 
 
-class Rule_C06( AbstractRule ):
-
-    brief       = '''Header files should not expose inline functions as
-public interface. The result after changing the implementation is undefined.'''
-
-    description = '''Functions declared as `inline` might (!) be put in-place
-by the compiler, rather than invoking a function call. This is a mean to
-improve performance when repetitively calling small functions.
-
-Similar to macros, the code gets duplicated in the caller. Therefore public
-functions of a library should not be declared as inline otherwise it might
-happen that an old binary (that was not recompiled in the meanwhile) still
-contains the old logic.
-
-Even worse, inlining is just a request to the compiler which might decide to
-inline or not depending on the code situation. This might result in a mixture
-of code variants.'''
-
-    sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
-
-    def run( self, details, files ):
-        """
-            Checks that public C/C++ functions are not exposed as 'inline'.
-        """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
-        logging.debug( "looking for public functions declared 'inline'" )
-        passed = 0
-        failed = 0
-
-        for filePath in files:
-            _, ext = os.path.splitext( filePath )
-
-            if ext in C_CPP_HEADER_EXTENSIONS:
-                content = FastScript.getFileContent( filePath )
-
-                if content.find( 'inline' ) != -1:
-                    logging.info( "C06: %s: public API should not be declared 'inline'",
-                                  filePath )
-                    failed += 1
-                else:
-                    passed += 1
-
-        if failed == 0:
-            result = ( OK, passed, failed,
-                       "no public function declared 'inline'" )
-        else:
-            result = ( FAILED, passed, failed,
-                       'public functions declared "inline"' )
-
-        return result
+class Rule_C06( RemovedRule ):
+    pass
 
 
 class Rule_C07( AbstractRule ):
@@ -2865,6 +2815,60 @@ terminating `\\0` must not be used.'''
                     'AnyString_About' }
 
     sqLevel     = frozenset( [ 'safety' ] )
+
+
+class Rule_SAFE08( AbstractRule ):
+
+    brief       = '''Header files should not expose inline functions as
+public interface. The result after changing the implementation is undefined.'''
+
+    description = '''Functions declared as `inline` might (!) be put in-place
+by the compiler, rather than invoking a function call. This is a mean to
+improve performance when repetitively calling small functions.
+
+Similar to macros, the code gets duplicated in the caller. Therefore public
+functions of a library should not be declared as inline otherwise it might
+happen that an old binary (that was not recompiled in the meanwhile) still
+contains the old logic.
+
+Even worse, inlining is just a request to the compiler which might decide to
+inline or not depending on the code situation. This might result in a mixture
+of code variants.'''
+
+    sqLevel     = frozenset( [ 'safety' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that public C/C++ functions are not exposed as 'inline'.
+        """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
+        logging.debug( "looking for public functions declared 'inline'" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            _, ext = os.path.splitext( filePath )
+
+            if ext in C_CPP_HEADER_EXTENSIONS:
+                content = FastScript.getFileContent( filePath )
+
+                if content.find( 'inline' ) != -1:
+                    logging.info( "SAFE08: %s: public API should not be declared 'inline'",
+                                  filePath )
+                    failed += 1
+                else:
+                    passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "no public function declared 'inline'" )
+        else:
+            result = ( FAILED, passed, failed,
+                       'public functions declared "inline"' )
+
+        return result
 
 
 class Rule_SPEC01( AbstractRule ):
