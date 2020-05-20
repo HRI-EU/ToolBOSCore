@@ -86,7 +86,7 @@ def listDependencies( canonicalPath, reverse=False, recursive=True,
             package.open()
         except AssertionError as details:
             logging.error( details )
-            logging.error( '%s: No such package in SIT' % canonicalPath )
+            logging.error( '%s: No such package in SIT', canonicalPath )
             raise SystemExit()
 
 

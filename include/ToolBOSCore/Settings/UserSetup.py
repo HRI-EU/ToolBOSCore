@@ -88,7 +88,7 @@ fi
     # remove it, because could be an existing file / symlink
     FastScript.remove( fileName )
 
-    logging.info( 'creating %s' % fileName )
+    logging.info( 'creating %s', fileName )
     FastScript.setFileContent( fileName, content )
 
 
@@ -117,12 +117,12 @@ def setupProxy( sitRootPath=None, sitProxyPath=None ):
 
     # delete existing proxy if it exists, it might be screwed up
     if os.path.exists( sitProxyPath ):
-        logging.info( 'cleaning existing proxy in %s' % sitProxyPath )
+        logging.info( 'cleaning existing proxy in %s', sitProxyPath )
         FastScript.remove( sitProxyPath )
 
     logging.info( 'creating proxy directory... (this may take some time)' )
-    logging.info( 'SIT Root:  %s' % sitRootPath )
-    logging.info( 'SIT Proxy: %s' % sitProxyPath )
+    logging.info( 'SIT Root:  %s', sitRootPath )
+    logging.info( 'SIT Proxy: %s', sitProxyPath )
     ProxyDir.createProxyDir( sitRootPath, sitProxyPath, verbose=False )
 
 

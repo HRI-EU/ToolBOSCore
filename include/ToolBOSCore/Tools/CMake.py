@@ -85,7 +85,7 @@ def getIncludePathsAsString( targetPlatform, targetName ):
     Any.requireIsFileNonEmpty( fileName )
 
     # read-in ground truth information
-    logging.debug( 'parsing %s' % fileName )
+    logging.debug( 'parsing %s', fileName )
     content    = FastScript.getFileContent( fileName, splitLines=True )
     raw_C      = ''
     raw_CPP    = ''
@@ -238,7 +238,7 @@ def getCDefinesAsString( targetPlatform, targetName ):
     Any.requireIsFileNonEmpty( fileName )
 
     # read-in ground truth information
-    logging.debug( 'parsing %s' % fileName )
+    logging.debug( 'parsing %s', fileName )
     content           = FastScript.getFileContent( fileName, splitLines=True )
     raw_C             = ''
     raw_CPP           = ''

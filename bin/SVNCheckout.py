@@ -131,7 +131,7 @@ if args[ 'global' ]:
 
         Any.requireIsInt( revision )
         Any.require( revision != -1 )
-        logging.info( 'SVN revision = %d' % revision )
+        logging.info( 'SVN revision = %d', revision )
 
     except ( AssertionError, IOError ):
         logging.error( '' )

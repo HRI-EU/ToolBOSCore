@@ -138,10 +138,10 @@ class AbstractValgrindRule( AbstractRule ):
 
         # get SQ-settings from pkgInfo.py
         sqSettings = self.getSQSettings( details )
-        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s",sqSettings )
+        logging.debug( "complete 'sqCheckExe' settings from pkgInfo.py: %s", sqSettings )
 
         if sqSettings is None:
-            msg    = "no 'sqCheckExe' settings found in pkgInfo.py, please see %s docs" % ruleId
+            msg    = "executables for valgrind check stated in pkgInfo.py 'sqCheckExe' field not found, please see %s documentation" % ruleId
             result = ( FAILED, 0, 1, msg )
 
             return result
@@ -159,7 +159,7 @@ class AbstractValgrindRule( AbstractRule ):
         logging.debug( "'sqCheckExe' settings for %s from pkgInfo.py: %s", ruleId, sqCheckExe )
 
         if not sqCheckExe:
-            msg    = "no 'sqCheckExe' settings for %s found in pkgInfo.py, please see %s docs" % ( ruleId, ruleId )
+            msg    = "executables for valgrind check stated in pkgInfo.py 'sqCheckExe' field not found, please see %s documentation" % ruleId
             result = ( FAILED, 0, 1, msg )
 
             return result
@@ -220,7 +220,9 @@ class AbstractValgrindRule( AbstractRule ):
             return None
 
         except AssertionError:
-            logging.error( "no 'sqCheckExe' found in pkgInfo.py (please see C12 docs)" )
+            ruleId = self.getRuleID()
+            Any.requireIsTextNonEmpty( ruleId )
+            logging.error( "executables for valgrind check stated in pkgInfo.py 'sqCheckExe' field not found, please see %s documentation", ruleId )
 
             return None
 
@@ -270,11 +272,10 @@ class AbstractValgrindRule( AbstractRule ):
 
         for binFile in binFiles:
             if binFile not in commands:
-                logging.warning("%s executable was found. "
-                                "but no sqCheckExe setting was specified in pkgInfo.py", binFile)
+                logging.warning( "'sqCheckExe' setting for executable '%s' not specified in pkgInfo.py" % binFile )
 
                 result = ( FAILED, 0, 1,
-                           "sqCheckExe setting for executable '%s' not specified in pkgInfo.py" % binFile )
+                           "'sqCheckExe' setting for executable '%s' not specified in pkgInfo.py" % binFile )
 
                 return result
 
@@ -290,7 +291,7 @@ class AbstractValgrindRule( AbstractRule ):
 
         for command in commandLines:
 
-            logging.info( "%s: checking '%s'" % ( ruleID,command ) )
+            logging.info( "%s: checking '%s'", ruleID,command )
 
             if Any.getDebugLevel() <= 3:
                 stdout = VersionCompat.StringIO()
@@ -313,11 +314,11 @@ class AbstractValgrindRule( AbstractRule ):
                     errorMessages.append( '%s: %s:%s - %s'
                                           % ( ruleID, error.fname, error.lineno, error.description ) )
 
-                logging.info( "%s: '%s' failed (see verbose-mode for details)"% ( ruleID, command ) )
+                logging.info( "%s: '%s' failed (see verbose-mode for details)", ruleID, command )
 
             else:
                 passedExecutables += 1
-                logging.info( "%s: '%s successfully finished"% ( ruleID, command ) )
+                logging.info( "%s: '%s successfully finished", ruleID, command )
 
         for error in errorMessages:
             logging.error( error )
@@ -1117,8 +1118,6 @@ context, without any sideeffects.
 Without these macros the code will not link in C++ context.'''
 
     goodExample = '''
-*plain C:*
-
     #ifdef __cplusplus
     extern "C" {
     #endif
@@ -1126,76 +1125,76 @@ Without these macros the code will not link in C++ context.'''
     #ifdef __cplusplus
     }
     #endif
-
-*using macros from ToolBOS SDK:*
-
-    ANY_BEGIN_C_DECLS
-    ...
-    ANY_END_C_DECLS
 '''
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
-    def run( self, details, files ):
-        if not details.isCPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
-
-        logging.debug( 'checking C header files for linkage guards' )
-
-        binDir            = os.path.join( details.topLevelDir, 'bin' )
-        ifdefExpr         = r'#\s*if\s+defined\(\s*__cplusplus\s*\)\s+extern\s+"C"\s+\{\s+#\s*endif'
-        ifdefinedExpr     = r'#\s*ifdef\s+__cplusplus\s+extern\s+"C"\s+\{\s+#\s*endif'
-        toolbosMacroExpr  = r'ANY_BEGIN_C_DECLS.*ANY_END_C_DECLS'
-        ifdefRegex        = re.compile( ifdefExpr )
-        ifDefinedRegex    = re.compile( ifdefinedExpr )
-        toolbosMacroRegex = re.compile( toolbosMacroExpr )
-        passed            = 0
-        failed            = 0
-
-        patterns          = { ifdefExpr       : ifdefRegex,
-                              ifdefinedExpr   : ifDefinedRegex,
-                              toolbosMacroExpr: toolbosMacroRegex }
-
-        try:
-
-            for filePath in files:
-                fname, ext = os.path.splitext( filePath )
-
-                if ext in C_HEADER_EXTENSIONS and not filePath.startswith( binDir ):
-
-                    contents = FastScript.getFileContent( filePath )
-                    found    = False
-
-                    logging.debug( 'checking: %s', filePath )
-
-                    for expr, regex in patterns.items():
-                        if regex.search( contents ):
-                            logging.debug( 'pattern found: %s', expr )
-                            found = True
-                        else:
-                            logging.debug( 'pattern not found: %s', expr )
-
-
-                    if found:
-                        logging.debug( 'passed: %s', filePath )
-                        passed += 1
-                    else:
-                        logging.info( 'C02: linkage guard missing: %s', filePath )
-                        failed += 1
-
-        except EnvironmentError as e:
-            logging.error( e )
-            return FAILED, passed, failed, e
-
-
-        if failed == 0:
-            result = ( OK, passed, failed,
-                       'all headers contain proper linkage guards' )
-        else:
-            result = ( FAILED, passed, failed,
-                       'invalid C header files found' )
-
-        return result
+    # TBCORE-2067  It turned out that the current implementation is not
+    #              satisfactory as we have no easy way to determine if a
+    #              header file (*.h) contains C or C++ code, despite
+    #              attempting to interpret it. Given that the rule is
+    #              anyway of limited use, we disabled this code.
+    #
+    # def run( self, details, files ):
+    #     if not details.isCPackage():
+    #         return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
+    #
+    #     logging.debug( 'checking C header files for linkage guards' )
+    #
+    #     binDir            = os.path.join( details.topLevelDir, 'bin' )
+    #     ifdefExpr         = r'#\s*if\s+defined\(\s*__cplusplus\s*\)\s+extern\s+"C"\s+\{\s+#\s*endif'
+    #     ifdefinedExpr     = r'#\s*ifdef\s+__cplusplus\s+extern\s+"C"\s+\{\s+#\s*endif'
+    #     toolbosMacroExpr  = r'ANY_BEGIN_C_DECLS.*ANY_END_C_DECLS'
+    #     ifdefRegex        = re.compile( ifdefExpr )
+    #     ifDefinedRegex    = re.compile( ifdefinedExpr )
+    #     toolbosMacroRegex = re.compile( toolbosMacroExpr )
+    #     passed            = 0
+    #     failed            = 0
+    #
+    #     patterns          = { ifdefExpr       : ifdefRegex,
+    #                           ifdefinedExpr   : ifDefinedRegex,
+    #                           toolbosMacroExpr: toolbosMacroRegex }
+    #
+    #     try:
+    #
+    #         for filePath in files:
+    #             fname, ext = os.path.splitext( filePath )
+    #
+    #             if ext in C_HEADER_EXTENSIONS and not filePath.startswith( binDir ):
+    #
+    #                 contents = FastScript.getFileContent( filePath )
+    #                 found    = False
+    #
+    #                 logging.debug( 'checking: %s', filePath )
+    #
+    #                 for expr, regex in patterns.items():
+    #                     if regex.search( contents ):
+    #                         logging.debug( 'pattern found: %s', expr )
+    #                         found = True
+    #                     else:
+    #                         logging.debug( 'pattern not found: %s', expr )
+    #
+    #
+    #                 if found:
+    #                     logging.debug( 'passed: %s', filePath )
+    #                     passed += 1
+    #                 else:
+    #                     logging.info( 'C02: linkage guard missing: %s', filePath )
+    #                     failed += 1
+    #
+    #     except EnvironmentError as e:
+    #         logging.error( e )
+    #         return FAILED, passed, failed, e
+    #
+    #
+    #     if failed == 0:
+    #         result = ( OK, passed, failed,
+    #                    'all headers contain proper linkage guards' )
+    #     else:
+    #         result = ( FAILED, passed, failed,
+    #                    'invalid C header files found' )
+    #
+    #     return result
 
 
 class Rule_C03( AbstractRule ):
@@ -1485,58 +1484,8 @@ and other compile errors.'''
         return result
 
 
-class Rule_C06( AbstractRule ):
-
-    brief       = '''Header files should not expose inline functions as
-public interface. The result after changing the implementation is undefined.'''
-
-    description = '''Functions declared as `inline` might (!) be put in-place
-by the compiler, rather than invoking a function call. This is a mean to
-improve performance when repetitively calling small functions.
-
-Similar to macros, the code gets duplicated in the caller. Therefore public
-functions of a library should not be declared as inline otherwise it might
-happen that an old binary (that was not recompiled in the meanwhile) still
-contains the old logic.
-
-Even worse, inlining is just a request to the compiler which might decide to
-inline or not depending on the code situation. This might result in a mixture
-of code variants.'''
-
-    sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
-
-    def run( self, details, files ):
-        """
-            Checks that public C/C++ functions are not exposed as 'inline'.
-        """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
-        logging.debug( "looking for public functions declared 'inline'" )
-        passed = 0
-        failed = 0
-
-        for filePath in files:
-            _, ext = os.path.splitext( filePath )
-
-            if ext in C_CPP_HEADER_EXTENSIONS:
-                content = FastScript.getFileContent( filePath )
-
-                if content.find( 'inline' ) != -1:
-                    logging.info( "C06: %s: public API should not be declared 'inline'",
-                                  filePath )
-                    failed += 1
-                else:
-                    passed += 1
-
-        if failed == 0:
-            result = ( OK, passed, failed,
-                       "no public function declared 'inline'" )
-        else:
-            result = ( FAILED, passed, failed,
-                       'public functions declared "inline"' )
-
-        return result
+class Rule_C06( RemovedRule ):
+    pass
 
 
 class Rule_C07( AbstractRule ):
@@ -1760,10 +1709,10 @@ Releasing resources as soon as possible reduces the possibility that
 exhaustion will occur.
 
 The check function for this rule invokes Valgrind on all executables listed
-in the SQ_12 variable in pkgInfo.py, e.g.:
+in the sqCheckExe variable in pkgInfo.py, e.g.:
 
-    SQ_12 = [ 'bin/${MAKEFILE_PLATFORM}/main',
-              'bin/${MAKEFILE_PLATFORM}/main foo --bar' ]
+    sqCheckExe = [ 'bin/${MAKEFILE_PLATFORM}/main',
+                   'bin/${MAKEFILE_PLATFORM}/main foo --bar' ]
 
 Please specify a list of commands, including arguments (if any), that
 shall be analyzed by the check routine.
@@ -2867,6 +2816,60 @@ terminating `\\0` must not be used.'''
                     'AnyString_About' }
 
     sqLevel     = frozenset( [ 'safety' ] )
+
+
+class Rule_SAFE08( AbstractRule ):
+
+    brief       = '''Header files should not expose inline functions as
+public interface. The result after changing the implementation is undefined.'''
+
+    description = '''Functions declared as `inline` might (!) be put in-place
+by the compiler, rather than invoking a function call. This is a mean to
+improve performance when repetitively calling small functions.
+
+Similar to macros, the code gets duplicated in the caller. Therefore public
+functions of a library should not be declared as inline otherwise it might
+happen that an old binary (that was not recompiled in the meanwhile) still
+contains the old logic.
+
+Even worse, inlining is just a request to the compiler which might decide to
+inline or not depending on the code situation. This might result in a mixture
+of code variants.'''
+
+    sqLevel     = frozenset( [ 'safety' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that public C/C++ functions are not exposed as 'inline'.
+        """
+        if not details.isCPackage() and not details.isCppPackage():
+            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
+
+        logging.debug( "looking for public functions declared 'inline'" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            _, ext = os.path.splitext( filePath )
+
+            if ext in C_CPP_HEADER_EXTENSIONS:
+                content = FastScript.getFileContent( filePath )
+
+                if content.find( 'inline' ) != -1:
+                    logging.info( "SAFE08: %s: public API should not be declared 'inline'",
+                                  filePath )
+                    failed += 1
+                else:
+                    passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "no public function declared 'inline'" )
+        else:
+            result = ( FAILED, passed, failed,
+                       'public functions declared "inline"' )
+
+        return result
 
 
 class Rule_SPEC01( AbstractRule ):

@@ -126,7 +126,7 @@ def _getBundledIcon( name ):
         elif os.path.exists( svgFile ):
             filePath = svgFile
         else:
-            logging.error( 'missing icon file: %s.{svg,png}' % name )
+            logging.error( 'missing icon file: %s.{svg,png}', name )
 
             # provide empty fallback icon to prevent crashes
             return QIcon()

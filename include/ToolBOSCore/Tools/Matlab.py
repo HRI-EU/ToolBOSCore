@@ -587,8 +587,7 @@ def checkMessage( msgid, minSeverity = 1 ):
     if is_valid( msgid ):
         retVal = True if MESSAGES[ msgid ].severity >= minSeverity else False
     else:
-        logging.warning(
-            "Matlab MessageId '{0}' not present in MESSAGES".format( msgid ) )
+        logging.warning( "Matlab MessageId '%i' not present in MESSAGES", msgid )
 
     return retVal
 

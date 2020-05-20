@@ -158,16 +158,16 @@ class InstallProcedure( object ):
         if self.details.usePatchlevels and self.details.patchlevel is None:
             self._computePatchlevel()
 
-        logging.info( 'package name:     %s' % self.details.packageName     )
-        logging.info( 'package version:  %s' % self.details.packageVersion  )
-        logging.info( 'package category: %s' % self.details.packageCategory )
-        logging.info( 'canonical path:   %s' % self.details.canonicalPath   )
-        logging.info( 'package:          %s' % self.projectURL              )
-        logging.info( 'patchlevel:       %s' % self.details.patchlevel      )
-        logging.info( 'source location:  %s' % self.details.topLevelDir     )
-        logging.info( 'proxy SIT:        %s' % self.sitProxyPath            )
-        logging.info( 'global SIT:       %s' % self.sitRootPath             )
-        logging.info( 'platform:         %s' % self.hostPlatform            )
+        logging.info( 'package name:     %s', self.details.packageName     )
+        logging.info( 'package version:  %s', self.details.packageVersion  )
+        logging.info( 'package category: %s', self.details.packageCategory )
+        logging.info( 'canonical path:   %s', self.details.canonicalPath   )
+        logging.info( 'package:          %s', self.projectURL              )
+        logging.info( 'patchlevel:       %s', self.details.patchlevel      )
+        logging.info( 'source location:  %s', self.details.topLevelDir     )
+        logging.info( 'proxy SIT:        %s', self.sitProxyPath            )
+        logging.info( 'global SIT:       %s', self.sitRootPath             )
+        logging.info( 'platform:         %s', self.hostPlatform            )
 
         self._setUmask()
 
@@ -304,7 +304,7 @@ class InstallProcedure( object ):
                 raise ValueError( 'unexpected object in section "install"' )
 
             logging.debug( '' )
-            logging.debug( "custom install task: srcDir='%s' dstDir='%s'" % workItem )
+            logging.debug( "custom install task: srcDir='%s' dstDir='%s'", *workItem )
             self.copy( *workItem )  # the asterisk explodes the tuple into 2 vars
             logging.debug( '' )
 
@@ -323,7 +323,7 @@ class InstallProcedure( object ):
                 raise ValueError( 'unexpected tuple length=%d' % len(item) )
 
             logging.debug( '' )
-            logging.debug( "custom install task: srcDir='%s' pattern='%s' dstDir='%s'" % workItem )
+            logging.debug( "custom install task: srcDir='%s' pattern='%s' dstDir='%s'", *workItem )
             self.copyMatching( *workItem )  # the asterisk explodes the tuple into 3 vars
             logging.debug( '' )
 
@@ -339,7 +339,7 @@ class InstallProcedure( object ):
                 raise ValueError( 'unexpected tuple length=%d' % len(item) )
 
             logging.debug( '' )
-            logging.debug( "custom symlink task: target='%s' link='%s'" % workItem )
+            logging.debug( "custom symlink task: target='%s' link='%s'", *workItem )
             self.link( *workItem )  # the asterisk explodes the tuple into 3 vars
             logging.debug( '' )
 
@@ -348,7 +348,7 @@ class InstallProcedure( object ):
         """
             Shows the number of scheduled files
         """
-        logging.info( 'scheduled %d files for installation' % len( self.index.keys() ) )
+        logging.info( 'scheduled %d files for installation', len( self.index.keys() ) )
 
 
     def confirmInstall( self ):
@@ -416,7 +416,7 @@ class InstallProcedure( object ):
         logging.info( 'removing temporary files' )
 
         for item in self.tempObjects:
-            logging.debug( 'removing %s' % item )
+            logging.debug( 'removing %s', item )
             FastScript.remove( item )
 
 
@@ -614,9 +614,9 @@ class InstallProcedure( object ):
             srcDir = '.'
 
         if Any.isDir( srcDir ):
-            logging.debug( 'searching for subDir="%s"...' % srcDir )
+            logging.debug( 'searching for subDir="%s"...', srcDir )
         else:
-            logging.debug( 'searching for subDir="%s"... Not found' % srcDir )
+            logging.debug( 'searching for subDir="%s"... Not found', srcDir )
             return []
 
         if not dstDir:
@@ -626,9 +626,9 @@ class InstallProcedure( object ):
                                             relativeToHGR )
 
         if matching:
-            logging.info( 'adding %s/<%s>' % ( dstDir, srcPattern ) )
+            logging.info( 'adding %s/<%s>', dstDir, srcPattern )
         else:
-            logging.debug( 'not found: %s/<%s>' % ( srcDir, srcPattern ) )
+            logging.debug( 'not found: %s/<%s>', srcDir, srcPattern )
 
         return matching
 
@@ -678,8 +678,8 @@ class InstallProcedure( object ):
             raise ValueError
 
         matching = list( filter( regexp.search, fileList ) )
-        logging.debug( '%d items(s) in "%s", %d match expression' % \
-                       ( len(fileList), srcDir, len(matching) ) )
+        logging.debug( '%d items(s) in "%s", %d match expression', \
+                       len(fileList), srcDir, len(matching) )
 
         Any.requireIsList( matching )
 
@@ -805,7 +805,7 @@ class InstallProcedure( object ):
         else:
             linkPath = os.path.join( self.startPath, link )
 
-        logging.info( 'adding %s --> %s' % ( link, target ) )
+        logging.info( 'adding %s --> %s', link, target )
         self.index[ tmpFile ] = linkPath
         self.tempObjects.append( tmpFile )
 
@@ -967,7 +967,7 @@ class InstallProcedure( object ):
 
             if candidates:
                 try:
-                    logging.debug( 'trying to extract VM from %s' % candidates[0] )
+                    logging.debug( 'trying to extract VM from %s', candidates[0] )
                     extractVM( self.details.topLevelDir, srcDir, candidates[0] )
                     self.copyMatching( 'src', '.*\.xml$', 'include' )
 
@@ -1622,6 +1622,8 @@ class GlobalInstallProcedure( InstallProcedure ):
         errors = vcs.consistencyCheck()
 
         if errors:
+            # Not performance-critical and too complex if rewritten.
+            # pylint: disable=logging-not-lazy
             logging.error( errors[0] + ':' )
             logging.error( errors[1] )
             raise ValueError( errors[2] )
@@ -1753,7 +1755,7 @@ class TarExportProcedure( InstallProcedure ):
 
         self._tmpDir = tempfile.mkdtemp( prefix='install-' )
         self.tempObjects.append( self._tmpDir )
-        logging.debug( 'tmpDir:          %s' % self._tmpDir )
+        logging.debug( 'tmpDir:          %s', self._tmpDir )
 
 
     def postCollectMetaInfo( self ):
@@ -1790,7 +1792,7 @@ class TarExportProcedure( InstallProcedure ):
         else:
             self._fileName = './install/%s-%s.tar.bz2' % ( self.details.packageName,
                                                           self.details.packageVersion )
-        logging.debug( 'filename=%s' % self._fileName )
+        logging.debug( 'filename=%s', self._fileName )
 
 
     def preInstall( self ):
@@ -1822,7 +1824,7 @@ class TarExportProcedure( InstallProcedure ):
         import tarfile
 
         t = tarfile.open( self._fileName, 'w:bz2' )
-        logging.info( 'writing %s...' % self._fileName )
+        logging.info( 'writing %s...', self._fileName )
 
         fileList = list( self.index.keys() )
         fileList.sort()

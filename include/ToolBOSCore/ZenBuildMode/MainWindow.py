@@ -140,8 +140,8 @@ class MainWindow( QObject, object ):
                     hostname = terminal.hostname
                     command  = protoCmd
 
-                    logging.info( 'compiling natively on %s for %s' %
-                                  ( hostname, platform ) )
+                    logging.info( 'compiling natively on %s for %s',
+                                  hostname, platform )
 
                     self._execProgram( terminal, command )
                 except KeyError:
@@ -956,7 +956,7 @@ class MainWindow( QObject, object ):
     def _programCounter_increment( self, ):
         self.lock.acquire()
         self.runningProcesses += 1
-        logging.debug( 'running processes: %d' % self.runningProcesses )
+        logging.debug( 'running processes: %d', self.runningProcesses )
         self.lock.release()
 
         self._disableButtons()
@@ -966,7 +966,7 @@ class MainWindow( QObject, object ):
         self.lock.acquire()
 
         self.runningProcesses -= 1
-        logging.debug( 'running processes: %d' % self.runningProcesses )
+        logging.debug( 'running processes: %d', self.runningProcesses )
 
         if self.runningProcesses <= 0:
             self._enableButtons()
