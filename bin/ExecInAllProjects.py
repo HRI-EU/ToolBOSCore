@@ -126,7 +126,7 @@ def execInAllProjects( command ):
     for entry in dirList:
         workingDir = os.path.realpath( os.path.join( oldcwd, entry ) )
 
-        logging.debug( 'cd %s' % workingDir )
+        logging.debug( 'cd %s', workingDir )
         logging.info( 'workingDir=%s', workingDir )
 
         FastScript.changeDirectory( workingDir )

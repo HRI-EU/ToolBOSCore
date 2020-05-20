@@ -192,7 +192,7 @@ class TerminalWidget( QWidget, object ):
 
     def kill( self ):
         try:
-            logging.debug( 'terminating process %d' % self.pipe.pid )
+            logging.debug( 'terminating process %d', self.pipe.pid )
             self.pipe.kill()
         except ( AttributeError, OSError ):  # no such pipe, or terminated
             pass

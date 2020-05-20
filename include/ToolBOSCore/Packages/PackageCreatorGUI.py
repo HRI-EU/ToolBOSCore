@@ -79,7 +79,7 @@ class PackageCreatorGUI( object ):
         self._templatesAvailable = list( tmp )
 
         for template in self._templatesAvailable:
-            logging.debug( 'available template: %s' % template )
+            logging.debug( 'available template: %s', template )
             text  = template.replace( '_', ' ' )
             radio = QRadioButton( text )
             page.registerField( template, radio )
@@ -188,7 +188,7 @@ class PackageCreatorGUI( object ):
                 command = 'BST.py --new %s %s %s' % args
 
                 self.logWindow.insertHtml( '$ <b>' + command + '</b>\n' )
-                logging.info( 'executing: %s' % command )
+                logging.info( 'executing: %s', command )
 
                 self.workerThread = PackageCreatorThread( *args )
                 self.workerThread.finished.connect( self.onProcessFinished )
