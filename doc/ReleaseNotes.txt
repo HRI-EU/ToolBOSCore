@@ -1,4 +1,20 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.3
+
+
+CHANGES
+=======
+
+  - [TBCORE-2076] SQ GEN02: skip blacklisted directories
+  - [TBCORE-2075] SQ C12: improved error messages + documentation
+  - [TBCORE-2068] SQ C06 renamed to SAFE08
+  - [TBCORE-2067] SQ C02: dropped unreliable check function
+  - ToolBOS.conf: updated PyCharm + CLion versions to 2020.2
+  - ToolBOS.conf: updated Klocwork version to 2020.0
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.3.2
 
 
