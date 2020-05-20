@@ -136,8 +136,8 @@ if globalDir:
     sitRootPath  = globalDir
 
 
-logging.info( 'SIT Parent: %s' % sitRootPath )
-logging.info( 'SIT Proxy:  %s\n' % sitProxyPath )
+logging.info( 'SIT Parent: %s', sitRootPath )
+logging.info( 'SIT Proxy:  %s\n', sitProxyPath )
 
 answer = six.moves.input( 'Is this correct (Y/n)? ' )
 

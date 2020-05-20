@@ -34,7 +34,7 @@ class TestBootstrap( unittest.TestCase ):
     def test_isDeprecated( self ):
         canonicalPath = ToolBOSSettings.canonicalPath
 
-        logging.info( 'testing canonicalPath=%s' % canonicalPath )
+        logging.info( 'testing canonicalPath=%s', canonicalPath )
         ProjectProperties.requireIsCanonicalPath( canonicalPath )
 
         # ToolBOSCore never becomes deprecated, I hope ;-)

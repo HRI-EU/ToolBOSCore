@@ -289,7 +289,7 @@ def codeCheck():
         FastScript.execProgram( cmd, stdout=output, stderr=output )
 
         if Any.getDebugLevel() > 3:
-            logging.info( '\n' + output.getvalue() )
+            logging.info( '\n%s', output.getvalue() )
 
     except subprocess.CalledProcessError:
         if output.getvalue().find( 'No valid license found' ) > 0:
