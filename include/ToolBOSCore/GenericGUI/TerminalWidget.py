@@ -37,7 +37,7 @@
 import logging
 import os
 
-from PyQt5.QtCore    import pyqtSignal, Qt
+from PyQt5.QtCore    import pyqtSignal, Qt, QProcess
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
@@ -161,8 +161,8 @@ class TerminalWidget( QWidget, object ):
         self.textField.setColor( self._inactiveColor )
         self.textField.closeRequest.connect( self.closeRequest.emit )
         self.textField.reRunProcess.connect( self._reRun )
-        self.textField.terminateProcess.connect( self.terminate )
-        self.textField.terminateAllProcesses.connect( self.terminateAll )
+        self.textField.terminateThisProcess.connect( self.terminateThis )
+        self.textField.terminateAllProcesses.connect( self.emitTerminateAll )
         self.textField.standaloneRequest.connect( self.toggleStandalone )
 
         self.vLayout = QVBoxLayout()
@@ -186,6 +186,12 @@ class TerminalWidget( QWidget, object ):
         # widget again into the grid-view
         event.ignore()
         self.toggleStandalone()
+
+
+    def emitTerminateAll( self ):
+        self._terminating = True
+
+        self.terminateAllProcesses.emit()
 
 
     def isEnabled( self ):
@@ -268,6 +274,12 @@ class TerminalWidget( QWidget, object ):
         self._enabled = enabled
 
 
+    def setHaveTerminateAll( self, status ):
+        Any.requireIsBool( status )
+
+        self.textField.setHaveTerminateAll( status )
+
+
     def setHostname( self, hostname ):
         Any.requireIsTextNonEmpty( hostname )
 
@@ -328,6 +340,12 @@ class TerminalWidget( QWidget, object ):
             Any.requireIsCallable( func )
 
         self._outputFilter = func
+
+
+    def setTerminateAll( self, status ):
+        Any.requireIsBool( status )
+
+        self._haveTerminateAll = status
 
 
     def setToolTip( self, toolTipText ):
@@ -396,16 +414,13 @@ class TerminalWidget( QWidget, object ):
         return self.taskProcess
 
 
-    def terminate( self ):
+    def terminateThis( self ):
         self._terminating = True
 
-        if self.taskProcess is not None:
+        if self.taskProcess is None or self.taskProcess.state() == QProcess.NotRunning:
+            self._setTerminalColorFromExitStatus( 'no process' )
+        else:
             self.taskProcess.terminate()
-
-
-    def terminateAll( self ):
-        self._terminating = True
-        self.terminateAllProcesses.emit()
 
 
     def toggleStandalone( self):
@@ -507,9 +522,12 @@ class TerminalWidget( QWidget, object ):
     def _setTerminalColorFromExitStatus( self, status ):
         self.textField.ensureCursorVisible()
 
-        if self._terminating:
+        if status == 'no process':
+            self.writeText( '[no process running]\n' )
+
+        elif self._terminating:
             self.textField.setColor( self._exitFailureColor )
-            self.textField.append( '[Terminated]\n' )
+            self.writeText( '[Terminated]\n' )
 
         elif status is 0:
             self.textField.setColor( self._exitSuccessColor )
@@ -540,7 +558,7 @@ class TerminalWidget( QWidget, object ):
         closeRequest          = pyqtSignal()
         reRunProcess          = pyqtSignal()
         standaloneRequest     = pyqtSignal()
-        terminateProcess      = pyqtSignal()
+        terminateThisProcess  = pyqtSignal()
         terminateAllProcesses = pyqtSignal()
 
 
@@ -557,12 +575,13 @@ class TerminalWidget( QWidget, object ):
             self.setContextMenuPolicy( Qt.CustomContextMenu )
             self.customContextMenuRequested.connect( self._showContextMenu )
 
-            self._autoScroll          = True
-            self._frozen              = False
-            self._haveReRunAction     = False
-            self._haveTerminateAction = False
-            self._standalone          = False
-            self._tooltipText         = ''
+            self._autoScroll              = True
+            self._frozen                  = False
+            self._haveReRunAction         = False
+            self._haveTerminateThisAction = False
+            self._haveTerminateAllAction  = False
+            self._standalone              = False
+            self._tooltipText             = ''
 
             self._highlightCharNone   = QTextCharFormat()
             self._highlightCharNone.setFontFamily( "Courier New" )
@@ -591,13 +610,13 @@ class TerminalWidget( QWidget, object ):
 
 
         def programFinished( self ):
-            self._haveTerminateAction = False
+            self._haveTerminateThisAction = False
 
 
         def programStarted( self ):
-            self._haveReRunAction     = True
-            self._haveTerminateAction = True
-            self._autoScroll          = True
+            self._haveReRunAction         = True
+            self._haveTerminateThisAction = True
+            self._autoScroll              = True
 
 
         def setColor( self, color ):
@@ -607,6 +626,12 @@ class TerminalWidget( QWidget, object ):
             palette.setColor( QPalette.Base, color )
             self.setAutoFillBackground( True )
             self.setPalette( palette )
+
+
+        def setHaveTerminateAll( self, status ):
+            Any.requireIsBool( status )
+
+            self._haveTerminateAllAction = status
 
 
         def setStandalone( self, boolean ):
@@ -728,21 +753,22 @@ class TerminalWidget( QWidget, object ):
 
             # the "terminate"-action is only available during process execution
 
-            terminateAction = QAction( self )
-            terminateAction.setText( 'Terminate' )
-            terminateAction.triggered.connect( self._terminateProcess )
-            terminateAction.setEnabled( self._haveTerminateAction )
+            terminateThisAction = QAction( self )
+            terminateThisAction.setText( 'Terminate this' )
+            terminateThisAction.triggered.connect( self._terminateThisProcess )
+            terminateThisAction.setEnabled( self._haveTerminateThisAction )
 
-            menu.addAction( terminateAction )
+            menu.addAction( terminateThisAction )
 
-            # the "terminate all"-action is only available during process execution
 
-            terminateAllAction = QAction( self )
-            terminateAllAction.setText( 'Terminate all' )
-            terminateAllAction.triggered.connect( self._terminateAllProcess )
-            terminateAllAction.setEnabled( self._haveTerminateAction )
+            # if the "terminate all"-action is enabled, ist must be always visible
 
-            menu.addAction( terminateAllAction )
+            if self._haveTerminateAllAction:
+                terminateAllAction = QAction( self )
+                terminateAllAction.setText( 'Terminate all' )
+                terminateAllAction.triggered.connect( self._terminateAllProcesses )
+
+                menu.addAction( terminateAllAction )
 
 
             if self._frozen:
@@ -777,11 +803,11 @@ class TerminalWidget( QWidget, object ):
             menu.exec_( self.mapToGlobal( pos ) )
 
 
-        def _terminateProcess( self ):
-            self.terminateProcess.emit()
+        def _terminateThisProcess( self ):
+            self.terminateThisProcess.emit()
 
 
-        def _terminateAllProcess( self ):
+        def _terminateAllProcesses( self ):
            self.terminateAllProcesses.emit()
 
 
@@ -821,14 +847,25 @@ class MultiTermWidget( QGroupBox, object ):
 
         self.layout.addWidget( terminal, self._nextRow, self._nextCol )
         self.rearrangeTerminals()
+        self.setHaveTerminateAll( len(self._terminals) > 1 )
+
+
+        # ensure to only connect exactly once even if this addTerminal()
+        # might be called repetitive on the same terminal, otherwise
+        # the slot gets executed multiple times resulting in multiple
+        # '[Terminated]' messages
+        try:
+            terminal.terminateAllProcesses.disconnect()
+        except TypeError:
+            pass                                 # was not connected
 
         terminal.terminateAllProcesses.connect( self.terminateAllProcesses )
         terminal.show()
 
 
     def clear( self ):
-
         for terminal in self._terminals:
+            terminal.setHaveTerminateAll( False )
             terminal.hide()
 
         self._terminals = []
@@ -858,6 +895,13 @@ class MultiTermWidget( QGroupBox, object ):
             self._totalRows = self._nextRow
 
 
+    def setHaveTerminateAll( self, status ):
+        Any.requireIsBool( status )
+
+        for terminal in self._terminals:
+            terminal.setHaveTerminateAll( status )
+
+
     def setOutputFilter( self, func ):
         """
             Callback to be invoked before printing the command output to the
@@ -875,9 +919,12 @@ class MultiTermWidget( QGroupBox, object ):
         for terminal in self._terminals:
             terminal.setOutputFilter( func )
 
-    def terminateAllProcesses(self):
+
+    def terminateAllProcesses( self ):
+        logging.debug( 'terminating all...' )
+
         for terminal in self._terminals:
-            terminal.terminate()
+            terminal.terminateThis()
 
 
 # EOF
