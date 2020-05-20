@@ -162,7 +162,7 @@ class PackageCreator( object ):
 
         FastScript.mkdir( os.path.dirname( dstFile ) )  # ensure dstDir exists
 
-        logging.info( 'processing %s' % dstFile )
+        logging.info( 'processing %s', dstFile )
 
         # unlike shutil.copyfile() the shutil.copy2() function also copies
         # attributes such as executable flag (e.g. needed for unittest.sh etc.)
@@ -485,10 +485,10 @@ class PackageCreator_External_GNU_Autotools( PackageCreator ):
         tarball  = os.path.join( dstDir, 'src', 'Example-1.0-src.tar.bz2' )
         symlink  = os.path.join( dstDir, 'src', 'sources.tar.bz2' )
 
-        logging.info( 'processing %s' % tarball )
+        logging.info( 'processing %s', tarball )
         FastScript.setFileContent( tarball, '' )
 
-        logging.info( 'processing %s' % symlink )
+        logging.info( 'processing %s', symlink )
         os.symlink( 'Example-1.0-src.tar.bz2', symlink )
 
 
@@ -535,10 +535,10 @@ class PackageCreator_External_CMake_in_tree_build( PackageCreator ):
         tarball = os.path.join(dstDir, 'src', 'Example-1.0-src.tar.bz2')
         symlink = os.path.join(dstDir, 'src', 'sources.tar.bz2')
 
-        logging.info('processing %s' % tarball)
+        logging.info('processing %s', tarball)
         FastScript.setFileContent(tarball, '')
 
-        logging.info('processing %s' % symlink)
+        logging.info('processing %s', symlink)
         os.symlink('Example-1.0-src.tar.bz2', symlink)
 
         # create basic packageVar.cmake
@@ -583,10 +583,10 @@ class PackageCreator_External_CMake_out_of_tree_build( PackageCreator ):
         tarball  = os.path.join( dstDir, 'src', 'Example-1.0-src.tar.bz2' )
         symlink  = os.path.join( dstDir, 'src', 'sources.tar.bz2' )
 
-        logging.info( 'processing %s' % tarball )
+        logging.info( 'processing %s', tarball )
         FastScript.setFileContent( tarball, '' )
 
-        logging.info( 'processing %s' % symlink )
+        logging.info( 'processing %s', symlink )
         os.symlink( 'Example-1.0-src.tar.bz2', symlink )
 
 
@@ -638,10 +638,10 @@ class PackageCreator_External_without_compilation( PackageCreator ):
         tarball  = os.path.join( dstDir, 'src', 'Example-1.0-precompiled.tar.bz2' )
         symlink  = os.path.join( dstDir, 'src', 'package.tar.bz2' )
 
-        logging.info( 'processing %s' % tarball )
+        logging.info( 'processing %s', tarball )
         FastScript.setFileContent( tarball, '' )
 
-        logging.info( 'processing %s' % symlink )
+        logging.info( 'processing %s', symlink )
         os.symlink( 'Example-1.0-precompiled.tar.bz2', symlink )
 
 
@@ -1061,9 +1061,9 @@ def runTemplate( templateName, packageName, packageVersion, values = None,
     Any.requireIsTextNonEmpty( packageName )
     Any.requireIsTextNonEmpty( packageVersion )
 
-    logging.debug( 'templateName=%s'   % templateName   )
-    logging.debug( 'packageName=%s'    % packageName    )
-    logging.debug( 'packageVersion=%s' % packageVersion )
+    logging.debug( 'templateName=%s'  , templateName   )
+    logging.debug( 'packageName=%s'   , packageName    )
+    logging.debug( 'packageVersion=%s', packageVersion )
 
     try:
         creator = packageCreatorFactory( templateName, packageName,
@@ -1096,7 +1096,7 @@ def runMakoEngine( srcFile, dstFile, values ):
     Any.requireIsText( dstFile )
     Any.requireIsDict( values )
 
-    logging.info( 'processing %s' % dstFile )
+    logging.info( 'processing %s', dstFile )
 
 
     # First determine the directory of the template file, and tell Mako

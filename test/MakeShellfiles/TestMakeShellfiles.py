@@ -44,8 +44,8 @@ class TestMakeShellfiles( unittest.TestCase ):
             expectedFile = fileNamePrefix + fileName
             resultFile   = os.path.join( installDir, fileName )
 
-            logging.info( 'expecting content as in: %s' % expectedFile )
-            logging.info( 'comparing with:          %s' % resultFile )
+            logging.info( 'expecting content as in: %s', expectedFile )
+            logging.info( 'comparing with:          %s', resultFile )
 
             expectedContent = FastScript.getFileContent( expectedFile )
             resultContent   = FastScript.getFileContent( resultFile )
@@ -57,7 +57,7 @@ class TestMakeShellfiles( unittest.TestCase ):
                     try:
                         self.assertTrue( resultContent.find( line ) != -1 )
                     except AssertionError:
-                        logging.error( 'line not found: %s' % line )
+                        logging.error( 'line not found: %s', line )
                         raise
 
 

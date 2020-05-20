@@ -439,7 +439,7 @@ try:
         Any.requireIsList( candidates )
 
         if not candidates:
-            logging.info( 'No cross-compilation from %s hosts implemented :-(' % hostPlatform )
+            logging.info( 'No cross-compilation from %s hosts implemented :-(', hostPlatform )
         else:
             print( '\nSupported cross-compilation platforms on %s hosts:\n' % hostPlatform )
             for candidate in candidates:

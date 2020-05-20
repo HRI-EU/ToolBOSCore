@@ -622,7 +622,7 @@ class CheckRoutineDialog( QDialog, object ):
 
         Any.requireIsTextNonEmpty( ruleID )
 
-        logging.debug( 'toggling description for rule=%s' % ruleID )
+        logging.debug( 'toggling description for rule=%s', ruleID )
 
         rule = self._allRulesDict[ ruleID ]
 

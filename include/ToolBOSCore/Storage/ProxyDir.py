@@ -156,7 +156,7 @@ def createProxyDir( sitRoot, sitProxy, verbose=True ):
         target   = os.path.join( sitRoot, package )
 
         if verbose:
-            logging.info( 'linking %s' % package )
+            logging.info( 'linking %s', package )
 
         # create directory where the link shall be created
         FastScript.mkdir( os.path.dirname( linkName ) )
@@ -171,7 +171,7 @@ def createProxyDir( sitRoot, sitProxy, verbose=True ):
 
 
     logging.info( '' )
-    logging.info( 'Proxy created in %s' % sitProxy )
+    logging.info( 'Proxy created in %s', sitProxy )
 
 
 def updateProxyDir( removeBrokenSymlinks     = True,
@@ -341,9 +341,9 @@ def _removeProxyInstallations( sitRootPkgList, sitProxyPkgList,
 
         for installRoot in toDelete:
             if dryRun:
-                logging.info( '-- DRY RUN --   normally would now delete %s' % installRoot )
+                logging.info( '-- DRY RUN --   normally would now delete %s', installRoot )
             else:
-                logging.info( 'deleting %s' % installRoot )
+                logging.info( 'deleting %s', installRoot )
                 FastScript.remove( installRoot )
 
     return result
@@ -412,9 +412,9 @@ def _removeEmptyCategories( sitRootPkgList, sitProxyPkgList,
 
     for path in emptyDirs:
         if dryRun:
-            logging.info( '-- DRY RUN --   found empty dir. %s' % path )
+            logging.info( '-- DRY RUN --   found empty dir. %s', path )
         else:
-            logging.info( 'rmdir %s' % SIT.strip( path ) )
+            logging.info( 'rmdir %s', SIT.strip( path ) )
             os.rmdir( path )
 
     return len(emptyDirs)
@@ -446,7 +446,7 @@ def _linkNewPackagesIntoProxy( sitRootPkgList, sitProxyPkgList,
 
         try:
             os.symlink( pkgRootPath, pkgProxyPath )
-            logging.info( 'linking %s' % project )
+            logging.info( 'linking %s', project )
             proxyChanged = True
         except OSError:
             pass      # after linking one path, the other one might be inside
@@ -504,7 +504,7 @@ def _checkDefFiles( sitRootPkgList, sitProxyPkgList,
             collapsed = SIT.collapseHGR( defPath )
 
             if dryRun:
-                logging.info( '-- DRY RUN --   found superfluous %s' % collapsed )
+                logging.info( '-- DRY RUN --   found superfluous %s', collapsed )
             else:
                 logging.info( 'deleting %s', defPath )
                 FastScript.remove( defPath )
@@ -535,10 +535,10 @@ def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
                 proxyLinkTarget = os.readlink( pkgProxyPath )
                 if proxyLinkTarget[0] == '/' and \
                    not proxyLinkTarget.startswith( sitRoot ):
-                    logging.warning( '%s: points to %s' %
+                    logging.warning( '%s: points to %s',
                                      ( pkgProxyPath, proxyLinkTarget ) )
             except OSError:
-                logging.warning( 'invalid symlink: please check %s' % pkgProxyPath )
+                logging.warning( 'invalid symlink: please check %s', pkgProxyPath )
 
     return False        # proxy was not altered by this
 
@@ -571,7 +571,7 @@ def _checkProxyLinkedVersion( sitRootPkgList, sitProxyPkgList,
             continue
 
         if localPatchlevel < globalPatchlevel:
-            logging.info( 'updating %s' % project )
+            logging.info( 'updating %s', project )
 
             pkgProxyPath = os.path.join( sitProxy, project )
             pkgRootPath  = os.path.join( sitRoot,  project )

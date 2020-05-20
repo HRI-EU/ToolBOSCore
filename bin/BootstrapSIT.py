@@ -92,7 +92,7 @@ resolveLTS = args['resolveLTS']
 
 
 if os.path.exists( path ):
-    logging.error( '%s: directory exists' % path )
+    logging.error( '%s: directory exists', path )
     raise SystemExit()
 
 

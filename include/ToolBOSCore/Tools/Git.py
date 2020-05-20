@@ -92,7 +92,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
 
         if self._dryRun:
             logging.warning( "DRY-RUN: won't commit anything" )
-            logging.debug( "command: %s" % cmd )
+            logging.debug( "command: %s", cmd )
         else:
             FastScript.execProgram( cmd, stdout=output, stderr=output )
 
@@ -160,7 +160,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
 
         if self._dryRun:
             logging.warning( "DRY-RUN: won't transfer anything" )
-            logging.debug( "cmd: %s" % cmd )
+            logging.debug( "cmd: %s", cmd )
         else:
             FastScript.execProgram( cmd, stdout=output, stderr=output )
 
