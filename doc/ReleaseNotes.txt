@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.4
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-1442] terminals in Zen Build Mode + DTBOS gained a "terminate all" action
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.3.3
 
 
