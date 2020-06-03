@@ -61,11 +61,15 @@ fi
 
 # The user may specify BST_INSTALL_PREFIX so that the SIT will be placed
 # inside, useful for testing (see TBCORE-1104).
+#
+# Do not alter $SIT otherwise.
 
 
 if [[ -z "${BST_INSTALL_PREFIX}" ]]
 then
-    SIT=$(SIT_getRootPath)
+    # do nothing, otherwise mostly everybody (who does not use BST_INSTALL_PREFIX)
+    # sourcing this file will get their $SIT altered, which we really don't want
+    SIT=${SIT}
 else
     SIT=${BST_INSTALL_PREFIX}
 fi
@@ -87,9 +91,11 @@ then
   PROJECT_PATCHLEVEL_VERSION=${PROJECT_VERSION}.${PROJECT_REVISION}  # 3 digits
 fi
 
-if [ -z "${PROJECT_CATEGORY}" ]
+if [[ -z "${PROJECT_CATEGORY}" && -r "CMakeLists.txt" ]]
 then
   PROJECT_CATEGORY=$(awk '/BST_INSTALL_CATEGORY/ { gsub( "[:'\)']","" ); print $2 }' < CMakeLists.txt)
+else
+  PROJECT_CATEGORY="UnableToDetectCategory"
 fi
 
 CANONICAL_PATH=${PROJECT_CATEGORY}/${PROJECT_NAME}/${PROJECT_VERSION}
