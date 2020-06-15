@@ -120,14 +120,18 @@ class PackageCreatorGUI( object ):
                 self.nameValue    = QLineEdit( 'MyPackage' )
                 self.versionLabel = QLabel( 'Package version:' )
                 self.versionValue = QLineEdit( '1.0' )
+                self.flatStyle    = QCheckBox( 'flat directory structure (new style)' )
                 self.goButton     = QPushButton( '&Create' )
                 self.logWindow    = QTextEdit()
+
+                self.flatStyle.setChecked( True )
 
                 self.grid.addWidget( self.nameLabel,    1, 1 )
                 self.grid.addWidget( self.nameValue,    1, 2 )
                 self.grid.addWidget( self.versionLabel, 2, 1 )
                 self.grid.addWidget( self.versionValue, 2, 2 )
-                self.grid.addWidget( self.goButton,     3, 2 )
+                self.grid.addWidget( self.flatStyle,    3, 2 )
+                self.grid.addWidget( self.goButton,     4, 2 )
 
                 # -11 is the default margin on most platforms
                 self.gridWid.setContentsMargins( -8, 0, -8, 0 )
@@ -183,14 +187,21 @@ class PackageCreatorGUI( object ):
 
                 self.packageName    = self.field( 'packageName'    )
                 self.packageVersion = self.field( 'packageVersion' )
+                flatStyle           = self.flatStyle.isChecked()
+                args                = [ '--flat' ] if flatStyle else []
 
-                args    = ( self.template, self.packageName, self.packageVersion )
-                command = 'BST.py --new %s %s %s' % args
+                args.extend( [ self.template, self.packageName, self.packageVersion ] )
+
+                command = 'BST.py --new %s' % ' '.join( args )
 
                 self.logWindow.insertHtml( '$ <b>' + command + '</b>\n' )
                 logging.info( 'executing: %s', command )
 
-                self.workerThread = PackageCreatorThread( *args )
+                self.workerThread = PackageCreatorThread( self.template,
+                                                          self.packageName,
+                                                          self.packageVersion,
+                                                          flatStyle )
+
                 self.workerThread.finished.connect( self.onProcessFinished )
                 self.workerThread.newOutput.connect( lambda s: self.onNewOutput( s ) )
                 self.workerThread.start()
@@ -294,16 +305,18 @@ class PackageCreatorThread( QThread ):
     # A workaround is to provide a __block member
     __block  = None
 
-    def __init__( self, templateName, packageName, packageVersion ):
+    def __init__( self, templateName, packageName, packageVersion, flatStyle ):
         QThread.__init__( self )
 
         Any.requireIsTextNonEmpty( templateName )
         Any.requireIsTextNonEmpty( packageName )
         Any.requireIsTextNonEmpty( packageVersion )
+        Any.requireIsBool( flatStyle )
 
         self.templateName   = templateName
         self.packageName    = packageName
         self.packageVersion = packageVersion
+        self.flatStyle      = flatStyle
 
 
     def run( self ):
@@ -314,7 +327,8 @@ class PackageCreatorThread( QThread ):
 
         PackageCreator.runTemplate( self.templateName,
                                     self.packageName,
-                                    self.packageVersion )
+                                    self.packageVersion,
+                                    flatStyle=self.flatStyle )
 
         self.newOutput.emit( progressLog.getvalue() )
 
