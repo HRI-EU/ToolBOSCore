@@ -73,21 +73,30 @@ class PackageCreator( object ):
 
 
     def __init__( self, packageName, packageVersion, values=None,
-                  outputDir='' ):
+                  outputDir='', flatStyle=False ):
         Any.requireIsTextNonEmpty( packageName )
         Any.requireIsTextNonEmpty( packageVersion )
         Any.requireIsText( outputDir )
+        Any.requireIsBool( flatStyle )
 
         self.packageName      = packageName
         self.packageVersion   = packageVersion
         self.templateDir      = templateDir
         self.templateDir_core = templateDir_core
         self.outputDir        = outputDir
-        self.dstDir           = os.path.join( outputDir, packageName,
-                                            packageVersion )
+        self.flatStyle        = flatStyle
 
-        # replacement map passed to templating engine
-        self.values         = { 'packageName'   : packageName,
+        if flatStyle:
+            # modern directory structure, e.g. src/ directly in project root
+            self.dstDir = os.path.join( outputDir, packageName )
+        else:
+            # legacy directory structure with version-directory
+            self.dstDir = os.path.join( outputDir, packageName, packageVersion )
+
+
+        # replacement map etc. passed to templating engine
+        self.values         = { 'flatStyle'     : flatStyle,
+                                'packageName'   : packageName,
                                 'PACKAGENAME'   : packageName.upper(),
                                 'packageVersion': packageVersion }
 
@@ -117,7 +126,8 @@ class PackageCreator( object ):
         tmp = PackageCreator_Master( self.packageName,
                                      self.packageVersion,
                                      self.values,
-                                     self.outputDir )
+                                     self.outputDir,
+                                     self.flatStyle )
 
         tmp.run()
 
@@ -1039,7 +1049,7 @@ def getTemplatesAvailable():
 
 
 def packageCreatorFactory( templateName, packageName, packageVersion,
-                           values = None, outputDir = '' ):
+                           values=None, outputDir='', flatStyle=False ):
     """
         Returns an instance of package creator for the desired template.
     """
@@ -1048,11 +1058,12 @@ def packageCreatorFactory( templateName, packageName, packageVersion,
     except KeyError:
         raise ValueError( templateName + ': No such template' )
 
-    return constructor( packageName, packageVersion, values, outputDir )
+    return constructor( packageName, packageVersion, values, outputDir,
+                        flatStyle )
 
 
-def runTemplate( templateName, packageName, packageVersion, values = None,
-                 outputDir = '' ):
+def runTemplate( templateName, packageName, packageVersion, values=None,
+                 outputDir='', flatStyle=False ):
     """
         Decorator for packageCreatorFactory() which can be used to create
         a new package. It does all the typical logging and error handling.
@@ -1060,14 +1071,17 @@ def runTemplate( templateName, packageName, packageVersion, values = None,
     Any.requireIsTextNonEmpty( templateName )
     Any.requireIsTextNonEmpty( packageName )
     Any.requireIsTextNonEmpty( packageVersion )
+    Any.requireIsBool( flatStyle )
 
     logging.debug( 'templateName=%s'  , templateName   )
     logging.debug( 'packageName=%s'   , packageName    )
     logging.debug( 'packageVersion=%s', packageVersion )
+    logging.debug( 'flatStyle=%s',      flatStyle      )
 
     try:
         creator = packageCreatorFactory( templateName, packageName,
-                                         packageVersion, values, outputDir )
+                                         packageVersion, values, outputDir,
+                                         flatStyle )
     except KeyError:
         logging.error( '%s: No such template' % templateName )
         return False
