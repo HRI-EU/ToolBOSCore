@@ -52,8 +52,8 @@ from ToolBOSCore.Util import FastScript
 
 
 packageName    = 'ToolBOSCore'
-packageVersion = '3.3'
-canonicalPath  = 'DevelopmentTools/ToolBOSCore/3.3'
+packageVersion = '3.4'
+canonicalPath  = 'DevelopmentTools/ToolBOSCore/3.4'
 
 settingsFile   = 'ToolBOS.conf'
 
