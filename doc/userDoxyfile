@@ -1,7 +1,7 @@
 PROJECT_NAME   = "ToolBOSCore"
-INPUT          = ../
+INPUT          = ../doc/ModifiedMdFiles
 FILE_PATTERNS  = *.md
-RECURSIVE      = YES
+RECURSIVE      = NO
 SEARCHENGINE   = NO
 HAVE_DOT       = NO
 CLASS_DIAGRAMS = NO
