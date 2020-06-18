@@ -886,45 +886,6 @@ add_custom_target(${PACKAGE_NAME} ALL make
         FastScript.remove( os.path.join( dstDir, 'unittest.sh' ) )
 
 
-class PackageCreator_Matlab( PackageCreator ):
-    """
-        Creates a simple Matlab package.
-    """
-    def run( self ):
-        if not 'category' in self.values:
-            self.values[ 'category' ] = 'Libraries'
-
-        if not 'matlabPath' in self.values:
-            self.values[ 'matlabPath' ] = 'External/Matlab/8.4'
-
-        if not 'dependencies' in self.values:
-            self.values[ 'matlabPath'   ] =   self.values[ 'matlabPath' ]
-            self.values[ 'dependencies' ] = [ self.values[ 'matlabPath' ] ]
-
-        self.createMainPackage()
-
-        srcDir = os.path.join( self.templateDir, 'Matlab' )
-        dstDir = self.dstDir
-
-        self.copyVerbatim( os.path.join( srcDir, 'example.m' ),
-                           os.path.join( dstDir, 'examples/example.m' ) )
-
-        self.templatize( os.path.join( srcDir, 'packageName.m.mako' ),
-                         os.path.join( dstDir, 'src', '%s.m' % self.packageName ) )
-
-        self.templatize( os.path.join( srcDir, 'test.m.mako' ),
-                         os.path.join( dstDir, 'test/test.m' ) )
-
-        self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
-                           os.path.join( dstDir, 'pkgInfo.py' ) )
-
-        self.templatize( os.path.join( srcDir, 'startMatlab.sh.mako' ),
-                         os.path.join( dstDir, 'startMatlab.sh' ) )
-
-        self.templatize( os.path.join( srcDir, 'unittest.sh.mako' ),
-                         os.path.join( dstDir, 'unittest.sh' ) )
-
-
 class PackageCreator_Python( PackageCreator ):
     """
         Creates a simple Python package.
