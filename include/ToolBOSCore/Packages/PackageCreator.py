@@ -95,10 +95,11 @@ class PackageCreator( object ):
 
 
         # replacement map etc. passed to templating engine
-        self.values         = { 'flatStyle'     : flatStyle,
-                                'packageName'   : packageName,
-                                'PACKAGENAME'   : packageName.upper(),
-                                'packageVersion': packageVersion }
+        self.values         = { 'flatStyle'      : flatStyle,
+                                'packageCategory': 'Libraries',
+                                'packageName'    : packageName,
+                                'PACKAGENAME'    : packageName.upper(),
+                                'packageVersion' : packageVersion }
 
         try:
             if values is None:
@@ -188,6 +189,33 @@ class PackageCreator_Master( PackageCreator ):
         A set of default directories and files will be placed inside.
     """
     def run( self ):
+        if not 'category' in self.values:
+            logging.info( 'please check SIT category in pkgInfo.py!' )
+            self.values.update( { 'category': 'Libraries' } )
+
+        if not 'customPkgInfo' in self.values:
+            self.values.update( { 'customPkgInfo': '' } )
+
+        srcDir = os.path.join( self.templateDir_core, 'master' )
+        dstDir = self.dstDir
+
+        Any.requireIsDir( srcDir )
+
+        self.templatize( os.path.join( srcDir, 'pkgInfo.py.mako' ),
+                         os.path.join( dstDir, 'pkgInfo.py' ) )
+
+        self.copyVerbatim( os.path.join( srcDir, 'unittest.sh' ),
+                           os.path.join( dstDir, 'unittest.sh' ) )
+
+
+class PackageCreator_CMakeProject( PackageCreator ):
+    """
+        Creates an empty package with a boilerplate CMakeLists.txt.
+    """
+    def run( self ):
+        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
+        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+
         if not 'buildRules' in self.values:
 
             # When using default build rules, allow customization of
@@ -228,27 +256,34 @@ bst_build_executables("${EXE_FILES}" "${BST_LIBRARIES_SHARED}")''' % \
             self.values.update( { 'buildRules': buildRules } )
 
 
-        if not 'category' in self.values:
-            logging.info( 'please check BST_INSTALL_CATEGORY in CMakeLists.txt' )
-            self.values.update( { 'category': 'Libraries' } )
-
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = []
+            self.values[ 'dependencies' ] = [ package_toolboslib,
+                                              package_cutest ]
 
+        self.createMainPackage()
 
-        srcDir = os.path.join( self.templateDir_core, 'master' )
+        srcDir = os.path.join( self.templateDir_core, 'CMakeProject' )
         dstDir = self.dstDir
-
-        Any.requireIsDir( srcDir )
 
         self.templatize( os.path.join( srcDir, 'CMakeLists.txt.mako' ),
                          os.path.join( dstDir, 'CMakeLists.txt' ) )
 
-        self.copyVerbatim( os.path.join( srcDir, 'unittest.sh' ),
-                           os.path.join( dstDir, 'unittest.sh' ) )
+
+    def createCMakePackage( self ):
+        """
+            Creates a new package with the provided name and version.
+            A set of default directories and files will be placed inside.
+        """
+        tmp = PackageCreator_CMakeProject( self.packageName,
+                                           self.packageVersion,
+                                           self.values,
+                                           self.outputDir,
+                                           self.flatStyle )
+
+        tmp.run()
 
 
-class PackageCreator_C_BBCM( PackageCreator ):
+class PackageCreator_C_BBCM( PackageCreator_CMakeProject ):
     """
         Creates a BBCM component for wrapping code in RTBOS.
     """
@@ -270,8 +305,7 @@ class PackageCreator_C_BBCM( PackageCreator ):
 
         self.setValidFlags()
 
-
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir, 'C_BBCM' )
         dstDir = self.dstDir
@@ -298,7 +332,7 @@ class PackageCreator_C_BBCM( PackageCreator ):
                          os.path.join( dstDir, 'test', 'unittest.c' ) )
 
 
-class PackageCreator_C_BBDM( PackageCreator ):
+class PackageCreator_C_BBDM( PackageCreator_CMakeProject ):
     """
         Creates a BBDM component for wrapping data in RTBOS.
     """
@@ -323,8 +357,7 @@ class PackageCreator_C_BBDM( PackageCreator ):
 
         self.setValidFlags()
 
-
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir, 'C_BBDM' )
         dstDir = self.dstDir
@@ -352,7 +385,7 @@ class PackageCreator_C_BBDM( PackageCreator ):
                          os.path.join( dstDir, 'test', 'TestTimestep.c' ) )
 
 
-class PackageCreator_C_Library( PackageCreator ):
+class PackageCreator_C_Library( PackageCreator_CMakeProject ):
     """
         Creates a simple C library package.
     """
@@ -369,14 +402,10 @@ class PackageCreator_C_Library( PackageCreator ):
 
         self.setValidFlags()
 
-
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir_core, 'C_Library' )
         dstDir = self.dstDir
-
-        self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
-                           os.path.join( dstDir, 'pkgInfo.py' ) )
 
         self.templatize( os.path.join( srcDir, 'packageName.c.mako' ),
                          os.path.join( dstDir, 'src', '%s.c' % self.packageName ) )
@@ -388,7 +417,7 @@ class PackageCreator_C_Library( PackageCreator ):
                          os.path.join( dstDir, 'test', 'unittest.c' ) )
 
 
-class PackageCreator_C_MainProgram( PackageCreator ):
+class PackageCreator_C_MainProgram( PackageCreator_CMakeProject ):
     """
         Creates a simple C main program package.
     """
@@ -400,7 +429,7 @@ class PackageCreator_C_MainProgram( PackageCreator ):
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ package_toolboslib ]
 
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir_core, 'C_MainProgram' )
         dstDir = self.dstDir
@@ -413,7 +442,7 @@ class PackageCreator_C_MainProgram( PackageCreator ):
         FastScript.remove( os.path.join( dstDir, 'unittest.sh' ) )
 
 
-class PackageCreator_Cpp_Class( PackageCreator ):
+class PackageCreator_Cpp_Class( PackageCreator_CMakeProject ):
     """
         Creates a simple C++ class package.
     """
@@ -426,7 +455,7 @@ class PackageCreator_Cpp_Class( PackageCreator ):
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ package_toolboslib ]
 
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir_core, 'Cpp_Class' )
         dstDir = self.dstDir
@@ -440,7 +469,7 @@ class PackageCreator_Cpp_Class( PackageCreator ):
         FastScript.remove( os.path.join( dstDir, 'unittest.sh' ) )
 
 
-class PackageCreator_Cpp_MainProgram( PackageCreator ):
+class PackageCreator_Cpp_MainProgram( PackageCreator_CMakeProject ):
     """
         Creates a simple C main program package.
     """
@@ -454,7 +483,7 @@ class PackageCreator_Cpp_MainProgram( PackageCreator ):
             self.values[ 'dependencies' ] = [ package_toolboslib ]
 
 
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir_core, 'Cpp_MainProgram' )
         dstDir = self.dstDir
@@ -476,18 +505,25 @@ class PackageCreator_External_GNU_Autotools( PackageCreator ):
         if not 'category' in self.values:
             self.values[ 'category' ] = 'External'
 
+        if not 'customPkgInfo' in self.values:
+            self.values[ 'customPkgInfo' ] = '''
+# envVars        = [ ( 'PATH', '${INSTALL_ROOT}/bin:${PATH}' ),
+#                    ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]
+
+linkAllLibraries = True
+
+install          = [ ( 'precompiled/package', '.' ) ]
+'''
+
         self.createMainPackage()
 
         srcDir    = os.path.join( self.templateDir, 'External_GNU_Autotools' )
         dstDir    = self.dstDir
 
-        for fileName in FastScript.getFilesInDir( srcDir, '.php' ):
+        for fileName in FastScript.getFilesInDir( srcDir, ):
             srcFile = os.path.join( srcDir, fileName )
             dstFile = os.path.join( dstDir, fileName )
             self.copyVerbatim( srcFile, dstFile )
-
-        self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
-                           os.path.join( dstDir, 'pkgInfo.py' ) )
 
         FastScript.remove( os.path.join( dstDir, 'unittest.sh' ) )
 
@@ -526,18 +562,27 @@ class PackageCreator_External_CMake_in_tree_build( PackageCreator ):
         if not 'category' in self.values:
             self.values['category'] = 'External'
 
+        if not 'customPkgInfo' in self.values:
+            self.values[ 'customPkgInfo' ] = '''
+# envVars        = [ ( 'PATH', '${INSTALL_ROOT}/bin:${PATH}' ),
+#                    ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]
+
+linkAllLibraries = True
+
+usePatchlevels   = True
+
+patchlevel       = 0
+'''
+
         self.createMainPackage()
 
         srcDir = os.path.join(self.templateDir, 'External_CMake_in_tree_build' )
         dstDir = self.dstDir
 
-        for fileName in FastScript.getFilesInDir(srcDir, '.php'):
-            srcFile = os.path.join(srcDir, fileName)
-            dstFile = os.path.join(dstDir, fileName)
-            self.copyVerbatim(srcFile, dstFile)
-
-        self.copyVerbatim(os.path.join(srcDir, 'pkgInfo.py'),
-                          os.path.join(dstDir, 'pkgInfo.py'))
+        for fileName in FastScript.getFilesInDir( srcDir ):
+            srcFile = os.path.join( srcDir, fileName )
+            dstFile = os.path.join( dstDir, fileName )
+            self.copyVerbatim( srcFile, dstFile )
 
         FastScript.remove(os.path.join(dstDir, 'unittest.sh'))
 
@@ -574,18 +619,27 @@ class PackageCreator_External_CMake_out_of_tree_build( PackageCreator ):
         if not 'category' in self.values:
             self.values[ 'category' ] = 'External'
 
+        if not 'customPkgInfo' in self.values:
+            self.values[ 'customPkgInfo' ] = '''
+# envVars        = [ ( 'PATH', '${INSTALL_ROOT}/bin:${PATH}' ),
+#                    ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]
+
+linkAllLibraries = True
+
+usePatchlevels   = True
+
+patchlevel       = 0
+'''
+
         self.createMainPackage()
 
         srcDir    = os.path.join( self.templateDir, 'External_CMake_out_of_tree_build' )
         dstDir    = self.dstDir
 
-        for fileName in FastScript.getFilesInDir( srcDir, '.php' ):
+        for fileName in FastScript.getFilesInDir( srcDir ):
             srcFile = os.path.join( srcDir, fileName )
             dstFile = os.path.join( dstDir, fileName )
             self.copyVerbatim( srcFile, dstFile )
-
-        self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
-                           os.path.join( dstDir, 'pkgInfo.py' ) )
 
         FastScript.remove( os.path.join( dstDir, 'unittest.sh' ) )
 
@@ -629,18 +683,26 @@ class PackageCreator_External_without_compilation( PackageCreator ):
 # The actual build instructions can be found in the compile.sh.
 '''
 
+        if not 'customPkgInfo' in self.values:
+            self.values[ 'customPkgInfo' ] = '''
+# envVars        = [ ( 'PATH', '${INSTALL_ROOT}/bin:${PATH}' ),
+#                    ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]
+
+linkAllLibraries = True
+
+install          = [ ( 'precompiled/package', '.' ) ]
+'''
+
         self.createMainPackage()
 
         srcDir    = os.path.join( self.templateDir, 'External_without_compilation' )
         dstDir    = self.dstDir
 
-        for fileName in FastScript.getFilesInDir( srcDir, '.php' ):
-            srcFile = os.path.join( srcDir, fileName )
-            dstFile = os.path.join( dstDir, fileName )
-            self.copyVerbatim( srcFile, dstFile )
+        self.copyVerbatim( os.path.join( srcDir, 'HowTo.txt' ),
+                           os.path.join( dstDir, 'HowTo.txt' ) )
 
-        self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
-                           os.path.join( dstDir, 'pkgInfo.py' ) )
+        self.copyVerbatim( os.path.join( srcDir, 'pre-configure.sh' ),
+                           os.path.join( dstDir, 'pre-configure.sh' ) )
 
         FastScript.remove( os.path.join( dstDir, 'unittest.sh' ) )
 
@@ -874,6 +936,13 @@ class PackageCreator_Python( PackageCreator ):
         if not 'dependencies' in self.values:
             self.values[ 'dependencies' ] = [ 'External/AllPython/2.7' ]
 
+        if not 'customPkgInfo' in self.values:
+            self.values[ 'customPkgInfo' ] = '''
+envVars          = [ ( 'PYTHONPATH', '${INSTALL_ROOT}/include:${PYTHONPATH}' ) ]
+
+install          = [ ( 'src', 'include' ) ]
+'''
+
         self.createMainPackage()
 
         srcDir = os.path.join( self.templateDir, 'Python' )
@@ -888,9 +957,6 @@ class PackageCreator_Python( PackageCreator ):
         self.copyVerbatim( os.path.join( srcDir, 'HelloWorld.py' ),
                            os.path.join( dstDir, 'include', self.packageName,
                                          'HelloWorld.py' ) )
-
-        self.copyVerbatim( os.path.join( srcDir, 'pkgInfo.py' ),
-                           os.path.join( dstDir, 'pkgInfo.py' ) )
 
         self.copyVerbatim( os.path.join( srcDir, 'unittest.sh' ),
                            os.path.join( dstDir, 'unittest.sh' ) )
@@ -975,7 +1041,7 @@ class PackageCreator_Quality_Guideline( PackageCreator ):
                          os.path.join( dstDir, 'QualityGuideline-printable.html' ) )
 
 
-class PackageCreator_RTMaps_Package( PackageCreator ):
+class PackageCreator_RTMaps_Package( PackageCreator_CMakeProject ):
     """
         Creates an empty RTMaps package structure (without any components
         inside).
@@ -985,7 +1051,9 @@ class PackageCreator_RTMaps_Package( PackageCreator ):
             self.values[ 'category' ] = 'Modules/RTMaps'
 
         if not 'dependencies' in self.values:
-            self.values[ 'dependencies' ] = [ 'External/RTMaps/4.2' ]
+            package_rtmaps = ToolBOSSettings.getConfigOption( 'package_rtmaps' )
+            Any.requireIsTextNonEmpty( package_rtmaps )
+            self.values[ 'dependencies' ] = [ package_rtmaps ]
 
         if not 'buildRules' in self.values:
             self.values[ 'buildRules' ] = '''file(GLOB SRC_FILES src/*.c src/*.cpp)
@@ -993,7 +1061,7 @@ class PackageCreator_RTMaps_Package( PackageCreator ):
 bst_build_rtmaps_package("${SRC_FILES}" "${PROJECT_NAME}" "${BST_LIBRARIES_SHARED}")'''
 
 
-        self.createMainPackage()
+        self.createCMakePackage()
 
         srcDir = os.path.join( self.templateDir, 'RTMaps_Package' )
         dstDir = self.dstDir
