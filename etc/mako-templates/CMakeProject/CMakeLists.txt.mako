@@ -22,9 +22,6 @@ cmake_minimum_required(VERSION 2.8.8)
 
 find_package(BuildSystemTools)
 
-</%text>\
-set(BST_INSTALL_CATEGORY ${category})
-<%text>
 
 #----------------------------------------------------------------------------
 # Dependencies
@@ -33,7 +30,7 @@ set(BST_INSTALL_CATEGORY ${category})
 
 # please include here the packages this one depends on
 # (one bst_find_package() per dependency), e.g:
-# bst_find_package(DevelopmentTools/ToolBOSCore/3.0)
+# bst_find_package(Libraries/ToolBOSLib/3.1)
 
 </%text>\
 % for dep in dependencies:

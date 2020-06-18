@@ -1117,6 +1117,9 @@ Project
  *   <td>canonical path of PyCharm SIT package (e.g. "External/PyCharmPro/4.5")</td>
  * </tr>
  * <tr>
+ *   <td><tt>package_rtmaps</tt></td>
+ *   <td>canonical path of RTMaps SIT package (e.g. "External/RTMaps/4.7")</td>
+ * </tr> * <tr>
  *   <td><tt>package_totalview</tt></td>
  *   <td>canonical path of TotalView debugger package
  *       (e.g. "External/totalview/8.15")</td>
