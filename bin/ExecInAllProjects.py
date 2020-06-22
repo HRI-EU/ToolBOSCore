@@ -70,17 +70,23 @@ argman.addArgument( '-i', '--ignore-errors', action='store_true',
 argman.addArgument( '-l', '--list', action='store_true',
                     help='whitelist of projects to visit' )
 
+argman.addArgument( '-r', '--repofile', action='store',
+                    help="python file with whitelist of projects to visit. "
+                         "(e.g.: projectRoots = ['./path/to/Foo', './path/to/Bar'])" )
+
 argman.addArgument( 'command', help='command to execute within projects' )
 
 argman.addExample( '%(prog)s "svn st"' )
 argman.addExample( '%(prog)s -f script.sh' )
 argman.addExample( '%(prog)s -v -l whitelist.txt "svn st"' )
+argman.addExample( '%(prog)s -v -r repoInfo.py "BST.py -q"' )
 
 args         = vars( argman.run() )
 
 command      = args['command']
 ignoreErrors = args['ignore_errors']
 listfile     = args['list']
+repofile     = args['repofile']
 scriptfile   = args['file']
 
 
@@ -114,6 +120,20 @@ def execInAllProjects( command ):
         # read subdirectories from file, and remove trailing newlines
         dirList = FastScript.getFileContent( listfile, splitLines=True )
         dirList = map( str.strip, dirList )
+
+    elif repofile:
+        Any.requireIsFileNonEmpty( repofile )
+
+        content = FastScript.execFile( repofile )
+        try:
+            dirList = content["projectRoots"]
+        except KeyError :
+            logging.info( "specify the whitelist of project root paths as a list "
+                         "named 'projectRoots' in %s ", repofile )
+            return False
+
+        logging.info( "Project roots specified in %s are : %s", repofile, dirList )
+
     else:
         noSVN   = re.compile( "^.svn$" )
         for path in FastScript.getDirsInDirRecursive( excludePattern=noSVN ):
