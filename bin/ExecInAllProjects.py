@@ -68,14 +68,14 @@ argman.addArgument( '-i', '--ignore-errors', action='store_true',
                     help='ignore errors', )
 
 argman.addArgument( '-r', '--repofile', action='store',
-                    help="python file with whitelist of projects to visit. "
-                         "(e.g.: projectRoots = ['./path/to/Foo', './path/to/Bar'])" )
+                    help="Python file with whitelist of projects to visit, "
+                         "e.g.: projectRoots = ['./path/to/Foo', './path/to/Bar']" )
 
 argman.addArgument( 'command', help='command to execute within projects' )
 
 argman.addExample( '%(prog)s "svn st"' )
-argman.addExample( '%(prog)s -f script.sh' )
-argman.addExample( '%(prog)s -v -r repoInfo.py "BST.py -q"' )
+argman.addExample( '%(prog)s -v -f script.sh' )
+argman.addExample( '%(prog)s -r repoInfo.py "BST.py -q"' )
 
 args         = vars( argman.run() )
 
@@ -116,11 +116,11 @@ def execInAllProjects( command ):
         try:
             dirList = content["projectRoots"]
         except KeyError :
-            logging.info( "specify the whitelist of project root paths as a list "
-                         "named 'projectRoots' in %s ", repofile )
+            logging.info( "Please specify the whitelist of project root paths as a list "
+                         "named 'projectRoots' in %s", repofile )
             return False
 
-        logging.info( "Project roots specified in %s are : %s", repofile, dirList )
+        logging.debug( 'Project roots specified in %s: %s', repofile, dirList )
 
     else:
         noSVN   = re.compile( "^.svn$" )
@@ -154,6 +154,11 @@ def execInAllProjects( command ):
 #----------------------------------------------------------------------------
 # Main program
 #----------------------------------------------------------------------------
+
+
+if repofile and not Any.isFile( repofile ):
+    logging.error( '%s: No such file', repofile )
+    sys.exit( -1 )
 
 
 try:
