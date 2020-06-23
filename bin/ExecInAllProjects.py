@@ -67,20 +67,21 @@ argman.addArgument( '-f', '--file',
 argman.addArgument( '-i', '--ignore-errors', action='store_true',
                     help='ignore errors', )
 
-argman.addArgument( '-l', '--list', action='store_true',
-                    help='whitelist of projects to visit' )
+argman.addArgument( '-r', '--repofile', action='store',
+                    help="Python file with whitelist of projects to visit, "
+                         "e.g.: projectRoots = ['./path/to/Foo', './path/to/Bar']" )
 
 argman.addArgument( 'command', help='command to execute within projects' )
 
 argman.addExample( '%(prog)s "svn st"' )
-argman.addExample( '%(prog)s -f script.sh' )
-argman.addExample( '%(prog)s -v -l whitelist.txt "svn st"' )
+argman.addExample( '%(prog)s -v -f script.sh' )
+argman.addExample( '%(prog)s -r repoInfo.py "BST.py -q"' )
 
 args         = vars( argman.run() )
 
 command      = args['command']
 ignoreErrors = args['ignore_errors']
-listfile     = args['list']
+repofile     = args['repofile']
 scriptfile   = args['file']
 
 
@@ -108,12 +109,19 @@ def execInAllProjects( command ):
     dirList = []
     oldcwd  = os.getcwd()
 
-    if listfile:
-        Any.requireIsFileNonEmpty( listfile )
+    if repofile:
+        Any.requireIsFileNonEmpty( repofile )
 
-        # read subdirectories from file, and remove trailing newlines
-        dirList = FastScript.getFileContent( listfile, splitLines=True )
-        dirList = map( str.strip, dirList )
+        content = FastScript.execFile( repofile )
+        try:
+            dirList = content["projectRoots"]
+        except KeyError :
+            logging.info( "Please specify the whitelist of project root paths as a list "
+                         "named 'projectRoots' in %s", repofile )
+            return False
+
+        logging.debug( 'Project roots specified in %s: %s', repofile, dirList )
+
     else:
         noSVN   = re.compile( "^.svn$" )
         for path in FastScript.getDirsInDirRecursive( excludePattern=noSVN ):
@@ -146,6 +154,11 @@ def execInAllProjects( command ):
 #----------------------------------------------------------------------------
 # Main program
 #----------------------------------------------------------------------------
+
+
+if repofile and not Any.isFile( repofile ):
+    logging.error( '%s: No such file', repofile )
+    sys.exit( -1 )
 
 
 try:
