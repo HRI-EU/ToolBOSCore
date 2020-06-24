@@ -99,7 +99,6 @@ if not command and scriptfile:
 # Functions
 #----------------------------------------------------------------------------
 
-
 def execInAllProjects( command ):
     Any.requireIsTextNonEmpty( command )
 
@@ -123,11 +122,31 @@ def execInAllProjects( command ):
         logging.debug( 'Project roots specified in %s: %s', repofile, dirList )
 
     else:
-        noSVN   = re.compile( "^.svn$" )
-        for path in FastScript.getDirsInDirRecursive( excludePattern=noSVN ):
-            if os.path.isfile( os.path.join( path, 'CMakeLists.txt' ) ):
-                dirList.append( path )
+        allDirList = []                  #all dirs and subdir that contains pkgInfo.py or CMakeList.txt
+        topDirList = []
 
+        ignorePattern  = re.compile( "^/.[aA-zZ]*$" )
+
+        for path in FastScript.getDirsInDirRecursive( excludePattern=ignorePattern ):
+            if os.path.isfile( os.path.join( path, 'pkgInfo.py' ) ):
+                allDirList.append( path )
+            elif os.path.isfile( os.path.join( path, 'CMakeLists.txt' ) ):
+                allDirList.append( path )
+
+        # topDirList will contain all main directories which also have subdirectories in allDirList
+        for a in allDirList:
+            for b in allDirList:
+                if a == b:
+                    continue
+                elif a + "/" in b:
+                    topDirList.append(b)
+                else:
+                    continue
+
+        # remove elements in topDirList from allDirList
+        dirList = [ x for x in allDirList if x not in topDirList ]
+
+        logging.debug( 'Project roots found are : %s', dirList )
 
     # execute the task
 
@@ -149,7 +168,6 @@ def execInAllProjects( command ):
                 raise
 
         FastScript.changeDirectory( oldcwd )
-
 
 #----------------------------------------------------------------------------
 # Main program
