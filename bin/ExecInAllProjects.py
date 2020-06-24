@@ -99,6 +99,7 @@ if not command and scriptfile:
 # Functions
 #----------------------------------------------------------------------------
 
+
 def execInAllProjects( command ):
     Any.requireIsTextNonEmpty( command )
 
@@ -114,9 +115,11 @@ def execInAllProjects( command ):
         content = FastScript.execFile( repofile )
         try:
             dirList = content["projectRoots"]
-        except KeyError :
-            logging.info( "Please specify the whitelist of project root paths as a list "
-                         "named 'projectRoots' in %s", repofile )
+            Any.requireIsList( dirList )
+        except ( AssertionError, KeyError ):
+            logging.error( "Key 'projectRoots' found but is of type '%s'", type(dirList) )
+            logging.error( "Please specify the whitelist of project root paths as a list "
+                           "named 'projectRoots' in %s", repofile )
             return False
 
         logging.debug( 'Project roots specified in %s: %s', repofile, dirList )
@@ -168,6 +171,7 @@ def execInAllProjects( command ):
                 raise
 
         FastScript.changeDirectory( oldcwd )
+
 
 #----------------------------------------------------------------------------
 # Main program
