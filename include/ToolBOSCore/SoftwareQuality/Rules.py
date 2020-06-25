@@ -176,10 +176,14 @@ class AbstractValgrindRule( AbstractRule ):
 
             return validityCheck
 
-        # source the package before running Valgrind
+        # source the package before running Valgrind, package should be installed in proxy or global SIT
+        try:
+            source( details.canonicalPath )
+            logging.info( "sourcing %s", details.canonicalPath )
+        except AssertionError as e:
+            logging.info( "Please install package: %s in your proxy SIT", details.packageName )
 
-        source( details.canonicalPath )
-        logging.info( "sourcing %s", details.canonicalPath )
+            return FAILED, 0, 0, 'unable to run valgrind'
 
         bstProxyPackage = BSTProxyInstalledPackage()
 
