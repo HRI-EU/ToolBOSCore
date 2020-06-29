@@ -3062,6 +3062,9 @@ def findNonAsciiCharacters( filePath, rule ):
 
 def createCParser( filePath, details, headerAndLanguageMap ):
 
+    Any.requireMsg( Any.isDir( details.buildDirArch ),
+                    "%s: No such directory (forgot to compile?)" % details.buildDirArch )
+
     # this check can be removed in future when only bionic64 or its successor
     # are in use
 

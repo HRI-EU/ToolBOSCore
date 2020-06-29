@@ -45,15 +45,180 @@ import logging
 import os
 import re
 import shlex
+import six
+import subprocess
 
 from ToolBOSCore.BuildSystem import Compilers
 from ToolBOSCore.Util        import FastScript
-from ToolBOSCore.Util        import Any
+from ToolBOSCore.Util        import Any, VersionCompat
 
 
 #----------------------------------------------------------------------------
 # Public API
 #----------------------------------------------------------------------------
+
+
+class CMakeServer( object ):
+    """
+        The CMake server-mode is a JSON protocol with which applications
+        can communicate reliably with the CMake build system.
+
+        The API documentation can be found at:
+        https://cmake.org/cmake/help/v3.10/manual/cmake-server.7.html
+    """
+
+    def __init__( self, topLevelDir, buildDir, verbose=False ):
+        Any.requireIsDirNonEmpty( topLevelDir )
+        Any.requireIsDirNonEmpty( buildDir )
+        Any.requireIsBool( verbose )
+
+        self._pipe        = None
+        self._projectRoot = topLevelDir
+        self._stdin       = VersionCompat.StringIO()
+        self._stdout      = VersionCompat.StringIO()
+        self._topLevelDir = buildDir
+        self._verbose     = verbose            # log raw queries + replies
+
+
+    def connect( self ):
+        logging.debug( 'connecting to CMake server' )
+
+        self._openPipe()
+        self._handshake()
+        self._configure()
+        self._compute()
+
+
+    def disconnect( self ):
+        logging.debug( 'disconnecting from CMake server' )
+
+        self._closePipe()
+
+
+    def getCodeModel( self ):
+        logging.debug( 'retrieving CMake code model' )
+
+        cmd = '{"type":"codemodel"}'
+        return self._query( cmd, 'codemodel' )
+
+
+    def _openPipe( self ):
+        # CMake 3.10.2 on Ubuntu 18.04 needs '--experimental' flag
+        args = [ 'cmake', '-E', 'server', '--debug', '--experimental' ]
+
+        logging.debug( 'opening pipe: %s', ' '.join( args ) )
+
+
+        if six.PY2:
+            self._pipe = subprocess.Popen( args,
+                                           bufsize=1,    # 1 == line buffered
+                                           cwd=self._topLevelDir,
+                                           stdin=subprocess.PIPE,
+                                           stdout=subprocess.PIPE )
+        else:
+            self._pipe = subprocess.Popen( args,
+                                           bufsize=1,    # 1 == line buffered
+                                           cwd=self._topLevelDir,
+                                           stdin=subprocess.PIPE,
+                                           stdout=subprocess.PIPE,
+                                           encoding='utf8' )
+
+
+    def _closePipe( self ):
+        logging.debug( 'closing pipe' )
+
+        self._pipe.terminate()
+
+
+    def _query( self, payload, command ):
+        """
+            A query is wrapped into a fixed string pattern, and then sent
+            via named pipe to CMake. The result is a JSON data response.
+
+            The 'command' is the CMake command name (e.g. "compute")
+            which we search for to discover the end of the message.
+        """
+        Any.requireIsTextNonEmpty( payload )
+        Any.requireIsTextNonEmpty( command )
+
+        leadIn   = '[== "CMake Server" ==['
+        leadOut  = ']== "CMake Server" ==]'
+        query    = '%s\n%s\n%s\n' % ( leadIn, payload, leadOut )
+
+        if self._verbose:
+            logging.debug( '<QUERY>%s</QUERY>', query )
+
+        # send query
+        self._pipe.stdin.write( query )
+        self._pipe.stdin.flush()
+
+        # according to the protocol we expect a reply in 3 steps:
+        #    - one         lead-in    with starting + trailing newline
+        #    - one or more payload(s) with            trailing newline
+        #    - one         lead-out   with            trailing newline
+        #
+        reply = self._queryWorker( leadIn, command, leadOut )
+
+        if self._verbose:
+            logging.debug( '<REPLY>%s</REPLY>', reply )
+
+        Any.requireIsTextNonEmpty( reply )
+
+        reply = reply.strip()
+        reply = reply.replace( leadIn, '' )
+        reply = reply.replace( leadOut, '' )
+        reply = reply.strip()
+
+        return reply
+
+
+    def _queryWorker( self, leadIn, command, leadOut ):
+        Any.requireIsTextNonEmpty( leadIn )
+        Any.requireIsTextNonEmpty( command )
+        Any.requireIsTextNonEmpty( leadOut )
+
+        lastLine = '"inReplyTo":"%s","type":"reply"}' % command
+        reply = ''
+
+        while True:
+
+            while True:
+                line = self._pipe.stdout.readline()
+                if line:
+                    reply += line
+
+                if leadOut + '\n' in reply:
+                    break
+
+            if self._verbose:
+                logging.debug( 'searching for last line: %s', lastLine )
+                logging.debug( 'reply ends with: %s', reply[-100:] )
+
+            if lastLine in reply:
+                break
+
+        return reply
+
+
+    def _handshake( self ):
+        logging.debug( 'starting protocol handshake' )
+
+        cmd = '{"type":"handshake","protocolVersion":{"major":1},"sourceDirectory":"%s","buildDirectory":"%s","generator":"Unix Makefiles"}' % \
+              ( self._projectRoot, self._topLevelDir)
+        self._query( cmd, 'handshake' )
+
+    def _configure( self ):
+        logging.info( 'configuring CMake project (this may take some time...)' )
+
+        cmd = '{"type":"configure"}'
+        self._query( cmd, 'configure' )
+
+
+    def _compute( self ):
+        logging.debug( 'cmputing CMake-internals (this may take some time...)' )
+
+        cmd = '{"type":"compute"}'
+        self._query( cmd, 'compute' )
 
 
 Switches = collections.namedtuple( 'Switches', [ 'c', 'cpp' ] )
