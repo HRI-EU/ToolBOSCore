@@ -74,7 +74,7 @@ then
     # directories (to be sure they are found)
 
     BST.py --shellfiles &> /dev/null
-    source install/BashSrc
+    source ./install/BashSrc
 
     CWD=$(pwd)
     export LD_LIBRARY_PATH=${CWD}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
