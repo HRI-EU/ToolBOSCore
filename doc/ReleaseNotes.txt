@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.5
+
+
+CHANGES
+=======
+
+  - [TBCORE-2107] added field "category" to auto-generated pkgInfo.py files
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2107] ListDependencies.py: consider legacy pkgInfo.py-value "section"
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.3.4
 
 
