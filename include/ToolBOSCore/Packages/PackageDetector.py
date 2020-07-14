@@ -515,6 +515,10 @@ class PackageDetector( object ) :
         """
             replace placeholders in pkgInfo.py strings
         """
+        Any.requireIsTextNonEmpty( self.packageCategory )
+        Any.requireIsTextNonEmpty( self.packageName )
+        Any.requireIsTextNonEmpty( self.packageVersion )
+
         installRoot = '${SIT}/%s/%s/%s' % ( self.packageCategory,
                                             self.packageName,
                                             self.packageVersion )
@@ -573,6 +577,9 @@ class PackageDetector( object ) :
         self.gitRelPath        = getValue( 'repoRelPath',      self.gitRelPath )
         self.packageName       = getValue( 'package',          self.packageName ) # legacy 2018-09-26
         self.sqCheckExe        = getValue( 'SQ_12',            self.sqCheckExe )  # legacy 2019-10-08
+
+        # 2020-07-14  Legacy, can be dropped later on
+        self.packageCategory   = getValue( 'section',          self.packageCategory )
 
         # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
