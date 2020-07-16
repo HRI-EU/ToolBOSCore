@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.6
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2108] UpdateProxyDir.py: fixed format-string in log message during symlink checks
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.3.5
 
 
