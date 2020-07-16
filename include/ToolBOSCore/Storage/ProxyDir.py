@@ -533,10 +533,10 @@ def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
             # check if version symlink points into root SIT
             try:
                 proxyLinkTarget = os.readlink( pkgProxyPath )
+
                 if proxyLinkTarget[0] == '/' and \
                    not proxyLinkTarget.startswith( sitRoot ):
-                    logging.warning( '%s: points to %s',
-                                     ( pkgProxyPath, proxyLinkTarget ) )
+                    logging.warning( '%s: points to %s', pkgProxyPath, proxyLinkTarget )
             except OSError:
                 logging.warning( 'invalid symlink: please check %s', pkgProxyPath )
 
