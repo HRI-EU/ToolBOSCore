@@ -78,12 +78,11 @@ sqLevel          = 'advanced'
 #
 # HRI-EU copyright header has been replaced by typical BSD 3-clause license preamble
 
-sqOptOutRules    = [ 'GEN04', 'C10', 'C12' ]
+sqOptOutRules    = [ 'GEN04', 'C10' ]
 
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'GEN04': 'package is published under BSD License',
-                     'C10'  : 'do not invoke Klocwork on example files',
-                     'C12'  : 'do not invoke Valgrind on example files' }
+                     'C10'  : 'do not invoke Klocwork on example files' }
 
 
 # EOF

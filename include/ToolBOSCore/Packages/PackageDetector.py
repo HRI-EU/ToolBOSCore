@@ -123,7 +123,7 @@ class PackageDetector( object ) :
         self.sqOptOutDirs      = []
         self.sqOptInFiles      = []
         self.sqOptOutFiles     = []
-        self.sqCheckExe        = None
+        self.sqCheckExe        = []
         self.sqComments        = {}
         self.useClang          = None
 
