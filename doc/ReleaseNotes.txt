@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.7
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2102] CMake now generates ./build/<platform>/compile_commands.json
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.3.6
 
 

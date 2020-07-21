@@ -123,6 +123,13 @@ add_custom_target(CompilersTxt ALL
   COMMENT "Generating compilers.txt")
 
 
+# The above creation of compilers.txt might get superseded by the CMake
+# setting 'CMAKE_EXPORT_COMPILE_COMMANDS', which generates a JSON file with
+# all such details (see TBCORE-2102).
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+
 #----------------------------------------------------------------------------
 # Compiler flags
 #----------------------------------------------------------------------------
