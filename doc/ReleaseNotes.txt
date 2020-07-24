@@ -1,30 +1,34 @@
 
-                     RELEASE NOTES FOR <PACKAGE> <VERSION>
-                     (to be populated in release branches)
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.0
 
 
 NEW FEATURES
 =============
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [TBCORE-2102] CMake: write compiler commands to ./build/<platform>/compile_commands.json
+  - [TBCORE-2091] CMake.py: added API for connecting to CMake server mode
+  - [TBCORE-2088] ExecInAllProjects.py: allow customization of project list via configfile
+  - [TBCORE-1694] BST.py -n --flat: create new-style package w/o version number
 
 
 CHANGES
 =======
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [TBCORE-2107] pkgInfo.py files in SIT gained "category" field (replacing "section" in future)
+  - [TBCORE-2089] fused and simplified Software Quality rules C12 + C15 (Valgrind checks)
+  - [TBCORE-2087] PackageCreator: dropped Matlab package template
+  - [TBCORE-2083] ExecInAllProjects.py: dropped option "--list"
+  - [TBCORE-2071] SQ C12: improved error message if some dependent package not present in SIT
+  - [TBCORE-2030] MakefileSystem.bash: all relative sourcings now with explicit ./ to avoid $PATH lookup
 
 
 FIXED BUGS
 ==========
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [TBCORE-2108] UpdateProxyDir.py: fixed possible crash during symlink validation
+  - [TBCORE-2107] ListDependencies.py: fixed crash caused by pkgInfo.py field name inconsistency
+  - [TBCORE-2093] AppConfig.py: actually do save changes in configfiles
+  - [TBCORE-2089] SQ C12: consider relative path names to executables
 
 
 # EOF
