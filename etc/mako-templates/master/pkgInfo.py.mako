@@ -14,7 +14,13 @@
 #
 
 
-BST_useClang     = True
+name             = '${packageName}'
+
+version          = '${packageVersion}'
+
+category         = '${category}'
+\
+${customPkgInfo}\
 
 
 # EOF

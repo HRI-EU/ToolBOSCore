@@ -74,7 +74,7 @@ then
     # directories (to be sure they are found)
 
     BST.py --shellfiles &> /dev/null
-    source install/BashSrc
+    source ./install/BashSrc
 
     CWD=$(pwd)
     export PYTHONPATH=${CWD}/include:${CWD}/src:${PYTHONPATH}

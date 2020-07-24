@@ -92,7 +92,7 @@ def _checkForUpdates():
         logging.debug( 'no need to patch' )
 
 
-def _createPackage( args ):
+def _createPackage( args, flatStyle ):
     from ToolBOSCore.Packages import PackageCreator
 
 
@@ -116,7 +116,8 @@ def _createPackage( args ):
         try:
             packageName    = args[1]
             packageVersion = args[2]
-            return PackageCreator.runTemplate( templateName, packageName, packageVersion )
+            return PackageCreator.runTemplate( templateName, packageName, packageVersion,
+                                               flatStyle=flatStyle )
         except IndexError:
             logging.error( 'Please specify a package name and version (see help)' )
             return False
@@ -304,6 +305,9 @@ argman.addArgument( '--deprecate-all', action='store_true',
 argman.addArgument( '-f', '--shellfiles', action='store_true',
                     help='generate install/{BashSrc,pkgInfo.py} etc.' )
 
+argman.addArgument( '--flat', action='store_true', default=False,
+                    help='create new-style (flat) package structures' )
+
 argman.addArgument( '-i', '--install', action='store_true',
                     help='install package into global SIT' )
 
@@ -356,23 +360,23 @@ argman.addArgument( '-y', '--yes', action='store_true',
 argman.addArgument( '-z', '--zen', action='store_true',
                     help='zen build mode (GUI)' )
 
-argman.addExample( '%(prog)s                         # build (setup once + compile)' )
-argman.addExample( '%(prog)s -avx                    # all + install into proxy (verbose)' )
-argman.addExample( '%(prog)s -ai                     # all + install globally' )
-argman.addExample( '%(prog)s -bv                     # build in verbose mode' )
-argman.addExample( '%(prog)s /path/to/sourcetree     # out-of-tree build' )
-argman.addExample( '%(prog)s -p help                 # show cross-compile platforms' )
-argman.addExample( '%(prog)s -p windows-amd64-vs2012 # cross-compile for Windows' )
-argman.addExample( '%(prog)s -n                      # create new packages (GUI-version)' )
-argman.addExample( '%(prog)s -n help                 # show available templates' )
-argman.addExample( '%(prog)s -n C_Library Foo 1.0    # create new C library named Foo/1.0' )
-argman.addExample( '%(prog)s -q                      # run all quality checks' )
-argman.addExample( '%(prog)s -q src C01 C02 C03      # run specified checks on "src" only' )
-argman.addExample( '%(prog)s -q sqLevel=advanced     # check with specified quality level' )
-argman.addExample( '%(prog)s -u                      # check for updates / apply patches' )
-argman.addExample( '%(prog)s --uninstall             # remove package from SIT' )
-argman.addExample( '%(prog)s --deprecate             # deprecate this package' )
-argman.addExample( '%(prog)s --deprecate Foo/Bar/1.0 # deprecate specified package' )
+argman.addExample( '%(prog)s                             # build (setup once + compile)' )
+argman.addExample( '%(prog)s -avx                        # all + install into proxy (verbose)' )
+argman.addExample( '%(prog)s -ai                         # all + install globally' )
+argman.addExample( '%(prog)s -bv                         # build in verbose mode' )
+argman.addExample( '%(prog)s /path/to/sourcetree         # out-of-tree build' )
+argman.addExample( '%(prog)s -p help                     # show cross-compile platforms' )
+argman.addExample( '%(prog)s -p windows-amd64-vs2012     # cross-compile for Windows' )
+argman.addExample( '%(prog)s -n                          # create new packages (GUI-version)' )
+argman.addExample( '%(prog)s -n help                     # show available templates' )
+argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C library "Foo"' )
+argman.addExample( '%(prog)s -q                          # run all quality checks' )
+argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
+argman.addExample( '%(prog)s -q sqLevel=advanced         # check with specified quality level' )
+argman.addExample( '%(prog)s -u                          # check for updates / apply patches' )
+argman.addExample( '%(prog)s --uninstall                 # remove package from SIT' )
+argman.addExample( '%(prog)s --deprecate                 # deprecate this package' )
+argman.addExample( '%(prog)s --deprecate Foo/Bar/1.0     # deprecate specified package' )
 
 argman.setAllowUnknownArgs( True )
 
@@ -388,6 +392,7 @@ distclean     = args['distclean']
 deprecate     = args['deprecate']
 deprecate_all = args['deprecate_all']
 documentation = args['doc']
+flatStyle     = args['flat']
 globalInstall = args['install']
 jobs          = args['jobs']
 listEnv       = args['list']
@@ -543,7 +548,7 @@ try:
 
 
     if new:
-        status = _createPackage( unhandled )
+        status = _createPackage( unhandled, flatStyle )
         sys.exit( 0 if status else -5 )
 
 
