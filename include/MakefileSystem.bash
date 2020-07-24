@@ -50,7 +50,7 @@ source ${TOOLBOSCORE_ROOT}/include/SIT.bash
 if [[ -r definitions.sh ]]
 then
     echo "sourcing definitions.sh"
-    source definitions.sh
+    source ./definitions.sh
 fi
 
 
@@ -125,7 +125,7 @@ fi
 
 if [[ -r definitions.sh ]]
 then
-    source definitions.sh
+    source ./definitions.sh
 fi
 
 

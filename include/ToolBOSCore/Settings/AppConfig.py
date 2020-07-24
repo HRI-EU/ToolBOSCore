@@ -167,6 +167,7 @@ class AppConfig( object ):
         logging.debug( 'setting config option: %s=%s', name, str(value) )
         self._userSettings[ name ] = value
         self._allSettings[  name ] = value
+        self.save()
 
 
     def delUserConfigOption( self, name ):
@@ -183,6 +184,8 @@ class AppConfig( object ):
 
         except KeyError:
             logging.debug( '%s: No such user config option', name )
+
+        self.save()
 
 
     def save( self ):

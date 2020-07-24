@@ -1,139 +1,34 @@
 
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.7
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.0
 
 
 NEW FEATURES
 =============
 
-  - [TBCORE-2102] CMake now generates ./build/<platform>/compile_commands.json
+  - [TBCORE-2102] CMake: write compiler commands to ./build/<platform>/compile_commands.json
+  - [TBCORE-2091] CMake.py: added API for connecting to CMake server mode
+  - [TBCORE-2088] ExecInAllProjects.py: allow customization of project list via configfile
+  - [TBCORE-1694] BST.py -n --flat: create new-style package w/o version number
 
 
------------------------------------------------------------------------------
+CHANGES
+=======
 
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.6
+  - [TBCORE-2107] pkgInfo.py files in SIT gained "category" field (replacing "section" in future)
+  - [TBCORE-2089] fused and simplified Software Quality rules C12 + C15 (Valgrind checks)
+  - [TBCORE-2087] PackageCreator: dropped Matlab package template
+  - [TBCORE-2083] ExecInAllProjects.py: dropped option "--list"
+  - [TBCORE-2071] SQ C12: improved error message if some dependent package not present in SIT
+  - [TBCORE-2030] MakefileSystem.bash: all relative sourcings now with explicit ./ to avoid $PATH lookup
 
 
 FIXED BUGS
 ==========
 
-  - [TBCORE-2108] UpdateProxyDir.py: fixed format-string in log message during symlink checks
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.5
-
-
-CHANGES
-=======
-
-  - [TBCORE-2107] added field "category" to auto-generated pkgInfo.py files
-
-
-FIXED BUGS
-==========
-
-  - [TBCORE-2107] ListDependencies.py: consider legacy pkgInfo.py-value "section"
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.4
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-1442] terminals in Zen Build Mode + DTBOS gained a "terminate all" action
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.3
-
-
-CHANGES
-=======
-
-  - [TBCORE-2076] SQ GEN02: skip blacklisted directories
-  - [TBCORE-2075] SQ C12: improved error messages + documentation
-  - [TBCORE-2068] SQ C06 renamed to SAFE08
-  - [TBCORE-2067] SQ C02: dropped unreliable check function
-  - ToolBOS.conf: updated PyCharm + CLion versions to 2020.2
-  - ToolBOS.conf: updated Klocwork version to 2020.0
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.2
-
-
-CHANGES
-=======
-
-  - [TBCORE-2066] extended former contributors in author list + special thanks
-
-
-FIXED BUGS
-==========
-
-  - [TBCORE-2061] BST.py: handle exception in case of regexp-error in pkgInfo.py
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.1
-
-
-CHANGES
-=======
-
-  - [TBCORE-2066] honor former contributors in author list
-  - [TBCORE-1934] SQ C12: source package dependencies before executing Valgrind
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.3.0
-
-
-NEW FEATURES
-=============
-
-  - SQ routine: major re-implementation with improved API, logging, summary,...
-  - most SQ rules received some polishing, clean-up, improved logging,...
-  - [TBCORE-2053] launch standalone SQ check GUI using "BST.py -qz"
-  - [TBCORE-2052] perform SQ checks with different level: BST.py -q sqLevel=NAME
-  - [TBCORE-2027] added ThreadPool class
-  - [TBCORE-1996] initial ToolBOS workspaces support
-  - [TBCORE-1907] added SQ GEN13 (check return-values of functions)
-  - [TBCORE-1907] added SQ GEN14 (function length + cyclomatic complexity)
-  - [TBCORE-1907] added SQ C11 (do not use setjmp() and longjmp())
-  - [TBCORE-1907] renamed + generalized SAFE08 --> C16 (simple headers + macros)
-  - ToolBOS-Setup.py can be invoked from Git repo, no more need for SIT
-
-
-CHANGES
-=======
-
-  - [TBCORE-2062] ToolBOSCore no longer sources any other SIT packages
-  - SQ GEN01 only checks filenames for validity, no longer the file content
-  - SQ C04 skipped in case of C++
-  - SQ C05 permits any pre-/postfixes to inclusion safeguard names
-  - SQ C12 re-implemented
-  - SQ DOC01 recognizes many more documentation systems, not only doxygen
-  - SQ DOC04 dropped (no longer desired)
-  - SQ PY04 extended to catch os.exit() and os._exit()
-  - SQ checks now ignore ./external and ./3rdParty by default
-  - updated default versions of PyCharm + CLion to 2019.3
-  - updated URLs to CERT C Coding Standard descriptions
-  - moved ToolBOSCore.Util.CAnalyzerElements.py --> ToolBOSCore.SoftwareQuality
-
-
-FIXED BUGS
-==========
-
-  - FastScript.*chmod() applied wrong file permissions
+  - [TBCORE-2108] UpdateProxyDir.py: fixed possible crash during symlink validation
+  - [TBCORE-2107] ListDependencies.py: fixed crash caused by pkgInfo.py field name inconsistency
+  - [TBCORE-2093] AppConfig.py: actually do save changes in configfiles
+  - [TBCORE-2089] SQ C12: consider relative path names to executables
 
 
 # EOF

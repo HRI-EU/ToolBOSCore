@@ -36,14 +36,14 @@
 
 name             = 'ToolBOSCore'
 
-version          = '3.3'
+version          = '3.4'
 
 category         = 'DevelopmentTools'
 
 recommends       = [ 'deb://git-core',
                      'deb://git-svn',
                      'deb://graphviz',
-                     'sit://External/CMake/3.3',
+                     'sit://External/CMake/3.4',
                      'sit://External/git/2.18',
                      'sit://External/subversion/2.18',
                      'sit://External/wine/3.5' ]
@@ -78,12 +78,11 @@ sqLevel          = 'advanced'
 #
 # HRI-EU copyright header has been replaced by typical BSD 3-clause license preamble
 
-sqOptOutRules    = [ 'GEN04', 'C10', 'C12' ]
+sqOptOutRules    = [ 'GEN04', 'C10' ]
 
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'GEN04': 'package is published under BSD License',
-                     'C10'  : 'do not invoke Klocwork on example files',
-                     'C12'  : 'do not invoke Valgrind on example files' }
+                     'C10'  : 'do not invoke Klocwork on example files' }
 
 
 # EOF

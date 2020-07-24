@@ -123,7 +123,7 @@ class PackageDetector( object ) :
         self.sqOptOutDirs      = []
         self.sqOptInFiles      = []
         self.sqOptOutFiles     = []
-        self.sqCheckExe        = None
+        self.sqCheckExe        = []
         self.sqComments        = {}
         self.useClang          = None
 
@@ -178,6 +178,8 @@ class PackageDetector( object ) :
 
         self.binDir            = os.path.join( self.topLevelDir, 'bin' )
         self.binDirArch        = os.path.join( self.topLevelDir, 'bin', hostPlatform )
+        self.buildDir          = os.path.join( self.topLevelDir, 'build' )
+        self.buildDirArch      = os.path.join( self.topLevelDir, 'build', hostPlatform )
         self.examplesDir       = os.path.join( self.topLevelDir, 'examples' )
         self.examplesDirArch   = os.path.join( self.topLevelDir, 'examples', hostPlatform )
         self.includeDir        = os.path.join( self.topLevelDir, 'include' )
