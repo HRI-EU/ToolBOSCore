@@ -817,12 +817,16 @@ def isTopLevelDir( path='.' ):
     projectVersion  = ProjectProperties.getPackageVersion( path, verbatim=True )
     versionDirFound = bool( regExpVersion.search( projectVersion ) )
 
+    cmakeListsFile  = os.path.join( path, 'CMakeLists.txt' )
+    packageVarFile  = os.path.join( path, 'packageVar.cmake' )
+    pkgInfoFile     = os.path.join( path, 'pkgInfo.py' )
+
     if versionDirFound:
         return True
     else:
-        return os.path.exists( 'CMakeLists.txt' ) or \
-               os.path.exists( 'packageVar.cmake' ) or \
-               os.path.exists( 'pkgInfo.py' )
+        return os.path.exists( cmakeListsFile ) or \
+               os.path.exists( packageVarFile ) or \
+               os.path.exists( pkgInfoFile )
 
 
 def requireTopLevelDir( path='.' ):
