@@ -34,6 +34,21 @@
 #
 
 
+function check
+{
+    "$@"
+    local status=$?
+
+    if [[ $status != 0 ]]
+    then
+        echo -e "\nexecution failed: $*\n"
+        exit 255
+    fi
+
+    return $status
+}
+
+
 function runTest()
 {
     FILENAME=$1
@@ -41,9 +56,10 @@ function runTest()
 
     if [[ -f "${FILENAME}" ]]
     then
-        echo -e "\nStart test: ${FILENAME}"
+        echo -e "Start test: ${FILENAME}"
 
-        if [[ -e CMakeLists.txt || -e pkgInfo.py ]]
+        if [[ ( "${USE_RUNFROMSOURCETREE}" == "TRUE" ) &&
+              ( -e CMakeLists.txt || -e pkgInfo.py   ) ]]
         then
             RunFromSourceTree.sh ${CMDLINE}
         else
@@ -53,13 +69,13 @@ function runTest()
         if [[ $? != 0 ]]
         then
             echo -e "Stop test:  ${FILENAME}  [\033[1;31mFAILED\033[00m]"
-            exit -1
+            exit 1
         else
             echo -e "Stop test:  ${FILENAME}  [\033[1;32mOK\033[00m]"
         fi
     else
         echo -e "Error: ${FILENAME}  [\033[1;31mNOT FOUND\033[00m]"
-        exit -1
+        exit 1
     fi
 }
 
@@ -87,17 +103,17 @@ function runMatlabTest()
             if [[ $? != 0 ]]
             then
                 echo -e "Stop test:  ${FILENAME}  [\033[1;31mFAILED\033[00m]"
-                exit -1
+                exit 1
             else
                 echo -e "Stop test:  ${FILENAME}  [\033[1;32mOK\033[00m]"
             fi
         else
             echo -e "Error: ${FILENAME}  [\033[1;31mNOT A MATLAB FILE\033[00m]"
-            exit -1
+            exit 1
         fi
     else
         echo -e "Error: ${FILENAME}  [\033[1;31mNOT FOUND\033[00m]"
-        exit -1
+        exit 1
     fi
 }
 
