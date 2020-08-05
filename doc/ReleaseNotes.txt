@@ -1,4 +1,28 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.1
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2105] BST.py supports cross-compilation from bionic64 to Windows
+
+
+CHANGES
+=======
+
+  - [TBCORE-2121] Unittest.sh now longer implicitly uses RunFromSourceTree.sh, set USE_RUNFROMSOURCETREE=TRUE to restore previous behavior
+  - [TBCORE-2121] Function runTest() from Unittest.sh returns different exit values
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2113] BST.py: fixed regression in out-of-tree builds
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.0
 
 
