@@ -386,7 +386,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
         if cpu == 'x86':
             compilerBasePath  = r'{0}\bin\Hostx86\x86'.format( msvcToolsBasePath )
             compilerBasePath += r';{0}\bin\Hostx86\x86;{0}\bin\Hostx86\x64\1033;{0}\bin\Hostx86\x86\1033'.format( msvcToolsBasePath )
-        elif cpu == 'x64':
+        else:
             compilerBasePath  = r'{0}\bin\Hostx64\x64'.format( msvcToolsBasePath )
             compilerBasePath += r';{0}\bin\Hostx64\x64\1033'.format( msvcToolsBasePath )
 
