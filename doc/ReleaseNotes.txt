@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.2
+
+
+CHANGES
+=======
+
+  - [[XIF-106] dropped legacy PackageLifecycle.py
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2114] BST.py: fixed out-of-tree builds under Py3 (caused by pickle-limitations)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.1
 
 
