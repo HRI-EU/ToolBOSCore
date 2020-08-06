@@ -502,7 +502,16 @@ try:
         if setup:
             raise AssertionError( 'skipped recycling cachefile' )
 
-        bst = FastScript.deserializeFromFile( bstCache )
+        FastScript.tryImport( 'dill' )
+        import dill
+
+        try:
+            f = open( bstCache, 'rb' )
+            bst = dill.load( f )
+            f.close()
+        except EOFError as details:
+            raise FileNotFoundError( details )
+
         logging.debug( '%s found', bstCache )
 
     except ( AssertionError, KeyError, IOError ):
@@ -514,7 +523,13 @@ try:
             bst.setSourceAndBinaryTree( sourceTree, binaryTree )
 
             try:
-                FastScript.serializeToFile( bstCache, bst )
+                FastScript.tryImport( 'dill' )
+                import dill
+
+                from ToolBOSCore.External.atomicfile import AtomicFile
+
+                with AtomicFile(bstCache, 'wb') as f:
+                    dill.dump( bst, f )
             except ( IOError, OSError ) as details:
                 logging.debug( 'unable to create %s', bstCache )
                 logging.debug( details )
