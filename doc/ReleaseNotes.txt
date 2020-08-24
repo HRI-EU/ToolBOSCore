@@ -28,7 +28,7 @@ NEW FEATURES
 CHANGES
 =======
 
-  - [TBCORE-2121] Unittest.sh now longer implicitly uses RunFromSourceTree.sh, set USE_RUNFROMSOURCETREE=TRUE to restore previous behavior
+  - [TBCORE-2121] Unittest.sh no longer implicitly uses RunFromSourceTree.sh, set USE_RUNFROMSOURCETREE=TRUE to restore previous behavior
   - [TBCORE-2121] Function runTest() from Unittest.sh returns different exit values
 
 
