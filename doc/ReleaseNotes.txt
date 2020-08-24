@@ -5,7 +5,7 @@
 CHANGES
 =======
 
-  - [[XIF-106] dropped legacy PackageLifecycle.py
+  - [XIF-106] dropped legacy PackageLifecycle.py
 
 
 FIXED BUGS
