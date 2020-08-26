@@ -69,6 +69,13 @@ message( "Major version:          ${CMAKE_MATCH_1}" )
 message( "Minor version:          ${CMAKE_MATCH_2}" )
 
 
+# pass the string-length of the source directory as compiler define,
+# used to compute correct filename in ANY_LOG_CPP macro (TBCORE-2135)
+
+string(LENGTH "${CMAKE_SOURCE_DIR}/" BST_BASE_PATH_LENGTH)
+add_definitions("-DBST_BASE_PATH_LENGTH=${BST_BASE_PATH_LENGTH}")
+
+
 # set the corresponding CMake-internal variables
 
 project(${PACKAGE_NAME})
