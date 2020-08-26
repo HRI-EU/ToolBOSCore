@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.3.8
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2135] BST.py / CMake: added __BST_FILENAME__ compiler define (used in ANY_LOG_CPP)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.3.7
 
 
