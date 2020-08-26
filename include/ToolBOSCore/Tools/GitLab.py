@@ -172,17 +172,30 @@ def git2https( gitURL ):
     """
         Translates an URL in form "git@<host>:<group>/<project>.git" into
         the form "https://<host>/<group>/<project>".
+
+        If the URL already starts with 'https://' then the same string
+        is used.
+
+        In all cases (incl. URL started with 'https://') the function
+        ensures that the returned HTTPS URL contains a trailing '.git'.
     """
     Any.requireIsTextNonEmpty( gitURL )
-    Any.requireIsMatching( gitURL, '^git@.+' )
 
-    # replace the ':' by '/'
-    tmp = gitURL.replace( ':', '/' )
 
-    # replace 'git@' by 'https//'
-    httpsURL = tmp.replace( 'git@', 'https://' )
+    if gitURL.startswith( 'https://' ):
+        httpsURL = gitURL
 
-    # ensure it ends with '.git'
+    else:
+        Any.requireIsMatching( gitURL, '^git@.+' )
+
+        # replace the ':' by '/'
+        tmp = gitURL.replace( ':', '/' )
+
+        # replace 'git@' by 'https//'
+        httpsURL = tmp.replace( 'git@', 'https://' )
+
+
+    # ensure HTTPS URL ends with '.git'
     if not httpsURL.endswith( '.git' ):
         httpsURL += '.git'
 
