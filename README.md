@@ -10,7 +10,7 @@ This package contains:
 * software quality guidelines and check routines
 
 
-#### Setup 
+#### Setup
 * [Installing ToolBOS on disk](doc/ToolBOSCore/Setup/InstallingToolBOS.md)
 * [Shell configuration](doc/ToolBOSCore/Setup/ShellConfig.md)
 * [Sourcing additional packages](doc/ToolBOSCore/Setup/SourcingAdditionalPackages.md)
@@ -54,6 +54,7 @@ therefore most names are abbreviated for data privacy reasons.
 
 #### Authors (in alphabetical order):
 
+* <a href="https://github.com/adnanyaseen94">Adnan Yaseen</a>
 * <a href="https://github.com/laynor">Alessandro Piras</a>
 * <a href="https://github.com/antonelloceravola">Antonello Ceravola</a>
 * Axel J.
@@ -94,6 +95,7 @@ therefore most names are abbreviated for data privacy reasons.
 * Thomas L.
 * <a href="https://github.com/TimoFriedri">Timo Friedrich</a>
 * <a href="https://www.linkedin.com/in/traian-stefanescu-7b54383">Traian Stefanescu</a>
+* <a href="https://github.com/Darruma">Umair Darr</a>
 
 Should somebody be missing please bring it to our attention.
 

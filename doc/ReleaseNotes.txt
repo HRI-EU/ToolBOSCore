@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.3
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2135] BST.py / CMake: added __BST_FILENAME__ compiler define (used in ANY_LOG_CPP)
+
+
+CHANGES
+=======
+
+  - [TBCORE-2131] GitLab.git2https(): handle if provided URL is already HTTPS
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.2
 
 
