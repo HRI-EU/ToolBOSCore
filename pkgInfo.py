@@ -84,5 +84,7 @@ sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'GEN04': 'package is published under BSD License',
                      'C10'  : 'do not invoke Klocwork on example files' }
 
+copyright        = 'Copyright (c) Honda Research Institute Europe GmbH'
+
 
 # EOF

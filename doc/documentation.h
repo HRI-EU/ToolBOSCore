@@ -2878,7 +2878,18 @@ make install
  *      <td>category of the package (eg.: Development tools,
  *          Application or External etc.)</td>
  * </tr>
-
+ * <tr>
+ *      <td><tt>copyright</tt></td>
+ *      <td>string, list of strings, or dict { string: string or list of strings }</td>
+ *      <td>package copyright / license information<p>
+ *          Used by the Software Quality Rule GEN04 checker. Value can be of type
+ *           string (search for a single line), a list of  strings (search for
+ *           multiple lines) or a dict. In the latter case the dict keys are relative
+ *           paths (or parts thereof) to files and/or directories, and the dict
+ *           values are the corresponding copyright / license information to be
+ *           searched in all files starting with the matching relative path.
+ *           The dict values can again be single strings or lists of strings.</td>
+ * </tr>
  * <tr>
  *   <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
  *       colspan="3">package interrelationship</td>
