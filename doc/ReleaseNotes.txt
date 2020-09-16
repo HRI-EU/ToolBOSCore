@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.4
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2045] SQ GEN04: allow searching for customized copyright header
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.3
 
 

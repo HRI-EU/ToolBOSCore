@@ -52,7 +52,7 @@ delete           = [ '*py.class' ]
 
 usePatchlevels   = True
 
-patchlevel       = 3
+patchlevel       = 4
 
 install          = [ 'external',
                      'share' ]
@@ -83,6 +83,8 @@ sqOptOutRules    = [ 'GEN04', 'C10' ]
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'GEN04': 'package is published under BSD License',
                      'C10'  : 'do not invoke Klocwork on example files' }
+
+copyright        = 'Copyright (c) Honda Research Institute Europe GmbH'
 
 
 # EOF
