@@ -101,6 +101,7 @@ class PackageDetector( object ) :
 
         # values extracted from install/user{Install,Src}.php / pkgInfo.py
         self.pkgInfoContent    = pkgInfoContent
+        self.copyright         = None
         self.docTool           = None
         self.install           = []
         self.installHooks      = {}
@@ -589,6 +590,7 @@ class PackageDetector( object ) :
         self.buildDependencies = getValue( 'buildDepends',     self.buildDependencies )
         self.buildDependsArch  = getValue( 'buildDependsArch', self.buildDependsArch )
         self.packageCategory   = getValue( 'category',         self.packageCategory )
+        self.copyright         = getValue( 'copyright',        self.copyright )
         self.dependencies      = getValue( 'depends',          self.dependencies )
         self.dependsArch       = getValue( 'dependsArch',      self.dependsArch )
         self.userSrcEnv        = getValue( 'envVars',          self.userSrcEnv )
