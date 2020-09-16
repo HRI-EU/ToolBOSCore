@@ -269,7 +269,7 @@ characters per line.'''
         maxWidth  = limit + grace        # we only search for really long lines
         threshold = 5
 
-        for filePath in files:
+        for filePath in sorted( files ):
             longLines = 0
             maxLen    = 0
             lines     = FastScript.getFileContent( filePath, splitLines=True )
@@ -309,10 +309,10 @@ characters per line.'''
 class Rule_GEN04( AbstractRule ):
 
     brief       = '''All source code files and related artefacts, such as
-configfiles or documentation, must start with the HRI-EU copyright header.'''
+configfiles or documentation, must start with a copyright header.'''
 
-    description = '''The standardized copyright header contains both copyright
-claim and address of the company.
+    description = '''The standardized HRI-EU copyright header contains both
+copyright claim and address of the company.
 
 Please add it to all source code files and related artefacts resulting from
 work for HRI-EU.
@@ -322,9 +322,6 @@ for HRI-EU.
 
 This rule does not need to be applied to auto-generated files (such as doxygen
 HTML documentation or generated SWIG code).
-
-This rule shall not be applied to open-source code released under a particular
-license that most often requires a specific header.
 
 *Header for C / C++ / Java files:*
 
@@ -425,28 +422,51 @@ license that most often requires a specific header.
     #
     #-->
 
-Please replace *description* by a very short summary what this file is about.'''
+Please replace *description* by a very short summary what this file is about.
+
+This rule shall not be applied to open-source code released under a particular
+license that most often requires a specific header. In such case please place
+the copyright information into the pkgInfo.py, e.g.:
+
+copyright       =
+'''
 
     seeAlso     = { 'rule DOC-04': None }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
+
+    def __init__( self ):
+        super( Rule_GEN04 ).__init__()
+
+        from ToolBOSCore.Packages.CopyrightHeader import getCopyright
+
+        self._defaultCopyrightHeader = getCopyright()
+
+
     def run( self, details, files ):
         """
             Checks if the HRI-EU copyright header is present.
         """
-        from ToolBOSCore.Packages.CopyrightHeader import getCopyright
-
         logging.debug( 'checking files for copyright header' )
-        failed = 0
 
-        copyrightLines = getCopyright()
-        whitelist      = ALL_FILE_EXTENSIONS
+        failed    = 0
+        whitelist = ALL_FILE_EXTENSIONS
 
-        for filePath in files:
-            if os.path.splitext( filePath )[-1] in whitelist:
-                logging.debug( 'checking %s', filePath )
-                content = FastScript.getFileContent( filePath )
+
+        if details.copyright:
+            logging.info( 'found specific copyright information in pkgInfo.py' )
+        else:
+            logging.debug( 'searching for default copyright header' )
+
+
+        for filePath in sorted( files ):
+            fileExt = os.path.splitext( filePath )[-1]
+
+            if fileExt in whitelist:
+                content        = FastScript.getFileContent( filePath )
+                copyrightLines = self._getCopyrightLines( filePath, details.copyright )
+
 
                 for line in copyrightLines:
                     if content.find( line ) == -1:
@@ -467,6 +487,106 @@ Please replace *description* by a very short summary what this file is about.'''
                        'copyright header missing' )
 
         return result
+
+
+    def _getCopyrightLines( self, filePath, copyrightData ):
+        """
+            Returns a list of strings (copyright header lines) that shall
+            be present in 'filePath'.
+
+            The info are taken from the pkgInfo.py file. The author may
+            specify the appropriate copyright headers there.
+            If no information have been provided we assume the common
+            copyright header as returned from Packages.getCopyrightHeader().
+        """
+        Any.requireIsTextNonEmpty( filePath )
+
+        if copyrightData is None:
+            # logging.debug( 'no copyright info by author, assuming defaults' )
+
+            lines = self._defaultCopyrightHeader
+
+        elif Any.isText( copyrightData ):
+            # logging.info( 'single copyright line by author, use this for all project files' )
+            # logging.info( 'copyright info: %s', copyrightData )
+
+            msg = 'copyright data in pkgInfo.py too short (min. 10 chars required)'
+            Any.requireIsTextNonEmpty( copyrightData )
+            Any.requireMsg( len(copyrightData) > 10, msg )
+            lines = [ copyrightData ]
+
+        elif Any.isList( copyrightData ):
+            #logging.debug( 'multiple copyright lines by author, using them for all project files' )
+            #logging.debug( '<copyrightInfo>' )
+            #logging.debug( copyrightData )
+            #logging.debug( '</copyrightInfo>' )
+
+            Any.requireIsListNonEmpty( copyrightData )
+            lines = copyrightData
+
+        elif Any.isDict( copyrightData ):
+            #logging.debug( 'dict with copyright info provided by author' )
+
+            Any.requireIsDictNonEmpty( copyrightData )
+            lines = self._getCopyrightFromDict( filePath, copyrightData )
+
+        else:
+            msg = 'pkgInfo.py: invalid type "%s" for value of "copyright"' % type(copyrightData)
+            raise AssertionError( msg )
+
+        return lines
+
+
+    def _getCopyrightFromDict( self, filePath, copyrightData ):
+        """
+            Given a dict 'copyrightData' mapping 'path' --> 'copyright'
+
+            We assume that 'path' is any part of a relative path to a file
+            e.g.:
+                 * "external"
+                 * "external/foo.org"
+                 * "external/foo.org/foo.c"
+
+            and 'copyright' is any of:
+                 * single string
+                 * multiple strings (array)
+
+            This function attempts to find the longest matching key in
+            the dict matching 'filePath', and returns the associated value.
+        """
+        Any.requireIsTextNonEmpty( filePath )
+        Any.requireIsDictNonEmpty( copyrightData )
+
+        bestLen     = 0
+        bestPattern = None
+        bestLines   = self._defaultCopyrightHeader  # attempt to overwrite in for-loop
+
+        for pattern, lines in copyrightData.items():
+
+            if filePath.startswith( pattern ):
+                patternLen = len(pattern)
+
+                if patternLen > bestLen:
+                    bestLen     = patternLen
+                    bestPattern = pattern
+
+                    if Any.isText( lines ):
+                        msg = 'copyright data in pkgInfo.py too short (min. 10 chars required)'
+                        Any.requireIsTextNonEmpty( lines )
+                        Any.requireMsg( len(lines) > 10, msg )
+                        bestLines = [ lines ]
+
+                    elif Any.isList( lines ):
+                        Any.requireIsListNonEmpty( lines )
+                        bestLines = lines
+
+                    else:
+                        msg = 'Invalid type "%s" for copyright in path "%s"' % ( type(lines), pattern )
+                        raise AssertionError( msg )
+
+        logging.debug( 'best pattern for %s: %s', filePath, bestPattern )
+
+        return bestLines
 
 
 class Rule_GEN05( AbstractRule ):
