@@ -834,7 +834,7 @@ def requireTopLevelDir( path='.' ):
         Throws a RuntimeError in case the current working directory
         is not the top-level directory of a source package.
     """
-    if path is '.' or not path:
+    if path == '.' or not path:
         path = os.getcwd()
 
     Any.requireMsg( isTopLevelDir( path ),
