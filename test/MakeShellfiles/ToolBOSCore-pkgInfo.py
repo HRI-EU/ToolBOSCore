@@ -24,13 +24,7 @@ name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
-maintainer       = ( 'mark', 'Mark Dunn' )
-
-gitBranch        = 'TBCORE-2141-CallUnitTestFromBash'
-
 gitRelPath       = ''
-
-gitCommitID      = '5cae995c635e7d635e6933d6e088e9c50c152e1a'
 
 gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
 
