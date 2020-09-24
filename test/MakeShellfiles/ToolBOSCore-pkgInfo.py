@@ -2,56 +2,44 @@
 #
 #  Custom package settings
 #
-#  Copyright (c) Honda Research Institute Europe GmbH
+#  Copyright (C)
+#  Honda Research Institute Europe GmbH
+#  Carl-Legien-Str. 30
+#  63073 Offenbach/Main
+#  Germany
 #
-#  Redistribution and use in source and binary forms, with or without
-#  modification, are permitted provided that the following conditions are
-#  met:
-#
-#  1. Redistributions of source code must retain the above copyright notice,
-#     this list of conditions and the following disclaimer.
-#
-#  2. Redistributions in binary form must reproduce the above copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
-#
-#  3. Neither the name of the copyright holder nor the names of its
-#     contributors may be used to endorse or promote products derived from
-#     this software without specific prior written permission.
-#
-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-#  IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-#  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-#  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-#  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-#  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-#  PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-#  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-#  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-#  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#  UNPUBLISHED PROPRIETARY MATERIAL.
+#  ALL RIGHTS RESERVED.
 #
 #
 
+
+category         = 'DevelopmentTools'
 
 section          = 'DevelopmentTools'
 
-version          = '3.3'
+version          = '3.4'
 
 name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
-maintainer       = ( 'mstein', 'Marcus Stein' )
+maintainer       = ( 'mark', 'Mark Dunn' )
 
-gitBranch        = 'develop'
+gitBranch        = 'TBCORE-2141-CallUnitTestFromBash'
 
 gitRelPath       = ''
+
+gitCommitID      = '5cae995c635e7d635e6933d6e088e9c50c152e1a'
+
+gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
+
+gitOrigin        = 'https://github.com/HRI-EU/ToolBOSCore.git'
 
 recommends       = [ 'deb://git-core',
                      'deb://git-svn',
                      'deb://graphviz',
-                     'sit://External/CMake/3.3',
+                     'sit://External/CMake/3.4',
                      'sit://External/git/2.18',
                      'sit://External/subversion/2.18',
                      'sit://External/wine/3.5' ]
