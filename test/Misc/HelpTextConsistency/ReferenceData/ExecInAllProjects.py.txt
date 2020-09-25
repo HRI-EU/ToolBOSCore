@@ -1,4 +1,4 @@
-usage: ExecInAllProjects.py [-h] [-f FILE] [-i] [-l] [-v] command
+usage: ExecInAllProjects.py [-h] [-f FILE] [-i] [-r REPOFILE] [-v] command
 
 Execute a command within each project below the current working
 directory.
@@ -10,12 +10,14 @@ optional arguments:
   -h, --help            show this help message and exit
   -f FILE, --file FILE  path to script to execute within each project
   -i, --ignore-errors   ignore errors
-  -l, --list            whitelist of projects to visit
+  -r REPOFILE, --repofile REPOFILE
+                        Python file with whitelist of projects to visit, e.g.:
+                        projectRoots = ['./path/to/Foo', './path/to/Bar']
   -v, --verbose         show debug messages
 
 examples:
   ExecInAllProjects.py "svn st"
-  ExecInAllProjects.py -f script.sh
-  ExecInAllProjects.py -v -l whitelist.txt "svn st"
+  ExecInAllProjects.py -v -f script.sh
+  ExecInAllProjects.py -r repoInfo.py "BST.py -q"
 
 Please report bugs on JIRA (https://jira.honda-ri.de:8443).

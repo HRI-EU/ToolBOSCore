@@ -14,24 +14,26 @@
 #
 
 
+category         = 'DevelopmentTools'
+
 section          = 'DevelopmentTools'
 
-version          = '3.3'
+version          = '3.4'
 
 name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
-maintainer       = ( 'mstein', 'Marcus Stein' )
-
-gitBranch        = 'develop'
-
 gitRelPath       = ''
+
+gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
+
+gitOrigin        = 'https://github.com/HRI-EU/ToolBOSCore.git'
 
 recommends       = [ 'deb://git-core',
                      'deb://git-svn',
                      'deb://graphviz',
-                     'sit://External/CMake/3.3',
+                     'sit://External/CMake/3.4',
                      'sit://External/git/2.18',
                      'sit://External/subversion/2.18',
                      'sit://External/wine/3.5' ]
