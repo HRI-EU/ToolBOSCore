@@ -80,7 +80,7 @@ def getDependencies( fileContent ):
             # bst_find_package(Libraries/Data/C-common/RoadPoints/1.0/)
             # because it violates the regexp for canonical paths
             data = tmp.group(1)
-            data = data[:-1] if data[-1] is '/' else data
+            data = data[:-1] if data[-1] == '/' else data
 
             depList.append( 'sit://' + data )
 
