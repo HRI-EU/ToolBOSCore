@@ -49,7 +49,7 @@ function check
 }
 
 
-function runTest()
+function execTest()
 {
     FILENAME=$1
     CMDLINE=$@
@@ -69,16 +69,28 @@ function runTest()
         if [[ $? != 0 ]]
         then
             echo -e "Stop test:  ${FILENAME}  [\033[1;31mFAILED\033[00m]"
-            exit 1
+            return 1
         else
             echo -e "Stop test:  ${FILENAME}  [\033[1;32mOK\033[00m]"
+	    return 0
         fi
     else
         echo -e "Error: ${FILENAME}  [\033[1;31mNOT FOUND\033[00m]"
-        exit 1
+        return 1
     fi
 }
 
+function runTest()
+{
+    CMDLINE=$@
+
+    execTest $@
+
+    if [[ $? != 0 ]]
+    then
+        exit 1
+    fi
+}
 
 function runTests()
 {

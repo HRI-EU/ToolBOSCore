@@ -1,4 +1,23 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.5
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2141] Unittest.sh: splitted runTest() so that individual
+    testprograms can also be launched from cmdline, using execTest()
+
+
+CHANGES
+=======
+
+  - etc/ToolBOS.conf: updated PyCharm + CLion versions to 2020.2
+  - minor internal code improvements
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.4
 
 
