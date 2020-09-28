@@ -130,7 +130,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         server      = tmp1.netloc
         repoDir     = tmp1.path
 
-        server      = None if server is '' else server
+        server      = None if server == '' else server
 
         if server:                            # if not set create on localhost
             Any.requireIsTextNonEmpty( server )
