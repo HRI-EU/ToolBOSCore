@@ -24,7 +24,13 @@ name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
+maintainer       = ( 'mark', 'Mark Dunn' )
+
+gitBranch        = 'TBCORE-2109-IsWithLiteral'
+
 gitRelPath       = ''
+
+gitCommitID      = '258ffab0a1fab5dd27b4343d4a87588a056d89f3'
 
 gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
 
