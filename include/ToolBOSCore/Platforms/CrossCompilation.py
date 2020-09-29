@@ -496,7 +496,7 @@ def _switchEnv_linuxIntelToARM( targetPlatform ):
 
     # setup arguments which will be passed to CMake
 
-    if targetPlatform is 'peakcan':
+    if targetPlatform == 'peakcan':
 
         fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                                  'include/CMake/Peakcan-cross.cmake' )
@@ -508,7 +508,7 @@ def _switchEnv_linuxIntelToARM( targetPlatform ):
         FastScript.setEnv( 'COMPILER',   'gcc'     )
         FastScript.setEnv( 'BST_CMAKE_OPTIONS', '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
 
-    elif targetPlatform is 'phyboardwega':
+    elif targetPlatform == 'phyboardwega':
 
         fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                                  'include/CMake/phyBOARD-WEGA-cross.cmake' )

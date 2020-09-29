@@ -160,7 +160,7 @@ if os.path.exists( dirName ):
     logging.warning( '%s: directory already exists', dirName )
     answer = six.moves.input( 'Overwrite (y/N)? ' )
 
-    if answer is not 'y' and answer is not 'Y':
+    if answer != 'y' and answer != 'Y':
         raise SystemExit( 'Aborted.' )
 
 try:
