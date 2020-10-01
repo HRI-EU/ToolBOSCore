@@ -1,4 +1,28 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.6
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2122] BST.py: print warning in case of invalid bstCache.dill
+
+
+CHANGES
+=======
+
+  - [TBCORE-2122] cachefile renamed: bstCache.pickle --> bstCache.dill
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2122] BST.py: handle invalid bstCache.dill file when mixing different Python version
+  - [TBCORE-2080] SQ GEN07: prevent crash if SIT category could not be determined
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.5
 
 
