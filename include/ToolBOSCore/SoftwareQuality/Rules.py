@@ -700,6 +700,10 @@ package-specific testsuite.'''
         """
             Checks if the package provides a unittest.
         """
+        Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
+                                                       'Please check pkginfo.py '
+                                                       'or CMakeLists.txt for category information.' )
+
         if details.isComponent():
             return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
 
@@ -2533,6 +2537,10 @@ provide small, easy-to-understand example programs / showcases.
             Test passes if there are any Non-SVN files within the
             "examples" subdirectory.
         """
+        Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
+                                                       'Please check pkginfo.py '
+                                                       'or CMakeLists.txt for category information.' )
+
         if details.isComponent():
             return NOT_APPLICABLE, 0, 0, 'examples not required for components'
 
