@@ -236,6 +236,8 @@ class PackageDetector( object ) :
             Returns 'True' if the package is an open source or commercial
             external software which has not been developed at HRI-EU.
         """
+        Any.requireIsTextNonEmpty( self.packageCategory )
+
         if self.packageCategory == 'External' or self._exists( 'src/sources.tar.bz2' ):
             return True
         else:
@@ -346,6 +348,9 @@ class PackageDetector( object ) :
             The specific "BBDMAll" collector-package is explicitly
             blacklisted because is not a real component by itself.
         """
+        Any.requireIsTextNonEmpty( self.packageName )
+        Any.requireIsTextNonEmpty( self.packageCategory )
+
         isBBDMAll      = self.packageName == 'BBDMAll'
         isBBDMName     = self.packageName.startswith( 'BBDM' )
         isBBDMCategory = self.packageCategory == 'Modules/BBDM'
@@ -362,6 +367,9 @@ class PackageDetector( object ) :
             The specific "BBDMAll" collector-package is explicitly
             blacklisted because is not a real component by itself.
         """
+        Any.requireIsTextNonEmpty( self.packageName )
+        Any.requireIsTextNonEmpty( self.packageCategory )
+
         isBBDMAll        = self.packageName == 'BBDMAll'
         isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
                            self.packageCategory.startswith( 'Modules/RTMaps' )
