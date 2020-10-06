@@ -491,7 +491,7 @@ try:
     # that the user does not need to pass the source-tree location
     # all the time
 
-    bstCache = 'bstCache.pickle'
+    bstCache = 'bstCache.dill'
 
     try:
         # this file will only be present if we perform out-of-tree
@@ -511,6 +511,10 @@ try:
             f.close()
         except EOFError as details:
             raise FileNotFoundError( details )
+        except dill.UnpicklingError as e:
+            logging.warning( 'unable to deserialize %s: %s', bstCache, e )
+            logging.warning( 'ignoring cache file!' )
+            raise IOError( e )
 
         logging.debug( '%s found', bstCache )
 

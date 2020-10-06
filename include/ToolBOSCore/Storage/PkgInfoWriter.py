@@ -148,11 +148,16 @@ class PkgInfoWriter( AbstractWriter ):
         if self._sourceTree:
             return ''
         else:
-            return self.writeTable( { 'name'    : self.details.packageName,
-                                      'package' : self.details.packageName,  # legacy, for backward compat
-                                      'version' : self.details.packageVersion,
-                                      'section' : self.details.packageCategory, # legacy, for backward compat
-                                      'category': self.details.packageCategory } )
+            table = { 'name'    : self.details.packageName,
+                      'package' : self.details.packageName,     # legacy, for backward compat
+                      'version' : self.details.packageVersion,
+                      'section' : self.details.packageCategory, # legacy, for backward compat
+                      'category': self.details.packageCategory }
+
+            if self.details.patchlevel != '':                   # patchlevel might be zero!
+                table[ 'patchlevel' ] = self.details.patchlevel
+
+            return self.writeTable( table )
 
 
     def addOriginalName( self ):

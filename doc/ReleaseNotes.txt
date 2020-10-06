@@ -1,4 +1,48 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.7
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-1878] BST.py: when using patchlevels, write value into generated pkgInfo.py files
+  - [TBCORE-1878] AboutDialog.py: show ToolBOSCore + Middleware versions (incl. patchlevel)
+                  and other minor GUI enhancements
+
+
+CHANGES
+=======
+
+  - [TBCORE-2106] bin/ToolBOS-Config.py: print values in a native Python format
+  - [TBCORE-1878] AboutDialog.py API: 'show()' must now be done by caller (no longer implicit)
+
+
+-----------------------------------------------------------------------------
+
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.6
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-2122] BST.py: print warning in case of invalid bstCache.dill
+
+
+CHANGES
+=======
+
+  - [TBCORE-2122] cachefile renamed: bstCache.pickle --> bstCache.dill
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2122] BST.py: handle invalid bstCache.dill file when mixing different Python version
+  - [TBCORE-2080] SQ GEN07: prevent crash if SIT category could not be determined
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.5
 
 

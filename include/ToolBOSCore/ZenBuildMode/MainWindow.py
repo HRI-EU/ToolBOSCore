@@ -664,13 +664,13 @@ class MainWindow( QObject, object ):
             path = shlex.split( command )[1]
 
             for platform, terminal in self.terminals.items():
-                if platform is not 'localhost' and terminal.isVisible():
+                if platform != 'localhost' and terminal.isVisible():
                     terminal.setPath( path )
                     terminal.writeCommand( 'cd %s' % path )
 
         else:
             for platform, terminal in self.terminals.items():
-                if platform is not 'localhost' and terminal.isVisible():
+                if platform != 'localhost' and terminal.isVisible():
 
                     if ( nativeOnly and terminal.isNative ) or not nativeOnly:
                         self._execProgram( terminal, command, showCmd )
