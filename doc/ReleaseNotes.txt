@@ -1,4 +1,24 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 3.4.7
+
+
+NEW FEATURES
+=============
+
+  - [TBCORE-1878] BST.py: when using patchlevels, write value into generated pkgInfo.py files
+  - [TBCORE-1878] AboutDialog.py: show ToolBOSCore + Middleware versions (incl. patchlevel)
+                  and other minor GUI enhancements
+
+
+CHANGES
+=======
+
+  - [TBCORE-2106] bin/ToolBOS-Config.py: print values in a native Python format
+  - [TBCORE-1878] AboutDialog.py API: 'show()' must now be done by caller (no longer implicit)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 3.4.6
 
 
