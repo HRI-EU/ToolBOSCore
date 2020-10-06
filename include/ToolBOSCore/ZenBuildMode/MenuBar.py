@@ -147,6 +147,7 @@ class MenuBar( QMenuBar, object ):
 
     def helpAbout( self ):
         self._aboutDialog = AboutDialog.AboutDialog( self.parent )
+        self._aboutDialog.show()
 
 
     def helpOnlineDocumentation( self ):

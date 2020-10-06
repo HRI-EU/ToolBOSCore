@@ -45,47 +45,62 @@ from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.GenericGUI               import PixmapProvider
+from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Packages.CopyrightHeader import getCopyright
 from ToolBOSCore.Util                     import FastScript
 
 
-class AboutDialog( QWidget ):
+class AboutDialog( QDialog ):
 
-    def __init__( self, parent ):
+    _font = QFont( "Courier", 10 )
+
+
+    def __init__( self, parent=None ):
         super( AboutDialog, self ).__init__( parent )
 
         logo = QLabel()
         logo.setPixmap( PixmapProvider.getPixmap( 'ToolBOS-Logo-small' ) )
         logo.setAlignment( Qt.AlignCenter )
 
-        palette = logo.palette()
-        palette.setColor( QPalette.Background, QColor( 255, 255, 255 ) )
-        self.setAutoFillBackground( True )
-        self.setPalette( palette )
-
-        copyrightInfo = QTextEdit()
-        copyrightInfo.setText( getCopyright() )
+        copyrightInfo = QPlainTextEdit()
+        copyrightInfo.setFont( self._font )
+        copyrightInfo.setPlainText( getCopyright() )
         copyrightInfo.setReadOnly( True )
-
-        self._dialog = QDialog( parent )
 
         layout = QGridLayout()
         layout.addWidget( logo,          0, 0 )
         layout.addWidget( copyrightInfo, 0, 1 )
 
-        #          label text (key)      value                      lines to display
-        info = [ ( 'TOOLBOSCORE_ROOT',   FastScript.getEnv( 'TOOLBOSCORE_ROOT'  ), 1 ),
-                 ( 'TOOLBOSMIDDLEWARE_ROOT', FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' ), 1 ),
-                 ( 'SIT',                FastScript.getEnv( 'SIT'               ), 1 ),
-                 ( 'MAKEFILE_PLATFORM',  FastScript.getEnv( 'MAKEFILE_PLATFORM' ), 1 ),
-                 ( 'PATH',               FastScript.getEnv( 'PATH'              ), 3 ),
-                 ( 'LD_LIBRARY_PATH',    FastScript.getEnv( 'LD_LIBRARY_PATH'   ), 3 ),
-                 ( 'PYTHONPATH',         FastScript.getEnv( 'PYTHONPATH'        ), 3 ),
-                 ( 'python interpreter', sys.executable,                           1 ),
-                 ( 'python version',     sys.version,                              1 ),
-                 ( 'hostname',           socket.gethostname(),                     1 ),
-                 ( 'CPUs',               str( multiprocessing.cpu_count() ),       1 ),
-                 ( 'memory',             'calculating...',                         1 ) ]
+        tcRoot     = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
+        tcDetector = PackageDetector( tcRoot )
+        tcDetector.retrieveMakefileInfo()
+        tcVersion  = tcDetector.packageVersion
+        tcVersion += '.%d' % tcDetector.patchlevel if tcDetector.patchlevel else ''
+        tcInfo     = '%s (Version: %s)' % ( tcRoot, tcVersion )
+
+        mwRoot     = FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' )
+        if mwRoot:
+            mwDetector = PackageDetector( mwRoot )
+            mwDetector.retrieveMakefileInfo()
+            mwVersion  = mwDetector.packageVersion
+            mwVersion += '.%d' % mwDetector.patchlevel if mwDetector.patchlevel else ''
+            mwInfo     = '%s (Version: %s)' % ( mwRoot, mwVersion )
+        else:
+            mwInfo     = 'not available'
+
+        #          label text (key)       value                                     lines to display
+        info = [ ( 'ToolBOS Core',        tcInfo,                                   1 ),
+                 ( 'ToolBOS Middleware',  mwInfo,                                   1 ),
+                 ( '$SIT',                FastScript.getEnv( 'SIT'               ), 1 ),
+                 ( '$MAKEFILE_PLATFORM',  FastScript.getEnv( 'MAKEFILE_PLATFORM' ), 1 ),
+                 ( '$PATH',               FastScript.getEnv( 'PATH'              ), 3 ),
+                 ( '$LD_LIBRARY_PATH',    FastScript.getEnv( 'LD_LIBRARY_PATH'   ), 3 ),
+                 ( '$PYTHONPATH',         FastScript.getEnv( 'PYTHONPATH'        ), 3 ),
+                 ( 'Python interpreter',  sys.executable,                           1 ),
+                 ( 'Python version',      sys.version,                              1 ),
+                 ( 'Hostname',            socket.gethostname(),                     1 ),
+                 ( 'CPUs',                str( multiprocessing.cpu_count() ),       1 ),
+                 ( 'Memory',              'calculating...',                         1 ) ]
 
         i       = 1
         memText = None
@@ -101,47 +116,41 @@ class AboutDialog( QWidget ):
                 valueWidget.setMaximumHeight( 80 )
 
             valueWidget.setReadOnly( True )
-            valueWidget.setFont( QFont( "Courier", 10 ) )
+            valueWidget.setFont( self._font )
 
-            if key == 'memory':
+            if key == 'Memory':
                 memText = valueWidget         # store a handle to this widget
 
             layout.addWidget( keyWidget,   i, 0 )
             layout.addWidget( valueWidget, i, 1 )
             i += 1
 
-        okButton = QPushButton( '&OK' )
-        okButton.setFocus()
-        okButton.setMaximumWidth( 200 )
-        okButton.clicked.connect( self._dialog.close )
+        self._standardButtons = QDialogButtonBox( QDialogButtonBox.Close )
+        self._standardButtons.clicked.connect( self.close )
 
-        layout.addWidget( okButton, i, 1 )
+        layout.addWidget( self._standardButtons, i, 1 )
 
         # noinspection PyArgumentList
         dialogWidth = QApplication.desktop().screenGeometry().width() / 3 * 2
 
-        self._dialog.setLayout( layout )
-        self._dialog.setMinimumWidth( dialogWidth )
-        self._dialog.setModal( True )
-        self._dialog.show()
+        self.setLayout( layout )
+        self.setMinimumWidth( dialogWidth )
+        self.setModal( True )
+        self.setWindowTitle( 'About ToolBOS SDK' )
 
         self._thread = self._FreeMemDetectorThread()
         self._thread.start()
         self._thread.newData.connect( lambda s: memText.setText( s ) )
 
         # stop thread upon close
-        self._dialog.accepted.connect( self._thread.terminate )
-        self._dialog.rejected.connect( self._thread.terminate )
-        okButton.clicked.connect( self._thread.terminate )
+        self.accepted.connect( self._thread.terminate )
+        self.rejected.connect( self._thread.terminate )
+        self._standardButtons.clicked.connect( self._thread.terminate )
 
 
     class _FreeMemDetectorThread( QThread, object ):
 
         newData = pyqtSignal( str )
-
-        def __init__( self ):
-            QThread.__init__( self )
-
 
         def run( self ):
             from psutil import virtual_memory
@@ -157,6 +166,16 @@ class AboutDialog( QWidget ):
                 logging.debug( memText )
                 self.newData.emit( memText )
                 sleep( 1 )
+
+
+if __name__ == '__main__':
+    app    = QApplication( [] )
+    app.setStyle( 'fusion' )
+
+    aboutDialog = AboutDialog()
+    aboutDialog.show()
+
+    app.exec_()
 
 
 # EOF
