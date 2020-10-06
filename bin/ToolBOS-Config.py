@@ -41,6 +41,7 @@
 
 
 from __future__ import print_function
+from pprint     import pprint
 
 import logging
 
@@ -99,7 +100,7 @@ if printVar:
     except KeyError:
         value = '<not set>'
 
-    print( value )
+    pprint( value )
 
 elif setVar:
     # Note: Setting non-string options does not work, yet because everything
@@ -149,7 +150,11 @@ else:
 
     for key in keys:
         value = config[ key ]
-        print( '%30s | %s' % ( key.ljust(30), value ) )
 
+        if type(value) in (dict, list, frozenset):
+            print( '%30s | %s' % ( key.ljust(30), value ) )
+        else:
+            print( '%30s | ' % ( key.ljust(30) ), end='' )
+            pprint( value )
 
 # EOF
