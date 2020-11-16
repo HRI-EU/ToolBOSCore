@@ -348,33 +348,4 @@ class DependenciesDialog( QWidget, object ):
         child.setTextAlignment( column, Qt.AlignCenter )
 
 
-    def _getInstallStatus( self, package, sitPath ):
-
-        try:
-            installed = ProjectProperties.isInstalled( package, sitPath )
-        except ValueError:
-            installed = False
-
-
-        if installed:
-
-            if package.startswith( 'sit://' ):
-                msg = '%s: exists' % \
-                      os.path.join( sitPath, SIT.strip( package) )
-            else:
-                msg = '%s: installed on this machine' % \
-                      package.replace( 'deb://', '' )
-
-        else:
-
-            if package.startswith( 'sit://' ):
-                msg = '%s: no such file or directory' % \
-                      os.path.join( sitPath, SIT.strip( package ) )
-            else:
-                msg = '%s: not installed on this machine' % \
-                      package.replace( 'deb://', '' )
-
-        return installed, msg
-
-
 # EOF
