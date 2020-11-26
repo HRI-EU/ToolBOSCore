@@ -43,7 +43,7 @@ import re
 import six
 
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Settings                 import ToolBOSSettings
+from ToolBOSCore.Settings                 import ToolBOSConf
 from ToolBOSCore.Storage.AbstractWriter   import AbstractWriter
 from ToolBOSCore.Util                     import Any
 from ToolBOSCore.Util                     import FastScript
@@ -189,7 +189,7 @@ class PkgInfoWriter( AbstractWriter ):
         try:
             from Middleware.InfoParser import BBCMInfoParser, BBDMInfoParser, Utils
         except ImportError as e:
-            pkg = ToolBOSSettings.getConfigOption( 'package_toolbosmiddleware' )
+            pkg = ToolBOSConf.getConfigOption( 'package_toolbosmiddleware' )
             msg = 'To work with Middleware-related packages, please run ' \
                   '"source ${SIT}/%s/BashSrc" first.' % pkg
 

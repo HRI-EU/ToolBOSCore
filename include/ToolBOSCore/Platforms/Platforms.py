@@ -62,7 +62,7 @@ def getHostPlatform():
         hostPlatform = forcedPlatform
 
     else:
-        from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+        from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
         hostPlatform = getConfigOption( 'hostPlatform' )
 
     Any.requireIsTextNonEmpty( hostPlatform )

@@ -44,7 +44,7 @@ import logging
 import os
 import os.path
 
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import CMakeLists
 from ToolBOSCore.Tools    import SVN
 from ToolBOSCore.Util     import Any
@@ -108,8 +108,8 @@ def findFile( fileName ):
 
 # discover SVN server to use, package name and category
 cwd           = os.getcwd()
-server        = ToolBOSSettings.getConfigOption( 'defaultSVNServer' )
-reposPath     = ToolBOSSettings.getConfigOption( 'defaultSVNRepositoryPath' )
+server        = ToolBOSConf.getConfigOption( 'defaultSVNServer' )
+reposPath     = ToolBOSConf.getConfigOption( 'defaultSVNRepositoryPath' )
 packageName   = os.path.basename( cwd )
 category      = None
 

@@ -53,7 +53,7 @@ from ToolBOSCore.Packages.BSTPackage              import BSTProxyInstalledPackag
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
 from ToolBOSCore.Settings.ProcessEnv              import source
-from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\

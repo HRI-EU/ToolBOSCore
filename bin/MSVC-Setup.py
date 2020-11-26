@@ -45,7 +45,7 @@ import os
 
 from ToolBOSCore.Settings.UserSetup import setupMSVC
 from ToolBOSCore.Util               import ArgsManagerV2
-from ToolBOSCore.Settings           import ToolBOSSettings
+from ToolBOSCore.Settings           import ToolBOSConf
 
 
 #----------------------------------------------------------------------------
@@ -73,7 +73,7 @@ if not path:
     path = os.path.expandvars( '${HOME}/.wine' )
 
 if not version:
-    version = ToolBOSSettings.getConfigOption( 'msvcVersion')
+    version = ToolBOConf.getConfigOption( 'msvcVersion')
 
 
 #----------------------------------------------------------------------------

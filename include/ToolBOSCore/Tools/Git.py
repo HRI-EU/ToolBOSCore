@@ -41,7 +41,7 @@ import re
 from six                  import StringIO
 from six.moves.urllib     import parse
 
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
 from ToolBOSCore.Util     import Any, FastScript, VersionCompat
 
@@ -335,7 +335,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
 
         super( RemoteGitRepository, self ).__init__( url )
 
-        self._allowedHosts = ToolBOSSettings.getConfigOption( 'Git_allowedHosts' )
+        self._allowedHosts = ToolBOSConf.getConfigOption( 'Git_allowedHosts' )
 
 
     def clone( self, output=None ):

@@ -43,7 +43,7 @@ import os
 import re
 
 from ToolBOSCore.Platforms import Platforms
-from ToolBOSCore.Settings  import ToolBOSSettings
+from ToolBOSCore.Settings  import ToolBOSConf
 from ToolBOSCore.Util      import FastScript
 from ToolBOSCore.Util      import Any
 
@@ -99,7 +99,7 @@ def getSwitchEnvironmentList( fromPlatform=None ):
         are returned.
     """
     if fromPlatform is None:
-        xcmpHosts = ToolBOSSettings.getConfigOption( 'BST_crossCompileHosts' )
+        xcmpHosts = ToolBOSConf.getConfigOption( 'BST_crossCompileHosts' )
 
         # only return those which are not None
         result    = filter( bool, xcmpHosts.keys() )
@@ -167,7 +167,7 @@ def getNativeCompilationList():
         'BST_defaultPlatforms_native', defaulting to the current
         host platform if not overwritten by the user.
     """
-    platformList = list( ToolBOSSettings.getConfigOption( 'BST_defaultPlatforms_native' ) )
+    platformList = list( ToolBOSConf.getConfigOption( 'BST_defaultPlatforms_native' ) )
 
     if not platformList:
         platformList = [ Platforms.getHostPlatform() ]
@@ -182,7 +182,7 @@ def getCrossCompilationList():
         Returns the value of the ToolBOS config option
         'BST_defaultPlatforms_xcmp'.
     """
-    platformList = list( ToolBOSSettings.getConfigOption( 'BST_defaultPlatforms_xcmp' ) )
+    platformList = list( ToolBOSConf.getConfigOption( 'BST_defaultPlatforms_xcmp' ) )
 
     platformList.sort()
 
@@ -200,7 +200,7 @@ def getNativeCompileHost( platform ):
     Any.requireIsTextNonEmpty( platform )
 
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_userCompileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_userCompileHosts' )
 
     try:
         return hosts[ platform ]
@@ -209,7 +209,7 @@ def getNativeCompileHost( platform ):
         pass
 
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_compileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_compileHosts' )
 
     try:
         return hosts[ platform ]
@@ -227,7 +227,7 @@ def getCrossCompileHost( platform ):
     """
     Any.requireIsTextNonEmpty( platform )
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_userCrossCompileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_userCrossCompileHosts' )
 
     try:
         return hosts[ platform ]
@@ -235,7 +235,7 @@ def getCrossCompileHost( platform ):
         # not found in user's configfile
         pass
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_crossCompileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_crossCompileHosts' )
 
     try:
         return hosts[ platform ]
@@ -342,7 +342,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     from ToolBOSCore.Settings import ProcessEnv
     from ToolBOSCore.Settings import UserSetup
-    from ToolBOSCore.Settings import ToolBOSSettings
+    from ToolBOSCore.Settings import ToolBOSConf
 
     Any.requireIsTextNonEmpty( targetPlatform )
 
@@ -440,7 +440,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     # source "ToolBOSPluginWindows" if not already done
 
-    bspMap     = ToolBOSSettings.getConfigOption( 'BST_crossCompileBSPs' )
+    bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
     Any.requireIsDictNonEmpty( bspMap )
 
     neededBSP  = bspMap[ targetPlatform ]
@@ -479,14 +479,14 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
 def _switchEnv_linuxIntelToARM( targetPlatform ):
     from ToolBOSCore.Settings import ProcessEnv
-    from ToolBOSCore.Settings import ToolBOSSettings
+    from ToolBOSCore.Settings import ToolBOSConf
 
     Any.requireIsTextNonEmpty( targetPlatform )
 
 
     # source cross-compiler package if not already done
 
-    bspMap     = ToolBOSSettings.getConfigOption( 'BST_crossCompileBSPs' )
+    bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
     Any.requireIsDictNonEmpty( bspMap )
 
     neededBSP  = bspMap[ targetPlatform ]
