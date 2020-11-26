@@ -45,7 +45,7 @@ import re
 
 from six import StringIO
 from ToolBOSCore.Settings            import ProcessEnv
-from ToolBOSCore.Settings            import ToolBOSSettings
+from ToolBOSCore.Settings            import ToolBOSConf
 from ToolBOSCore.Util                import Any
 from ToolBOSCore.Util                import FastScript
 
@@ -621,7 +621,7 @@ def codeCheck( filename, minseverity = 1, filtermsg = None ):
     """
     Any.requireIsFileNonEmpty( filename )
 
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_matlab' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_matlab' ) )
 
     cmd = "matlab -nodisplay -nosplash -nodesktop -r " + \
           "\"checkcode('{0}', '-id', '-fullpath'); quit;\"".format( filename )

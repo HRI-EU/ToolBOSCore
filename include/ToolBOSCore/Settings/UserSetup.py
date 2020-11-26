@@ -42,7 +42,7 @@ import subprocess
 
 from ToolBOSCore.Packages import ProjectProperties
 from ToolBOSCore.Settings import ProcessEnv
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import FastScript
 from ToolBOSCore.Util     import Any
 
@@ -371,7 +371,7 @@ def sourceWindowsBSP(msvc):
         Loads the necessary ToolBOSPluginWindows so that Wine and MSVC
         will be found in PATH etc.
     """
-    allBSPs       = ToolBOSSettings.getConfigOption( 'BST_crossCompileBSPs' )
+    allBSPs       = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
     Any.requireIsDictNonEmpty( allBSPs )
 
     if msvc in (2010, 2012):

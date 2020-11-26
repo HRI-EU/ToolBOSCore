@@ -47,7 +47,7 @@ from ToolBOSCore.BuildSystem               import BuildSystemTools
 from ToolBOSCore.Packages.PackageCreator import PackageCreator_JetBrains_CLion_Config
 from ToolBOSCore.Packages                  import ProjectProperties
 from ToolBOSCore.Settings                  import ProcessEnv
-from ToolBOSCore.Settings                  import ToolBOSSettings
+from ToolBOSCore.Settings                  import ToolBOSConf
 from ToolBOSCore.Util                      import Any
 
 
@@ -88,7 +88,7 @@ def startGUI():
         Note that the program will be opened in background in order not to
         block the caller.
     """
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_clion' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_clion' ) )
 
     try:
         cmd = 'clion.sh'

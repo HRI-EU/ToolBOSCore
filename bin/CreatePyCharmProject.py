@@ -47,7 +47,7 @@ import sys
 
 from ToolBOSCore.BuildSystem import BuildSystemTools
 from ToolBOSCore.Settings    import ProcessEnv
-from ToolBOSCore.Settings    import ToolBOSSettings
+from ToolBOSCore.Settings    import ToolBOSConf
 from ToolBOSCore.Tools       import PyCharm
 from ToolBOSCore.Util        import Any
 from ToolBOSCore.Util        import ArgsManagerV2
@@ -77,7 +77,7 @@ argman.run()
 BuildSystemTools.requireTopLevelDir()
 
 
-ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_pycharm' ) )
+ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_pycharm' ) )
 
 
 try:

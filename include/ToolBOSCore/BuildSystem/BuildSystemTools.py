@@ -44,7 +44,7 @@ import subprocess
 from ToolBOSCore.Packages                 import ProjectProperties
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Storage                  import PkgInfo
 from ToolBOSCore.Util                     import Any

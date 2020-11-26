@@ -40,7 +40,7 @@ import os
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms.Platforms      import getHostPlatform
 from ToolBOSCore.Settings                 import ProcessEnv
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Util                     import Any, FastScript
 

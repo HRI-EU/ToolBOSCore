@@ -42,7 +42,7 @@ import subprocess
 from six.moves            import StringIO
 from six.moves.urllib     import parse
 
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
 from ToolBOSCore.Util     import Any
 from ToolBOSCore.Util     import FastScript
@@ -63,7 +63,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
 
         super( SVNRepository, self ).__init__( url )
 
-        self._allowedHosts = ToolBOSSettings.getConfigOption( 'SVN_allowedHosts' )
+        self._allowedHosts = ToolBOSConf.getConfigOption( 'SVN_allowedHosts' )
 
 
     def checkout( self, revision='HEAD', output=None ):
@@ -287,7 +287,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         Any.requireIsTextNonEmpty( self._hostName )
 
-        mapping  = ToolBOSSettings.getConfigOption( 'serverAccounts' )
+        mapping  = ToolBOSConf.getConfigOption( 'serverAccounts' )
         Any.requireIsDict( mapping )
 
         userName = None

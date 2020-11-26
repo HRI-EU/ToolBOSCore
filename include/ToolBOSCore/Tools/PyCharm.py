@@ -50,7 +50,7 @@ from six import StringIO
 
 from ToolBOSCore.BuildSystem               import BuildSystemTools
 from ToolBOSCore.Settings                  import ProcessEnv
-from ToolBOSCore.Settings                  import ToolBOSSettings
+from ToolBOSCore.Settings                  import ToolBOSConf
 from ToolBOSCore.Packages                  import ProjectProperties
 from ToolBOSCore.Packages.PackageCreator import PackageCreator_JetBrains_PyCharm_Config
 from ToolBOSCore.Util                      import Any
@@ -260,7 +260,7 @@ def codeCheck():
         @see: parseCodeCheckResult()
 
     """
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_pycharm' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_pycharm' ) )
 
     output   = StringIO()
     FastScript.execProgram( 'ps aux', stdout=output, stderr=output )
@@ -358,7 +358,7 @@ def startGUI():
         Note that the program will be opened in background in order not to
         block the caller.
     """
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_pycharm' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_pycharm' ) )
 
     try:
         cmd = 'pycharm.sh'
