@@ -1758,7 +1758,7 @@ Specify an empty list if really nothing has to be executed.'''
                     errorMessages.append( '%s: %s:%s - %s'
                                           % ( ruleID, error.fname, error.lineno, error.description ) )
 
-                logging.info( "%s: '%s' failed (see verbose-mode for details)", ruleID, command )
+                logging.info( "%s: '%s' failed (see verbose-mode for details: BST.py -q C12 -v)", ruleID, command )
 
             else:
                 passedExecutables += 1
