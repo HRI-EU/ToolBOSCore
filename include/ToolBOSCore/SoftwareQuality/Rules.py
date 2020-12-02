@@ -953,9 +953,9 @@ causing data loss or inconsistent states.'''
         failed = 0
         passed = 0
 
-        regexpExit1 = re.compile( '\sexit\s*\(' )
-        regexpExit2 = re.compile( '\s_exit\s*\(' )
-        regexpAbort = re.compile( '\sabort\s*\(' )
+        regexpExit1 = re.compile( r'\sexit\s*\(' )
+        regexpExit2 = re.compile( r'\s_exit\s*\(' )
+        regexpAbort = re.compile( r'\sabort\s*\(' )
 
         for filePath in files:
             if filePath.find( '/bin/' ) != -1 or \
@@ -1348,7 +1348,7 @@ and other compile errors.'''
                 #               PACKAGENAME_BAZ_H
 
                 safeguard   = '#ifndef %s_H' % moduleUpper
-                regexp      = re.compile( '#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
+                regexp      = re.compile( r'#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
 
                 tmp = regexp.search( content )
 
@@ -1956,7 +1956,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
 
         logging.debug( "checking for access to private members from outside" )
         found  = 0
-        regexp = re.compile( '(\w+)\._(\w+)' )
+        regexp = re.compile( r'(\w+)\._(\w+)' )
 
         for filePath in files:
             if filePath.endswith( '.py' ) and os.path.exists( filePath ):
@@ -2382,7 +2382,7 @@ Documentation should be maintained under one of the following locations:
     goodExample = '''
     * for C / C++ projects:*
     /*!
-     * \mainpage
+     * \\mainpage
      *
      * This package contains a coffee machine implemented for various
      * operating systems. On Linux and OS X run "make coffee", on Android
@@ -2508,7 +2508,7 @@ it is about.
 
 Preferrably both arguments and return value (if any) should be documented.
 
-For redundant cases, doxygen's `\copydoc` command should be considered. This
+For redundant cases, doxygen's `\\copydoc` command should be considered. This
 command duplicates documentation at other locations, to avoid physical
 duplication (for consistency reasons).'''
 

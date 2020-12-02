@@ -203,7 +203,7 @@ def parseCodeCheckResult( output ):
 
 
     resultList = []
-    regexp     = re.compile( '^\d+\s\([A-Za-z]+\)\s(.*?):(\d+)\s(.+?)\s' )
+    regexp     = re.compile( r'^\d+\s\([A-Za-z]+\)\s(.*?):(\d+)\s(.+?)\s' )
     lines      = output.splitlines()
     cwd        = os.getcwd()
 

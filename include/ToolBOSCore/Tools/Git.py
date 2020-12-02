@@ -48,7 +48,7 @@ from ToolBOSCore.Util     import Any, FastScript, VersionCompat
 
 class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
 
-    _modifiedFileExpr = re.compile( '^\sM\s(.+)$' )
+    _modifiedFileExpr = re.compile( r'^\sM\s(.+)$' )
 
 
     def __init__( self ):
@@ -218,7 +218,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
         output = tmp.getvalue()
         # Any.requireIsTextNonEmpty( output )  # repo may not have any remote
 
-        tmp = re.search( "^origin\s+(.+)\s\(fetch\)", output )
+        tmp = re.search( r"^origin\s+(.+)\s\(fetch\)", output )
 
         try:
             origin = tmp.group(1)
