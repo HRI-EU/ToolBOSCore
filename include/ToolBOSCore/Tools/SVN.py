@@ -602,19 +602,19 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
             self._infoOutput = output.getvalue()
 
-            self._repoRootFromInfo = re.search( "Repository Root: (\S+)\n",
+            self._repoRootFromInfo = re.search( r"Repository Root: (\S+)\n",
                                                 self._infoOutput ).group(1)
 
             logging.debug( 'found SVN repository root: %s',
                            self._repoRootFromInfo )
 
-            self._repoUrlFromInfo = re.search( "URL: (\S+)\n",
+            self._repoUrlFromInfo = re.search( r"URL: (\S+)\n",
                                                self._infoOutput ).group(1)
 
             logging.debug( 'found SVN repository URL: %s',
                            self._repoUrlFromInfo )
 
-            self._revFromInfo = int( re.search( "Revision\s?: (\d+?)\s",
+            self._revFromInfo = int( re.search( r"Revision\s?: (\d+?)\s",
                                 self._infoOutput ).group(1) )
 
             logging.debug( 'found SVN revision: %d', self._revFromInfo )

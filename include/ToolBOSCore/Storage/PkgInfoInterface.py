@@ -130,7 +130,7 @@ class PkgInfoInterface( object ):
 
         newContent = StringIO()
         table      = { key: value }
-        regexp     = re.compile( '^%s\s+=' % key )
+        regexp     = re.compile( r'^%s\s+=' % key )
         found      = False                  # overall found in pkgInfo.py
         foundNow   = False                  # helpervar. used in loop
 
@@ -199,7 +199,7 @@ class PkgInfoInterface( object ):
 
 
         newContent = StringIO()
-        regexp     = re.compile( '^%s\s+=' % key )
+        regexp     = re.compile( r'^%s\s+=' % key )
         lines      = self._content.splitlines()
         skip       = 0
         found      = False

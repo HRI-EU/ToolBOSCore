@@ -813,7 +813,7 @@ def isTopLevelDir( path='.' ):
         Returns a boolean whether or not the provided directory is the
         top-level-directory of a source package.
     """
-    regExpVersion   = re.compile( "^(\d+\.\d+).*$" )
+    regExpVersion   = re.compile( r"^(\d+\.\d+).*$" )
     projectVersion  = ProjectProperties.getPackageVersion( path, verbatim=True )
     versionDirFound = bool( regExpVersion.search( projectVersion ) )
 
@@ -850,7 +850,7 @@ def _getDistcleanPatterns():
         'pkgInfo.py' within your project's top-level directory
         (e.g. inside Spam/42.0):
 
-          delete      = [ 'deleteMe.*\.txt' ]
+          delete      = [ 'deleteMe.*\\.txt' ]
           doNotDelete = [ 'install/??shSrc' ]
 
         The patterns in the 'doNotDelete' list should be taken from

@@ -69,7 +69,7 @@ def getSystemPackages():
         raise EnvironmentError( 'Not a Debian-based operating system' )
 
     output = StringIO()
-    regexp = re.compile( "^ii\s+(.+?)\s+(.+?)\s.+$" )
+    regexp = re.compile( r"^ii\s+(.+?)\s+(.+?)\s.+$" )
     result = {}
 
     try:

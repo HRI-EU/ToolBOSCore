@@ -642,7 +642,7 @@ def codeCheck( filename, minseverity = 1, filtermsg = None ):
         filtermsg = []
 
     result = []
-    regexp = re.compile( '^L\s(\d+)\s\(.+?\):\s([A-Z]+):\s(.+)$' )
+    regexp = re.compile( r'^L\s(\d+)\s\(.+?\):\s([A-Z]+):\s(.+)$' )
 
     for line in stdout.getvalue().split( '\n' ):
         tmp = regexp.match( line )
