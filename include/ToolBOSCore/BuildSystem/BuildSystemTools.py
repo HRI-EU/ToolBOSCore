@@ -463,12 +463,13 @@ class BuildSystemTools( object ):
         # ToolBOS.conf to the extra search path for "getConfigOption()"
         # (TBCORE-1052)
 
-        tconfExtraDir = [ self._sourceTree ] if self._outOfTree else None
+        if self._outOfTree:
+            envName  = 'TOOLBOSCONF_PATH'
+            envValue = '%s:%s' % ( self._sourceTree, FastScript.getEnv( envName ) )
+            logging.debug( 'registering extra ToolBOS.conf dir: %s', self._sourceTree )
+            FastScript.setEnv( envName, envValue )
 
-        if tconfExtraDir:
-            logging.debug( 'registering extra ToolBOS.conf dir: %s', tconfExtraDir )
-
-        cmakeModPath  = getConfigOption( 'BST_modulePath', tconfExtraDir )
+        cmakeModPath  = getConfigOption( 'BST_modulePath' )
         cmakeModPath  = FastScript.expandVars( cmakeModPath )
 
         if self._outOfTree and not os.path.isabs( cmakeModPath ):
