@@ -38,7 +38,7 @@ OLD_VERSION=3[.]3
 NEW_VERSION=3.4
 
 
-sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat CmdSrcMinGW.bat \
+sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           bin/*.bat \
                                           bin/ToolBOS-Setup.py \
                                           etc/ToolBOS.conf \

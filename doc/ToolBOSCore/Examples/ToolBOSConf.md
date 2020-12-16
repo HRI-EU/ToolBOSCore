@@ -37,5 +37,5 @@
     hostArch     = 'amd64'
     hostCompiler = 'gcc'
     hostOS       = 'linux'
-    hostPlatform = 'precise64'
+    hostPlatform = 'focal64'
     # EOF
