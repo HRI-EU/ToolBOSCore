@@ -138,6 +138,7 @@ def getPlatformList():
     """
     return (
              ( 'bionic64',              'linux',     64, 'gcc',    'Ubuntu 18.04 LTS (64 bit)' ),
+             ( 'focal64',               'linux',     64, 'gcc',    'Ubuntu 20.04 LTS (64 bit)' ),
              ( 'macos',                 'macos',     32, 'gcc',    'Apple MacOS' ),
              ( 'peakcan',               'peakcan',   32, 'gcc',    'PeakCAN Router' ),
              ( 'phyboardwega',          'phyboard',  32, 'gcc',    'phyboardwega' ),
