@@ -46,12 +46,8 @@ cd ${CWD}/NativeCompilation     && runTest ./TestNativeCompilation.py
 
 if [[ "${CIA}" != "TRUE" ]]
 then
-    # 1. cross-compilation is not supported from trusty64, yet
-    #
-    # 2. during unittest TOOLBOSCORE_ROOT points to the working copy
-    #    under test, which does not contain the ToolBOSCore.lib
-    #    Windows libraries
-    #
+    # skip complex cross-compilation setup during Nightly Build
+
     cd ${CWD}/WineMSVC          && runTest ./TestWineMSVC.py
 fi
 

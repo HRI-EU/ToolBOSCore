@@ -366,7 +366,7 @@ argman.addExample( '%(prog)s -ai                         # all + install globall
 argman.addExample( '%(prog)s -bv                         # build in verbose mode' )
 argman.addExample( '%(prog)s /path/to/sourcetree         # out-of-tree build' )
 argman.addExample( '%(prog)s -p help                     # show cross-compile platforms' )
-argman.addExample( '%(prog)s -p windows-amd64-vs2012     # cross-compile for Windows' )
+argman.addExample( '%(prog)s -p windows-amd64-vs2017     # cross-compile for Windows' )
 argman.addExample( '%(prog)s -n                          # create new packages (GUI-version)' )
 argman.addExample( '%(prog)s -n help                     # show available templates' )
 argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C library "Foo"' )
