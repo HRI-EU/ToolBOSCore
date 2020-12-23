@@ -31,8 +31,10 @@
 #
 #
 
-from ToolBOSCore.Util import Any
+
 import logging
+
+from ToolBOSCore.Util import Any
 
 
 def getDefaultLanguageStandard( platform ):
@@ -79,12 +81,13 @@ def _preprocessString( compiler, string, lang ):
     """
         Preprocess a string with the given compiler.
     """
-    from six import StringIO
-    from ToolBOSCore.Util.FastScript import execProgram
-    from subprocess import CalledProcessError
+    import io
 
-    inp = StringIO( string )
-    out = StringIO( )
+    from subprocess import CalledProcessError
+    from ToolBOSCore.Util.FastScript import execProgram
+
+    inp = io.StringIO( string )
+    out = io.StringIO( )
 
     try:
         execProgram( '{} -x{} -E -'.format( compiler, lang ),
@@ -215,7 +218,8 @@ def getIncludePaths(compiler, lang):
         Get the standard include paths for the given compiler and language ('c'
         or 'c++').
     """
-    from six import StringIO
+    import io
+
     from ToolBOSCore.Util.FastScript import execProgram
     from subprocess import CalledProcessError
 
@@ -228,9 +232,9 @@ def getIncludePaths(compiler, lang):
     import itertools
     lines = _preprocessString( compiler, '', lang ).split('\n')
 
-    inp = StringIO( '' )
-    out = StringIO( )
-    err = StringIO( )
+    inp = io.StringIO( '' )
+    out = io.StringIO( )
+    err = io.StringIO( )
 
     try:
         execProgram( '{} -x{} -E -Wp,-v -'.format( compiler, lang ),
@@ -250,3 +254,6 @@ def getIncludePaths(compiler, lang):
         logging.error( 'Unable to run the preprocessor: %s.', e )
 
     return None
+
+
+# EOF

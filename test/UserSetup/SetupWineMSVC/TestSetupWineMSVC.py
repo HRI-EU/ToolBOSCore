@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  launches the unit testing
@@ -35,11 +35,10 @@
 #
 
 
+import io
 import os
 import tempfile
 import unittest
-
-from six import StringIO
 
 from ToolBOSCore.Settings           import UserSetup
 from ToolBOSCore.Util               import FastScript
@@ -57,7 +56,7 @@ class TestSetupWineMSVC( unittest.TestCase ):
 
     def test_setupMSVC_withWine( self ):
         configDir = tempfile.mkdtemp( prefix='test-' )
-        output    = StringIO() if Any.getDebugLevel() <= 3 else None
+        output    = io.StringIO() if Any.getDebugLevel() <= 3 else None
 
 
         # setup Wine

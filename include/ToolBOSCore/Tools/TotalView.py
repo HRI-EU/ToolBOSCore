@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Interface to RogueWave TotalView debugger
@@ -44,7 +44,7 @@ import logging
 import subprocess
 
 from ToolBOSCore.Settings import ProcessEnv
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 
 
 #----------------------------------------------------------------------------
@@ -59,7 +59,7 @@ def startGUI():
         Note that the program will be opened in background in order not to
         block the caller.
     """
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_totalview' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_totalview' ) )
 
     try:
         cmd = 'totalview'

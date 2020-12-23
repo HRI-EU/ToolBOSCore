@@ -36,8 +36,9 @@
 
 import logging
 import re
+import urllib
 
-from ToolBOSCore.Util import Any, FastScript, VersionCompat
+from ToolBOSCore.Util import Any, FastScript
 
 FastScript.tryImport( 'gitlab' )
 import gitlab
@@ -123,7 +124,7 @@ class GitLabRepo( object ):
         Any.requireIsMatching( repoURL, '^http.+\.git' )
         Any.requireIsTextNonEmpty( token )
 
-        tmp             = VersionCompat.urlsplit( repoURL )
+        tmp             = urllib.urlsplit( repoURL )
         Any.requireIsTextNonEmpty( tmp.scheme )
         Any.requireIsTextNonEmpty( tmp.netloc )
         Any.requireIsTextNonEmpty( tmp.path )

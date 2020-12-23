@@ -52,7 +52,7 @@ At loading time the Python code gets evaluated and the following variables are s
       <td>dependsArch</td>
       <td>dict { string: list of strings }</td>
       <td>platform-specific dependencies can be stored in this dictionary,
-          e.g. { 'trusty64': [ 'deb://openjdk-7-jdk' ] }</td>
+          e.g. { 'focal64': [ 'deb://openjdk-11-jdk' ] }</td>
  </tr>
  <tr>
       <td>buildDepends</td>
@@ -64,7 +64,7 @@ At loading time the Python code gets evaluated and the following variables are s
       <td>buildDependsArch</td>
       <td>dict { string: list of strings }</td>
       <td>platform-specific build-dependencies can be stored in this
-          dictionary, e.g. { 'trusty64': [ 'deb://gcc-4.8' ] }</td>
+          dictionary, e.g. { 'focal64': [ 'deb://gcc-9.3' ] }</td>
  </tr>
  <tr>
       <td>recommended</td>

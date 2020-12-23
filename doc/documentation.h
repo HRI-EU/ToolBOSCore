@@ -128,14 +128,14 @@
  *   <th>Platform identifier</th>
  * </tr>
  * <tr>
- *   <td>Ubuntu Linux 14.04 LTS ("Trusty Tahr")</td>
- *   <td>amd64 (64 bit)</td>
- *   <td><tt>trusty64</tt></td>
- * </tr>
- * <tr>
  *   <td>Ubuntu Linux 18.04 LTS ("Bionic Beaver")</td>
  *   <td>amd64 (64 bit)</td>
  *   <td><tt>bionic64</tt></td>
+ * </tr>
+ <tr>
+ *   <td>Ubuntu Linux 20.04 LTS ("Focal Fossa")</td>
+ *   <td>amd64 (64 bit)</td>
+ *   <td><tt>focal64</tt></td>
  * </tr>
  * <tr>
  *   <th colspan="4"> </th>
@@ -235,16 +235,16 @@
  * Please execute the following commands and follow their instructions:
  *
  * \code
-   $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.4/BashSrc
+   $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/BashSrc
 
-   $ /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.4/bin/ToolBOS-Setup.py
+   $ /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/bin/ToolBOS-Setup.py
    \endcode
  *
  * As mentioned by the script, please add a line like this to your
  * ~/.bashrc, and then logout and login again.
  *
  * \code
-   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.4/BashSrc
+   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/BashSrc
    \endcode
  *
  * <hr>
@@ -254,7 +254,7 @@
  * script:
  *
  * \verbatim
-   S:\DevelopmentTools\ToolBOSCore\3.4\CmdSrc.bat
+   S:\DevelopmentTools\ToolBOSCore\4.0\CmdSrc.bat
    \endverbatim
  *
  * \image html BuildSystemTools/WindowsSetEnv.png
@@ -263,13 +263,13 @@
  * \page ToolBOS_Setup_AddOns Sourcing additional packages
  *
  * To always have additional packages sourced, please do so directly in
- * your ~/.bashrc (after the sourcing of ToolBOSCore/3.4/BashSrc).
+ * your ~/.bashrc (after the sourcing of ToolBOSCore/4.0/BashSrc).
  *
  * \note At this point you may make use of ${SIT}.
  *
  * \verbatim
    # mandatory:
-   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.4/BashSrc
+   source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/BashSrc
 
    # optional:
    source ${SIT}/Applications/ABC/1.0/BashSrc
@@ -468,7 +468,7 @@
 \endcode
  * for example:
  * \code
- * ${SIT}/DevelopmentTools/ToolBOSCore/3.4
+ * ${SIT}/DevelopmentTools/ToolBOSCore/4.0
 \endcode
  *
  * A package name must start with an alphabetic character (A-Z, a-z).
@@ -482,7 +482,7 @@
  * e.g.:
  * \code
  * 1.0
- * 3.4.12
+ * 4.0.12
  * 2012.0
  * 42.0.1337-rc1
 \endcode
@@ -1480,11 +1480,11 @@ Project
  * <tr>
  *   <td>\b Example:
  *       \code
-         bst_find_package(DevelopmentTools/ToolBOSCore/3.4)
+         bst_find_package(DevelopmentTools/ToolBOSCore/4.0)
          bst_find_package(Libraries/MasterClock/1.6)
          \endcode
  *
- *       This includes both packages ToolBOSCore 3.4 and MasterClock 1.6
+ *       This includes both packages ToolBOSCore 4.0 and MasterClock 1.6
  *       (and recursively all of their dependencies) from the SIT.
  *
  *       The \c packageVar.cmake inside each of these packages is
@@ -2228,7 +2228,7 @@ Project
  * CMakeLists.txt:
  *
  * \verbatim
-   bst_find_package(DevelopmentTools/ToolBOSCore/3.4)
+   bst_find_package(DevelopmentTools/ToolBOSCore/4.0)
    bst_find_package(Libraries/MasterClock/1.6)
    \endverbatim
  *
@@ -2367,7 +2367,7 @@ Project
  * </tr>
  * <tr>
  *   <td>check for particular platform</td>
- *   <td><tt>if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "windows-amd64-vs2012")<br/>...<br/>else()<br/>...<br/>endif()</tt></td>
+ *   <td><tt>if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "windows-amd64-vs2017")<br/>...<br/>else()<br/>...<br/>endif()</tt></td>
  * </tr>
  * </table>
  *
@@ -2469,7 +2469,7 @@ Project
    Major version:          1
    Minor version:          6
    CMake generator:        Unix Makefiles
-   including package:      sit://DevelopmentTools/ToolBOSCore/3.4
+   including package:      sit://DevelopmentTools/ToolBOSCore/4.0
    including package:      sit://Libraries/MasterClockCore/1.2
    -- Configuring done
    -- Generating done
@@ -2603,13 +2603,13 @@ Project
  * in your \c pkgInfo.py . Each tuple contains two elements (target, symlink).
  *
  * \code
-   installSymlinks  = [ ( 'windows-amd64-vs2010',             # target
-                          'windows-amd64-vs2012' ) ]          # symlink
+   installSymlinks  = [ ( 'windows-amd64-vs2020',             # target
+                          'windows-amd64-vs2017' ) ]          # symlink
    \endcode
  *
  * This creates a symlink within the installation directory. The symlink is
- * named "windows-amd64-vs2012" (2nd element) pointing to
- * "windows-amd64-vs2010" (1st element).
+ * named "windows-amd64-vs2017" (2nd element) pointing to
+ * "windows-amd64-vs2020" (1st element).
  *
  * Both elements may contain subdirectory pathnames.
  *
@@ -2904,7 +2904,7 @@ make install
  *      <td><tt>dependsArch</tt></td>
  *      <td>dict { string: list of strings }</td>
  *      <td>plaform-specific dependencies can be stored in this dictionary,
- *          e.g. { 'trusty64': [ 'deb://openjdk-7-jdk' ] }</td>
+ *          e.g. { 'focal64': [ 'deb://openjdk-11-jdk' ] }</td>
  * </tr>
  * <tr>
  *      <td><tt>buildDepends</tt></td>
@@ -2916,7 +2916,7 @@ make install
  *      <td><tt>buildDependsArch</tt></td>
  *      <td>dict { string: list of strings }</td>
  *      <td>plaform-specific build-dependencies can be stored in this
- *          dictionary, e.g. { 'trusty64': [ 'deb://gcc-4.8' ] }</td>
+ *          dictionary, e.g. { 'focal64': [ 'deb://gcc-9.3' ] }</td>
  * </tr>
  * <tr>
  *      <td><tt>recommended</tt></td>
@@ -3195,7 +3195,7 @@ make install
 
    # explicitly state dependencies (otherwise extracted from CMakeLists.txt)
 
-   depends       = [ 'sit://DevelopmentTools/ToolBOSCore/3.4',
+   depends       = [ 'sit://DevelopmentTools/ToolBOSCore/4.0',
                      'deb://libjpeg62' ]
 
    buildDepends  = [ 'sit://External/pthreads/1.0',
@@ -3277,7 +3277,7 @@ make install
  * fact is a dynamically linked executable):
  *
  * \verbatim
-   $ ldd test/precise64/unittest
+   $ ldd test/${MAKEFILE_PLATFORM}/unittest
         linux-vdso.so.1 =>  (0x00007fff12e2b000)
         librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fc41c3b4000)
         libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fc41c196000)
@@ -3312,11 +3312,11 @@ make install
  *
  * <h2>Windows applications on Linux, using Wine</h2>
  *
- * With the "-p windows-amd64-vs2012" option you can execute Windows binaries on
+ * With the "-p windows-amd64-vs2017" option you can execute Windows binaries on
  * Linux machines, using the <a href="http://www.winehq.org">Wine</a> framework.
  *
  * \verbatim
-   $ RunFromSourceTree.sh -p windows-amd64-vs2012 test/windows-amd64-vs2012/testDataSet.exe
+   $ RunFromSourceTree.sh -p windows-amd64-vs2017 test/windows-amd64-vs2017/testDataSet.exe
    [1266874888.373423 9:0 testDataSet.cpp:318 Info] base constructor sampling plan
    [1266874888.373423 9:0 testDataSet.cpp:326 Data] mNumDimensions=Dimension: 0
    [1266874888.373423 9:0 testDataSet.cpp:327 Data] mNumPoints=Points: 0
@@ -3667,7 +3667,7 @@ make install
  *
  * \code
  * export SIT_VERSION=oldstable
- * source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/3.4/BashSrc
+ * source /hri/sit/${SIT_VERSION}/DevelopmentTools/ToolBOSCore/4.0/BashSrc
 \endcode
  *
  * To work permanently with this build you should set this in your
@@ -3704,7 +3704,7 @@ make install
  * Set this in your ~/.bashrc:
  * \code
  * export TOOLBOSCORE_AUTO_VERSION=FALSE
- * source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.4.1234
+ * source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0.1234
 \endcode
  * where "2.0.1234" is the particular version you are interested in.
  *
@@ -4634,13 +4634,13 @@ make install
    $ ls -lh /var/crash
    total 128K
    drwxrwxrwt  2 root   root   4.0K Jan 22 16:10 .
-   drwxr-xr-x 15 root   root   4.0K Apr 25  2013 ..
-   -rw-------  1 mstein hriasc 256K Jan 22 16:16 !home!mstein!tmp!HelloWorld!1.0!bin!precise64!CrashNow.22475.1421939771.11
+   drwxr-xr-x 15 root   root   4.0K Apr 25  2020 ..
+   -rw-------  1 mstein hriasc 256K Jan 22 16:16 !home!mstein!tmp!HelloWorld!1.0!bin!focal64!CrashNow.22475.1421939771.11
    \endverbatim
  *
  * Then you can open this corefile with your preferred debugger, e.g.:
    \verbatim
-   $ gdb ./CrashNow /var/crash/\!home\!mstein\!tmp\!HelloWorld\!1.0\!bin\!precise64\!CrashNow.22475.1421939771.11
+   $ gdb ./CrashNow /var/crash/\!home\!mstein\!tmp\!HelloWorld\!1.0\!bin\!focal64\!CrashNow.22475.1421939771.11
    [...]
    Core was generated by `./CrashNow'.
    Program terminated with signal 11, Segmentation fault.

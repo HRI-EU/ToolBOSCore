@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Create ground truth data for HelpText unittest
@@ -41,13 +41,13 @@
 
 
 import glob
+import io
 import logging
 import os
 
 from ToolBOSCore.Platforms          import Platforms
 from ToolBOSCore.Util               import Any
 from ToolBOSCore.Util               import FastScript
-from six import StringIO
 
 
 verbose = FastScript.getEnv( 'VERBOSE' ) == 'TRUE'
@@ -102,7 +102,7 @@ for program in pyScripts + shScripts + executables:
 
     logging.info( 'processing %s', basename )
 
-    output   = StringIO()
+    output   = io.StringIO()
     cmd      = '%s --help' % program
     fileName = os.path.join( 'ReferenceData', '%s.txt' % basename )
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  launches the unit testing
@@ -35,9 +35,8 @@
 #
 
 
+import io
 import unittest
-
-from six import StringIO
 
 from ToolBOSCore.Util import Any, FastScript
 
@@ -51,7 +50,7 @@ class TestExecInAllProjects( unittest.TestCase ):
 
     def test_execInAllProjects( self ):
         cmd    = 'ExecInAllProjects.py "cat hello.txt"'
-        output = StringIO()
+        output = io.StringIO()
 
 
         # run ExecInAllProjects.py

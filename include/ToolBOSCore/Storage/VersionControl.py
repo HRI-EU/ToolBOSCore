@@ -34,13 +34,10 @@
 #
 
 
-from __future__ import print_function
-
 import logging
 import os
 
-from ToolBOSCore.Tools import Git
-from ToolBOSCore.Tools import SVN
+from ToolBOSCore.Tools import Git, SVN
 from ToolBOSCore.Util  import Any
 
 

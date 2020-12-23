@@ -34,6 +34,7 @@
 #
 
 
+import io
 import logging
 
 import sip
@@ -45,8 +46,6 @@ from PyQt5.QtCore    import pyqtSignal
 from PyQt5.QtCore    import QThread
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui     import *
-
-from six import StringIO
 
 from ToolBOSCore.GenericGUI import PixmapProvider
 from ToolBOSCore.Packages   import PackageCreator
@@ -320,7 +319,7 @@ class PackageCreatorThread( QThread ):
 
 
     def run( self ):
-        progressLog = StringIO()
+        progressLog = io.StringIO()
         debugLevel  = logging.DEBUG if Any.getDebugLevel() > 3 else logging.INFO
 
         Any.addStreamLogger( progressLog, debugLevel, False )

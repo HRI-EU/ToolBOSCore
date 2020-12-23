@@ -43,7 +43,7 @@ from mako.lookup import TemplateLookup
 
 from ToolBOSCore.Packages.PackageDetector   import PackageDetector
 from ToolBOSCore.Packages.ProjectProperties import requireIsCanonicalPath
-from ToolBOSCore.Settings                   import ToolBOSSettings
+from ToolBOSCore.Settings                   import ToolBOSConf
 from ToolBOSCore.Storage                    import SIT
 from ToolBOSCore.Storage.BashSrc            import BashSrcWriter
 from ToolBOSCore.Storage.CmdSrc             import CmdSrcWriter
@@ -59,7 +59,7 @@ templateDir_core = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
 
 # location of higher-level templates such as BBCMs etc.
 templateDir      = os.path.join( SIT.getPath(),
-                                 ToolBOSSettings.getConfigOption( 'package_pkgCreator' ),
+                                 ToolBOSConf.getConfigOption( 'package_pkgCreator' ),
                                  'etc/mako-templates' )
 
 
@@ -213,8 +213,8 @@ class PackageCreator_CMakeProject( PackageCreator ):
         Creates an empty package with a boilerplate CMakeLists.txt.
     """
     def run( self ):
-        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_cutest     = ToolBOSConf.getConfigOption( 'package_cutest' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
 
         if not 'buildRules' in self.values:
 
@@ -288,9 +288,9 @@ class PackageCreator_C_BBCM( PackageCreator_CMakeProject ):
         Creates a BBCM component for wrapping code in RTBOS.
     """
     def run( self ):
-        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
-        package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_cutest     = ToolBOSConf.getConfigOption( 'package_cutest' )
+        package_libxml     = ToolBOSConf.getConfigOption( 'package_libxml' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Modules/BBCM/Testing'
@@ -340,9 +340,9 @@ class PackageCreator_C_BBDM( PackageCreator_CMakeProject ):
         Any.requireMsg( len(self.packageName) > 4, "package name is too short" )
         Any.requireMsg( self.packageName.startswith( 'BBDM' ), "package name must start with 'BBDM'" )
 
-        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
-        package_libxml     = ToolBOSSettings.getConfigOption( 'package_libxml' )
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_cutest     = ToolBOSConf.getConfigOption( 'package_cutest' )
+        package_libxml     = ToolBOSConf.getConfigOption( 'package_libxml' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Modules/BBDM'
@@ -390,8 +390,8 @@ class PackageCreator_C_Library( PackageCreator_CMakeProject ):
         Creates a simple C library package.
     """
     def run( self ):
-        package_cutest     = ToolBOSSettings.getConfigOption( 'package_cutest' )
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_cutest     = ToolBOSConf.getConfigOption( 'package_cutest' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Libraries'
@@ -422,7 +422,7 @@ class PackageCreator_C_MainProgram( PackageCreator_CMakeProject ):
         Creates a simple C main program package.
     """
     def run( self ):
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Applications'
 
@@ -447,7 +447,7 @@ class PackageCreator_Cpp_Class( PackageCreator_CMakeProject ):
         Creates a simple C++ class package.
     """
     def run( self ):
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Libraries'
@@ -474,7 +474,7 @@ class PackageCreator_Cpp_MainProgram( PackageCreator_CMakeProject ):
         Creates a simple C main program package.
     """
     def run( self ):
-        package_toolboslib = ToolBOSSettings.getConfigOption( 'package_toolboslib' )
+        package_toolboslib = ToolBOSConf.getConfigOption( 'package_toolboslib' )
 
         if not 'category' in self.values:
             self.values[ 'category' ] = 'Applications'
@@ -993,7 +993,7 @@ class PackageCreator_Quality_Guideline( PackageCreator ):
         self.values[ 'rules'             ] = Rules.getRules()
         self.values[ 'ruleIDs'           ] = ruleIDs
 
-        self.values[ 'documentationURL_dir' ] = ToolBOSSettings.getConfigOption( 'documentationURL_dir' )
+        self.values[ 'documentationURL_dir' ] = ToolBOSConf.getConfigOption( 'documentationURL_dir' )
 
         self.templatize( os.path.join( srcDir, 'online.html.mako' ),
                          os.path.join( dstDir, 'QualityGuideline.html' ) )
@@ -1012,7 +1012,7 @@ class PackageCreator_RTMaps_Package( PackageCreator_CMakeProject ):
             self.values[ 'category' ] = 'Modules/RTMaps'
 
         if not 'dependencies' in self.values:
-            package_rtmaps = ToolBOSSettings.getConfigOption( 'package_rtmaps' )
+            package_rtmaps = ToolBOSConf.getConfigOption( 'package_rtmaps' )
             Any.requireIsTextNonEmpty( package_rtmaps )
             self.values[ 'dependencies' ] = [ package_rtmaps ]
 
