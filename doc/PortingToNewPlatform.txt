@@ -11,9 +11,8 @@ WHAT TO DO WHEN INTRODUCING NEW PLATFORMS:
 
   * ToolBOS.conf: compile host assignment for Zen Build Mode, or None
 
-  * list in documentation ("supported platforms", "compile hosts")
+  * list in documentation ("supported platforms")
 
-  * mention in ChangeLog
   
 
 

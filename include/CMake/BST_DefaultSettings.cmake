@@ -196,6 +196,7 @@ elseif( "$ENV{MAKEFILE_PLATFORM}" STREQUAL "mingw64" )
     add_definitions(${BST_DEFAULT_DEFINES})
 
 elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32" OR
+       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal32" OR
        "$ENV{MAKEFILE_PLATFORM}" STREQUAL "xenial32")
 
     set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=sandybridge -std=c99")
@@ -204,6 +205,7 @@ elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32" OR
     add_definitions(${BST_DEFAULT_DEFINES})
 
 elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
+       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal64" OR
        "$ENV{MAKEFILE_PLATFORM}" STREQUAL "xenial64")
 
     set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=sandybridge -m64 -std=c99")

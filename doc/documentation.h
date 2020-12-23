@@ -137,6 +137,11 @@
  *   <td>amd64 (64 bit)</td>
  *   <td><tt>bionic64</tt></td>
  * </tr>
+ <tr>
+ *   <td>Ubuntu Linux 20.04 LTS ("Focal Fossa")</td>
+ *   <td>amd64 (64 bit)</td>
+ *   <td><tt>focal64</tt></td>
+ * </tr>
  * <tr>
  *   <th colspan="4"> </th>
  * </tr>
