@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  List packages which have no dependee (inspired by "deborphan")
@@ -39,8 +39,6 @@
 # Includes
 #----------------------------------------------------------------------------
 
-
-from __future__ import print_function
 
 from ToolBOSCore.Packages import BSTPackage
 from ToolBOSCore.Packages import ProjectProperties

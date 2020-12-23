@@ -40,7 +40,7 @@ import os
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms.Platforms      import getHostPlatform
 from ToolBOSCore.Settings                 import ProcessEnv
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Util                     import Any, FastScript
 
@@ -88,16 +88,10 @@ class DocumentationCreator( object ):
             handler = NullBackend
         elif details.isMatlabPackage():
 
-            # [CIA-1131] matdoc no longer works on xenial64
-            #
-            # On Ubuntu 16.04 disable documentation creation
-            # (do not use doxygen either to not overwrite the
-            # correct matdoc-output from Ubuntu 14.04 machines)
+            # Matlab is no longer needed, and there are also issues starting
+            # with Ubuntu 16.04 (see CIA-1131)
 
-            if getHostPlatform().startswith( 'xenial' ):
-                handler = NullBackend
-            else:
-                handler = MatlabBackend
+            handler = NullBackend
 
         else:
             handler = DoxygenBackend

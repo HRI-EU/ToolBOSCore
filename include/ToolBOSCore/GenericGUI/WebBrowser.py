@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  simple browser widget
@@ -53,7 +53,7 @@ except ImportError:
     _qt = 0
 
 
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import Any
 
 
@@ -165,7 +165,7 @@ def openDocumentation( canonicalPath, parent=None ):
 
     logging.info( 'opening docu for %s', canonicalPath )
 
-    url = ToolBOSSettings.getConfigOption( 'documentationURL_sit' ) + \
+    url = ToolBOSConf.getConfigOption( 'documentationURL_sit' ) + \
           canonicalPath + '/doc/html/index.html'
 
     title   = 'Documentation of %s' % canonicalPath
@@ -184,7 +184,7 @@ def openToolBOSDocumentation( fileName, parent=None ):
 
     logging.info( 'opening online documentation' )
 
-    url = ToolBOSSettings.getConfigOption( 'documentationURL_dir' ) + \
+    url = ToolBOSConf.getConfigOption( 'documentationURL_dir' ) + \
           fileName + '.html'
 
     browser = WebBrowser( 'Documentation', parent )

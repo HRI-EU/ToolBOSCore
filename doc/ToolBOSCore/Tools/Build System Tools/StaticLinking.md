@@ -40,7 +40,7 @@ Note that CMake supports true static linking of executables though.
     
 The resulting executable will link against essential libraries only (in fact is a dynamically linked executable):
 
-    $ ldd test/precise64/unittest
+    $ ldd test/focal64/unittest
          linux-vdso.so.1 =>  (0x00007fff12e2b000)
          librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fc41c3b4000)
          libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fc41c196000)

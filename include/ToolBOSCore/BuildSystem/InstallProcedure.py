@@ -37,6 +37,7 @@
 import collections
 import glob
 import grp
+import io
 import logging
 import os
 import re
@@ -44,8 +45,6 @@ import stat
 import subprocess
 import tempfile
 import time
-
-import six
 
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
@@ -197,7 +196,7 @@ class InstallProcedure( object ):
         if Any.getDebugLevel() > 3:
             output = None
         else:
-            output = six.StringIO()
+            output = io.StringIO()
 
         dc = DocumentationCreator( self.details.topLevelDir, self.dstSIT,
                                    output, output, self.details )
@@ -372,7 +371,7 @@ class InstallProcedure( object ):
 
             try:
                 prompt = '\t--> Install now? (Y/n)  '
-                answer = six.moves.input( prompt )
+                answer = input( prompt )
             except EOFError:
                 # user hit <CTRL+D>
                 raise KeyboardInterrupt( 'operation aborted by user' )
@@ -548,8 +547,8 @@ class InstallProcedure( object ):
                                                                       itemDstPath )
 
                 # os.walks() puts symlinks to directories into the 'directories'
-                # list, and not into 'files', hence symlinks like "precise64" -->
-                # "trusty64" would not get installed, see JIRA ticket TBCORE-947
+                # list, and not into 'files', hence symlinks like "focal64" -->
+                # "bionic64" would not get installed, see JIRA ticket TBCORE-947
                 for item in dirs:
                     itemSrcPath = os.path.join( root, item )
 
@@ -1436,7 +1435,7 @@ class GlobalInstallProcedure( InstallProcedure ):
 
             try:
                 prompt = '\n\t--> Reason:  '
-                reason = six.moves.input( prompt )
+                reason = input( prompt )
             except EOFError:
                 # user hit <CTRL+D>
                 raise KeyboardInterrupt( 'operation aborted by user' )
@@ -1536,7 +1535,7 @@ class GlobalInstallProcedure( InstallProcedure ):
                 try:
                     prompt = '\n\t--> Update symlink %s --> %s (Y/n)?  ' % \
                              ( self.details.packageVersion, target )
-                    answer = six.moves.input( prompt )
+                    answer = input( prompt )
                 except EOFError:
                     # user hit <CTRL+D>
                     raise KeyboardInterrupt( 'operation aborted by user' )

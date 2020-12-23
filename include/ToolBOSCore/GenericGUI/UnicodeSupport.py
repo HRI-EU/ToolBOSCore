@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Various UTF-8 / -16 conversion functions, incl. Qt types
@@ -37,8 +37,6 @@
 
 import logging
 
-import six
-
 from PyQt5.QtCore import QByteArray
 
 from ToolBOSCore.Util import Any
@@ -76,10 +74,7 @@ def convert( x ):
 
 def convertBytes( b ):
     """
-        Converts a string of Python's 'byte' type to:
-
-        Py2: unicode
-        Py3: str
+        Converts a string of Python's 'byte' type to 'str'.
     """
     Any.requireIsInstance( b, bytes )
 
@@ -96,14 +91,9 @@ def convertQByteArray( qba ):
     Any.requireIsInstance( qba, QByteArray )
 
     data = qba.data()
+    Any.requireIsInstance( data, bytes )
 
-    if six.PY2:
-        Any.requireIsInstance( data, str )
-        return convertStr( data )
-
-    else:
-        Any.requireIsInstance( data, bytes )
-        return convertBytes( data )
+    return convertBytes( data )
 
 
 def convertStr( s ):
@@ -115,28 +105,9 @@ def convertStr( s ):
     """
     Any.requireIsInstance( s, str )
 
-    if six.PY2:
-        # decode str-object (which may contain UTF-8/16) to Unicode object
+    # no need to do anything (str-objects are unicode-ready)
 
-        try:
-            result = s.decode( 'utf8' )
-
-        except UnicodeDecodeError:
-            logging.warning( 'UTF-8 conversion error, trying UTF-16' )
-
-            try:
-                result = s.decode( 'utf16' )
-
-            except UnicodeDecodeError as e:
-                logging.error( 'conversion error: %s', e )
-                result = e
-
-    else:
-        # no need to do anything (str-objects are unicode-ready)
-
-        result = s
-
-    return result
+    return s
 
 
 # EOF

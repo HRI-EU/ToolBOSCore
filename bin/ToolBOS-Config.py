@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Show ToolBOS config options
@@ -40,10 +40,8 @@
 #----------------------------------------------------------------------------
 
 
-from __future__ import print_function
-from pprint     import pprint
-
 import logging
+import pprint
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import Any, ArgsManagerV2
@@ -58,28 +56,33 @@ desc = 'Configure ToolBOS SDK preferences.'
 
 argman = ArgsManagerV2.ArgsManager( desc )
 
+argman.addArgument( '-f', '--format', type=str, metavar='VAR',
+                    help='show value of specified config option in native Python format' )
+
 argman.addArgument( '-p', '--print', type=str, metavar='VAR',
                     help='show value of specified config option' )
 
-argman.addArgument( '-s', '--set', type=str, metavar='EXPR',
-                    help='set config option in user conf in Python syntax ("key=value")' )
-
 argman.addArgument( '-r', '--remove', type=str, metavar='VAR',
                     help='remove config option from user conf' )
+
+argman.addArgument( '-s', '--set', type=str, metavar='EXPR',
+                    help='set config option in user conf in Python syntax ("key=value")' )
 
 argman.addArgument( '-z', '--zen', action='store_true',
                     help='open configuration GUI' )
 
 
 argman.addExample( '%(prog)s' )
+argman.addExample( '%(prog)s -f defaultPlatform' )
 argman.addExample( '%(prog)s -p defaultPlatform' )
+argman.addExample( '%(prog)s -r "foo"' )
 argman.addExample( '%(prog)s -s "defaultPlatform = \'qnx\'"' )
 argman.addExample( '%(prog)s -s "foo=bar"' )
-argman.addExample( '%(prog)s -r "foo"' )
 argman.addExample( '%(prog)s -z                   # opens GUI' )
 
 args     = vars( argman.run() )
 
+formatVar = args['format']
 printVar  = args['print']
 removeVar = args['remove']
 setVar    = args['set']
@@ -93,14 +96,28 @@ zen       = args['zen']
 
 tconf = ToolBOSConf.ToolBOSConf()
 
+if formatVar:
+    try:
+        value = tconf.getConfigOption( formatVar )
+    except KeyError:
+        value = '<not set>'
 
-if printVar:
+    if type( value ) in ( dict, list, frozenset ):
+        print( value )
+    else:
+        pprint.pprint( value )
+
+elif printVar:
     try:
         value = tconf.getConfigOption( printVar )
     except KeyError:
         value = '<not set>'
 
-    pprint( value )
+    print( value )
+
+elif removeVar:
+    Any.setDebugLevel( logging.DEBUG )
+    tconf.delUserConfigOption( removeVar  )
 
 elif setVar:
     # Note: Setting non-string options does not work, yet because everything
@@ -124,18 +141,7 @@ elif setVar:
     Any.setDebugLevel( logging.DEBUG )
     tconf.setUserConfigOption( key, value )
 
-elif removeVar:
-
-    Any.setDebugLevel( logging.DEBUG )
-    tconf.delUserConfigOption( removeVar  )
-
-elif removeVar:
-
-    Any.setDebugLevel( logging.DEBUG )
-    tconf.delUserConfigOption( removeVar  )
-
 elif zen:
-
     from ToolBOSCore.Settings import PreferencesDialog
 
     PreferencesDialog.run()
@@ -151,10 +157,10 @@ else:
     for key in keys:
         value = config[ key ]
 
-        if type(value) in (dict, list, frozenset):
+        if type( value ) in ( dict, list, frozenset ):
             print( '%30s | %s' % ( key.ljust(30), value ) )
         else:
             print( '%30s | ' % ( key.ljust(30) ), end='' )
-            pprint( value )
+            pprint.pprint( value )
 
 # EOF

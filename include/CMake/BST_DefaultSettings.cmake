@@ -135,76 +135,22 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #----------------------------------------------------------------------------
 
 
-if(BST_USE_CLANG OR "$ENV{MAKEFILE_PLATFORM}" MATCHES "^mingw" )
+if(BST_USE_CLANG)
     set(BST_DEFAULT_FLAGS_LINUX "-ggdb -Wall -Wextra -pedantic -fPIC -Wno-long-long -Wno-variadic-macros -Wfloat-equal")
 else()
     set(BST_DEFAULT_FLAGS_LINUX "-ggdb -Wall -Wextra -pedantic -fPIC -rdynamic -Wno-long-long -Wno-variadic-macros -Wfloat-equal")
 endif()
 
-# set(BST_DEFAULT_FLAGS_WINDOWS "/GF /MD /GS- /Gd /Gy /Oi /FC /showIncludes")
+
 set(BST_DEFAULT_FLAGS_WINDOWS "/GF /MD /GS- /Gd /Gy /Oi")
-
-if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "windows-i386-msvc" OR
-   "$ENV{MAKEFILE_PLATFORM}" STREQUAL "windows-amd64-msvc")
-    if(MSVC_VERSION GREATER 1600)
-      # Workaround to prevent compiler's warning for incompatibility between
-      # VC2012 and PDK7.1
-      add_definitions("/D_USING_V110_SDK71_")
-    endif()
-endif()
-
-# Note: The BST_DEFAULT_DEFINES variable is also used in BPL packages.
-#       There it is used to set CMAKE_SWIG_FLAGS.
 
 
 if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "")
 
     message(FATAL_ERROR "Please set the MAKEFILE_PLATFORM environment variable.")
 
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "centos6-32" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "lucid32" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "precise32" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "trusty32" )
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2  -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2 ")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__linux__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "centos6-64" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "lucid64" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "precise64" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "trusty64" )
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2 -m64 -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2 -m64")
-    set(BST_DEFAULT_DEFINES     "-D__64BIT__ -D__linux__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif( "$ENV{MAKEFILE_PLATFORM}" STREQUAL "mingw32" )
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2  -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2 ")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__win32__ -D_WIN32 -D__windows__ -D__mingw__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif( "$ENV{MAKEFILE_PLATFORM}" STREQUAL "mingw64" )
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2 -m64 -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=core2 -m64")
-    set(BST_DEFAULT_DEFINES     "-D__64BIT__ -D__win64__ -D_WIN64 -D__windows__ -D__mingw__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "xenial32")
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=sandybridge -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=sandybridge")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__linux__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
 elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "xenial64")
+       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal64")
 
     set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=sandybridge -m64 -std=c99")
     set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -mtune=sandybridge -m64")
@@ -212,10 +158,7 @@ elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
     add_definitions(${BST_DEFAULT_DEFINES})
 
 elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32armv7" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "lucid32armv7" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "precise32armv7" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "trusty32armv7" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "xenial32armv7")
+       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal32armv7")
 
     set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -march=armv7-a -std=c99")
     set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -march=armv7-a")

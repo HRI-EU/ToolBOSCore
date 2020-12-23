@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Qt-style mode for BST packages
@@ -36,11 +36,11 @@
 
 
 import base64
+import io
 import logging
 import os
 
 import dill
-import six
 
 from PyQt5.QtCore import pyqtSignal, QByteArray, QObject, QThread
 
@@ -324,7 +324,7 @@ class BSTPackageModel( QObject, object ):
                                      self._bstpkg_src.detector.topLevelDir,
                                      self._bstpkg_src.detector.canonicalPath )
 
-        self._depDetectorData = six.BytesIO()
+        self._depDetectorData = io.BytesIO()
 
         self._depDetector = ProcessExecutor.ProcessExecutor()
         self._depDetector.setCommand( cmd )
@@ -367,19 +367,10 @@ class BSTPackageModel( QObject, object ):
             logging.debug( 'no dependency data received' )
             return
 
-        if six.PY2:
-            if not Any.isInstance( base64payload, unicode ):
-                logging.debug( 'received dependency data of unexpected type' )
-                logging.debug( '(this could come from a ~/.bashrc which prints text)' )
-
-                return
-
-        else:
-            if not Any.isInstance( base64payload, bytes ):
-                logging.debug( 'received dependency data of unexpected type' )
-                logging.debug( '(this could come from a ~/.bashrc which prints text)' )
-
-                return
+        if not Any.isInstance( base64payload, bytes ):
+            logging.debug( 'received dependency data of unexpected type' )
+            logging.debug( '(this could come from a ~/.bashrc which prints text)' )
+            return
 
         dillPayload     = base64.b64decode( base64payload )
         dillPayloadSize = len(dillPayload)
@@ -456,11 +447,7 @@ class BSTPackageModel( QObject, object ):
 
         text = UnicodeSupport.convertQByteArray( data )
 
-
-        if six.PY2:
-            self._depDetectorData.write( text )
-        else:
-            self._depDetectorData.write( bytes( text, 'utf-8' ) )
+        self._depDetectorData.write( bytes( text, 'utf-8' ) )
 
 
     def _onSQPreparerFinished( self ):

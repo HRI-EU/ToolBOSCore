@@ -80,7 +80,7 @@ def getMinRequirements():
         Opposed to getBuildRequirements() this only contains the minimal
         requirements for executing / distributing software.
     """
-    from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
 
     result = getConfigOption( 'SIT_bootstrapMin' )
 
@@ -96,7 +96,7 @@ def getBuildRequirements():
         Opposed to getMinRequirements() this contains everything needed to
         build software packages.
     """
-    from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
 
     result = getConfigOption( 'SIT_bootstrapFull' )
 

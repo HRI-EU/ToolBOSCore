@@ -39,12 +39,6 @@
 #----------------------------------------------------------------------------
 
 
-# Attention:
-#
-# Any.py should never depend on a non-standard Python module such as 'six'!
-# This would create trouble when such module is not available on certain
-# platforms!
-
 import logging
 import io
 import os

@@ -34,21 +34,20 @@
 #
 
 
+import io
 import logging
 import os
 import re
+import urllib
 
-from six                  import StringIO
-from six.moves.urllib     import parse
-
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
-from ToolBOSCore.Util     import Any, FastScript, VersionCompat
+from ToolBOSCore.Util     import Any, FastScript
 
 
 class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
 
-    _modifiedFileExpr = re.compile( '^\sM\s(.+)$' )
+    _modifiedFileExpr = re.compile( r'^\sM\s(.+)$' )
 
 
     def __init__( self ):
@@ -115,7 +114,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
                2. detailed description of the problem
                3. suggested solution
         """
-        tmp = VersionCompat.StringIO()
+        tmp = io.StringIO()
         cmd = 'git status --porcelain'
 
         FastScript.execProgram( cmd, stdout=tmp )
@@ -172,7 +171,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
             May return None, for example if repo is in 'Detached HEAD'
             state.
         """
-        output = StringIO()
+        output = io.StringIO()
         cmd    = 'git rev-parse --abbrev-ref HEAD'
 
         FastScript.execProgram( cmd, stdout=output, stderr=output )
@@ -193,7 +192,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
         """
         Any.requireIsBool( short )
 
-        output = StringIO()
+        output = io.StringIO()
 
         if short:
             cmd = "git rev-parse --short HEAD"
@@ -212,13 +211,13 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
         """
             Returns the URL of the 'origin' (fetch direction).
         """
-        tmp = StringIO()
+        tmp = io.StringIO()
 
         FastScript.execProgram( 'git remote -v', stdout=tmp )
         output = tmp.getvalue()
         # Any.requireIsTextNonEmpty( output )  # repo may not have any remote
 
-        tmp = re.search( "^origin\s+(.+)\s\(fetch\)", output )
+        tmp = re.search( r"^origin\s+(.+)\s\(fetch\)", output )
 
         try:
             origin = tmp.group(1)
@@ -335,7 +334,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
 
         super( RemoteGitRepository, self ).__init__( url )
 
-        self._allowedHosts = ToolBOSSettings.getConfigOption( 'Git_allowedHosts' )
+        self._allowedHosts = ToolBOSConf.getConfigOption( 'Git_allowedHosts' )
 
 
     def clone( self, output=None ):
@@ -356,8 +355,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
             Has no effect if it was already SSH.
         """
         if self.url.startswith( 'http' ):
-            tokens = VersionCompat.urlsplit( self.url )
-
+            tokens = urllib.urlsplit( self.url )
 
             # remove username from net location, if present
             tmp = re.match( '^.+@(.+)$', tokens.netloc )
@@ -443,7 +441,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
     def _getHostName_HTTP( self ):
         Any.requireIsTextNonEmpty( self.url )
 
-        netloc = parse.urlsplit( self.url ).netloc
+        netloc = urllib.parse.urlsplit( self.url ).netloc
         Any.requireIsTextNonEmpty( netloc )
 
         # remove leading 'username@' if present
