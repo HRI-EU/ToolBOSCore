@@ -35,11 +35,10 @@
 #
 
 
+import io
 import os
 import tempfile
 import unittest
-
-from six  import StringIO
 
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.PackageCreator        import PackageCreator_C_Library
@@ -69,7 +68,7 @@ class TestDocumentationCreator( unittest.TestCase ):
         Any.requireIsDirNonEmpty( tmpDir )
 
         # create docu
-        output = StringIO() if Any.getDebugLevel() <= 3 else None
+        output = io.StringIO() if Any.getDebugLevel() <= 3 else None
         d = DocumentationCreator( projectRoot, stdout=output, stderr=output )
         d.generate()
 

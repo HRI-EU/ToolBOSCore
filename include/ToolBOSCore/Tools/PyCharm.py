@@ -41,12 +41,11 @@
 
 
 import glob
+import io
 import logging
 import os
 import subprocess
 import xml.etree.ElementTree
-
-from six import StringIO
 
 from ToolBOSCore.BuildSystem               import BuildSystemTools
 from ToolBOSCore.Settings                  import ProcessEnv
@@ -71,60 +70,6 @@ def getConfigDir():
     Any.requireMsg( configDir, 'Environment variable PYCHARM_CONFIGDIR not set' )
 
     return configDir
-
-
-#def createUserConfig():
-    #"""
-        #If not existent, yet, register HRI-EU codestyle and other settings
-        #within ~/.PyCharm40.
-
-        #Returns immediately if such directory already exists (won't touch)
-        #or if we are executed by CIA.
-    #"""
-    #srcDir = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                           #'etc/PyCharm/user' )
-    #dstDir = getConfigDir()
-
-    #Any.requireIsDirNonEmpty( srcDir )
-    #Any.requireIsTextNonEmpty( dstDir )
-
-    #if os.path.exists( dstDir ):
-        #logging.info( '%s: directory exists', dstDir )
-        #return
-
-    #if FastScript.getEnv( 'CIA' ) == 'TRUE':
-        #logging.info( 'createUserConfig() skipped within CIA' )
-        #return
-
-
-    ## codestyle
-
-    #dstDir = os.path.join( dstDir, 'inspection' )
-    #logging.debug( 'creating %s', dstDir )
-    #FastScript.mkdir( dstDir )
-
-    #for fileName in ( 'Default.xml', 'HRI.xml' ):
-        #srcFile  = os.path.join( srcDir, fileName )
-        #dstFile  = os.path.join( dstDir, fileName )
-
-        #Any.requireIsFileNonEmpty( srcFile )
-        #logging.debug( 'creating %s', dstFile )
-        #FastScript.copy( srcFile, dstFile )
-
-
-    ## proxy settings
-
-    #dstDir = os.path.join( dstDir, 'options' )
-    #logging.debug( 'creating %s', dstDir )
-    #FastScript.mkdir( dstDir )
-
-    #fileName = 'proxy.settings.xml'
-    #srcFile  = os.path.join( srcDir, fileName )
-    #dstFile  = os.path.join( dstDir, fileName )
-
-    #Any.requireIsFileNonEmpty( srcFile )
-    #logging.debug( 'creating %s', dstFile )
-    #FastScript.copy( srcFile, dstFile )
 
 
 def createProject():
@@ -154,93 +99,6 @@ def createProject():
                                                         packageVersion,
                                                         outputDir=configDir )
     template.run()
-    # srcDir = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-    #                        'etc/PyCharm/project' )
-    # dstDir = os.path.expanduser( '.idea' )
-    # FastScript.mkdir( dstDir )
-    #
-    #
-    # # main workspace
-    #
-    # for fileName in ( 'workspace.xml', '1.0.iml', 'modules.xml' ):
-    #     srcFile  = os.path.join( srcDir,  fileName )
-    #     dstFile  = os.path.join( dstDir, fileName )
-    #
-    #     Any.requireIsFileNonEmpty( srcFile )
-    #     logging.debug( 'creating %s', dstFile )
-    #     FastScript.copy( srcFile, dstFile )
-    #
-    #
-    # # project name
-    #
-    # projectRoot    = ProjectProperties.detectTopLevelDir()
-    #
-    # if projectRoot is None:
-    #     path = os.getcwd()
-    #     msg = '%s: not a top-level directory of a source package ' \
-    #           '(neither CMakeLists.txt nor pkgInfo.py found)' % path
-    #     raise RuntimeError( msg )
-    #
-    # packageName    = ProjectProperties.getPackageName( projectRoot )
-    # packageVersion = ProjectProperties.getPackageVersion( projectRoot )
-    #
-    # Any.requireIsTextNonEmpty( packageName )
-    # Any.requireIsTextNonEmpty( packageVersion )
-    #
-    # content        = '%s %s' % ( packageName, packageVersion )
-    #
-    # FastScript.setFileContent( '.idea/.name', content )
-    #
-    #
-    # # codestyle
-    #
-    # srcFile  = os.path.join( srcDir, 'codeStyleSettings.xml' )
-    # dstFile  = os.path.join( dstDir, 'codeStyleSettings.xml' )
-    # Any.requireIsFileNonEmpty( srcFile )
-    #
-    # logging.debug( 'creating %s', dstFile )
-    # FastScript.copy( srcFile, dstFile )
-    #
-    #
-    # # inspection profiles
-    #
-    # dstDir = '.idea/inspectionProfiles'
-    # FastScript.mkdir( dstDir )
-    #
-    # for fileName in ( 'profiles_settings.xml', 'HRI.xml' ):
-    #     srcFile  = os.path.join( srcDir, fileName )
-    #     dstFile  = os.path.join( dstDir, fileName )
-    #
-    #     Any.requireIsFileNonEmpty( srcFile )
-    #     logging.debug( 'creating %s', dstFile )
-    #     FastScript.copy( srcFile, dstFile )
-    #
-    #
-    # # VCS integration
-    #
-    # # if we find SVN information then enable VCS integration in PyCharm
-    # svnInfo = StringIO()
-    # url     = None
-    #
-    # try:
-    #     Subversion.getInfo( output=svnInfo )
-    #     url = Subversion.getRepositoryURL( svnInfo.getvalue() )
-    # except subprocess.CalledProcessError as details:
-    #     logging.warning( details )
-    #
-    #
-    # if url:
-    #     dstDir  = '.idea'
-    #     srcFile = os.path.join( srcDir, 'misc.xml' )
-    #     dstFile = os.path.join( dstDir, 'misc.xml' )
-    #
-    #     logging.debug( 'creating %s', dstFile )
-    #     content = FastScript.getFileContent( srcFile )
-    #     content = content.replace( '${URL}', url )
-    #
-    #     FastScript.setFileContent( dstFile, content )
-    # else:
-    #     logging.warning( 'no SVN information found --> VCS integration disabled' )
 
 
 def codeCheck():
@@ -262,7 +120,7 @@ def codeCheck():
     """
     ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_pycharm' ) )
 
-    output   = StringIO()
+    output   = io.StringIO()
     FastScript.execProgram( 'ps aux', stdout=output, stderr=output )
 
     if output.getvalue().find( 'pycharm' ) > 0:

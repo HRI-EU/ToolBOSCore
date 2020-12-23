@@ -42,7 +42,6 @@
 
 import logging
 import os.path
-import six
 
 from ToolBOSCore.Storage import ProxyDir
 from ToolBOSCore.Storage import SIT
@@ -139,7 +138,7 @@ if globalDir:
 logging.info( 'SIT Parent: %s', sitRootPath )
 logging.info( 'SIT Proxy:  %s\n', sitProxyPath )
 
-answer = six.moves.input( 'Is this correct (Y/n)? ' )
+answer = input( 'Is this correct (Y/n)? ' )
 
 if answer == '' or answer == 'y' or answer == 'Y':
     try:

@@ -35,11 +35,11 @@
 
 
 import ast
+import io
 import logging
 import re
 import os
 
-from six                                  import StringIO
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Storage.PkgInfo          import getPkgInfoContent
 from ToolBOSCore.Storage.PkgInfoWriter    import PkgInfoWriter
@@ -128,7 +128,7 @@ class PkgInfoInterface( object ):
         Any.requireIsTextNonEmpty( key )
         # value might be anything, can't check for it
 
-        newContent = StringIO()
+        newContent = io.StringIO()
         table      = { key: value }
         regexp     = re.compile( r'^%s\s+=' % key )
         found      = False                  # overall found in pkgInfo.py
@@ -198,7 +198,7 @@ class PkgInfoInterface( object ):
         self._removeLeadOut()
 
 
-        newContent = StringIO()
+        newContent = io.StringIO()
         regexp     = re.compile( r'^%s\s+=' % key )
         lines      = self._content.splitlines()
         skip       = 0

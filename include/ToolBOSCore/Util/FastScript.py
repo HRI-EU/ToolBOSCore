@@ -596,8 +596,6 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
         Returns the exit code of the program. Raises an exception if it is
         not zero.
     """
-    import six
-
     Any.requireIsTextNonEmpty( cmd )
 
     from shlex      import split
@@ -642,14 +640,9 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
             errStream = PIPE
 
 
-    if six.PY3:
-        p = Popen( cmd, stdin=inStream, stdout=outStream,
-                   stderr=errStream, cwd=localWorkingDir,
-                   encoding='utf8' )
-    else:
-        p = Popen( cmd, stdin=inStream, stdout=outStream,
-                   stderr=errStream, cwd=localWorkingDir )
-
+    p = Popen( cmd, stdin=inStream, stdout=outStream,
+               stderr=errStream, cwd=localWorkingDir,
+               encoding='utf8' )
 
 
     ( outData, errData ) = p.communicate( inData )
@@ -1261,7 +1254,6 @@ def tryImport( modules ):
         Stops with a message to the user if some are not found.
     """
     import importlib
-    import six
 
     if Any.isText( modules ):
         modules = [ modules ]
@@ -1273,15 +1265,9 @@ def tryImport( modules ):
     for moduleName in modules:
         Any.requireIsTextNonEmpty( moduleName )
 
-
-        if six.PY2:
-            errorClass = ImportError
-        else:
-            errorClass = ModuleNotFoundError
-
         try:
             importlib.import_module( moduleName )
-        except errorClass:
+        except ModuleNotFoundError:
             notFound.add( moduleName )
 
 

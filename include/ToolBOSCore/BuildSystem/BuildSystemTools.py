@@ -36,6 +36,7 @@
 
 import copy
 import glob
+import io
 import logging
 import os
 import re
@@ -164,10 +165,8 @@ class BuildSystemTools( object ):
 
 
         if Any.getDebugLevel() <= 3:
-            from six import StringIO
-
             # capture output so that it's not printed
-            output = StringIO()
+            output = io.StringIO()
         else:
             output = None
 

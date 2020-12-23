@@ -36,6 +36,7 @@
 
 
 import functools
+import io
 import logging
 import re
 
@@ -49,8 +50,6 @@ import markdown
 from PyQt5.QtCore    import Qt, QEvent, QThread
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
-
-from six import StringIO
 
 from ToolBOSCore.GenericGUI      import IconProvider
 from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
@@ -77,7 +76,7 @@ class CheckRoutineDialog( QDialog, object ):
         self.installEventFilter( self )
 
         self._model             = model
-        self._logOutput         = StringIO()
+        self._logOutput         = io.StringIO()
         self._allRules          = Rules.getRules()
         self._allRulesDict      = {}
         self._checkSelected     = False

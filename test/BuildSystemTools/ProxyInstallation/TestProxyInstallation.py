@@ -35,10 +35,9 @@
 #
 
 
+import io
 import os
 import unittest
-
-from six import StringIO
 
 from ToolBOSCore.BuildSystem.BuildSystemTools     import BuildSystemTools
 from ToolBOSCore.Platforms                        import Platforms
@@ -62,7 +61,7 @@ class TestProxyInstallation( unittest.TestCase ):
         packageVersion = '1.0'
         category       = 'Applications'
         projectRoot    = os.path.join( '.', packageName, packageVersion )
-        output         = StringIO() if Any.getDebugLevel() <= 3 else None
+        output         = io.StringIO() if Any.getDebugLevel() <= 3 else None
         platform       = Platforms.getHostPlatform()
         sitPath        = SIT.getPath()
 

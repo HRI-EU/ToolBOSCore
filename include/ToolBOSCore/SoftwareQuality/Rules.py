@@ -37,6 +37,7 @@
 import ast
 import collections
 import inspect
+import io
 import logging
 import os
 import re
@@ -44,8 +45,6 @@ import shlex
 import subprocess
 import sys
 import tempfile
-
-import six
 
 from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
@@ -142,32 +141,16 @@ Japanese output on screen.'''
 
                 logging.debug( 'checking %s', filePath )
 
-
-                if six.PY2:
-
-                    try:
-                        filePath.decode( 'ascii' )
-                        passed += 1
-                    except UnicodeDecodeError as e:
-                        # PyCharm linter fails to recognize the start property
-                        # so we silence the warning.
-                        # noinspection PyUnresolvedReferences
-                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
-                                      filePath )
-                        failed += 1
-
-                else:
-
-                    try:
-                        filePath.encode( 'ascii' )
-                        passed += 1
-                    except UnicodeEncodeError as e:
-                        # PyCharm linter fails to recognize the start property
-                        # so we silence the warning.
-                        # noinspection PyUnresolvedReferences
-                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
-                                      filePath )
-                        failed += 1
+                try:
+                    filePath.encode( 'ascii' )
+                    passed += 1
+                except UnicodeEncodeError as e:
+                    # PyCharm linter fails to recognize the start property
+                    # so we silence the warning.
+                    # noinspection PyUnresolvedReferences
+                    logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                  filePath )
+                    failed += 1
 
 
         if failed == 0:
@@ -1475,7 +1458,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         logging.debug( "check if package can be built using BST.py" )
 
         oldcwd = os.getcwd()
-        output = six.StringIO() if Any.getDebugLevel() <= 3 else None
+        output = io.StringIO() if Any.getDebugLevel() <= 3 else None
 
         FastScript.changeDirectory( details.topLevelDir )
 
@@ -1531,7 +1514,7 @@ once in a while inspect your code using Klocwork.'''
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
         failed = 0
-        output = six.StringIO()
+        output = io.StringIO()
         error  = False
         kwDir  = tempfile.mkdtemp( prefix='klocwork-' )
 
@@ -3045,31 +3028,16 @@ def findNonAsciiCharacters( filePath, rule ):
 
     for i, line in enumerate( content ):
 
-        if six.PY2:
-
-            try:
-                line.decode( 'ascii' )
-                passed += 1
-            except UnicodeDecodeError as e:
-                # PyCharm linter fails to recognize the start property
-                # so we silence the warning.
-                # noinspection PyUnresolvedReferences
-                logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
-                              rule, filePath, i, e.start )
-                failed += 1
-
-        else:
-
-            try:
-                line.encode( 'ascii' )
-                passed += 1
-            except UnicodeEncodeError as e:
-                # PyCharm linter fails to recognize the start property
-                # so we silence the warning.
-                # noinspection PyUnresolvedReferences
-                logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
-                              rule, filePath, i, e.start )
-                failed += 1
+        try:
+            line.encode( 'ascii' )
+            passed += 1
+        except UnicodeEncodeError as e:
+            # PyCharm linter fails to recognize the start property
+            # so we silence the warning.
+            # noinspection PyUnresolvedReferences
+            logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
+                          rule, filePath, i, e.start )
+            failed += 1
 
 
     return passed, failed
@@ -3090,19 +3058,10 @@ def createCParser( filePath, details, headerAndLanguageMap ):
         raise EnvironmentError( msg )
 
 
-    if six.PY2:
-
-        try:
-            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
-        except ImportError as e:
-            raise EnvironmentError( e )
-
-    else:
-
-        try:
-            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
-        except ModuleNotFoundError as e:
-            raise EnvironmentError( e )
+    try:
+        from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
+    except ModuleNotFoundError as e:
+        raise EnvironmentError( e )
 
 
     _, ext       = os.path.splitext( filePath )

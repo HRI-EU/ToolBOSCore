@@ -35,11 +35,10 @@
 #
 
 
+import io
 import os
 import tempfile
 import unittest
-
-from six import StringIO
 
 from ToolBOSCore.BuildSystem.BuildSystemTools import BuildSystemTools
 from ToolBOSCore.Packages.PackageCreator      import PackageCreator_C_Library
@@ -61,7 +60,7 @@ class TestNativeCompilation( unittest.TestCase ):
         packageName    = 'HelloWorld'
         packageVersion = '42.0'
         projectRoot    = os.path.join( tmpDir, packageName, packageVersion )
-        output         = StringIO() if Any.getDebugLevel() <= 3 else None
+        output         = io.StringIO() if Any.getDebugLevel() <= 3 else None
         platform       = Platforms.getHostPlatform()
 
 

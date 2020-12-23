@@ -34,13 +34,12 @@
 #
 
 
+import io
 import logging
 import os
 import re
 import subprocess
-
-from six.moves            import StringIO
-from six.moves.urllib     import parse
+import urllib
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
@@ -126,7 +125,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         from ToolBOSCore.Packages import ProjectProperties
 
-        tmp1        = parse.urlsplit( self.url )
+        tmp1        = urllib.parse.urlsplit( self.url )
         server      = tmp1.netloc
         repoDir     = tmp1.path
 
@@ -191,7 +190,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         saneUrl = self._removeUsernameFromURL( self.url )
         Any.requireIsTextNonEmpty( saneUrl )
 
-        hostName = parse.urlsplit( saneUrl ).netloc
+        hostName = urllib.parse.urlsplit( saneUrl ).netloc
 
         # in case of repositories located at 'file:///' a hostname won't
         # be found, hence do not require it
@@ -242,7 +241,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         Any.requireIsTextNonEmpty( self.url )
 
-        output = StringIO()
+        output = io.StringIO()
         cmd    = "svn ls %s" % self.url
         status = None
 
@@ -335,10 +334,10 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         Any.requireIsTextNonEmpty( url )
 
-        urlData = list( parse.urlsplit( url )[ : ] )
+        urlData = list( urllib.parse.urlsplit( url )[ : ] )
         urlData[1] = '%s@%s' % ( username, urlData[1] )
 
-        result     =parse.urlunsplit (urlData )
+        result     = urllib.parse.urlunsplit (urlData )
         Any.requireIsTextNonEmpty( result )
 
         return result
@@ -581,7 +580,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
         """
         if not self._infoOutput:
 
-            output = StringIO()
+            output = io.StringIO()
 
 
             # Temporarily unset the LANG environment variable, in order to always
@@ -631,7 +630,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
         Any.requireIsBool( againstServer )
 
-        output = StringIO()
+        output = io.StringIO()
         self.status( againstServer, output, verbose=True, xml=True )
 
         Any.requireIsTextNonEmpty( output.getvalue() )

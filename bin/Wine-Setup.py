@@ -40,10 +40,9 @@
 #----------------------------------------------------------------------------
 
 
+import io
 import logging
 import os
-
-from six import StringIO
 
 from ToolBOSCore.Settings import UserSetup
 from ToolBOSCore.Util     import ArgsManagerV2
@@ -76,7 +75,7 @@ path = args['path']
 
 
 # suppress all Wine warnings that would confuse normal users
-output = StringIO()
+output = io.StringIO()
 
 try:
     UserSetup.setupWineDotNet( path, stdout=output, stderr=output )
