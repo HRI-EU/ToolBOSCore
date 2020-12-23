@@ -72,7 +72,7 @@ argman.addArgument( '-r', '--resolveLTS', action='store_true',
 argman.addArgument( 'path', help='directory where to create the new SIT' )
 
 argman.addExample( '%(prog)s -bd /tmp/newSIT' )
-argman.addExample( '%(prog)s --platforms=trusty64,bionic64 /tmp/newSIT' )
+argman.addExample( '%(prog)s --platforms=bionic64,focal64 /tmp/newSIT' )
 
 argman.setAllowUnknownArgs( True )
 
