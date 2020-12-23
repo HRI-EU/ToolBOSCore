@@ -40,10 +40,8 @@
 #----------------------------------------------------------------------------
 
 
-from __future__ import print_function
-from pprint     import pprint
-
 import logging
+import pprint
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import Any, ArgsManagerV2
@@ -107,7 +105,7 @@ if formatVar:
     if type( value ) in ( dict, list, frozenset ):
         print( value )
     else:
-        pprint( value )
+        pprint.pprint( value )
 
 elif printVar:
     try:
@@ -163,6 +161,6 @@ else:
             print( '%30s | %s' % ( key.ljust(30), value ) )
         else:
             print( '%30s | ' % ( key.ljust(30) ), end='' )
-            pprint( value )
+            pprint.pprint( value )
 
 # EOF

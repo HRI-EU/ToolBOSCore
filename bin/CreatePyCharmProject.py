@@ -40,8 +40,6 @@
 #----------------------------------------------------------------------------
 
 
-from __future__ import print_function
-
 import logging
 import sys
 
@@ -81,8 +79,6 @@ ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_pycharm' ) )
 
 
 try:
-    #PyCharm.createUserConfig()
-
     logging.info( 'creating config in ./.idea' )
     PyCharm.createProject()
     FastScript.prettyPrintError( 'Now please execute: runPyCharm.sh' )
