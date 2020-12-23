@@ -430,10 +430,10 @@ def getFileContent( filename, splitLines = False, asBinary=False ):
     if not os.path.isfile( filename ):
         raise IOError( "%s: No such file" % filename )
 
-    mode = 'rU'
-
     if asBinary:
-        mode += 'b'
+        mode = 'rb'
+    else:
+        mode = 'r'
 
     with open( filename, mode ) as f:
         logging.debug( 'reading file: %s', filename )
