@@ -34,8 +34,8 @@
 #
 
 
-OLD_VERSION=3[.]3
-NEW_VERSION=3.4
+OLD_VERSION=3[.]4
+NEW_VERSION=4.0
 
 
 sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
