@@ -34,13 +34,9 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Includes
-#----------------------------------------------------------------------------
-
-
 import collections
 import glob
+import io
 import logging
 import os
 import re
@@ -48,13 +44,7 @@ import shlex
 import subprocess
 
 from ToolBOSCore.BuildSystem import Compilers
-from ToolBOSCore.Util        import FastScript
-from ToolBOSCore.Util        import Any, VersionCompat
-
-
-#----------------------------------------------------------------------------
-# Public API
-#----------------------------------------------------------------------------
+from ToolBOSCore.Util        import Any, FastScript
 
 
 class CMakeServer( object ):
@@ -73,8 +63,8 @@ class CMakeServer( object ):
 
         self._pipe        = None
         self._projectRoot = topLevelDir
-        self._stdin       = VersionCompat.StringIO()
-        self._stdout      = VersionCompat.StringIO()
+        self._stdin       = io.StringIO()
+        self._stdout      = io.StringIO()
         self._topLevelDir = buildDir
         self._verbose     = verbose            # log raw queries + replies
 
