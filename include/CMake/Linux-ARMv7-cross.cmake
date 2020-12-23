@@ -35,9 +35,8 @@
 
 set(CMAKE_SYSTEM_NAME Linux)
 
-if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "lucid32armv7" OR
-   "$ENV{MAKEFILE_PLATFORM}" STREQUAL "precise32armv7" OR
-   "$ENV{MAKEFILE_PLATFORM}" STREQUAL "trusty32armv7")
+if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32armv7" OR
+   "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal32armv7")
 
   set(CMAKE_C_COMPILER   "arm-cortex_a8-linux-gnueabi-gcc")
   set(CMAKE_CXX_COMPILER "arm-cortex_a8-linux-gnueabi-g++")
