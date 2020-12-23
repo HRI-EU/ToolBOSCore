@@ -364,7 +364,7 @@ def guessSVNLocation( package ):
 
         'package' must be a canonical project path.
     """
-    from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
 
     requireIsCanonicalPath( package )
 

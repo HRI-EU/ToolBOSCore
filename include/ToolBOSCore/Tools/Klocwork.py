@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  run Klocwork tool on this project
@@ -45,7 +45,7 @@ import tempfile
 from ToolBOSCore.Packages  import PackageCreator
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ProcessEnv
-from ToolBOSCore.Settings  import ToolBOSSettings
+from ToolBOSCore.Settings  import ToolBOSConf
 from ToolBOSCore.Util      import FastScript
 from ToolBOSCore.Util      import Any
 
@@ -85,13 +85,13 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
     requireOutsideTmpDir()
 
-    kwPackage         = ToolBOSSettings.getConfigOption( 'package_klocwork' )
+    kwPackage         = ToolBOSConf.getConfigOption( 'package_klocwork' )
     buildSpec         = os.path.join( klocworkDir, 'kwinject.out' )
     kwlpDir           = os.path.join( klocworkDir, '.kwlp' )  # KW local project
     kwpsDir           = os.path.join( klocworkDir, '.kwps' )  # KW project settings
     hostPlatform      = Platforms.getHostPlatform()
-    licenseServerHost = ToolBOSSettings.getConfigOption( 'kwLicenseServerHost' )
-    licenseServerPort = ToolBOSSettings.getConfigOption( 'kwLicenseServerPort' )
+    licenseServerHost = ToolBOSConf.getConfigOption( 'kwLicenseServerHost' )
+    licenseServerPort = ToolBOSConf.getConfigOption( 'kwLicenseServerPort' )
 
     Any.requireIsTextNonEmpty( kwPackage )
     Any.requireIsTextNonEmpty( hostPlatform )
@@ -168,7 +168,7 @@ def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None ):
 
     requireOutsideTmpDir()
 
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_klocwork' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_klocwork' ) )
 
     kwlpDir = os.path.join( klocworkDir, '.kwlp' )
     Any.requireIsDirNonEmpty( kwlpDir )
@@ -203,7 +203,7 @@ def parseCodeCheckResult( output ):
 
 
     resultList = []
-    regexp     = re.compile( '^\d+\s\([A-Za-z]+\)\s(.*?):(\d+)\s(.+?)\s' )
+    regexp     = re.compile( r'^\d+\s\([A-Za-z]+\)\s(.*?):(\d+)\s(.+?)\s' )
     lines      = output.splitlines()
     cwd        = os.getcwd()
 
@@ -237,7 +237,7 @@ def startGUI( options='', blocking=False ):
     """
     requireOutsideTmpDir()
 
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_klocwork' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_klocwork' ) )
 
     try:
         cmd = 'kwgcheck %s' % options

@@ -36,6 +36,7 @@
 
 import copy
 import glob
+import io
 import logging
 import os
 import re
@@ -44,7 +45,7 @@ import subprocess
 from ToolBOSCore.Packages                 import ProjectProperties
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Storage                  import PkgInfo
 from ToolBOSCore.Util                     import Any
@@ -164,10 +165,8 @@ class BuildSystemTools( object ):
 
 
         if Any.getDebugLevel() <= 3:
-            from six import StringIO
-
             # capture output so that it's not printed
-            output = StringIO()
+            output = io.StringIO()
         else:
             output = None
 
@@ -463,12 +462,13 @@ class BuildSystemTools( object ):
         # ToolBOS.conf to the extra search path for "getConfigOption()"
         # (TBCORE-1052)
 
-        tconfExtraDir = [ self._sourceTree ] if self._outOfTree else None
+        if self._outOfTree:
+            envName  = 'TOOLBOSCONF_PATH'
+            envValue = '%s:%s' % ( self._sourceTree, FastScript.getEnv( envName ) )
+            logging.debug( 'registering extra ToolBOS.conf dir: %s', self._sourceTree )
+            FastScript.setEnv( envName, envValue )
 
-        if tconfExtraDir:
-            logging.debug( 'registering extra ToolBOS.conf dir: %s', tconfExtraDir )
-
-        cmakeModPath  = getConfigOption( 'BST_modulePath', tconfExtraDir )
+        cmakeModPath  = getConfigOption( 'BST_modulePath' )
         cmakeModPath  = FastScript.expandVars( cmakeModPath )
 
         if self._outOfTree and not os.path.isabs( cmakeModPath ):
@@ -813,7 +813,7 @@ def isTopLevelDir( path='.' ):
         Returns a boolean whether or not the provided directory is the
         top-level-directory of a source package.
     """
-    regExpVersion   = re.compile( "^(\d+\.\d+).*$" )
+    regExpVersion   = re.compile( r"^(\d+\.\d+).*$" )
     projectVersion  = ProjectProperties.getPackageVersion( path, verbatim=True )
     versionDirFound = bool( regExpVersion.search( projectVersion ) )
 
@@ -850,7 +850,7 @@ def _getDistcleanPatterns():
         'pkgInfo.py' within your project's top-level directory
         (e.g. inside Spam/42.0):
 
-          delete      = [ 'deleteMe.*\.txt' ]
+          delete      = [ 'deleteMe.*\\.txt' ]
           doNotDelete = [ 'install/??shSrc' ]
 
         The patterns in the 'doNotDelete' list should be taken from

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Retrieves icon resources by name
@@ -42,13 +42,13 @@ import sys
 from PyQt5.QtGui import QIcon
 
 from ToolBOSCore.Packages import ProjectProperties
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import Any
 
 
 _iconCache     = {}
 _iconDir       = None
-_useThemeIcons = ToolBOSSettings.getConfigOption( 'Qt_useThemeIcons' )
+_useThemeIcons = ToolBOSConf.getConfigOption( 'Qt_useThemeIcons' )
 
 
 def getIcon( name ):

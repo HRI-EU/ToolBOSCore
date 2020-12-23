@@ -106,23 +106,9 @@ Target: Prerequisite to use ToolBOS
 
 System: all computers where ToolBOS is involved (clients + servers)
 
+    $ cp ${TOOLBOSCORE_ROOT}/examples/ToolBOS.conf /etc/ToolBOS.conf
 
-  - on 32 bit Linux systems:
-
-    $ mkdir /etc/HRI
-    $ echo "gcc"       > /etc/HRI/makefile.cc
-    $ echo "i686"      > /etc/HRI/makefile.cpu
-    $ echo "linux"     > /etc/HRI/makefile.os
-    $ echo "precise32" > /etc/HRI/makefile.platform
-
-
-  - on 64 bit Linux systems:
-
-    $ mkdir /etc/HRI
-    $ echo "gcc"       > /etc/HRI/makefile.cc
-    $ echo "amd64"     > /etc/HRI/makefile.cpu
-    $ echo "linux"     > /etc/HRI/makefile.os
-    $ echo "precise64" > /etc/HRI/makefile.platform
+Then update its contents if needed.
 
 
 -----------------------------------------------------------------------------

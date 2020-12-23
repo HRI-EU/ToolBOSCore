@@ -1,166 +1,25 @@
 
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.7
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.0
 
 
 NEW FEATURES
 =============
 
-  - [TBCORE-1878] BST.py: when using patchlevels, write value into generated pkgInfo.py files
-  - [TBCORE-1878] AboutDialog.py: show ToolBOSCore + Middleware versions (incl. patchlevel)
-                  and other minor GUI enhancements
+  - [TBCORE-2106] bin/ToolBOS-Config.py: added "-f" option to print values in native Python format
+  - added support for Ubuntu Linux 20.04 ("focal64")
 
 
 CHANGES
 =======
 
-  - [TBCORE-2106] bin/ToolBOS-Config.py: print values in a native Python format
-  - [TBCORE-1878] AboutDialog.py API: 'show()' must now be done by caller (no longer implicit)
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.6
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-2122] BST.py: print warning in case of invalid bstCache.dill
-
-
-CHANGES
-=======
-
-  - [TBCORE-2122] cachefile renamed: bstCache.pickle --> bstCache.dill
-
-
-FIXED BUGS
-==========
-
-  - [TBCORE-2122] BST.py: handle invalid bstCache.dill file when mixing different Python version
-  - [TBCORE-2080] SQ GEN07: prevent crash if SIT category could not be determined
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.5
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-2141] Unittest.sh: splitted runTest() so that individual
-    testprograms can also be launched from cmdline, using execTest()
-
-
-CHANGES
-=======
-
-  - etc/ToolBOS.conf: updated PyCharm + CLion versions to 2020.2
-  - minor internal code improvements
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.4
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-2045] SQ GEN04: allow searching for customized copyright header
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.3
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-2135] BST.py / CMake: added __BST_FILENAME__ compiler define (used in ANY_LOG_CPP)
-
-
-CHANGES
-=======
-
-  - [TBCORE-2131] GitLab.git2https(): handle if provided URL is already HTTPS
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.2
-
-
-CHANGES
-=======
-
-  - [XIF-106] dropped legacy PackageLifecycle.py
-
-
-FIXED BUGS
-==========
-
-  - [TBCORE-2114] BST.py: fixed out-of-tree builds under Py3 (caused by pickle-limitations)
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.1
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-2105] BST.py supports cross-compilation from bionic64 to Windows
-
-
-CHANGES
-=======
-
-  - [TBCORE-2121] Unittest.sh no longer implicitly uses RunFromSourceTree.sh, set USE_RUNFROMSOURCETREE=TRUE to restore previous behavior
-  - [TBCORE-2121] Function runTest() from Unittest.sh returns different exit values
-
-
-FIXED BUGS
-==========
-
-  - [TBCORE-2113] BST.py: fixed regression in out-of-tree builds
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOSCORE 3.4.0
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-2102] CMake: write compiler commands to ./build/<platform>/compile_commands.json
-  - [TBCORE-2091] CMake.py: added API for connecting to CMake server mode
-  - [TBCORE-2088] ExecInAllProjects.py: allow customization of project list via configfile
-  - [TBCORE-1694] BST.py -n --flat: create new-style package w/o version number
-
-
-CHANGES
-=======
-
-  - [TBCORE-2107] pkgInfo.py files in SIT gained "category" field (replacing "section" in future)
-  - [TBCORE-2089] fused and simplified Software Quality rules C12 + C15 (Valgrind checks)
-  - [TBCORE-2087] PackageCreator: dropped Matlab package template
-  - [TBCORE-2083] ExecInAllProjects.py: dropped option "--list"
-  - [TBCORE-2071] SQ C12: improved error message if some dependent package not present in SIT
-  - [TBCORE-2030] MakefileSystem.bash: all relative sourcings now with explicit ./ to avoid $PATH lookup
-
-
-FIXED BUGS
-==========
-
-  - [TBCORE-2108] UpdateProxyDir.py: fixed possible crash during symlink validation
-  - [TBCORE-2107] ListDependencies.py: fixed crash caused by pkgInfo.py field name inconsistency
-  - [TBCORE-2093] AppConfig.py: actually do save changes in configfiles
-  - [TBCORE-2089] SQ C12: consider relative path names to executables
+  - [TBCORE-2117] improved error messages
+  - [TBCORE-2085] 'bst' is now a Bash function due to alias propagation errors
+  - [TBCORE-2158] dropped Python 2.x support (outdated)
+  - [TBCORE-2097] FastScript.py: omit passing superfluous 'U' mode to open()
+  - dropped support of Ubuntu Linux 14.04 (outdated)
+  - dropped support of MinGW (unused)
+  - dropped support of CreateIntelliJProject.py (unused)
+  - updated versions of PyCharm and CLion to 2020.3
 
 
 # EOF

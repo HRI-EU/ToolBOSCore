@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Configures the user's shell environment to work with ToolBOS
@@ -40,11 +40,8 @@
 #----------------------------------------------------------------------------
 
 
-from __future__ import print_function
-
 import logging
 import os.path
-import six
 import sys
 
 # ATTENTION: Do imports from ToolBOSCore-package below after PYTHONPATH
@@ -64,19 +61,19 @@ sys.path.append( os.path.join( tcRootDir, 'include' ) )
 sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 
 
-# check if ToolBOSCore/3.4/BashSrc was sourced (so PYTHONPATH was set),
+# check if ToolBOSCore/4.0/BashSrc was sourced (so PYTHONPATH was set),
 # otherwise we will not be able to import any ToolBOSCore Python package
 #
 sourced = False
 
 for directory in sys.path:
-    if directory.endswith( 'ToolBOSCore/3.4/include' ) or \
+    if directory.endswith( 'ToolBOSCore/4.0/include' ) or \
        directory.endswith( 'ToolBOSCore/include' ):
         sourced = True
 
 if not sourced:
     print( "\nPlease run the following command first:" )
-    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/3.4/BashSrc\n" )
+    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/BashSrc\n" )
     sys.exit( -1 )
 
 
@@ -158,7 +155,7 @@ dirName = os.path.expanduser( '~/.HRI' )
 
 if os.path.exists( dirName ):
     logging.warning( '%s: directory already exists', dirName )
-    answer = six.moves.input( 'Overwrite (y/N)? ' )
+    answer = input( 'Overwrite (y/N)? ' )
 
     if answer != 'y' and answer != 'Y':
         raise SystemExit( 'Aborted.' )

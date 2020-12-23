@@ -34,15 +34,14 @@
 #
 
 
+import io
 import logging
 import os
 import re
 import subprocess
+import urllib
 
-from six.moves            import StringIO
-from six.moves.urllib     import parse
-
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
 from ToolBOSCore.Util     import Any
 from ToolBOSCore.Util     import FastScript
@@ -63,7 +62,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
 
         super( SVNRepository, self ).__init__( url )
 
-        self._allowedHosts = ToolBOSSettings.getConfigOption( 'SVN_allowedHosts' )
+        self._allowedHosts = ToolBOSConf.getConfigOption( 'SVN_allowedHosts' )
 
 
     def checkout( self, revision='HEAD', output=None ):
@@ -126,7 +125,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         from ToolBOSCore.Packages import ProjectProperties
 
-        tmp1        = parse.urlsplit( self.url )
+        tmp1        = urllib.parse.urlsplit( self.url )
         server      = tmp1.netloc
         repoDir     = tmp1.path
 
@@ -191,7 +190,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         saneUrl = self._removeUsernameFromURL( self.url )
         Any.requireIsTextNonEmpty( saneUrl )
 
-        hostName = parse.urlsplit( saneUrl ).netloc
+        hostName = urllib.parse.urlsplit( saneUrl ).netloc
 
         # in case of repositories located at 'file:///' a hostname won't
         # be found, hence do not require it
@@ -242,7 +241,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         Any.requireIsTextNonEmpty( self.url )
 
-        output = StringIO()
+        output = io.StringIO()
         cmd    = "svn ls %s" % self.url
         status = None
 
@@ -287,7 +286,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         Any.requireIsTextNonEmpty( self._hostName )
 
-        mapping  = ToolBOSSettings.getConfigOption( 'serverAccounts' )
+        mapping  = ToolBOSConf.getConfigOption( 'serverAccounts' )
         Any.requireIsDict( mapping )
 
         userName = None
@@ -335,10 +334,10 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
         Any.requireIsTextNonEmpty( url )
 
-        urlData = list( parse.urlsplit( url )[ : ] )
+        urlData = list( urllib.parse.urlsplit( url )[ : ] )
         urlData[1] = '%s@%s' % ( username, urlData[1] )
 
-        result     =parse.urlunsplit (urlData )
+        result     = urllib.parse.urlunsplit (urlData )
         Any.requireIsTextNonEmpty( result )
 
         return result
@@ -581,7 +580,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
         """
         if not self._infoOutput:
 
-            output = StringIO()
+            output = io.StringIO()
 
 
             # Temporarily unset the LANG environment variable, in order to always
@@ -602,19 +601,19 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
             self._infoOutput = output.getvalue()
 
-            self._repoRootFromInfo = re.search( "Repository Root: (\S+)\n",
+            self._repoRootFromInfo = re.search( r"Repository Root: (\S+)\n",
                                                 self._infoOutput ).group(1)
 
             logging.debug( 'found SVN repository root: %s',
                            self._repoRootFromInfo )
 
-            self._repoUrlFromInfo = re.search( "URL: (\S+)\n",
+            self._repoUrlFromInfo = re.search( r"URL: (\S+)\n",
                                                self._infoOutput ).group(1)
 
             logging.debug( 'found SVN repository URL: %s',
                            self._repoUrlFromInfo )
 
-            self._revFromInfo = int( re.search( "Revision\s?: (\d+?)\s",
+            self._revFromInfo = int( re.search( r"Revision\s?: (\d+?)\s",
                                 self._infoOutput ).group(1) )
 
             logging.debug( 'found SVN revision: %d', self._revFromInfo )
@@ -631,7 +630,7 @@ class WorkingCopy( AbstractVCS.AbstractWorkingTree ):
 
         Any.requireIsBool( againstServer )
 
-        output = StringIO()
+        output = io.StringIO()
         self.status( againstServer, output, verbose=True, xml=True )
 
         Any.requireIsTextNonEmpty( output.getvalue() )

@@ -140,7 +140,7 @@ in your CMakeLists.txt:
   </tr>
   <tr>
     <td>check for particular platform</td>
-    <td>if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "windows-amd64-vs2012")<br/>...<br/>else()<br/>...<br/>endif()</td>
+    <td>if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "windows-amd64-vs2017")<br/>...<br/>else()<br/>...<br/>endif()</td>
   </tr>
   </table>
   

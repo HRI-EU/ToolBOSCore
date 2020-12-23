@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  updates and repairs the user's SIT sandbox ("proxy directory")
@@ -39,8 +39,6 @@
 # Includes
 #----------------------------------------------------------------------------
 
-
-from __future__ import print_function
 
 import logging
 import sys

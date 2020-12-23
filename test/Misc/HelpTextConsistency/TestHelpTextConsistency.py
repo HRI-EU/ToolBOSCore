@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  launches the unit testing
@@ -36,11 +36,10 @@
 
 
 import glob
+import io
 import logging
 import os
 import unittest
-
-from six import StringIO
 
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Util      import Any, FastScript
@@ -89,7 +88,7 @@ class TestHelpTextConsistency( unittest.TestCase ):
 
             logging.info( 'processing %s', basename )
 
-            output   = StringIO()
+            output   = io.StringIO()
             cmd      = '%s --help' % program
             fileName = os.path.join( 'ReferenceData', '%s.txt' % basename )
 

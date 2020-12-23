@@ -62,7 +62,7 @@ def getHostPlatform():
         hostPlatform = forcedPlatform
 
     else:
-        from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+        from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
         hostPlatform = getConfigOption( 'hostPlatform' )
 
     Any.requireIsTextNonEmpty( hostPlatform )
@@ -138,21 +138,10 @@ def getPlatformList():
     """
     return (
              ( 'bionic64',              'linux',     64, 'gcc',    'Ubuntu 18.04 LTS (64 bit)' ),
-             ( 'macos',                 'macos',     32, 'gcc',    'Apple MacOS' ),
+             ( 'focal64',               'linux',     64, 'gcc',    'Ubuntu 20.04 LTS (64 bit)' ),
              ( 'peakcan',               'peakcan',   32, 'gcc',    'PeakCAN Router' ),
              ( 'phyboardwega',          'phyboard',  32, 'gcc',    'phyboardwega' ),
-             ( 'trusty32',              'linux',     32, 'gcc',    'Ubuntu 12.04 LTS (32 bit)' ),
-             ( 'trusty64',              'linux',     64, 'gcc',    'Ubuntu 14.04 LTS (64 bit)' ),
-             ( 'windows-i386-vs2010',   'windows',   32, 'vs2010', 'Visual Studio 2010 on Microsoft Windows (32 bit)' ),
-             ( 'windows-i386-vs2012',   'windows',   32, 'vs2012', 'Visual Studio 2012 on Microsoft Windows (32 bit)' ),
-             ( 'windows-i386-vs2013',   'windows',   32, 'vs2013', 'Visual Studio 2013 on Microsoft Windows (32 bit)' ),
-             ( 'windows-amd64-vs2010',  'windows',   64, 'vs2010', 'Visual Studio 2010 on Microsoft Windows (64 bit)' ),
-             ( 'windows-amd64-vs2012',  'windows',   64, 'vs2012', 'Visual Studio 2012 on Microsoft Windows (64 bit)' ),
-             ( 'windows-amd64-vs2013',  'windows',   64, 'vs2013', 'Visual Studio 2013 on Microsoft Windows (64 bit)' ),
-             ( 'windows-i386-vs2017',   'windows',   32, 'vs2017', 'Visual Studio 2017 on Microsoft Windows (32 bit)' ),
-             ( 'windows-amd64-vs2017',  'windows',   64, 'vs2017', 'Visual Studio 2017 on Microsoft Windows (64 bit)' ),
-             ( 'mingw32',               'linux',     32, 'gcc',    'MinGW (32 bit)' ),
-             ( 'mingw64',               'linux',     64, 'gcc',    'MinGW (64 bit)' )
+             ( 'windows-amd64-vs2017',  'windows',   64, 'vs2017', 'Visual Studio 2017 on Microsoft Windows (64 bit)' )
             )
 
 
@@ -175,11 +164,11 @@ def getFullPlatformString( platformName ):
     """
         Returns a human-readable string for the given platform name, e.g.:
 
-          getFullPlatformString( 'trusty64' )
+          getFullPlatformString( 'focal64' )
 
         will return:
 
-          'Ubuntu 12.04 LTS (64 bit)'
+          'Ubuntu 20.04 LTS (64 bit)'
 
     """
     Any.requireIsTextNonEmpty( platformName )
@@ -206,8 +195,6 @@ def getSystemType( platformName = '' ):
         sys = system().lower()
         if sys == 'windows':
             return 'win'
-        elif sys == 'darwin':
-            return 'macos'
         else:
             return sys
 

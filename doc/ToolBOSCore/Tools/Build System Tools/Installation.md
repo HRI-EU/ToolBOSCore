@@ -84,11 +84,11 @@ If Java examples were to be installed into a destination directory 'HowTo' inste
 To create a symlink during installation, put the following list of tuples in your pkgInfo.py.
 Each tuple contains two elements (target, symlink).
 
-    installSymlinks  = [ ( 'windows-amd64-vs2010',             # target
-                           'windows-amd64-vs2012' ) ]          # symlink
+    installSymlinks  = [ ( 'windows-amd64-vs2020',             # target
+                           'windows-amd64-vs2017' ) ]          # symlink
 
-This creates a symlink within the installation directory. The symlink is named "windows-amd64-vs2012" (2nd element) 
-pointing to "windows-amd64-vs2010" (1st element).
+This creates a symlink within the installation directory. The symlink is named "windows-amd64-vs2017" (2nd element) 
+pointing to "windows-amd64-vs2020" (1st element).
 
 Both elements may contain subdirectory pathnames.
 

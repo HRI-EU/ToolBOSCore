@@ -35,13 +35,12 @@
 
 
 import copy
+import io
 import logging
 import re
 import os
 import shutil
 import subprocess
-
-from six import StringIO
 
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
@@ -141,7 +140,7 @@ class PatchSystem( object ):
         if self.details.packageCategory.startswith( 'Modules' ) and \
            os.path.exists( fileName ):
 
-            output = StringIO()
+            output = io.StringIO()
             modified.append( fileName )
 
             try:

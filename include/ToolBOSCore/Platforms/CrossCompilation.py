@@ -43,7 +43,7 @@ import os
 import re
 
 from ToolBOSCore.Platforms import Platforms
-from ToolBOSCore.Settings  import ToolBOSSettings
+from ToolBOSCore.Settings  import ToolBOSConf
 from ToolBOSCore.Util      import FastScript
 from ToolBOSCore.Util      import Any
 
@@ -89,17 +89,13 @@ def getSwitchEnvironmentList( fromPlatform=None ):
         This function can be used to fetch a list of platforms to which
         the <fromPlatform> can be switched to. Example:
 
-           getSwitchEnvironmentList( 'lucid64' )
-
-        According to the returned list it is possible to switchEnvironment()
-        from 'precise64' to 'windows-amd64-vs2012', but not to 'vxworks'.
-
+           getSwitchEnvironmentList( 'focal64' )
 
         If <fromPlatform> is None, all possible cross-compilation platforms
         are returned.
     """
     if fromPlatform is None:
-        xcmpHosts = ToolBOSSettings.getConfigOption( 'BST_crossCompileHosts' )
+        xcmpHosts = ToolBOSConf.getConfigOption( 'BST_crossCompileHosts' )
 
         # only return those which are not None
         result    = filter( bool, xcmpHosts.keys() )
@@ -132,26 +128,14 @@ def getSwitchEnvironmentList( fromPlatform=None ):
             targetPlatform = tmp.group(1)
             Any.requireIsTextNonEmpty( targetPlatform )
 
-            # At the time of writing the Windows-platforms are named
-            # windows-i386-msvc and windows-amd64-msvc. However names with
-            # dashes can't be used as function names thus the above
-            # candidates don't contain such dashes.
+            # Windows-platforms are named e.g. 'windows-amd64-vs2017'.
+            # However names with dashes can't be used as function names
+            # thus the above candidates don't contain such dashes.
             #
             # As a hack I'm replacing such well-known names here by hand.
-            # Better solutions are highly appreciated. Alternatively the
-            # Windows platforms could be renamed, e.g. "win32".
+            # Better solutions are highly appreciated.
             #
-            if targetPlatform == 'windowsi386vs2010':
-                targetPlatform = 'windows-i386-vs2010'
-            elif targetPlatform == 'windowsamd64vs2010':
-                targetPlatform = 'windows-amd64-vs2010'
-            elif targetPlatform == 'windowsi386vs2012':
-                targetPlatform = 'windows-i386-vs2012'
-            elif targetPlatform == 'windowsamd64vs2012':
-                targetPlatform = 'windows-amd64-vs2012'
-            elif targetPlatform == 'windowsi386vs2017':
-                targetPlatform = 'windows-i386-vs2017'
-            elif targetPlatform == 'windowsamd64vs2017':
+            if targetPlatform == 'windowsamd64vs2017':
                 targetPlatform = 'windows-amd64-vs2017'
 
             resultList.append( targetPlatform )
@@ -167,7 +151,7 @@ def getNativeCompilationList():
         'BST_defaultPlatforms_native', defaulting to the current
         host platform if not overwritten by the user.
     """
-    platformList = list( ToolBOSSettings.getConfigOption( 'BST_defaultPlatforms_native' ) )
+    platformList = list( ToolBOSConf.getConfigOption( 'BST_defaultPlatforms_native' ) )
 
     if not platformList:
         platformList = [ Platforms.getHostPlatform() ]
@@ -182,7 +166,7 @@ def getCrossCompilationList():
         Returns the value of the ToolBOS config option
         'BST_defaultPlatforms_xcmp'.
     """
-    platformList = list( ToolBOSSettings.getConfigOption( 'BST_defaultPlatforms_xcmp' ) )
+    platformList = list( ToolBOSConf.getConfigOption( 'BST_defaultPlatforms_xcmp' ) )
 
     platformList.sort()
 
@@ -200,7 +184,7 @@ def getNativeCompileHost( platform ):
     Any.requireIsTextNonEmpty( platform )
 
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_userCompileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_userCompileHosts' )
 
     try:
         return hosts[ platform ]
@@ -209,7 +193,7 @@ def getNativeCompileHost( platform ):
         pass
 
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_compileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_compileHosts' )
 
     try:
         return hosts[ platform ]
@@ -227,7 +211,7 @@ def getCrossCompileHost( platform ):
     """
     Any.requireIsTextNonEmpty( platform )
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_userCrossCompileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_userCrossCompileHosts' )
 
     try:
         return hosts[ platform ]
@@ -235,7 +219,7 @@ def getCrossCompileHost( platform ):
         # not found in user's configfile
         pass
 
-    hosts = ToolBOSSettings.getConfigOption( 'BST_crossCompileHosts' )
+    hosts = ToolBOSConf.getConfigOption( 'BST_crossCompileHosts' )
 
     try:
         return hosts[ platform ]
@@ -251,90 +235,17 @@ def getCrossCompileHost( platform ):
 # Change the environment so it appears to the build system as if we would
 # run on another platform, e.g. Windows with Visual Studio installed.
 
-def _switchEnv_trusty64_to_windowsi386vs2010():
-    _switchEnv_linuxToWindows( 'windows-i386-vs2010' )
-
-
-def _switchEnv_trusty64_to_windowsi386vs2012():
-    _switchEnv_linuxToWindows( 'windows-i386-vs2012' )
-
-
-def _switchEnv_trusty64_to_windowsamd64vs2010():
-    _switchEnv_linuxToWindows( 'windows-amd64-vs2010' )
-
-
-def _switchEnv_trusty64_to_windowsamd64vs2012():
-    _switchEnv_linuxToWindows( 'windows-amd64-vs2012' )
-
-
-def _switchEnv_trusty64_to_windowsi386vs2017():
-    _switchEnv_linuxToWindows( 'windows-i386-vs2017' )
-
-
-def _switchEnv_trusty64_to_windowsamd64vs2017():
-    _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
-
 
 def _switchEnv_bionic64_to_windowsamd64vs2017():
     _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
 
 
-def _switchEnv_trusty64_to_peakcan():
+def _switchEnv_bionic64_to_peakcan():
     _switchEnv_linuxIntelToARM( 'peakcan' )
 
 
-def _switchEnv_trusty64_to_phyboardwega():
+def _switchEnv_bionic64_to_phyboardwega():
     _switchEnv_linuxIntelToARM( 'phyboardwega' )
-
-
-# MinGW
-
-def _switchEnv_trusty64_to_mingw32():
-    _switchEnv_toMinGW( 'mingw32' )
-
-def _switchEnv_trusty64_to_mingw64():
-    _switchEnv_toMinGW( 'mingw64' )
-
-def _switchEnv_windowsi386vs2012_to_mingw64():
-    _switchEnv_toMinGW( 'mingw64' )
-
-def _switchEnv_windowsamd64vs2012_to_mingw64():
-    _switchEnv_toMinGW( 'mingw64' )
-
-def _switchEnv_windowsi386vs2012_to_mingw32():
-    _switchEnv_toMinGW( 'mingw32' )
-
-def _switchEnv_windowsamd64vs2012_to_mingw32():
-    _switchEnv_toMinGW( 'mingw32' )
-
-def _switchEnv_windowsi386vs2017_to_mingw32():
-    _switchEnv_toMinGW( 'mingw32' )
-
-def _switchEnv_windowsi386vs2017_to_mingw64():
-    _switchEnv_toMinGW( 'mingw64' )
-
-def _switchEnv_windowsamd64vs2017_to_mingw32():
-    _switchEnv_toMinGW( 'mingw32' )
-
-def _switchEnv_windowsamd64vs2017_to_mingw64():
-    _switchEnv_toMinGW( 'mingw64' )
-
-def _switchEnv_toMinGW( targetPlatform ):
-    fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                             'include', 'CMake', 'MinGW-linux.cmake' )
-
-    Any.requireIsFileNonEmpty( fileName )
-
-    FastScript.setEnv( 'TARGETOS', 'windows' )
-    FastScript.setEnv( 'TARGETARCH', targetPlatform )
-    FastScript.setEnv( 'COMPILER',   'gcc' )
-    FastScript.setEnv( 'MINGW_PLATFORM', targetPlatform )
-    FastScript.setEnv( 'MAKEFILE_PLATFORM', targetPlatform )
-
-    oldOptions = FastScript.getEnv( 'BST_CMAKE_OPTIONS' ) or ''
-    newOptions = '-DCMAKE_TOOLCHAIN_FILE:FILEPATH=%s %s' % ( fileName, oldOptions )
-
-    FastScript.setEnv( 'BST_CMAKE_OPTIONS', newOptions )
 
 
 def _switchEnv_linuxToWindows( targetPlatform ):
@@ -342,7 +253,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     from ToolBOSCore.Settings import ProcessEnv
     from ToolBOSCore.Settings import UserSetup
-    from ToolBOSCore.Settings import ToolBOSSettings
+    from ToolBOSCore.Settings import ToolBOSConf
 
     Any.requireIsTextNonEmpty( targetPlatform )
 
@@ -440,7 +351,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     # source "ToolBOSPluginWindows" if not already done
 
-    bspMap     = ToolBOSSettings.getConfigOption( 'BST_crossCompileBSPs' )
+    bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
     Any.requireIsDictNonEmpty( bspMap )
 
     neededBSP  = bspMap[ targetPlatform ]
@@ -479,14 +390,14 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
 def _switchEnv_linuxIntelToARM( targetPlatform ):
     from ToolBOSCore.Settings import ProcessEnv
-    from ToolBOSCore.Settings import ToolBOSSettings
+    from ToolBOSCore.Settings import ToolBOSConf
 
     Any.requireIsTextNonEmpty( targetPlatform )
 
 
     # source cross-compiler package if not already done
 
-    bspMap     = ToolBOSSettings.getConfigOption( 'BST_crossCompileBSPs' )
+    bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
     Any.requireIsDictNonEmpty( bspMap )
 
     neededBSP  = bspMap[ targetPlatform ]
