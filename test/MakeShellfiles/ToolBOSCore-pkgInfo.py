@@ -18,7 +18,7 @@ category         = 'DevelopmentTools'
 
 section          = 'DevelopmentTools'
 
-version          = '3.4'
+version          = '4.0'
 
 name             = 'ToolBOSCore'
 
@@ -30,12 +30,9 @@ gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
 
 gitOrigin        = 'https://github.com/HRI-EU/ToolBOSCore.git'
 
-recommends       = [ 'deb://git-core',
-                     'deb://git-svn',
-                     'deb://graphviz',
+recommends       = [ 'deb://git',
                      'sit://External/CMake/3.4',
                      'sit://External/git/2.18',
-                     'sit://External/subversion/2.18',
                      'sit://External/wine/3.5' ]
 
 

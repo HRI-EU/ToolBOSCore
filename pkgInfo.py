@@ -36,16 +36,13 @@
 
 name             = 'ToolBOSCore'
 
-version          = '3.4'
+version          = '4.0'
 
 category         = 'DevelopmentTools'
 
-recommends       = [ 'deb://git-core',
-                     'deb://git-svn',
-                     'deb://graphviz',
+recommends       = [ 'deb://git',
                      'sit://External/CMake/3.4',
                      'sit://External/git/2.18',
-                     'sit://External/subversion/2.18',
                      'sit://External/wine/3.5' ]
 
 delete           = [ '*py.class' ]
