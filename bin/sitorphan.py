@@ -40,8 +40,6 @@
 #----------------------------------------------------------------------------
 
 
-from __future__ import print_function
-
 from ToolBOSCore.Packages import BSTPackage
 from ToolBOSCore.Packages import ProjectProperties
 from ToolBOSCore.Storage  import SIT
