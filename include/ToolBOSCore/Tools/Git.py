@@ -42,7 +42,7 @@ import urllib
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
-from ToolBOSCore.Util     import Any, FastScript, VersionCompat
+from ToolBOSCore.Util     import Any, FastScript
 
 
 class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
@@ -114,7 +114,7 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
                2. detailed description of the problem
                3. suggested solution
         """
-        tmp = VersionCompat.StringIO()
+        tmp = io.StringIO()
         cmd = 'git status --porcelain'
 
         FastScript.execProgram( cmd, stdout=tmp )
@@ -355,8 +355,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
             Has no effect if it was already SSH.
         """
         if self.url.startswith( 'http' ):
-            tokens = VersionCompat.urlsplit( self.url )
-
+            tokens = urllib.urlsplit( self.url )
 
             # remove username from net location, if present
             tmp = re.match( '^.+@(.+)$', tokens.netloc )

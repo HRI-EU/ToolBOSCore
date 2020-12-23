@@ -57,8 +57,7 @@ from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
-from ToolBOSCore.Util                             import Any, FastScript, \
-                                                         VersionCompat
+from ToolBOSCore.Util                             import Any, FastScript
 
 
 ALL_FILE_EXTENSIONS     = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
@@ -1721,8 +1720,8 @@ Specify an empty list if really nothing has to be executed.'''
             logging.info( "%s: checking '%s'", ruleID,command )
 
             if Any.getDebugLevel() <= 3:
-                stdout = VersionCompat.StringIO()
-                stderr = VersionCompat.StringIO()
+                stdout = io.StringIO()
+                stderr = io.StringIO()
             else:
                 stdout = None
                 stderr = None
