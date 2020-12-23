@@ -37,6 +37,7 @@
 import ast
 import collections
 import inspect
+import io
 import logging
 import os
 import re
@@ -45,21 +46,18 @@ import subprocess
 import sys
 import tempfile
 
-import six
-
 from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.BSTPackage              import BSTProxyInstalledPackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
 from ToolBOSCore.Settings.ProcessEnv              import source
-from ToolBOSCore.Settings.ToolBOSSettings         import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
-from ToolBOSCore.Util                             import Any, FastScript, \
-                                                         VersionCompat
+from ToolBOSCore.Util                             import Any, FastScript
 
 
 ALL_FILE_EXTENSIONS     = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
@@ -142,32 +140,16 @@ Japanese output on screen.'''
 
                 logging.debug( 'checking %s', filePath )
 
-
-                if six.PY2:
-
-                    try:
-                        filePath.decode( 'ascii' )
-                        passed += 1
-                    except UnicodeDecodeError as e:
-                        # PyCharm linter fails to recognize the start property
-                        # so we silence the warning.
-                        # noinspection PyUnresolvedReferences
-                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
-                                      filePath )
-                        failed += 1
-
-                else:
-
-                    try:
-                        filePath.encode( 'ascii' )
-                        passed += 1
-                    except UnicodeEncodeError as e:
-                        # PyCharm linter fails to recognize the start property
-                        # so we silence the warning.
-                        # noinspection PyUnresolvedReferences
-                        logging.info( 'GEN01: %s - Non-ASCII character in filename',
-                                      filePath )
-                        failed += 1
+                try:
+                    filePath.encode( 'ascii' )
+                    passed += 1
+                except UnicodeEncodeError as e:
+                    # PyCharm linter fails to recognize the start property
+                    # so we silence the warning.
+                    # noinspection PyUnresolvedReferences
+                    logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                                  filePath )
+                    failed += 1
 
 
         if failed == 0:
@@ -953,9 +935,9 @@ causing data loss or inconsistent states.'''
         failed = 0
         passed = 0
 
-        regexpExit1 = re.compile( '\sexit\s*\(' )
-        regexpExit2 = re.compile( '\s_exit\s*\(' )
-        regexpAbort = re.compile( '\sabort\s*\(' )
+        regexpExit1 = re.compile( r'\sexit\s*\(' )
+        regexpExit2 = re.compile( r'\s_exit\s*\(' )
+        regexpAbort = re.compile( r'\sabort\s*\(' )
 
         for filePath in files:
             if filePath.find( '/bin/' ) != -1 or \
@@ -1348,7 +1330,7 @@ and other compile errors.'''
                 #               PACKAGENAME_BAZ_H
 
                 safeguard   = '#ifndef %s_H' % moduleUpper
-                regexp      = re.compile( '#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
+                regexp      = re.compile( r'#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
 
                 tmp = regexp.search( content )
 
@@ -1475,7 +1457,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         logging.debug( "check if package can be built using BST.py" )
 
         oldcwd = os.getcwd()
-        output = six.StringIO() if Any.getDebugLevel() <= 3 else None
+        output = io.StringIO() if Any.getDebugLevel() <= 3 else None
 
         FastScript.changeDirectory( details.topLevelDir )
 
@@ -1531,7 +1513,7 @@ once in a while inspect your code using Klocwork.'''
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
         failed = 0
-        output = six.StringIO()
+        output = io.StringIO()
         error  = False
         kwDir  = tempfile.mkdtemp( prefix='klocwork-' )
 
@@ -1738,8 +1720,8 @@ Specify an empty list if really nothing has to be executed.'''
             logging.info( "%s: checking '%s'", ruleID,command )
 
             if Any.getDebugLevel() <= 3:
-                stdout = VersionCompat.StringIO()
-                stderr = VersionCompat.StringIO()
+                stdout = io.StringIO()
+                stderr = io.StringIO()
             else:
                 stdout = None
                 stderr = None
@@ -1758,7 +1740,7 @@ Specify an empty list if really nothing has to be executed.'''
                     errorMessages.append( '%s: %s:%s - %s'
                                           % ( ruleID, error.fname, error.lineno, error.description ) )
 
-                logging.info( "%s: '%s' failed (see verbose-mode for details)", ruleID, command )
+                logging.info( "%s: '%s' failed (see verbose-mode for details: BST.py -q C12 -v)", ruleID, command )
 
             else:
                 passedExecutables += 1
@@ -1956,7 +1938,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
 
         logging.debug( "checking for access to private members from outside" )
         found  = 0
-        regexp = re.compile( '(\w+)\._(\w+)' )
+        regexp = re.compile( r'(\w+)\._(\w+)' )
 
         for filePath in files:
             if filePath.endswith( '.py' ) and os.path.exists( filePath ):
@@ -2382,7 +2364,7 @@ Documentation should be maintained under one of the following locations:
     goodExample = '''
     * for C / C++ projects:*
     /*!
-     * \mainpage
+     * \\mainpage
      *
      * This package contains a coffee machine implemented for various
      * operating systems. On Linux and OS X run "make coffee", on Android
@@ -2508,7 +2490,7 @@ it is about.
 
 Preferrably both arguments and return value (if any) should be documented.
 
-For redundant cases, doxygen's `\copydoc` command should be considered. This
+For redundant cases, doxygen's `\\copydoc` command should be considered. This
 command duplicates documentation at other locations, to avoid physical
 duplication (for consistency reasons).'''
 
@@ -3045,31 +3027,16 @@ def findNonAsciiCharacters( filePath, rule ):
 
     for i, line in enumerate( content ):
 
-        if six.PY2:
-
-            try:
-                line.decode( 'ascii' )
-                passed += 1
-            except UnicodeDecodeError as e:
-                # PyCharm linter fails to recognize the start property
-                # so we silence the warning.
-                # noinspection PyUnresolvedReferences
-                logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
-                              rule, filePath, i, e.start )
-                failed += 1
-
-        else:
-
-            try:
-                line.encode( 'ascii' )
-                passed += 1
-            except UnicodeEncodeError as e:
-                # PyCharm linter fails to recognize the start property
-                # so we silence the warning.
-                # noinspection PyUnresolvedReferences
-                logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
-                              rule, filePath, i, e.start )
-                failed += 1
+        try:
+            line.encode( 'ascii' )
+            passed += 1
+        except UnicodeEncodeError as e:
+            # PyCharm linter fails to recognize the start property
+            # so we silence the warning.
+            # noinspection PyUnresolvedReferences
+            logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
+                          rule, filePath, i, e.start )
+            failed += 1
 
 
     return passed, failed
@@ -3090,19 +3057,10 @@ def createCParser( filePath, details, headerAndLanguageMap ):
         raise EnvironmentError( msg )
 
 
-    if six.PY2:
-
-        try:
-            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
-        except ImportError as e:
-            raise EnvironmentError( e )
-
-    else:
-
-        try:
-            from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
-        except ModuleNotFoundError as e:
-            raise EnvironmentError( e )
+    try:
+        from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
+    except ModuleNotFoundError as e:
+        raise EnvironmentError( e )
 
 
     _, ext       = os.path.splitext( filePath )

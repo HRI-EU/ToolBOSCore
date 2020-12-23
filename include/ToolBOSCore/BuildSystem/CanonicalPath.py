@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Determines the canonical path of the current package from values in
@@ -35,7 +35,6 @@
 #
 #
 
-from __future__ import print_function
 
 import logging
 

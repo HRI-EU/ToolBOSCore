@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Turns a software package into a project for the JetBrains PyCharm IDE
@@ -40,14 +40,12 @@
 #----------------------------------------------------------------------------
 
 
-from __future__ import print_function
-
 import logging
 import sys
 
 from ToolBOSCore.BuildSystem import BuildSystemTools
 from ToolBOSCore.Settings    import ProcessEnv
-from ToolBOSCore.Settings    import ToolBOSSettings
+from ToolBOSCore.Settings    import ToolBOSConf
 from ToolBOSCore.Tools       import PyCharm
 from ToolBOSCore.Util        import Any
 from ToolBOSCore.Util        import ArgsManagerV2
@@ -77,12 +75,10 @@ argman.run()
 BuildSystemTools.requireTopLevelDir()
 
 
-ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_pycharm' ) )
+ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_pycharm' ) )
 
 
 try:
-    #PyCharm.createUserConfig()
-
     logging.info( 'creating config in ./.idea' )
     PyCharm.createProject()
     FastScript.prettyPrintError( 'Now please execute: runPyCharm.sh' )

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Matlab source-code analysis
@@ -40,12 +40,12 @@
 #----------------------------------------------------------------------------
 
 
+import io
 import logging
 import re
 
-from six import StringIO
 from ToolBOSCore.Settings            import ProcessEnv
-from ToolBOSCore.Settings            import ToolBOSSettings
+from ToolBOSCore.Settings            import ToolBOSConf
 from ToolBOSCore.Util                import Any
 from ToolBOSCore.Util                import FastScript
 
@@ -621,13 +621,13 @@ def codeCheck( filename, minseverity = 1, filtermsg = None ):
     """
     Any.requireIsFileNonEmpty( filename )
 
-    ProcessEnv.source( ToolBOSSettings.getConfigOption( 'package_matlab' ) )
+    ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_matlab' ) )
 
     cmd = "matlab -nodisplay -nosplash -nodesktop -r " + \
           "\"checkcode('{0}', '-id', '-fullpath'); quit;\"".format( filename )
 
-    stdout = StringIO()
-    stderr = StringIO() if Any.getDebugLevel() <= 3 else None
+    stdout = io.StringIO()
+    stderr = io.StringIO() if Any.getDebugLevel() <= 3 else None
 
     try:
         FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
@@ -642,7 +642,7 @@ def codeCheck( filename, minseverity = 1, filtermsg = None ):
         filtermsg = []
 
     result = []
-    regexp = re.compile( '^L\s(\d+)\s\(.+?\):\s([A-Z]+):\s(.+)$' )
+    regexp = re.compile( r'^L\s(\d+)\s\(.+?\):\s([A-Z]+):\s(.+)$' )
 
     for line in stdout.getvalue().split( '\n' ):
         tmp = regexp.match( line )

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Build System Tools - Windows symbol extractor
@@ -39,8 +39,6 @@
 # Includes
 #----------------------------------------------------------------------------
 
-
-from __future__ import print_function
 
 import logging
 import re

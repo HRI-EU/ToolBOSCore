@@ -39,7 +39,7 @@ import argparse
 import logging
 import textwrap
 
-from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
 from ToolBOSCore.Util                     import Any
 from ToolBOSCore.Util                     import FastScript
 

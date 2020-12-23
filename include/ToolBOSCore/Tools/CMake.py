@@ -34,28 +34,17 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Includes
-#----------------------------------------------------------------------------
-
-
 import collections
 import glob
+import io
 import logging
 import os
 import re
 import shlex
-import six
 import subprocess
 
 from ToolBOSCore.BuildSystem import Compilers
-from ToolBOSCore.Util        import FastScript
-from ToolBOSCore.Util        import Any, VersionCompat
-
-
-#----------------------------------------------------------------------------
-# Public API
-#----------------------------------------------------------------------------
+from ToolBOSCore.Util        import Any, FastScript
 
 
 class CMakeServer( object ):
@@ -74,8 +63,8 @@ class CMakeServer( object ):
 
         self._pipe        = None
         self._projectRoot = topLevelDir
-        self._stdin       = VersionCompat.StringIO()
-        self._stdout      = VersionCompat.StringIO()
+        self._stdin       = io.StringIO()
+        self._stdout      = io.StringIO()
         self._topLevelDir = buildDir
         self._verbose     = verbose            # log raw queries + replies
 
@@ -108,20 +97,12 @@ class CMakeServer( object ):
 
         logging.debug( 'opening pipe: %s', ' '.join( args ) )
 
-
-        if six.PY2:
-            self._pipe = subprocess.Popen( args,
-                                           bufsize=1,    # 1 == line buffered
-                                           cwd=self._topLevelDir,
-                                           stdin=subprocess.PIPE,
-                                           stdout=subprocess.PIPE )
-        else:
-            self._pipe = subprocess.Popen( args,
-                                           bufsize=1,    # 1 == line buffered
-                                           cwd=self._topLevelDir,
-                                           stdin=subprocess.PIPE,
-                                           stdout=subprocess.PIPE,
-                                           encoding='utf8' )
+        self._pipe = subprocess.Popen( args,
+                                       bufsize=1,    # 1 == line buffered
+                                       cwd=self._topLevelDir,
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       encoding='utf8' )
 
 
     def _closePipe( self ):
@@ -254,8 +235,8 @@ def getIncludePathsAsString( targetPlatform, targetName ):
     content    = FastScript.getFileContent( fileName, splitLines=True )
     raw_C      = ''
     raw_CPP    = ''
-    regexp_C   = re.compile( '^(?:C_FLAGS|C_INCLUDES)\s=\s+(.*)$' )
-    regexp_CPP = re.compile( '^(?:CXX_FLAGS|CXX_INCLUDES)\s=\s+(.*)$' )
+    regexp_C   = re.compile( r'^(?:C_FLAGS|C_INCLUDES)\s=\s+(.*)$' )
+    regexp_CPP = re.compile( r'^(?:CXX_FLAGS|CXX_INCLUDES)\s=\s+(.*)$' )
     result     = ''
 
     for line in content:
@@ -409,10 +390,10 @@ def getCDefinesAsString( targetPlatform, targetName ):
     raw_CPP           = ''
     raw_C_CFLAGS      = ''
     raw_CPP_CFLAGS    = ''
-    regexp_C          = re.compile( '^C_DEFINES\s=\s+(.*)$' )
-    regexp_CPP        = re.compile( '^CXX_DEFINES\s=\s+(.*)$' )
-    regexp_C_CFLAGS   = re.compile( '^C_FLAGS\s=\s+(.*)$' )
-    regexp_CPP_CFLAGS = re.compile( '^CXX_FLAGS\s=\s+(.*)$' )
+    regexp_C          = re.compile( r'^C_DEFINES\s=\s+(.*)$' )
+    regexp_CPP        = re.compile( r'^CXX_DEFINES\s=\s+(.*)$' )
+    regexp_C_CFLAGS   = re.compile( r'^C_FLAGS\s=\s+(.*)$' )
+    regexp_CPP_CFLAGS = re.compile( r'^CXX_FLAGS\s=\s+(.*)$' )
     result            = ''
 
     for line in content:
@@ -466,7 +447,7 @@ def getCDefinesAsList( targetPlatform, targetName ):
     Any.requireIsTextNonEmpty( targetName )
 
     result  = []
-    regexp  = re.compile( '-D\s*(.*)' )
+    regexp  = re.compile( r'-D\s*(.*)' )
 
     for token in getCDefinesAsString( targetPlatform, targetName ).split():
 

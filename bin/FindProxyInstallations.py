@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  searches for projects locally installed in the SIT proxy, or pointing
@@ -40,8 +40,6 @@
 # Includes
 #----------------------------------------------------------------------------
 
-
-from __future__ import print_function
 
 import logging
 import os
