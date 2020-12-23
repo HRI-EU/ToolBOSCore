@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Aux.scripts around JetBrains CLion IDE (www.jetbrains.com/clion)
