@@ -45,7 +45,6 @@ import logging
 import os
 import re
 import shlex
-import six
 import subprocess
 
 from ToolBOSCore.BuildSystem import Compilers
@@ -108,20 +107,12 @@ class CMakeServer( object ):
 
         logging.debug( 'opening pipe: %s', ' '.join( args ) )
 
-
-        if six.PY2:
-            self._pipe = subprocess.Popen( args,
-                                           bufsize=1,    # 1 == line buffered
-                                           cwd=self._topLevelDir,
-                                           stdin=subprocess.PIPE,
-                                           stdout=subprocess.PIPE )
-        else:
-            self._pipe = subprocess.Popen( args,
-                                           bufsize=1,    # 1 == line buffered
-                                           cwd=self._topLevelDir,
-                                           stdin=subprocess.PIPE,
-                                           stdout=subprocess.PIPE,
-                                           encoding='utf8' )
+        self._pipe = subprocess.Popen( args,
+                                       bufsize=1,    # 1 == line buffered
+                                       cwd=self._topLevelDir,
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       encoding='utf8' )
 
 
     def _closePipe( self ):

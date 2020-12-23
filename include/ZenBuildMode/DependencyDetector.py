@@ -46,7 +46,6 @@ import base64
 import logging
 
 import dill
-import six
 
 from ToolBOSCore.BuildSystem        import BuildSystemTools
 from ToolBOSCore.Packages           import BSTPackage
@@ -184,16 +183,10 @@ data = { 'bstpkg_src':          bstpkg_src,
 dillPayload   = dill.dumps( data )
 Any.requireIsInstance( dillPayload, bytes )
 
-
 base64payload = base64.b64encode( dillPayload )
 Any.requireIsInstance( base64payload, bytes )
 
-
-if six.PY2:
-    strPayload = str( base64payload )
-else:
-    strPayload = str( base64payload, 'utf-8' )
-
+strPayload = str( base64payload, 'utf-8' )
 Any.requireIsInstance( strPayload, str )
 
 

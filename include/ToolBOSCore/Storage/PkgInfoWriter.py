@@ -35,12 +35,11 @@
 
 
 import glob
+import io
 import logging
 import os
 import pprint
 import re
-
-import six
 
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Settings                 import ToolBOSConf
@@ -72,7 +71,7 @@ class PkgInfoWriter( AbstractWriter ):
         super( PkgInfoWriter, self ).__init__( details )
 
         self._sourceTree = sourceTree
-        self._pprintOut  = six.StringIO()
+        self._pprintOut  = io.StringIO()
         self._pprinter   = pprint.PrettyPrinter( width=self._valueWidthMax,
                                                  stream=self._pprintOut )
 

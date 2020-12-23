@@ -40,10 +40,10 @@
 #----------------------------------------------------------------------------
 
 
+import io
 import logging
 import re
 
-from six import StringIO
 from ToolBOSCore.Settings            import ProcessEnv
 from ToolBOSCore.Settings            import ToolBOSConf
 from ToolBOSCore.Util                import Any
@@ -626,8 +626,8 @@ def codeCheck( filename, minseverity = 1, filtermsg = None ):
     cmd = "matlab -nodisplay -nosplash -nodesktop -r " + \
           "\"checkcode('{0}', '-id', '-fullpath'); quit;\"".format( filename )
 
-    stdout = StringIO()
-    stderr = StringIO() if Any.getDebugLevel() <= 3 else None
+    stdout = io.StringIO()
+    stderr = io.StringIO() if Any.getDebugLevel() <= 3 else None
 
     try:
         FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )

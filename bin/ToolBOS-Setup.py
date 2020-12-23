@@ -44,7 +44,6 @@ from __future__ import print_function
 
 import logging
 import os.path
-import six
 import sys
 
 # ATTENTION: Do imports from ToolBOSCore-package below after PYTHONPATH
@@ -158,7 +157,7 @@ dirName = os.path.expanduser( '~/.HRI' )
 
 if os.path.exists( dirName ):
     logging.warning( '%s: directory already exists', dirName )
-    answer = six.moves.input( 'Overwrite (y/N)? ' )
+    answer = input( 'Overwrite (y/N)? ' )
 
     if answer != 'y' and answer != 'Y':
         raise SystemExit( 'Aborted.' )

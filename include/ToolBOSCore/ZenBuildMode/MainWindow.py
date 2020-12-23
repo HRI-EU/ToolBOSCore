@@ -45,8 +45,6 @@ import sip
 sip.setapi( 'QString', 2 )
 sip.setapi( 'QVariant', 2 )
 
-import six
-
 from PyQt5.QtCore    import pyqtSignal, QObject, QByteArray
 from PyQt5.QtWidgets import *
 
@@ -784,9 +782,6 @@ class MainWindow( QObject, object ):
 
 
     def _onLocalShellInput( self, command ):
-        if six.PY2:
-            command = Any.Utf8( command )
-
         if not command:
             # f.i. just RETURN pressed
             terminal = self.terminals[ 'localhost' ]
@@ -891,9 +886,6 @@ class MainWindow( QObject, object ):
 
 
     def _onRemoteShellInput( self, command ):
-        if six.PY2:
-            command = Any.Utf8( command )
-
         if not command:
             # f.i. just RETURN pressed
             for terminal in self.visibleRemoteTerminals:

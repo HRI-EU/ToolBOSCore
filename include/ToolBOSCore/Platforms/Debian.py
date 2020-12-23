@@ -39,9 +39,8 @@
 #----------------------------------------------------------------------------
 
 
+import io
 import re
-
-from six import StringIO
 
 from ToolBOSCore.Util import Any, FastScript
 from ToolBOSCore.Settings import ProcessEnv
@@ -68,7 +67,7 @@ def getSystemPackages():
     if not ProcessEnv.which( 'dpkg' ):
         raise EnvironmentError( 'Not a Debian-based operating system' )
 
-    output = StringIO()
+    output = io.StringIO()
     regexp = re.compile( r"^ii\s+(.+?)\s+(.+?)\s.+$" )
     result = {}
 

@@ -37,8 +37,7 @@
 from __future__ import print_function
 
 import logging
-
-from six.moves.urllib import parse
+import urllib
 
 from ToolBOSCore.Util import Any, FastScript
 
@@ -235,10 +234,10 @@ class RemoteRepository( Repository ):
         """
         Any.requireIsTextNonEmpty( url )
 
-        urlData = list( parse.urlsplit( url )[ : ] )
+        urlData    = list( urllib.parse.urlsplit( url )[ : ] )
         urlData[1] = '%s@%s' % ( username, urlData[1] )
 
-        result     =parse.urlunsplit (urlData )
+        result     = urllib.parse.urlunsplit( urlData )
         Any.requireIsTextNonEmpty( result )
 
         return result
