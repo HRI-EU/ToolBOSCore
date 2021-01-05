@@ -26,7 +26,7 @@ package          = 'ToolBOSCore'
 
 gitRelPath       = ''
 
-gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore-Mirror.git'
+gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore.git'
 
 gitOrigin        = 'https://github.com/HRI-EU/ToolBOSCore.git'
 
