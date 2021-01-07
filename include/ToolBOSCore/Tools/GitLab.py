@@ -36,7 +36,7 @@
 
 import logging
 import re
-import urllib
+import urllib.parse
 
 from ToolBOSCore.Util import Any, FastScript
 
@@ -124,7 +124,7 @@ class GitLabRepo( object ):
         Any.requireIsMatching( repoURL, '^http.+\.git' )
         Any.requireIsTextNonEmpty( token )
 
-        tmp             = urllib.urlsplit( repoURL )
+        tmp             = urllib.parse.urlsplit( repoURL )
         Any.requireIsTextNonEmpty( tmp.scheme )
         Any.requireIsTextNonEmpty( tmp.netloc )
         Any.requireIsTextNonEmpty( tmp.path )

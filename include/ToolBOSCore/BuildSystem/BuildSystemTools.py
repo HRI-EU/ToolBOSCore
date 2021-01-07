@@ -362,6 +362,16 @@ class BuildSystemTools( object ):
     def _cmakeConfigure( self ):
         requireTopLevelDir( self._sourceTree )
 
+
+        # TBCORE-2163  silently return if no CMakeLists.txt present
+        #              (e.g. in pure Python module)
+        cmakeLists = os.path.join( self._sourceTree, 'CMakeLists.txt' )
+
+        if not os.path.exists( cmakeLists ):
+            logging.debug( '%s: No such file (skipping CMake execution)', cmakeLists )
+            return True
+
+
         cmd = 'cmake -DCMAKE_MODULE_PATH=%s -DCMAKE_BUILD_TYPE=%s' % \
               ( self._cmakeModPath, self._buildType )
 
@@ -406,6 +416,16 @@ class BuildSystemTools( object ):
 
     def _cmakeCompile( self ):
         requireTopLevelDir( self._sourceTree )
+
+
+        # TBCORE-2163  silently return if no CMakeLists.txt present
+        #              (e.g. in pure Python module)
+        cmakeLists = os.path.join( self._sourceTree, 'CMakeLists.txt' )
+
+        if not os.path.exists( cmakeLists ):
+            logging.debug( '%s: No such file (skipping CMake execution)', cmakeLists )
+            return True
+
 
         try:
             FastScript.execProgram( self._buildCmd,
