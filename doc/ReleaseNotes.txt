@@ -1,4 +1,17 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.1
+
+
+CHANGES
+=======
+
+  - [TBCORE-2163] BST.py: skip CMake invocation if no CMakeLists.txt present
+  - [TBCORE-2158] Any.py: dropped 'Any.Utf8' (use 'str' directly under Py3)
+  - etc/ToolBOS.conf: updated package versions
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.0
 
 
