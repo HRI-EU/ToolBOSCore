@@ -51,16 +51,6 @@ class TestCAnalyzer( unittest.TestCase ):
     def assertEmpty( self, collection ):
         self.assertFalse( collection, '{} is not empty'.format( repr( collection ) ) )
 
-    # noinspection PyCompatibility
-    def assertIsInstanceCompat( self, obj, cls ):
-        """
-           Python 3.0/3.1 compatibility wrapper for TestCase#assertIsInstance
-        """
-        if sys.version_info.major == 3 and sys.version_info.minor in (0, 1):
-            self.assertTrue( isinstance( obj, cls ), '%s is not an instance of %r' % (repr( obj ), cls) )
-        else:
-            self.assertIsInstance( obj, cls )
-
     def setUp( self ):
         from ToolBOSCore.BuildSystem.Compilers import getIncludePaths
         includePaths      = getIncludePaths( 'clang', 'c++' ) or getIncludePaths( 'clang-3.8', 'c++' )
@@ -72,7 +62,7 @@ class TestCAnalyzer( unittest.TestCase ):
     def test_variables( self ):
         self.assertIn( 'var1', self.parser.variables )
         var = self.parser.variables[ 'var1' ]
-        self.assertIsInstanceCompat( var, Variable )
+        self.assertIsInstance( var, Variable )
         self.assertEqual( var.name, 'var1' )
         self.assertEqual( var.type, 'int' )
         self.assertNotIn( '__var__', self.parser.variables )
@@ -88,7 +78,7 @@ class TestCAnalyzer( unittest.TestCase ):
 
         # function parameters
         fun = list( fset )[ 0 ]
-        self.assertIsInstanceCompat( fun, FunctionDefinition )
+        self.assertIsInstance( fun, FunctionDefinition )
         self.assertEqual( fun.name, 'foo' )
         self.assertNotEmpty( fun.params )
         self.assertEqual( len( fun.params ), 1 )
@@ -100,7 +90,7 @@ class TestCAnalyzer( unittest.TestCase ):
         # function prototypes
         self.assertEqual( len( fun.prototypes ), 1 )
         proto = fun.prototypes[ 0 ]
-        self.assertIsInstanceCompat( proto, FunctionPrototype )
+        self.assertIsInstance( proto, FunctionPrototype )
         self.assertEqual( proto.name, 'foo' )
         self.assertEqual( proto.returnType, 'int' )
         self.assertEqual( len( proto.params ), 1 )
@@ -132,7 +122,7 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertFalse( f2.isVariadic )
 
         # function parameters
-        self.assertIsInstanceCompat( f1, FunctionDefinition )
+        self.assertIsInstance( f1, FunctionDefinition )
         self.assertEqual( f1.name, 'bar' )
         self.assertNotEmpty( f1.params )
         f1_param_1 = f1.params[ 0 ]
@@ -143,7 +133,7 @@ class TestCAnalyzer( unittest.TestCase ):
         # function prototypes
         self.assertEqual( len( f1.prototypes ), 3 )
         proto1 = f1.prototypes[ 0 ]
-        self.assertIsInstanceCompat( proto1, FunctionPrototype )
+        self.assertIsInstance( proto1, FunctionPrototype )
         self.assertEqual( proto1.name, 'bar' )
         self.assertEqual( proto1.returnType, 'float' )
         self.assertEqual( len( proto1.params ), 1 )
@@ -151,7 +141,7 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertEqual( proto1.params[ 0 ].type, 'float' )
 
         proto2 = f1.prototypes[ 1 ]
-        self.assertIsInstanceCompat( proto2, FunctionPrototype )
+        self.assertIsInstance( proto2, FunctionPrototype )
         self.assertEqual( proto2.name, 'bar' )
         self.assertEqual( proto2.returnType, 'float' )
         self.assertEqual( len( proto2.params ), 1 )
@@ -159,7 +149,7 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertEqual( proto2.params[ 0 ].type, 'float' )
 
         proto3 = f1.prototypes[ 2 ]
-        self.assertIsInstanceCompat( proto3, FunctionPrototype )
+        self.assertIsInstance( proto3, FunctionPrototype )
         self.assertEqual( proto3.name, 'bar' )
         self.assertEqual( proto3.returnType, 'float' )
         self.assertEqual( len( proto3.params ), 1 )
@@ -176,7 +166,7 @@ class TestCAnalyzer( unittest.TestCase ):
 
         # function parameters
         fun = list( fset )[ 0 ]
-        self.assertIsInstanceCompat( fun, FunctionDefinition )
+        self.assertIsInstance( fun, FunctionDefinition )
         self.assertEqual( fun.name, 'variadicfn' )
         self.assertNotEmpty( fun.params )
         self.assertEqual( len( fun.params ), 1 )
@@ -195,7 +185,7 @@ class TestCAnalyzer( unittest.TestCase ):
         typename = 'myfloat'
         self.assertIn( typename, self.parser.typedefs )
         myfloat = self.parser.typedefs[ typename ]
-        self.assertIsInstanceCompat( myfloat, Typedef )
+        self.assertIsInstance( myfloat, Typedef )
         self.assertEqual( myfloat.name, typename )
         self.assertEqual( myfloat.type, 'float' )
 
@@ -203,7 +193,7 @@ class TestCAnalyzer( unittest.TestCase ):
         typename = 'intptr'
         self.assertIn( typename, self.parser.typedefs )
         intptr = self.parser.typedefs[ typename ]
-        self.assertIsInstanceCompat( intptr, Typedef )
+        self.assertIsInstance( intptr, Typedef )
         self.assertEqual( intptr.name, typename )
         self.assertIn( intptr.type, ('const int*', 'const int *') )
 
@@ -213,7 +203,7 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertNotIn( macroname, self.parser.fnmacros )
 
         mymacro = self.parser.macros[ macroname ]
-        self.assertIsInstanceCompat( mymacro, MacroDefinition )
+        self.assertIsInstance( mymacro, MacroDefinition )
         self.assertEqual( mymacro.name, macroname )
         self.assertEqual( mymacro.body, 'extern "C" {' )
 
@@ -223,7 +213,7 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertNotIn( macroname, self.parser.macros )
 
         mymacrofn = self.parser.fnmacros[ macroname ]
-        self.assertIsInstanceCompat( mymacrofn, MacroFnDefinition )
+        self.assertIsInstance( mymacrofn, MacroFnDefinition )
         self.assertEqual( mymacrofn.name, macroname )
         self.assertEqual( mymacrofn.body, '(__x + __y)' )
 
@@ -239,7 +229,7 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertIn( enumname, self.parser.enums )
 
         myenum = self.parser.enums[ enumname ]
-        self.assertIsInstanceCompat( myenum, Enum )
+        self.assertIsInstance( myenum, Enum )
         self.assertEqual( myenum.name, enumname )
         self.assertNotEmpty( myenum.values )
         self.assertEqual( len( myenum.values ), 3 )
@@ -257,7 +247,7 @@ class TestCAnalyzer( unittest.TestCase ):
 
         # function parameters
         fun = list( fset )[ 0 ]
-        self.assertIsInstanceCompat( fun, TemplateFunctionDefinition )
+        self.assertIsInstance( fun, TemplateFunctionDefinition )
         self.assertEqual( fun.name, fn_name )
         self.assertNotEmpty( fun.params )
         self.assertEqual( len( fun.params ), 1 )
@@ -271,8 +261,8 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertEqual( len( fun.templateParameters ), 2 )
 
         tp1, tp2 = fun.templateParameters
-        self.assertIsInstanceCompat( tp1, TemplateParameter )
-        self.assertIsInstanceCompat( tp2, TemplateParameter )
+        self.assertIsInstance( tp1, TemplateParameter )
+        self.assertIsInstance( tp2, TemplateParameter )
         self.assertEqual( tp1.name, 'T' )
         self.assertEqual( tp2.name, 'X' )
         self.assertEqual( tp1.type, 'typename' )
@@ -288,7 +278,7 @@ class TestCAnalyzer( unittest.TestCase ):
 
         # function parameters
         fun = list( fset )[ 0 ]
-        self.assertIsInstanceCompat( fun, TemplateFunctionDefinition )
+        self.assertIsInstance( fun, TemplateFunctionDefinition )
         self.assertEqual( fun.name, fn_name )
         self.assertNotEmpty( fun.params )
         self.assertEqual( len( fun.params ), 1 )
@@ -302,8 +292,8 @@ class TestCAnalyzer( unittest.TestCase ):
         self.assertEqual( len( fun.templateParameters ), 2 )
 
         tp1, tp2 = fun.templateParameters
-        self.assertIsInstanceCompat( tp1, TemplateParameter )
-        self.assertIsInstanceCompat( tp2, TemplateParameter )
+        self.assertIsInstance( tp1, TemplateParameter )
+        self.assertIsInstance( tp2, TemplateParameter )
         self.assertEqual( tp1.name, 'T1' )
         self.assertEqual( tp2.name, 'T2' )
         self.assertEqual( tp1.type, 'typename' )
@@ -312,7 +302,7 @@ class TestCAnalyzer( unittest.TestCase ):
     def field_test_helper( self, struct, fieldname, fieldtype, access ):
         self.assertIn( fieldname, struct.fields )
         field = struct.fields[ fieldname ]
-        self.assertIsInstanceCompat( field, Field )
+        self.assertIsInstance( field, Field )
         self.assertEqual( field.name, fieldname )
         self.assertEqual( field.type, fieldtype )
         self.assertEqual( field.access, access )
@@ -381,7 +371,7 @@ class TestCAnalyzer( unittest.TestCase ):
 
         struct = self.parser.structs[ structname ]
 
-        self.assertIsInstanceCompat( struct, Struct )
+        self.assertIsInstance( struct, Struct )
         self.assertEqual( struct.name, structname )
         self.assertEqual( struct.access, None )
 
@@ -417,7 +407,7 @@ class TestCAnalyzer( unittest.TestCase ):
 
         ns = self.parser.namespaces[nsname]
 
-        self.assertIsInstanceCompat(ns, Namespace)
+        self.assertIsInstance(ns, Namespace)
         self.assertEqual(ns.name, nsname)
 
         self.assertIn( 'foo', ns.variables)
