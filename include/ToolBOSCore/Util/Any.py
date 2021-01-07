@@ -220,10 +220,7 @@ def isUnicode( obj ):
     """
         Returns a boolean whether or not 'obj' is of type 'unicode'.
     """
-    if sys.version[0] == '3':
-        return isinstance( obj, str )            # Python 3.x
-    else:
-        return isinstance( obj, unicode )        # Python 2.x
+    return isinstance( obj, unicode )
 
 
 def isText( obj ):
@@ -855,10 +852,5 @@ def addStreamLogger( stream, debugLevel, preamble=True ):
 
     rootLogger.addHandler( logHandler )
 
-
-if sys.version_info[ 0 ] < 3:
-    Utf8 = unicode  # pylint: disable=invalid-name
-else:
-    Utf8 = str  # pylint: disable=invalid-name
 
 # EOF

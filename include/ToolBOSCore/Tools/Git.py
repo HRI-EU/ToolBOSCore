@@ -38,7 +38,7 @@ import io
 import logging
 import os
 import re
-import urllib
+import urllib.parse
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
@@ -355,7 +355,7 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
             Has no effect if it was already SSH.
         """
         if self.url.startswith( 'http' ):
-            tokens = urllib.urlsplit( self.url )
+            tokens = urllib.parse.urlsplit( self.url )
 
             # remove username from net location, if present
             tmp = re.match( '^.+@(.+)$', tokens.netloc )

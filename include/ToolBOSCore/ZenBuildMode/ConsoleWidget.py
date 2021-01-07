@@ -46,8 +46,8 @@ from ToolBOSCore.Util import Any
 
 class ConsoleWidget( QGroupBox, object ):
 
-    localCommand       = pyqtSignal( Any.Utf8 )
-    remoteCommand      = pyqtSignal( Any.Utf8 )
+    localCommand       = pyqtSignal( str )
+    remoteCommand      = pyqtSignal( str )
     localReturnPressed = pyqtSignal()
     emptyRemoteCommand = pyqtSignal()
 
