@@ -35,7 +35,7 @@
 
 
 import logging
-import urllib
+import urllib.parse
 
 from ToolBOSCore.Util import Any, FastScript
 
