@@ -39,7 +39,7 @@ import logging
 import os
 import re
 import subprocess
-import urllib
+import urllib.parse
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import AbstractVCS
