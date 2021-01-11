@@ -44,7 +44,6 @@ import re
 import stat
 import subprocess
 import tempfile
-import time
 
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
@@ -480,7 +479,6 @@ class InstallProcedure( object ):
 
         self._showTitle( 'STAGE 5 # CLEAN-UP' )
         self._executeHook( 'Install_onStartupStage5' )
-        self._suggestGit()
         self.cleanUp()
         self._executeHook( 'Install_onExitStage5' )
         self.onExit()
@@ -815,30 +813,6 @@ class InstallProcedure( object ):
     #------------------------------------------------------------------------
     # private helper functions
     #------------------------------------------------------------------------
-
-
-    def _suggestGit( self ):
-        if self.details.svnFound:
-            logging.warning( '')
-            logging.warning( '              /\\' )
-            logging.warning( '             /  \\' )
-            logging.warning( '            / /\ \\' )
-            logging.warning( '           / /  \ \\' )
-            logging.warning( '          / /    \ \\' )
-            logging.warning( '         / /  ##  \ \\' )
-            logging.warning( '        / /   ##   \ \\' )
-            logging.warning( '       / /    ##    \ \\' )
-            logging.warning( '      / /     ##     \ \\' )
-            logging.warning( '     / /      ##      \ \\' )
-            logging.warning( '    / /                \ \\' )
-            logging.warning( '   / /        ##        \ \\' )
-            logging.warning( '  / /____________________\ \\' )
-            logging.warning( ' /__________________________\\' )
-            logging.warning( '')
-            logging.warning( 'SVN support ends on 2019-03-31.' )
-            logging.warning( '' )
-            print()
-            time.sleep( 7 )
 
 
     def _computePatchlevel( self ):
