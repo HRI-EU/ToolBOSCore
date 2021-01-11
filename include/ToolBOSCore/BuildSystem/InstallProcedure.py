@@ -168,6 +168,9 @@ class InstallProcedure( object ):
         logging.info( 'global SIT:       %s', self.sitRootPath             )
         logging.info( 'platform:         %s', self.hostPlatform            )
 
+        Any.requireMsg( not os.path.isabs( self.details.packageCategory ),
+                        'invalid package category "%s" (must be relative path)' % self.details.packageCategory )
+
         self._setUmask()
 
         try:
