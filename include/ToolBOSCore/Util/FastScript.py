@@ -302,7 +302,7 @@ def copyWithRetry( src, dst, maxAttempts=3, waitSeconds=2 ):
             copy( src, dst )
             break                   # we managed to get here --> success
 
-        except OSError as e:
+        except ( FileNotFoundError, OSError ) as e:
             logging.debug( 'problem while copying: %s', e )
 
             if i >= maxAttempts:

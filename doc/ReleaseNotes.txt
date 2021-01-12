@@ -1,4 +1,18 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.2
+
+
+CHANGES
+=======
+
+  - [CIA-1284] Install procedure: added check that SIT category is relative path
+  - [CIA-1284] FastScript.copyWithRetry(): consider FileNotFoundError under Py3
+  - [TBCORE-2158] dropped Any.{is,requireIs}Unicode() (use {is,requireIs}String() under Py3)
+
+
+-----------------------------------------------------------------------------
+
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.1
 
 
