@@ -201,14 +201,6 @@ def requireIsString( obj ):
                 "variable is of type '%s', expected a string" % type(obj) )
 
 
-def requireIsUnicode( obj ):
-    """
-        Throws an AssertionError if 'obj' is not of type 'unicode'.
-    """
-    requireMsg( isUnicode( obj ),
-                "variable is not of type 'unicode'" )
-
-
 def isString( obj ):
     """
         Returns a boolean whether or not 'obj' is of type 'str'.
@@ -216,26 +208,10 @@ def isString( obj ):
     return isinstance( obj, str )
 
 
-def isUnicode( obj ):
-    """
-        Returns a boolean whether or not 'obj' is of type 'unicode'.
-    """
-    return isinstance( obj, unicode )
-
-
-def isText( obj ):
-    """
-        Returns a boolean whether or not 'obj' is of type 'str' or 'unicode'.
-    """
-    return isString( obj ) or isUnicode( obj )
-
-
-def requireIsText( obj ):
-    """
-        Throws an AssertionError if 'obj' is not of type 'str' or 'unicode'.
-    """
-    requireMsg( isText( obj ),
-                "variable is of type %s, expected 'str' or 'unicode'" % type( obj ) )
+# legacy leftovers from Python 2/3 migration when there was a need to
+# distinguish 8-bit char strings from Unicode strings
+isText        = isString
+requireIsText = requireIsString
 
 
 def isTextNonEmpty( obj ):
