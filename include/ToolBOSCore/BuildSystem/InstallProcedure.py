@@ -508,10 +508,43 @@ class InstallProcedure( object ):
 
             Note: Environment variables can be specified in both 'srcPath'
                   and 'dstPath', e.g. "config/${MAKEFILE_PLATFORM}".
+
+                  However MAKEFILE_PLATFORM is a very specific one.
+                  Besides the current value of this environment variable
+                  we als look for other allowed values (other platform
+                  strings). This means, with a single instruction you
+                  can install files for multiple platforms in one shot
+                  (see TBCORE-2148).
         """
         Any.requireIsTextNonEmpty( srcPath )
         Any.requireIsTextNonEmpty( self.startPath )
 
+
+        # TBCORE-2148  Check if strings contain MAKEFILE_PLATFORM and
+        #              attempt to copy files of all known platforms.
+
+        multiArchInstall  = srcPath is not None and 'MAKEFILE_PLATFORM' in srcPath
+        multiArchInstall |= dstPath is not None and 'MAKEFILE_PLATFORM' in dstPath
+
+        if multiArchInstall:
+            # call worker function for each platform, with modified parameters
+
+            for platform in self.platformList:
+
+                srcPathArch = srcPath.replace( '${MAKEFILE_PLATFORM}', platform )
+
+                if dstPath is None:
+                    dstPathArch = dstPath
+                else:
+                    dstPathArch = dstPath.replace( '${MAKEFILE_PLATFORM}', platform )
+
+                self._copy( srcPathArch, dstPathArch, mandatory, relativeToHGR )
+
+        else:
+            # call worker function once with verbatim parameters
+            self._copy( srcPath, dstPath, mandatory, relativeToHGR )
+
+    def _copy( self, srcPath, dstPath, mandatory, relativeToHGR ):
         srcPath = FastScript.expandVars( srcPath )
 
         if dstPath is not None:
