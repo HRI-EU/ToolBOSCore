@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.3
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2148] Install Procedure: search for all possible values of MAKEFILE_PLATFORM
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.2
 
 
@@ -11,7 +22,6 @@ CHANGES
 
 
 -----------------------------------------------------------------------------
-
 
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.1
 
@@ -30,7 +40,7 @@ CHANGES
 
 
 NEW FEATURES
-=============
+============
 
   - [TBCORE-2106] bin/ToolBOS-Config.py: added "-f" option to print values in native Python format
   - added support for Ubuntu Linux 20.04 ("focal64")
