@@ -76,7 +76,7 @@ class InstallProcedure( object ):
     """
 
     def __init__( self, sourceTree=None, binaryTree=None,
-                        stdout=None, stderr=None ):
+                  stdout=None, stderr=None ):
 
         self.dryRun            = bool( FastScript.getEnv( 'DRY_RUN' ) )
         self.index             = collections.OrderedDict()
@@ -261,20 +261,20 @@ class InstallProcedure( object ):
         self._registerComponent_ToolBOS()
 
         # scripts and executables
-        self.copyMatching( 'bin', '.*\.(m|php|py|sh)$', 'bin' )
+        self.copyMatching( 'bin', r'.*\.(m|php|py|sh)$', 'bin' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'bin', platform ), '.*' )
 
         self.copyOptional( 'data' )
         self.copyOptional( 'doc/doxygen.tag' )
         self.copyOptional( 'doc/html' )
-        self.copyMatching( 'doc', '.*\.(jpg|log|pdf|png|txt)$' )
+        self.copyMatching( 'doc', r'.*\.(jpg|log|pdf|png|txt)$' )
         self.copyOptional( 'etc' )
         self.copyOptional( 'include' )
-        self.copyMatching( 'install', '.*\.jar$', 'lib' )
+        self.copyMatching( 'install', r'.*\.jar$', 'lib' )
 
         # libraries and JAR files
-        self.copyMatching( 'lib', '.*\.jar$', 'lib' )
+        self.copyMatching( 'lib', r'.*\.jar$', 'lib' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'lib', platform ),
                                '.*(a|def|dll|exp|lib|manifest|mex|mexa64|pck|so)' )
@@ -287,7 +287,7 @@ class InstallProcedure( object ):
 
         self.copyOptional( 'pymodules' )
         self.copyOptional( 'sbin' )
-        self.copyMatching( 'src', '.*\.(h|hpp)$', 'include' )
+        self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
         self.copyOptional( 'web' )
 
 
@@ -359,17 +359,14 @@ class InstallProcedure( object ):
             all OK.
 
             The interactive prompt will be skipped if the environment
-            variable MAKEFILE_FASTINSTALL=TRUE.
-
-            TODO: implement a -y|--yes option to get rid of the environment
-            variable, or go for an "interactive" option (reverse behavior,
-            install straight by default)
+            variable MAKEFILE_FASTINSTALL=TRUE or if BST.py is invoked
+            with the '-y|--yes' option.
         """
         logging.info( 'ready for installation' )
         Any.logVerbatim( 3, '' )
 
         if FastScript.getEnv( 'MAKEFILE_FASTINSTALL' ) == 'FALSE' or \
-            ToolBOSConf.getConfigOption( 'BST_confirmInstall' ) is True:
+           ToolBOSConf.getConfigOption( 'BST_confirmInstall' ) is True:
 
             try:
                 prompt = '\t--> Install now? (Y/n)  '
@@ -425,7 +422,8 @@ class InstallProcedure( object ):
         pass
 
 
-    def showOutro( self ):
+    @staticmethod
+    def showOutro():
         """
             Shows some closing notes after the Install Procedure finished.
         """
@@ -446,7 +444,7 @@ class InstallProcedure( object ):
 
         self._showTitle( 'STAGE 1 # BASIC PACKAGE INFORMATION' )
         self.onStartup()
-        self._executeHook( 'Install_onStartupStage1' ) # pkgInfo.py not read, yet
+        self._executeHook( 'Install_onStartupStage1' )  # pkgInfo.py not read, yet
         self.preCollectMetaInfo()
         self.collectMetaInfo()
         self.postCollectMetaInfo()
@@ -508,16 +506,49 @@ class InstallProcedure( object ):
 
             Note: Environment variables can be specified in both 'srcPath'
                   and 'dstPath', e.g. "config/${MAKEFILE_PLATFORM}".
+
+                  However MAKEFILE_PLATFORM is a very specific one.
+                  Besides the current value of this environment variable
+                  we als look for other allowed values (other platform
+                  strings). This means, with a single instruction you
+                  can install files for multiple platforms in one shot
+                  (see TBCORE-2148).
         """
         Any.requireIsTextNonEmpty( srcPath )
         Any.requireIsTextNonEmpty( self.startPath )
 
+
+        # TBCORE-2148  Check if strings contain MAKEFILE_PLATFORM and
+        #              attempt to copy files of all known platforms.
+
+        multiArchInstall  = srcPath is not None and 'MAKEFILE_PLATFORM' in srcPath
+        multiArchInstall |= dstPath is not None and 'MAKEFILE_PLATFORM' in dstPath
+
+        if multiArchInstall:
+            # call worker function for each platform, with modified parameters
+
+            for platform in self.platformList:
+
+                srcPathArch = srcPath.replace( '${MAKEFILE_PLATFORM}', platform )
+
+                if dstPath is None:
+                    dstPathArch = dstPath
+                else:
+                    dstPathArch = dstPath.replace( '${MAKEFILE_PLATFORM}', platform )
+
+                self._copy( srcPathArch, dstPathArch, mandatory, relativeToHGR )
+
+        else:
+            # call worker function once with verbatim parameters
+            self._copy( srcPath, dstPath, mandatory, relativeToHGR )
+
+    def _copy( self, srcPath, dstPath, mandatory, relativeToHGR ):
         srcPath = FastScript.expandVars( srcPath )
 
         if dstPath is not None:
             dstPath = FastScript.expandVars( dstPath )
 
-        if mandatory == False and not os.path.exists( srcPath ):
+        if not mandatory and not os.path.exists( srcPath ):
             return
 
         if not dstPath:
@@ -581,16 +612,16 @@ class InstallProcedure( object ):
             an alternative relative 'dstDir' can be provided, e.g.:
 
                 copyMatching( 'doc',             # where to take from
-                              '\*.pdf',          # file pattern (regexp)
+                              r'\*.pdf',         # file pattern (regexp)
                               'manuals' )        # dir. where to install
 
             typical short-style usage:
 
-                copyMatching( 'doc', '.*\.pdf$' )
+                copyMatching( 'doc', r'.*\.pdf$' )
 
             with optional argument for destination directory:
 
-                copyMatching( 'src', '.*\.h', 'include' )
+                copyMatching( 'src', r'.*\.h', 'include' )
 
             This is a decorator for copyMatchingWorker(), which also shows
             some progress / debug infor about the copied files.
@@ -643,16 +674,16 @@ class InstallProcedure( object ):
             an alternative relative 'dstDir' can be provided, e.g.:
 
                 copyMatching( 'doc',             # where to take from
-                              '\*.pdf',          # file pattern (regexp)
+                              r'\*.pdf',          # file pattern (regexp)
                               'manuals' )        # dir. where to install
 
             typical short-style usage:
 
-                copyMatching( 'doc', '.*\.pdf$' )
+                copyMatching( 'doc', r'.*\.pdf$' )
 
             with optional argument for destination directory:
 
-                copyMatching( 'src', '.*\.h', 'include' )
+                copyMatching( 'src', r'.*\.h', 'include' )
 
             Returns the number of files scheduled for installation
             (= number of files matching the regular expression).
@@ -678,7 +709,7 @@ class InstallProcedure( object ):
             raise ValueError
 
         matching = list( filter( regexp.search, fileList ) )
-        logging.debug( '%d items(s) in "%s", %d match expression', \
+        logging.debug( '%d items(s) in "%s", %d match expression',
                        len(fileList), srcDir, len(matching) )
 
         Any.requireIsList( matching )
@@ -731,7 +762,8 @@ class InstallProcedure( object ):
                    relativeToHGR=relativeToHGR )
 
 
-    def copyWorker( self, src, dst ):
+    @staticmethod
+    def copyWorker( src, dst ):
         """
             A decorator for shutil.copy2() which preserves symlinks.
             (shutil.copy2() would copy the content instead.)
@@ -945,7 +977,7 @@ class InstallProcedure( object ):
                 try:
                     logging.debug( 'trying to extract VM from %s', candidates[0] )
                     extractVM( self.details.topLevelDir, srcDir, candidates[0] )
-                    self.copyMatching( 'src', '.*\.xml$', 'include' )
+                    self.copyMatching( 'src', r'.*\.xml$', 'include' )
 
                 except ( AssertionError, IndexError ):    # most likely is not a VM package
                     logging.debug( "package doesn't seem to be a VM package" )
@@ -1125,7 +1157,6 @@ class InstallProcedure( object ):
         groupID        = self._installGroupID
         groupName      = self._installGroupName
         umask          = self._installUmask
-        fail           = False
 
         # THEORY:
         #
@@ -1168,7 +1199,6 @@ class InstallProcedure( object ):
 
             except OSError as details:
                 logging.debug( details )
-                # fail = True                   do not treat as error
                 warn = True
 
 
@@ -1184,7 +1214,6 @@ class InstallProcedure( object ):
                     except OSError as details:
                         logging.debug( details )
                         warn = True
-                        fail = True
 
                 for item in files:
                     path = os.path.join( root, item )
@@ -1195,7 +1224,6 @@ class InstallProcedure( object ):
                     except OSError as details:
                         logging.debug( details )
                         warn = True
-                        fail = True
 
             if warn:
                 logging.warning( 'unable to set group=%s (see "-v" for details)', groupName )
@@ -1213,7 +1241,6 @@ class InstallProcedure( object ):
 
             except OSError as details:
                 logging.debug( details )
-                # fail = True                   do not treat as error
                 warn = True
 
 
@@ -1229,7 +1256,6 @@ class InstallProcedure( object ):
                     except OSError as details:
                         logging.debug( details )
                         warn = True
-                        fail = True
 
                 for item in files:
                     path = os.path.join( root, item )
@@ -1257,14 +1283,14 @@ class InstallProcedure( object ):
                         except OSError as details:
                             logging.debug( details )
                             warn = True
-                            fail = True
                     # </WORKAROUND>
 
             if warn:
                 logging.warning( 'unable to set umask=%s (see "-v" for details)', str(umask) )
 
 
-    def _showIntro( self, text ):
+    @staticmethod
+    def _showIntro( text ):
         """
             Show application name / headline at start-up.
         """
@@ -1281,7 +1307,8 @@ class InstallProcedure( object ):
         Any.logVerbatim( 3, 78 * '=' )
 
 
-    def _showTitle( self, title ):
+    @staticmethod
+    def _showTitle( title ):
         """
             Makes a visible break between the continuous loglines,
             to emphasize the installation stage transition.
@@ -1447,7 +1474,8 @@ class GlobalInstallProcedure( InstallProcedure ):
                 logging.debug( details )
 
 
-    def _globalInstallReason_verify(self, reason):
+    @staticmethod
+    def _globalInstallReason_verify( reason ):
         """
             Checks if the provided input is somehow reasonable.
 
@@ -1482,7 +1510,7 @@ class GlobalInstallProcedure( InstallProcedure ):
             msg = 'invalid reason (message too short)'
             raise ValueError( msg )
 
-        if not re.match( '^(DOC|FIX|IMP|NEW):\s\S+', reason ):
+        if not re.match( r'^(DOC|FIX|IMP|NEW):\s\S+', reason ):
             msg = 'invalid reason syntax (please see examples)'
             raise ValueError( msg )
 
@@ -1583,7 +1611,7 @@ class GlobalInstallProcedure( InstallProcedure ):
 
     def _vcsConsistencyCheck( self ):
         if FastScript.getEnv( 'MAKEFILE_SKIPSVNCHECK' ) == 'TRUE' or \
-            ToolBOSConf.getConfigOption( 'BST_svnCheck' ) is False:
+           ToolBOSConf.getConfigOption( 'BST_svnCheck' ) is False:
 
             logging.warning( 'VCS consistency check skipped' )
             return
@@ -1763,11 +1791,11 @@ class TarExportProcedure( InstallProcedure ):
 
         if self.details.usePatchlevels:
             self._fileName = './install/%s-%s.%d.tar.bz2' % ( self.details.packageName,
-                                                             self.details.packageVersion,
-                                                             self.details.patchlevel )
+                                                              self.details.packageVersion,
+                                                              self.details.patchlevel )
         else:
             self._fileName = './install/%s-%s.tar.bz2' % ( self.details.packageName,
-                                                          self.details.packageVersion )
+                                                           self.details.packageVersion )
         logging.debug( 'filename=%s', self._fileName )
 
 
