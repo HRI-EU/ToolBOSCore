@@ -359,11 +359,8 @@ class InstallProcedure( object ):
             all OK.
 
             The interactive prompt will be skipped if the environment
-            variable MAKEFILE_FASTINSTALL=TRUE.
-
-            TODO: implement a -y|--yes option to get rid of the environment
-            variable, or go for an "interactive" option (reverse behavior,
-            install straight by default)
+            variable MAKEFILE_FASTINSTALL=TRUE or if BST.py is invoked
+            with the '-y|--yes' option.
         """
         logging.info( 'ready for installation' )
         Any.logVerbatim( 3, '' )
