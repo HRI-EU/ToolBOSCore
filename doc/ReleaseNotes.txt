@@ -1,4 +1,16 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.4
+
+
+CHANGES
+=======
+
+  - [TBCORE-1867] use modified package templates from Data/PackageCreator/1.2
+
+
+-----------------------------------------------------------------------------
+
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.3
 
 
