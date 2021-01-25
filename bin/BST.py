@@ -499,21 +499,27 @@ try:
         if setup:
             raise AssertionError( 'skipped recycling cachefile' )
 
-        FastScript.tryImport( 'dill' )
-        import dill
 
-        try:
-            f = open( bstCache, 'rb' )
-            bst = dill.load( f )
-            f.close()
-        except EOFError as details:
-            raise FileNotFoundError( details )
-        except dill.UnpicklingError as e:
-            logging.warning( 'unable to deserialize %s: %s', bstCache, e )
-            logging.warning( 'ignoring cache file!' )
-            raise IOError( e )
+        if os.path.exists( bstCache ):
 
-        logging.debug( '%s found', bstCache )
+            FastScript.tryImport( 'dill' )
+            import dill
+
+            try:
+                f = open( bstCache, 'rb' )
+                bst = dill.load( f )
+                f.close()
+            except EOFError as details:
+                raise FileNotFoundError( details )
+            except dill.UnpicklingError as e:
+                logging.warning( 'unable to deserialize %s: %s', bstCache, e )
+                logging.warning( 'ignoring cache file!' )
+                raise IOError( e )
+
+            logging.debug( '%s found', bstCache )
+
+        else:
+            raise FileNotFoundError( '%s: No such file' % bstCache )
 
     except ( AssertionError, KeyError, IOError ):
 
