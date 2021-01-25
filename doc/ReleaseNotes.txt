@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.5
+
+
+CHANGES
+=======
+
+  - [TBCORE-2167] BST.py: only import "dill" + "lxml" when really needed (might not be installed)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.4
 
 
