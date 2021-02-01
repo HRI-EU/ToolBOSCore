@@ -266,6 +266,8 @@ class CheckRoutine( object ):
         self._setupSqLevel()
         self._setupOptIn()
         self._setupOptOut()
+        self._setupOptInDirs()
+        self._setupOptOutDirs()
 
 
     def showSummary( self, state ):
@@ -504,6 +506,21 @@ class CheckRoutine( object ):
             #
             # self.excludeRule( ruleID )
 
+
+    def _setupOptInDirs( self ):
+        Any.requireIsIterable( self.details.sqOptInDirs )
+
+        for dirname in self.details.sqOptInDirs:
+            logging.debug( '%6s: explicitly included via pkgInfo.py', dirname )
+            self.includeDir( dirname )
+
+
+    def _setupOptOutDirs( self ):
+        Any.requireIsIterable( self.details.sqOptOutDirs )
+
+        for dirname in self.details.sqOptOutDirs:
+            logging.debug( '%6s: explicitly excluded via pkgInfo.py', dirname )
+            self.excludeDir( dirname )
 
     def _showSummary( self ):
         """
