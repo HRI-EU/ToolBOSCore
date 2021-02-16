@@ -118,10 +118,12 @@ class CheckRoutine( object ):
 
 
     def excludeFile( self, filePath ):
-        absPath = os.path.join( self.details.topLevelDir, filePath )
+        Any.requireIsTextNonEmpty( filePath )
+
+        filePath = os.path.join( '.', filePath )
 
         try:
-            self.files.remove( absPath )
+            self.files.remove( filePath )
         except KeyError:
             pass
 
@@ -266,6 +268,10 @@ class CheckRoutine( object ):
         self._setupSqLevel()
         self._setupOptIn()
         self._setupOptOut()
+        self._setupOptInDirs()
+        self._setupOptOutDirs()
+        self._setupOptOutFiles()
+        self._setupOptInFiles()
 
 
     def showSummary( self, state ):
@@ -503,6 +509,38 @@ class CheckRoutine( object ):
             # executed from the normal progress log + report
             #
             # self.excludeRule( ruleID )
+
+
+    def _setupOptInDirs( self ):
+        Any.requireIsIterable( self.details.sqOptInDirs )
+
+        for dirname in self.details.sqOptInDirs:
+            logging.debug( '%6s: explicitly included via pkgInfo.py', dirname )
+            self.includeDir( dirname )
+
+
+    def _setupOptOutDirs( self ):
+        Any.requireIsIterable( self.details.sqOptOutDirs )
+
+        for dirname in self.details.sqOptOutDirs:
+            logging.debug( '%6s: explicitly excluded via pkgInfo.py', dirname )
+            self.excludeDir( dirname )
+
+
+    def _setupOptInFiles( self ):
+        Any.requireIsIterable( self.details.sqOptInFiles )
+
+        for filename in self.details.sqOptInFiles:
+            logging.debug( '%6s: explicitly included via pkgInfo.py', filename )
+            self.includeFile( filename )
+
+
+    def _setupOptOutFiles( self ):
+        Any.requireIsIterable( self.details.sqOptOutFiles )
+
+        for filename in self.details.sqOptOutFiles:
+            logging.debug( '%6s: explicitly excluded via pkgInfo.py', filename )
+            self.excludeFile( filename )
 
 
     def _showSummary( self ):
