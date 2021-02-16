@@ -1,4 +1,16 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.6
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2169] BST.py -q: re-introduced vanished support for including/excluding files/dirs in SQ checks
+
+
+-----------------------------------------------------------------------------
+
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.5
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  run Valgrind on this project
+#  run Valgrind on project
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -35,28 +35,20 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Includes
-#----------------------------------------------------------------------------
-
-
-import logging
 import os
 import tempfile
 
 from collections import namedtuple
 
+from ToolBOSCore.Util import Any, FastScript
+
+FastScript.tryImport( 'lxml' )
 from lxml import etree
 
-from ToolBOSCore.Packages import PackageCreator
-from ToolBOSCore.Settings import ProcessEnv
-from ToolBOSCore.Settings import ToolBOSSettings
-from ToolBOSCore.Util     import FastScript
-from ToolBOSCore.Util     import Any
 
-VALGRIND = 'valgrind --xml=yes --xml-file=%s %s'
+_valgrindCmd = 'valgrind --xml=yes --xml-file=%s %s'
 
-KIND_MAP = {
+_kindMap = {
     'InvalidFree'         : 'Free/delete/delete[] on an invalid pointer',
     'MismatchedFree'      : 'Free/delete/delete[] does not match allocation function (eg doing new[] then free on the result)',
     'InvalidRead'         : 'Read of an invalid address:',
@@ -76,30 +68,25 @@ KIND_MAP = {
 
 Error = namedtuple( 'Error', [ 'kind', 'description', 'fname', 'lineno' ] )
 
+
 def checkExecutable( executablePath, details, stdout=None, stderr=None ):
-
     tmpFile = tempfile.mktemp()
-
-    cmd = VALGRIND % ( tmpFile, executablePath )
+    cmd     = _valgrindCmd % (tmpFile, executablePath)
 
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
-
     failed, numErrors = parseOutput( tmpFile, details )
-
     FastScript.remove( tmpFile )
 
     return failed, numErrors
 
 
 def parseOutput( statusFile, details ):
-
     Any.requireIsFileNonEmpty( statusFile )
 
     out = etree.parse( statusFile )
-
     errors = [ errorParser( error, details ) for error in out.findall( 'error' ) ]
 
-    return bool(errors), errors
+    return bool( errors ), errors
 
 
 def errorParser( errorRoot, details ):
@@ -110,7 +97,7 @@ def errorParser( errorRoot, details ):
     Any.requireMsg( kindNode is not None, 'Malformed Valgrind output' )
     Any.requireMsg( descriptionNode is not None, 'Malformed Valgrind output' )
 
-    kind        = KIND_MAP[ kindNode.text ]
+    kind        = _kindMap[ kindNode.text ]
     description = descriptionNode.find( 'text' ).text
     fname       = ''
     lineno      = ''
@@ -129,5 +116,7 @@ def errorParser( errorRoot, details ):
                     fname  = frame.find( 'file' ).text
                     lineno = frame.find( 'line' ).text
 
-
     return Error( kind, description, fname, lineno )
+
+
+# EOF
