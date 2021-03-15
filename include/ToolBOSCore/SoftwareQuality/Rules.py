@@ -452,6 +452,7 @@ copyright       =
 
                 for line in copyrightLines:
                     if content.find( line ) == -1:
+                        logging.debug( "%s: '%s' not found", filePath, line )
                         logging.info( 'GEN04: copyright header missing in %s',
                                       filePath )
                         failed += 1
