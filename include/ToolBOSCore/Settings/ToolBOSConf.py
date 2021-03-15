@@ -44,6 +44,12 @@ from ToolBOSCore.Settings import AppConfig
 # global singleton for easy use
 _cache = None
 
+packageName    = 'ToolBOSCore'
+packageVersion = '4.0'
+canonicalPath  = 'DevelopmentTools/ToolBOSCore/4.0'
+
+settingsFile   = 'ToolBOS.conf'
+
 
 class ToolBOSConf( AppConfig.AppConfig ):
 

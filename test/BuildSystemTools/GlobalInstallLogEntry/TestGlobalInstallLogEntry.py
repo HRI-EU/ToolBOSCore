@@ -39,7 +39,7 @@ import tempfile
 import unittest
 
 from ToolBOSCore.BuildSystem.GlobalInstallLog import GlobalInstallLog
-from ToolBOSCore.Settings                     import ToolBOSSettings
+from ToolBOSCore.Settings                     import ToolBOSConf
 from ToolBOSCore.Util                         import FastScript
 from ToolBOSCore.Util                         import Any
 
@@ -57,7 +57,7 @@ class GlobalInstallLogEntryTest( unittest.TestCase ):
 
 
         # create log entry
-        logEntry = GlobalInstallLog( ToolBOSSettings.canonicalPath,
+        logEntry = GlobalInstallLog( ToolBOSConf.canonicalPath,
                                      isFirstInstall=False,
                                      msgType=msgType,
                                      message=message )
