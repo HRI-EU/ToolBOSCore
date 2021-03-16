@@ -254,7 +254,12 @@ characters per line.'''
         for filePath in sorted( files ):
             longLines = 0
             maxLen    = 0
-            lines     = FastScript.getFileContent( filePath, splitLines=True )
+            try:
+                lines = FastScript.getFileContent( filePath, splitLines=True )
+            except ( IOError, OSError, UnicodeDecodeError ) as e:
+                logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                failed += 1
+                continue
 
             for line in lines:
                 length = len( line.rstrip() )
@@ -620,7 +625,12 @@ tabs.'''
         failed = 0
 
         for fileName in files:
-            content = FastScript.getFileContent( fileName )
+            try:
+                content = FastScript.getFileContent( fileName )
+            except ( IOError, OSError, UnicodeDecodeError ) as e:
+                logging.error( 'unable to open file: %s: %s', fileName, type( e ) )
+                failed += 1
+                continue
 
             if content.find( '\t' ) == -1:
                 passed += 1
@@ -951,7 +961,12 @@ causing data loss or inconsistent states.'''
             _, ext = os.path.splitext( filePath )
             if ext in C_CPP_FILE_EXTENSIONS:
 
-                content = FastScript.getFileContent( filePath )
+                try:
+                    content = FastScript.getFileContent( filePath )
+                except ( IOError, OSError, UnicodeDecodeError ) as e:
+                    logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                    failed += 1
+                    continue
 
                 if regexpExit1.search( content ):
                     logging.info( 'C01: exit() found in %s:1', filePath )
@@ -2636,7 +2651,12 @@ label declared later in the same function.'''
             _, ext = os.path.splitext( filePath )
             if ext in C_CPP_FILE_EXTENSIONS:
 
-                content = FastScript.getFileContent( filePath )
+                try:
+                    content = FastScript.getFileContent( filePath )
+                except ( IOError, OSError, UnicodeDecodeError ) as e:
+                    logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                    found += 1
+                    continue
 
                 if content.find( ' goto ' ) > 0:
                     logging.info( 'SAFE04: goto-statement found: %s', filePath )
