@@ -1051,14 +1051,6 @@ Project
  *       (composed of <tt>documentationURL_dir + 'index.html'</tt></td>
  * </tr>
  * <tr>
- *   <td><tt>DTBOS_curvedLinks</tt></td>
- *   <td>use splines for the links between components (True), or straight lines (False)</td>
- * </tr>
- * <tr>
- *   <td><tt>DTBOS_showBoxShadows</tt></td>
- *   <td>boolean whether or not to display dropshadow effects around boxes</td>
- * </tr>
- * <tr>
  *   <td><tt>Git_allowedHosts</tt></td>
  *   <td>whitelist of hosts allowed to clone from during Nightly Build,
  *       aka servers considered to contain the official versions</td>
@@ -1119,16 +1111,11 @@ Project
  * <tr>
  *   <td><tt>package_rtmaps</tt></td>
  *   <td>canonical path of RTMaps SIT package (e.g. "External/RTMaps/4.7")</td>
- * </tr> * <tr>
+ * </tr>
+ * <tr>
  *   <td><tt>package_totalview</tt></td>
  *   <td>canonical path of TotalView debugger package
  *       (e.g. "External/totalview/8.15")</td>
- * </tr>
- * <tr>
- *   <td><tt>RTBOS_portRange</tt></td>
- *   <td>tuple(min,max) for auto-assigning port numbers to RTBOS machines
- *       (e.g. (2000,2100) wheres the min-value is included but the max-value
- *       is excluded from the range)</td>
  * </tr>
  * <tr>
  *   <td><tt>serverAccounts</tt></td>
