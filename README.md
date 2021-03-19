@@ -41,6 +41,7 @@ This package contains:
 * [Writing C/C++ libraries](doc/ToolBOSCore/How%20To's/WritingC_CPlusPlusLibraries.md)
 * [External packages](doc/ToolBOSCore/How%20To's/ExternalPackages.md)
 * [userDoxyfile](doc/ToolBOSCore/How%20To's/UserDoxyfile.md)
+* [License checks](ToolBOSCore/How%20To's/LicenseCheck.md)
 * [ToolBOS release rollback or beta-test ](doc/ToolBOSCore/How%20To's/ToolBOSBetaTest.md)
 * [Deprecated packages](doc/ToolBOSCore/How%20To's/DeprecatedPkg.md)
 
