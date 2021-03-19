@@ -22,7 +22,7 @@ found otherwise fallback to the default value shipped with the ToolBOS SDK itsel
 In order to tell the SVNCheckout.py script to always use a different username when connecting to the SVN server 'svnext',
 create a file ${HOME}/.HRI/ToolBOS/ToolBOS.conf with the following content:
 
-    serverAccounts = { 'svnext': 'marcus' }
+    serverAccounts = { 'svnext': 'marijke' }
     
  
 ### Commandline usage

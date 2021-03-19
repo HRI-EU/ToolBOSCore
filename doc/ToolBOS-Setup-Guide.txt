@@ -338,7 +338,7 @@ System: webserver
 Support address
 ===============
 
-  - Marcus Stein <marcus.stein@honda-ri.de>
+  - Marijke Stein <marijke.stein@honda-ri.de>
     +49 (0)69-89011-762
 
   - Honda Research Institute Europe GmbH

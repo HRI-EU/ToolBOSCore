@@ -908,7 +908,7 @@ Project
  * <tt>${HOME}/.HRI/ToolBOS/ToolBOS.conf</tt> with the following content:
  *
  * \code
-   serverAccounts = { 'svnext': 'marcus' }
+   serverAccounts = { 'svnext': 'marijke' }
    \endcode
  *
  * <h2>Commandline usage</h2>
@@ -3667,9 +3667,9 @@ make install
  * \code
  * $ ls -ahl ~/.HRI/sit
  * [...]
- * drwxr-xr-x 13 marcus marcus 4.0K 2013-05-13 11:20 latest
- * drwxr-xr-x 16 marcus marcus 4.0K 2011-10-21 16:24 oldstable
- * drwxr-xr-x 16 marcus marcus 4.0K 2011-07-01 15:52 testing
+ * drwxr-xr-x 13 marijke marijke 4.0K 2013-05-13 11:20 latest
+ * drwxr-xr-x 16 marijke marijke 4.0K 2011-10-21 16:24 oldstable
+ * drwxr-xr-x 16 marijke marijke 4.0K 2011-07-01 15:52 testing
 \endcode
  *
  * \attention When using another SIT build for the first time you will
@@ -4777,47 +4777,6 @@ copyright = { './external/foo.h':
                    [...]
                  ] }
    \endcode
- */
-
-
-/*!
- * \page ToolBOS_Contact Authors / Contact
- *
- * \section Authors
- * \li Marcus Stein
- * \li Roberto Fichera
- * \li Alessandro Piras
- * \li Mattia Ziulu
- * \li Siddhata Naik
- * \li and contributions by many other people
- *
- * \section Contact
- *
- * <table>
- * <tr>
- *     <td style="vertical-align: top;">Address:</td>
- *     <td>Honda Research Institute Europe GmbH<br>
- *         Carl-Legien-Straße 30<br>
- *         63073 Offenbach am Main<br>
- *         Germany</td>
- * </tr>
- * <tr>
- *     <td>Phone:</td>
- *     <td>+49 (0)69 / 89011750</td>
- * </tr>
- * <tr>
- *     <td>Fax:</td>
- *     <td>+49 (0)69 / 89011749</td>
- * </tr>
- * <tr>
- *     <td>Weblink:</td>
- *     <td><a href="https://www.honda-ri.de">www.honda-ri.de</a></td>
- * </tr>
- * <tr>
- *     <td>E-Mail:</td>
- *     <td>info@honda-ri.de</td>
- * </tr>
- * </table>
  */
 
 
