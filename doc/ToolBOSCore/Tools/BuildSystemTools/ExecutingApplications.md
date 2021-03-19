@@ -33,4 +33,4 @@ With the "-p windows-amd64-vs2012" option you can execute Windows binaries on Li
     [...]
     
 **See also**   
-    [Debugging](../../How%20To's/Debugging.md)
+    [Debugging](../../HowTo/Debugging.md)

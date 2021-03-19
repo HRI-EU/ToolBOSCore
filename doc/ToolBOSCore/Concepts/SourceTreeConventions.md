@@ -27,7 +27,7 @@ please try to stick to the existing names and semantics for consistency reasons.
 | src            | put here your C/C++/Java/Matlab/... sources                                               | the main source code of the package |
 | include        | put here your Python sources                                                              | the main source code of the package |
 | test           | You may use any framework for implementing your unit tests. However it is strongly encouraged to provide a file "unittest.sh" within your directory which serves as launcher script for the Nightly Build system, e.g. MyPackage/unittest.sh. | code and reference files for unittest |
-| pkgInfo.py     | General package related information. (Should always be present in the package)            | Contains the version of the package (Major.Minor), name of the package and the category this package belongs to. **See also** [pkgInfo.py](../Tools/Build%20System%20Tools/PkgInfo.md)|  
+| pkgInfo.py     | General package related information. (Should always be present in the package)            | Contains the version of the package (Major.Minor), name of the package and the category this package belongs to. **See also** [pkgInfo.py](../Tools/BuildSystemTools/PkgInfo.md)|  
 
 
 > **Note**  
