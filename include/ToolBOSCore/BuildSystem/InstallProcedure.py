@@ -1065,7 +1065,7 @@ class InstallProcedure( object ):
 
         if umask is None:
             try:
-                umask = ToolBOSConf.getUserConfigOption( 'installUmask' )
+                umask = ToolBOSConf.getConfigOption( 'installUmask' )
             except KeyError:
                 pass                                # variable not set by user
 
@@ -1110,7 +1110,7 @@ class InstallProcedure( object ):
 
         if groupName is None:
             try:
-                groupName = ToolBOSConf.getUserConfigOption( 'installGroup' )
+                groupName = ToolBOSConf.getConfigOption( 'installGroup' )
             except KeyError:
                 pass                        # variable not set by user
 
