@@ -10,7 +10,7 @@
 
 ###  Creating packages
 
-* [Package Creator](../Package%20Creator/PackageCreator.md)
+* [Package Creator](../PackageCreator/PackageCreator.md)
 
 
 ###  Building
@@ -43,6 +43,6 @@
 
 See also
 
-* [Debugging](../../How%20To's/Debugging.md) 
+* [Debugging](../../HowTo/Debugging.md) 
 * [ToolBOS.conf](../../Concepts/ToolBOSConf.md)   
 * [CMake](http://www.cmake.org/cmake/help/documentation.html)

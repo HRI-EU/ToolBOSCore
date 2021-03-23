@@ -3,7 +3,7 @@
 It is recommended to integrate 3rd party software in the same way as other HRI-EU packages:
 
 * install into SIT ("External" or "ExternalAdapted" category)
-* provide a packageVar.cmake (see [Build System Tools](../Tools/Build%20System%20Tools/BuildSystemTools.md) )
+* provide a packageVar.cmake (see [Build System Tools](../Tools/BuildSystemTools/BuildSystemTools.md) )
 
 > **Note**
 > If the package is shipped with its own FindXY.cmake you may or may not use this inside the packageVar.cmake.
@@ -29,7 +29,7 @@ It is recommended to integrate 3rd party software in the same way as other HRI-E
 ####  HowTo
 
 To create a ToolBOS-style wrapper package for the 3rd party software you may use the 
-[Package Creator](../Tools/Package%20Creator/PackageCreator.md) and follow the 
+[Package Creator](../Tools/PackageCreator/PackageCreator.md) and follow the 
 HowTo which you'll find within the generated package.
 
     # if package requires compilation:

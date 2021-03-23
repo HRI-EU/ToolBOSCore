@@ -17,4 +17,4 @@ functionality over time.
 
 [Rolling release](http://en.wikipedia.org/wiki/Rolling_Release)  
 [Point release vs. rolling release: Developer, user, and security considerations](http://www.techrepublic.com/blog/security/point-release-vs-rolling-release-developer-user-and-security-considerations/4150 )  
-[SIT builds](../How%20To's/SITBuilds.md)
+[SIT builds](../HowTo/SITBuilds.md)

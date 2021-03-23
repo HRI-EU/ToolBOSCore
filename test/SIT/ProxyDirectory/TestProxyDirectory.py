@@ -39,7 +39,7 @@ import os
 import tempfile
 import unittest
 
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import ProxyDir
 from ToolBOSCore.Storage  import SIT
 from ToolBOSCore.Util     import FastScript
@@ -56,7 +56,7 @@ class TestProxyDirectory( unittest.TestCase ):
     def test_createProxyDir( self ):
         sitProxyPath  = tempfile.mkdtemp( prefix='test-' )
         sitRootPath   = SIT.getRootPath()
-        canonicalPath = ToolBOSSettings.canonicalPath
+        canonicalPath = ToolBOSConf.canonicalPath
 
         Any.requireIsDir( sitRootPath )
 

@@ -25,24 +25,25 @@ This package contains:
 * [Source tree conventions](doc/ToolBOSCore/Concepts/SourceTreeConventions.md)
 * [Installation conventions](doc/ToolBOSCore/Concepts/InstallationConventions.md)
 * [ToolBOS.conf](doc/ToolBOSCore/Concepts/ToolBOSConf.md)
-* [SIT builds](doc/ToolBOSCore/How%20To's/SITBuilds.md)
+* [SIT builds](doc/ToolBOSCore/HowTo/SITBuilds.md)
 
 
 #### Tools
 
-* [Package Creator](doc/ToolBOSCore/Tools/Package%20Creator/PackageCreator.md)
-* [Build System Tools](doc/ToolBOSCore/Tools/Build%20System%20Tools/BuildSystemTools.md)
+* [Package Creator](doc/ToolBOSCore/Tools/PackageCreator/PackageCreator.md)
+* [Build System Tools](doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md)
 * [ExecInAllProjects.py](doc/ToolBOSCore/Tools/ExecInAllProjects.md)
 
 
 #### HowTo's
 
-* [Debugging](doc/ToolBOSCore/How%20To's/Debugging.md)
-* [Writing C/C++ libraries](doc/ToolBOSCore/How%20To's/WritingC_CPlusPlusLibraries.md)
-* [External packages](doc/ToolBOSCore/How%20To's/ExternalPackages.md)
-* [userDoxyfile](doc/ToolBOSCore/How%20To's/UserDoxyfile.md)
-* [ToolBOS release rollback or beta-test ](doc/ToolBOSCore/How%20To's/ToolBOSBetaTest.md)
-* [Deprecated packages](doc/ToolBOSCore/How%20To's/DeprecatedPkg.md)
+* [Debugging](doc/ToolBOSCore/HowTo/Debugging.md)
+* [Writing C/C++ libraries](doc/ToolBOSCore/HowTo/WritingC_CPlusPlusLibraries.md)
+* [External packages](doc/ToolBOSCore/HowTo/ExternalPackages.md)
+* [userDoxyfile](doc/ToolBOSCore/HowTo/UserDoxyfile.md)
+* [License checks](doc/ToolBOSCore/HowTo/LicenseChecks.md)
+* [ToolBOS release rollback or beta-test ](doc/ToolBOSCore/HowTo/ToolBOSBetaTest.md)
+* [Deprecated packages](doc/ToolBOSCore/HowTo/DeprecatedPkg.md)
 
 ___
 

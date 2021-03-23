@@ -48,7 +48,7 @@ import tempfile
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
-from ToolBOSCore.Settings                 import ToolBOSConf, ToolBOSSettings
+from ToolBOSCore.Settings                 import ToolBOSConf
 from ToolBOSCore.Storage                  import VersionControl
 from ToolBOSCore.Tools                    import RTMaps
 from ToolBOSCore.Util                     import Any, FastScript
@@ -1054,8 +1054,6 @@ class InstallProcedure( object ):
             Note that in any case the provided umask is supposed to be a
             string, e.g. '0022'.
         """
-        from ToolBOSCore.Settings.ToolBOSSettings import getUserConfigOption
-
         umask = FastScript.getEnv( 'MAKEFILE_INSTALL_UMASK' )
 
         if umask:
@@ -1067,7 +1065,7 @@ class InstallProcedure( object ):
 
         if umask is None:
             try:
-                umask = getUserConfigOption( 'installUmask' )
+                umask = ToolBOSConf.getConfigOption( 'installUmask' )
             except KeyError:
                 pass                                # variable not set by user
 
@@ -1102,8 +1100,6 @@ class InstallProcedure( object ):
 
             and in case set group name accordingly.
         """
-        from ToolBOSCore.Settings.ToolBOSSettings import getUserConfigOption
-
         groupName = FastScript.getEnv( 'MAKEFILE_INSTALL_GROUPNAME' )
 
         if groupName:
@@ -1114,7 +1110,7 @@ class InstallProcedure( object ):
 
         if groupName is None:
             try:
-                groupName = getUserConfigOption( 'installGroup' )
+                groupName = ToolBOSConf.getConfigOption( 'installGroup' )
             except KeyError:
                 pass                        # variable not set by user
 
@@ -1296,7 +1292,7 @@ class InstallProcedure( object ):
         """
         Any.requireIsTextNonEmpty( text )
 
-        version = ToolBOSSettings.packageVersion
+        version = ToolBOSConf.packageVersion
         Any.requireIsTextNonEmpty( version )
 
         display = 'TOOLBOS %s - %s' % ( version, text )

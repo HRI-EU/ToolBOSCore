@@ -58,13 +58,13 @@ function execTest()
     then
         echo -e "Start test: ${FILENAME}"
 
-        if [[ ( "${USE_RUNFROMSOURCETREE}" == "TRUE" ) &&
-              ( -e CMakeLists.txt || -e pkgInfo.py   ) ]]
+        if [[  ( "${USE_RUNFROMSOURCETREE}" == "FALSE" ) ||
+             ( ( ! -e CMakeLists.txt ) && ( ! -e pkgInfo.py ) )  ]]
         then
-            RunFromSourceTree.sh ${CMDLINE}
-        else
             ${CMDLINE}
-        fi
+        else
+            RunFromSourceTree.sh ${CMDLINE}
+         fi
 
         if [[ $? != 0 ]]
         then

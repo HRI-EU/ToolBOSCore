@@ -40,7 +40,7 @@ import os
 import unittest
 
 from ToolBOSCore.Packages.PackageCreator import makeShellfiles
-from ToolBOSCore.Settings                import ToolBOSSettings
+from ToolBOSCore.Settings                import ToolBOSConf
 from ToolBOSCore.Util                    import FastScript
 from ToolBOSCore.Util                    import Any
 
@@ -54,7 +54,7 @@ class TestMakeShellfiles( unittest.TestCase ):
     def test_makeShellfiles( self ):
         projectRoot    = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
         installDir     = os.path.join( projectRoot, 'install' )
-        fileNamePrefix = ToolBOSSettings.packageName + '-'
+        fileNamePrefix = ToolBOSConf.packageName + '-'
 
         # create shellfiles
         makeShellfiles( projectRoot )

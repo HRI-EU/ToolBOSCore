@@ -76,7 +76,7 @@ def getHostArch():
         On PCs this is typically either 'i686' (32 bit) or 'amd64' (64 bit).
     """
     from platform import machine
-    from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
 
     # check configfile
     try:
@@ -114,7 +114,7 @@ def getHostOS():
     """
     # check configfile
     try:
-        from ToolBOSCore.Settings.ToolBOSSettings import getConfigOption
+        from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
         hostOS = getConfigOption( 'hostOS' )
         Any.requireIsTextNonEmpty( hostOS )
 

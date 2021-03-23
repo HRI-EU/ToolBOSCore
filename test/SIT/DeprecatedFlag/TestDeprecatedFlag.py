@@ -39,7 +39,7 @@ import logging
 import unittest
 
 from ToolBOSCore.Packages import ProjectProperties
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import FastScript
 from ToolBOSCore.Util     import Any
 
@@ -52,7 +52,7 @@ class TestBootstrap( unittest.TestCase ):
 
 
     def test_isDeprecated( self ):
-        canonicalPath = ToolBOSSettings.canonicalPath
+        canonicalPath = ToolBOSConf.canonicalPath
 
         logging.info( 'testing canonicalPath=%s', canonicalPath )
         ProjectProperties.requireIsCanonicalPath( canonicalPath )

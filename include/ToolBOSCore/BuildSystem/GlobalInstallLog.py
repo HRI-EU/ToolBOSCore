@@ -160,7 +160,7 @@ class GlobalInstallLog( object ):
         message = message.replace( '\n', ' ' )
 
 
-        # 2010-07-22  Marcus Stein
+        # 2010-07-22  Marijke Stein
         #
         # If the message is sth. like 'NEW: ....', assume that the message
         # type is given in-line.
