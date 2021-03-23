@@ -72,6 +72,28 @@ function print_help()
 }
 
 
+# Find <target> in current or parent-directories. Print directory to
+# stdout when found. Stop at root (/) if <target> not found.
+function rfind()
+{
+    local target=${1}
+    local retStatus=1
+
+    local currentDir=${PWD}
+    while [ "${PWD}" != "/" ]; do
+        if [ -e "${target}" ]; then
+            echo "${PWD}"
+            retStatus=0
+	    break
+        fi
+        cd ..
+    done
+
+    cd ${currentDir}
+    return ${retStatus}
+}
+
+
 #----------------------------------------------------------------------------
 # init the variables
 
@@ -157,6 +179,12 @@ PATTERN='\(.*/[0-9]\+\.[0-9]\+\)'
 # the //\..\// sequence escapes all the occurrences of double backslashes that invalidate the path
 VERSION_PATH=`expr match "${EXECUTABLE_PATH//\..\//}" $PATTERN`
 
+# If VERSION_PATH is empty, we probably do not have a version-dir. Then we will
+# search upward for pkgInfo.py to find the top-level source-directory.
+if [[ ${VERSION_PATH} == "" ]]
+then
+    VERSION_PATH=$(rfind pkgInfo.py)
+fi
 
 if [[ $VERBOSE == "TRUE" ]]
 then

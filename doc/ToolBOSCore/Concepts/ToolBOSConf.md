@@ -22,7 +22,7 @@ found otherwise fallback to the default value shipped with the ToolBOS SDK itsel
 In order to tell the SVNCheckout.py script to always use a different username when connecting to the SVN server 'svnext',
 create a file ${HOME}/.HRI/ToolBOS/ToolBOS.conf with the following content:
 
-    serverAccounts = { 'svnext': 'marcus' }
+    serverAccounts = { 'svnext': 'marijke' }
     
  
 ### Commandline usage
@@ -65,8 +65,6 @@ You may configure your settings using ToolBOS-Config.py:
 | documentationURL_sit 	   | location of the SIT on the documentation server (http://.../sit/latest/)
 | documentationURL_dir 	   | location of the doxygen documentation of ToolBOSCore itself (http://.../doc/html/)
 | documentationURL 	       | URL to the doxygen documentation of ToolBOSCore itself (composed of documentationURL_dir + 'index.html'
-| DTBOS_curvedLinks 	   | use splines for the links between components (True), or straight lines (False)
-| DTBOS_showBoxShadows 	   | boolean whether or not to display drop shadow effects around boxes
 | Git_allowedHosts 	       | whitelist of hosts allowed to clone from during Nightly Build, aka servers considered to contain the official versions
 | hostArch 	               | value of MAKEFILE_CPU to use inside Python scripts 
 | hostOS 	               | value of MAKEFILE_OS to use inside Python scripts
@@ -81,7 +79,7 @@ You may configure your settings using ToolBOS-Config.py:
 | package_matlab 	       | canonical path of Matlab package (e.g. "External/Matlab/8.4")
 | package_nanomsg 	       | canonical path of the NanoMsg library to use (e.g. "External/nanomsg/1.0")
 | package_pycharm 	       | canonical path of PyCharm SIT package (e.g. "External/PyCharmPro/4.5")
+| package_rtmaps           | canonical path of RTMaps SIT package (e.g. "External/RTMaps/4.7")
 | package_totalview 	   | canonical path of TotalView debugger package (e.g. "External/totalview/8.15")
-| RTBOS_portRange 	       | tuple(min,max) for auto-assigning port numbers to RTBOS machines (e.g. (2000,2100) wheres the min-value is included but the max-value is excluded from the range)
 | serverAccounts 	       | username to use for SSH when connecting to certain hosts (a Python dictionary mapping hostname => username)
 | SVN_allowedHosts 	       | whitelist of hosts allowed to checkout from during Nightly Build, aka servers considered to contain the official versions 

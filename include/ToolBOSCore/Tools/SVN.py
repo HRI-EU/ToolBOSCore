@@ -347,7 +347,7 @@ class SVNRepository( AbstractVCS.RemoteRepository ):
         """
             Attempts to remove the "username@" part from self.url, e.g.:
 
-              urlA = 'https://marcus@server/DevelopmentTools/ToolBOSCore.git'
+              urlA = 'https://marijke@server/DevelopmentTools/ToolBOSCore.git'
               urlB = 'https://server/DevelopmentTools/ToolBOSCore.git'
 
             would in both cases return:

@@ -69,9 +69,9 @@ The proxy directories are independent and map to the SIT_VERSION. For example:
 
     $ ls -ahl ~/.HRI/sit
     [...]
-    drwxr-xr-x 13 marcus marcus 4.0K 2013-05-13 11:20 latest
-    drwxr-xr-x 16 marcus marcus 4.0K 2011-10-21 16:24 oldstable
-    drwxr-xr-x 16 marcus marcus 4.0K 2011-07-01 15:52 testing
+    drwxr-xr-x 13 marijke marijke 4.0K 2013-05-13 11:20 latest
+    drwxr-xr-x 16 marijke marijke 4.0K 2011-10-21 16:24 oldstable
+    drwxr-xr-x 16 marijke marijke 4.0K 2011-07-01 15:52 testing
     
 > **Attention**
 > When using another SIT build for the first time you will not have a proxy directory for it, yet.

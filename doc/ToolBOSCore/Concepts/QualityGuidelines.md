@@ -84,5 +84,5 @@
  
  
 **see also:**
-* [Zen Build Mode](../Tools/Build%20System%20Tools/ZBM.md)
+* [Zen Build Mode](../Tools/BuildSystemTools/ZBM.md)
 * http://en.wikipedia.org/wiki/Software_quality

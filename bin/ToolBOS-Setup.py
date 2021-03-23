@@ -77,7 +77,7 @@ if not sourced:
     sys.exit( -1 )
 
 
-from ToolBOSCore.Settings import ToolBOSSettings
+from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Settings import UserSetup
 from ToolBOSCore.Storage  import SIT
 from ToolBOSCore.Util     import ArgsManagerV2
@@ -92,7 +92,7 @@ from ToolBOSCore.Util     import FastScript
 sitRootPath  = SIT.getDefaultRootPath()
 sitProxyPath = SIT.getDefaultProxyPath()
 shell        = FastScript.getEnv( 'SHELL' )
-version      = ToolBOSSettings.packageVersion
+version      = ToolBOSConf.packageVersion
 subtitle     = '~ Welcome to ToolBOS SDK %s ~' % version
 
 
@@ -173,7 +173,7 @@ except AssertionError as details:
 shellfile            = 'BashSrc'
 shellFilePath        = os.path.join( tcRootDir, shellfile )
 shellFilePathDefault = os.path.join( SIT.getDefaultRootPath(),
-                                     ToolBOSSettings.canonicalPath,
+                                     ToolBOSConf.canonicalPath,
                                      shellfile )
 
 

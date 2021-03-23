@@ -125,7 +125,7 @@ elif setVar:
     #
     # Example:
     # $ ./bin/ToolBOS-Config.py -s 'foo2 = [ 1, 2, 3, 4]'
-    # [ToolBOSSettings.py:196 DEBUG] setting config option: foo2=[ 1, 2, 3, 4]
+    # [AppConfig.py:167 DEBUG] setting config option: foo2=[ 1, 2, 3, 4]
     #
     # results in:
     # foo2 = '[ 1, 2, 3, 4]'
