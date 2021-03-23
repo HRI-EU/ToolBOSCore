@@ -1,4 +1,26 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.7
+
+
+CHANGES
+=======
+
+  - [TBCORE-2187] dropped Doxygen documentation, only use Markdown files
+  - [TBCORE-2186] unittest.sh: use RunFromSourceTree.sh by default, disable with USE_RUNFROMSOURCETREE=FALSE
+  - [TBCORE-2185] dropped legacy setting 'package_bpl' from ToolBOS.conf
+  - [TBCORE-2183] updated ToolBOS.conf documentation
+  - [TBCORE-2168] improved error messages of various SQ checkers
+  - [TBCORE-2045] added comprehensive documentation for SQ GEN04 checker
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2051] BST.py: fixed crash of install procedure when 'installUmask' was specified
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.6
 
 
@@ -9,7 +31,6 @@ FIXED BUGS
 
 
 -----------------------------------------------------------------------------
-
 
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.5
 
