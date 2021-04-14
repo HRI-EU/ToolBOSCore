@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.8
+
+
+CHANGES
+=======
+
+  - [TBCORE-2016] BBDM template: separated boilerplate BBDM code from code to be customized
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.7
 
 
