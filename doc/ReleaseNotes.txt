@@ -1,4 +1,22 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.9
+
+
+CHANGES
+=======
+
+  - [TBCORE-2190] removed obselete Doxygen settings that cause warnings on Ubuntu 20.04
+  - [TECH-822] launch 2021.1 versions of PyCharm + CLion
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2188] avoid appending no-longer-existing paths to PYTHONPATH and LD_LIBRARY_PATH
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.8
 
 
