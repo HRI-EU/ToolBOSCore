@@ -44,7 +44,7 @@ import logging
 import os
 import sys
 
-from ToolBOSCore.Packages        import ProjectProperties
+from ToolBOSCore.Packages        import PackageDetector, ProjectProperties
 from ToolBOSCore.Storage         import SIT
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
 from ToolBOSCore.Util            import Any
@@ -125,6 +125,25 @@ def source( package ):
     _expandSysPath()
 
     return True
+
+
+def sourceFromHere():
+    """
+        Python equivalent of "source BashSrc" for package in source tree, in order to setup
+        PATH, LD_LIBRARY_PATH,... within the Python process.
+
+        @anchor ProcessEnv_source
+    """
+    detector = PackageDetector.PackageDetector()
+
+    libDirArch = detector.libDirArch
+    FastScript.appendEnv( 'LD_LIBRARY_PATH', libDirArch )
+
+    binDir = ':' + detector.binDir
+    FastScript.appendEnv( 'PATH', binDir )
+
+    binDirArch = ':' + detector.binDirArch
+    FastScript.appendEnv( 'PATH', binDirArch )
 
 
 def which( command ):
