@@ -149,7 +149,7 @@ class PkgInfoInterface( object ):
 
             # if we had just found the line then ignore further lines
             # (multi-line assignment)
-            if foundNow is True and len(line) > 0 and line[0] is ' ':
+            if foundNow is True and len(line) > 0 and line[0] == ' ':
                 continue
             else:
                 foundNow = False
@@ -217,8 +217,8 @@ class PkgInfoInterface( object ):
                     # if the record is multi-line (content continues in next
                     # line but indented), or followed by a blank line than
                     # remove them, too --> find next regular assignment
-                    for candidate in lines[ i+1 : ]:
-                        if candidate is '' or candidate.startswith( ' ' ):
+                    for candidate in lines[ i+1: ]:
+                        if candidate == '' or candidate.startswith( ' ' ):
                             skip += 1
                         else:
                             break
