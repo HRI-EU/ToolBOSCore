@@ -499,7 +499,7 @@ class TerminalWidget( QWidget, object ):
 
 
     def _resetPath( self, status ):
-        if status is 0:
+        if status == 0:
             self._oldPath = self.path    # keep for next 'cd'
         else:
             self.path = self._oldPath
@@ -529,7 +529,7 @@ class TerminalWidget( QWidget, object ):
             self.textField.setColor( self._exitFailureColor )
             self.writeText( '[Terminated]\n' )
 
-        elif status is 0:
+        elif status == 0:
             self.textField.setColor( self._exitSuccessColor )
             self.writeText( '[Done]\n' )
 

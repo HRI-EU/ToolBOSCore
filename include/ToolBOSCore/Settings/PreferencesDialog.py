@@ -210,21 +210,33 @@ class PreferencesDialog( QDialog, object ):
         label       = self._labels[ name ]
         field       = self._fields[ name ]
         revert      = self._revert[ name ]
+        font        = QFont()
 
-        normalValue = self._conf.getNormalValue( name )
+        try:
+            normalValue = self._conf.getNormalValue( name )
+            self._allData[ name ] = normalValue
+            field.setText( repr( normalValue ) )
+            logging.info( 'config option "%s" reverted to %s', name, normalValue )
+            self._conf.delUserConfigOption( name )
 
-        self._allData[ name ] = normalValue
+        except KeyError:
+            # This exception occurs only when the given key is not present in both
+            # machine and default settings i.e. when a new key was added by the user
+            logging.info( "%s has no default value, deleting this key", name )
 
-        self._conf.delUserConfigOption( name )
+            self._conf.delUserConfigOption( name )
 
-        field.setText( repr( normalValue ) )
+            font.setItalic( True )
+            field.setFont( font )
+            field.setText( 'no default value' )
 
         label.setStyleSheet( self._styleUnchanged )
         field.setStyleSheet( self._styleUnchanged )
 
-        revert.setEnabled( False )
+        font.setItalic( False )
+        field.setFont( font )
 
-        logging.info( 'config option "%s" reverted to %s', name, normalValue )
+        revert.setEnabled( False )
 
 
     def _onSave( self ):
@@ -235,7 +247,9 @@ class PreferencesDialog( QDialog, object ):
             oldValue = repr( self._allData[ name ] )
             newValue = str( field.text() )
 
-            if oldValue != newValue:
+            if newValue == 'no default value':
+                pass
+            elif oldValue != newValue:
                 logging.info( 'value of "%s" changed: %s ==> %s',
                               name, oldValue, newValue )
 

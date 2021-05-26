@@ -1,4 +1,23 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.10
+
+
+CHANGES
+=======
+
+  - [TBCORE-2193] supports Python 3.9
+  - [TBCORE-2142] SQ C12: load shared libraries from scanned package
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2189] PreferencesDialog.py: allow resetting a non-existing key
+  - [TBCORE-2101] ToolBOS-Config.py: fixed possibly wrongly generated ToolBOS.conf settings
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.9
 
 
