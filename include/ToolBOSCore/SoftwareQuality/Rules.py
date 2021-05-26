@@ -48,12 +48,13 @@ import tempfile
 
 from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
-from ToolBOSCore.Packages.BSTPackage              import BSTProxyInstalledPackage
+from ToolBOSCore.Packages.BSTPackage              import BSTSourcePackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
-from ToolBOSCore.Settings.ProcessEnv              import source
+from ToolBOSCore.Settings.ProcessEnv              import source, sourceFromHere
 from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
+from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
@@ -1646,27 +1647,31 @@ Specify an empty list if really nothing has to be executed.'''
 
             return validityCheck
 
-        # source the package before running Valgrind, package should be installed in proxy or global SIT
+        # source the package before running Valgrind
+
         try:
-            source( details.canonicalPath )
-            logging.debug( "sourcing %s", details.canonicalPath )
+            sourceFromHere()
+            logging.debug( "sourcing %s", os.getcwd() )
         except AssertionError as e:
             logging.error( e )
 
             return FAILED, 0, 0, 'unable to run valgrind'
 
-        bstProxyPackage = BSTProxyInstalledPackage()
+        # get the package dependencies, if found, source the dependencies
+        # before running Valgrind
 
-        bstProxyPackage.open( details.canonicalPath )
-        bstProxyPackage.retrieveDependencies( True )
+        bstSourcePackage = BSTSourcePackage()
 
-        deps = bstProxyPackage.depSet
-        logging.debug( "Package dependencies: %s", deps )
+        bstSourcePackage.open( os.getcwd() )
+        bstSourcePackage.retrieveDependencies( True )
+
+        deps = bstSourcePackage.depSet
+        logging.info( "Package dependencies: %s", deps )
 
         if deps:
             logging.info( "sourcing dependencies of %s", details.canonicalPath )
             for dep in deps:
-                source( dep )
+                source( SIT.strip( dep ) )
                 logging.info( "sourcing %s", dep )
 
         # finally run Valgrind

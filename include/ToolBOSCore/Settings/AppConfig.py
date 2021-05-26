@@ -164,7 +164,7 @@ class AppConfig( object ):
                         'name parameter must start with a letter' )
 
         # update setting
-        logging.debug( 'setting config option: %s=%s', name, str(value) )
+        logging.debug( 'setting config option: %s=%s', name, value )
         self._userSettings[ name ] = value
         self._allSettings[  name ] = value
         self.save()
@@ -204,10 +204,9 @@ class AppConfig( object ):
             content = getCopyrightHeader( 'python', 'User preferences' )
 
             for key, value in sorted( self._userSettings.items() ):
-                if Any.isText( value ):
-                    value = "'%s'" % value      # write Python string, not just value
+                value = repr( value )          # write object as Python code
 
-                content += '%s = %s\n\n' % ( key, str( value ) )
+                content += '%s = %s\n\n' % ( key, value )
 
             content += '\n# EOF\n'
 

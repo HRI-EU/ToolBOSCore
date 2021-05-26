@@ -77,7 +77,7 @@ argman.addExample( '%(prog)s -f defaultPlatform' )
 argman.addExample( '%(prog)s -p defaultPlatform' )
 argman.addExample( '%(prog)s -r "foo"' )
 argman.addExample( '%(prog)s -s "defaultPlatform = \'qnx\'"' )
-argman.addExample( '%(prog)s -s "foo=bar"' )
+argman.addExample( '%(prog)s -s "myList = [1,2,3,4]"' )
 argman.addExample( '%(prog)s -z                   # opens GUI' )
 
 args     = vars( argman.run() )
@@ -120,26 +120,21 @@ elif removeVar:
     tconf.delUserConfigOption( removeVar  )
 
 elif setVar:
-    # Note: Setting non-string options does not work, yet because everything
-    # is stored as string so far.
+    # sets config option to user conf file in Python syntax ("key=value")
     #
     # Example:
     # $ ./bin/ToolBOS-Config.py -s 'foo2 = [ 1, 2, 3, 4]'
     # [AppConfig.py:167 DEBUG] setting config option: foo2=[ 1, 2, 3, 4]
     #
     # results in:
-    # foo2 = '[ 1, 2, 3, 4]'
-    #
-    # because the function to store the option checks the datatype and in
-    # case of strings put quotes around it.
-    # To be reviewed (if necessary at all).
+    # foo2 = [ 1, 2, 3, 4]
 
-    key, value = setVar.split( '=' )
+    key, value = setVar.split( '=', 1 )       # maxsplit is set to 1, as the value itself can contain '=' sign
     key        = key.strip()
     value      = value.strip()
 
     Any.setDebugLevel( logging.DEBUG )
-    tconf.setUserConfigOption( key, value )
+    tconf.setUserConfigOption( key, eval( value ) )
 
 elif zen:
     from ToolBOSCore.Settings import PreferencesDialog
