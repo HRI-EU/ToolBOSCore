@@ -39,27 +39,67 @@ import logging
 import sys
 import traceback
 
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QSizePolicy, QTextEdit
 
 from ToolBOSCore.Util import Any
 
 
-def ErrorDialog( title, msg, printException=False ):
-    msg = str( msg )                        # also accept exception types
+class QMessageBoxResizable( QMessageBox ):
+    _minWidth  = 400
+    _minHeight = 200
+
+    # Resize a QMessageBox is a bit tricky because we also need to resize
+    # the internal message
+    def event( self, e ):
+        result = super( QMessageBoxResizable, self ).event( e )
+        self.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding )
+        self.setMinimumHeight( self._minHeight )
+        self.setMaximumHeight( 16777215 )
+        self.setMinimumWidth( self._minWidth )
+        self.setMaximumWidth( 16777215 )
+
+        message = self.findChild( QTextEdit )
+
+        if message:
+            message.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding )
+            message.setMinimumHeight( self._minHeight )
+            message.setMaximumHeight( 16777215 )
+            message.setMinimumWidth( self._minWidth )
+            message.setMaximumWidth( 16777215 )
+
+        return result
+
+
+def ErrorDialog( title, msg, printException=False, resizable=False ):
+    msg = str( msg )                             # also accept exception types
 
     Any.requireIsTextNonEmpty( title )
     Any.requireIsTextNonEmpty( msg )
 
-    if printException or Any.getDebugLevel() >= 5:
-        excType, _excValue, excTraceback = sys.exc_info()
-        tbs = traceback.format_tb( excTraceback )
+    excType, _excValue, excTraceback = sys.exc_info()
+    if excType:
+        if hasattr( excType, 'description' ):
+            description = excType.description
+        else:
+            description = str( excType )
+    else:
+        description = excType = 'Error'
 
+    if printException or Any.getDebugLevel() >= 5:
+        tbs = traceback.format_tb( excTraceback )
         logging.error( '%s, %s', excType, msg )
         logging.error( ''.join( tbs ) )
     else:
         logging.error( msg )
 
-    QMessageBox.critical( None, title, msg, QMessageBox.Ok )
+    msgBox = QMessageBoxResizable() if resizable else QMessageBox()
+    msgBox.setIcon( QMessageBox.Critical )
+    msgBox.setText( description )
+    msgBox.setWindowTitle( title )
+    msgBox.setDetailedText( msg )
+    msgBox.setStandardButtons( QMessageBox.Ok )
+
+    msgBox.exec_()
 
 
 # EOF

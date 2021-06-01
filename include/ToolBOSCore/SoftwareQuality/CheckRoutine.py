@@ -172,12 +172,21 @@ class CheckRoutine( object ):
 
 
     def overallResult( self ):
-        for result in self.results:
+        overallResult = True
 
-            if result[0] is FAILED:
-                return False
+        logging.debug( 'computing overall result:' )
 
-        return True
+        for ruleID, result in self.results.items():
+
+            status = result[0]
+            logging.debug( '%s: %s', ruleID, status )
+
+            if status is FAILED:
+                overallResult = False
+
+        logging.debug( 'overall result: %s', overallResult )
+
+        return overallResult
 
 
     def run( self ):
