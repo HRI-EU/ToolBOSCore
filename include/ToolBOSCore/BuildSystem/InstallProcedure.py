@@ -79,7 +79,7 @@ class InstallProcedure( object ):
                   stdout=None, stderr=None ):
 
         self.dryRun            = bool( FastScript.getEnv( 'DRY_RUN' ) )
-        self.index             = collections.OrderedDict()
+        self.index             = []
         self.stdout            = stdout
         self.stderr            = stderr
         self.tempObjects       = []
@@ -349,7 +349,7 @@ class InstallProcedure( object ):
         """
             Shows the number of scheduled files
         """
-        logging.info( 'scheduled %d files for installation', len( self.index.keys() ) )
+        logging.info( 'scheduled %d files for installation', len( self.index ) )
 
 
     def confirmInstall( self ):
@@ -573,10 +573,10 @@ class InstallProcedure( object ):
 
                     if itemDstPath.find( '.svn' ) == -1:   # do not install ".svn"
                         if relativeToHGR:
-                            self.index[ itemSrcPath ] = itemDstPath
+                            self.index.append( ( itemSrcPath, itemDstPath ) )
                         else:
-                            self.index[ itemSrcPath ] = os.path.join( self.startPath,
-                                                                      itemDstPath )
+                            self.index.append( ( itemSrcPath,
+                                                 os.path.join( self.startPath, itemDstPath ) ) )
 
                 # os.walks() puts symlinks to directories into the 'directories'
                 # list, and not into 'files', hence symlinks like "focal64" -->
@@ -597,9 +597,9 @@ class InstallProcedure( object ):
 
         elif os.path.exists( srcPath ):
             if relativeToHGR:
-                self.index[ srcPath ] = dstPath
+                self.index.append( ( srcPath, dstPath ) )
             else:
-                self.index[ srcPath ] = os.path.join( self.startPath, dstPath )
+                self.index.append( ( srcPath, os.path.join( self.startPath, dstPath ) ) )
 
 
     def copyMatching( self, srcDir, srcPattern, dstDir=None,
@@ -719,9 +719,9 @@ class InstallProcedure( object ):
             dst = os.path.join( dstDir, entry )
 
             if relativeToHGR:
-                self.index[ src ] = dst
+                self.index.append( ( src, dst ) )
             else:
-                self.index[ src ] = os.path.join( self.startPath, dst )
+                self.index.append( ( src, os.path.join( self.startPath, dst ) ) )
 
         return matching
 
@@ -838,7 +838,7 @@ class InstallProcedure( object ):
             linkPath = os.path.join( self.startPath, link )
 
         logging.info( 'adding %s --> %s', link, target )
-        self.index[ tmpFile ] = linkPath
+        self.index.append( ( tmpFile, linkPath ) )
         self.tempObjects.append( tmpFile )
 
 
@@ -992,16 +992,17 @@ class InstallProcedure( object ):
         Any.requireIsTextNonEmpty( rootDir )
         Any.requireIsDir( self.details.topLevelDir )
 
-        fileList = list( self.index.keys() )
+        for entry in self.index:
+            key   = entry[0]
+            value = entry[1]
 
-        for key in fileList:
-            src = os.path.join( self._binaryTree, key )
+            src   = os.path.join( self._binaryTree, key )
 
             if self._outOfTree and not os.path.exists( src ):
                 # in case of out-of-tree builds also look for <sourceTree>/<src>
                 src = os.path.join( self._sourceTree, key )
 
-            dst = os.path.join( rootDir, self.index[ key ] )
+            dst = os.path.join( rootDir, value )
 
             if self.dryRun:
                 logging.debug( '[DRY-RUN] cp %s %s', src, dst )
@@ -1352,6 +1353,15 @@ class GlobalInstallProcedure( InstallProcedure ):
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
 
         logging.info( 'installing package... (this may take some time)' )
+
+        logging.debug( '' )
+        logging.debug( 'files to install:' )
+
+        for entry in self.index:
+            i, j = entry
+            logging.debug( '%s --> %s', i, j )
+
+        logging.debug( '' )
 
         self._installWorker( self.sitRootPath )
         self._ensureWorldWritableIndex()
@@ -1826,11 +1836,9 @@ class TarExportProcedure( InstallProcedure ):
         t = tarfile.open( self._fileName, 'w:bz2' )
         logging.info( 'writing %s...', self._fileName )
 
-        fileList = list( self.index.keys() )
-        fileList.sort()
-
-        for key in fileList:
-            dst = self.index[ key ]
+        for entry in self.index:
+            key = entry[0]
+            dst = entry[1]
             src = os.path.join( self._tmpDir, dst )
 
             logging.debug( dst )

@@ -83,11 +83,6 @@ then
     echo ${LD_LIBRARY_PATH} | tr ":" "\n"
     echo -e "\n"
 
-    if [[ ! -e .idea ]]
-    then
-        CreateCLionProject.py
-    fi
-
 fi
 
 
