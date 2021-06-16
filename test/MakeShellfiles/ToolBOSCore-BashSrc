@@ -165,8 +165,7 @@ then
 
     # set environment variables used by O.S. and/or 3rd party software
     export PATH=${TOOLBOSCORE_ROOT}/bin:${PATH}
-    export LD_LIBRARY_PATH=${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
-    export PYTHONPATH=${TOOLBOSCORE_ROOT}/include:${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${PYTHONPATH}
+    export PYTHONPATH=${TOOLBOSCORE_ROOT}/include:${PYTHONPATH}
 
 
     #------------------------------------------------------------------------

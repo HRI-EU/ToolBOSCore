@@ -50,7 +50,6 @@ from ToolBOSCore.Storage                  import VersionControl
 from ToolBOSCore.Util                     import Any, FastScript
 
 
-
 class PatchSystem( object ):
     """
         Generic container for frequently changing statistics and patches
@@ -402,7 +401,7 @@ class PatchSystem( object ):
 
         else:
 
-            logging.info( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
+            logging.debug( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
 
             return []
 
@@ -487,7 +486,7 @@ class PatchSystem( object ):
 
         else:
 
-            logging.info( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
+            logging.debug( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
 
             return []
 
@@ -524,7 +523,7 @@ class PatchSystem( object ):
 
         else:
 
-            logging.info( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
+            logging.debug( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
 
             return []
 
@@ -581,7 +580,7 @@ class PatchSystem( object ):
 
         else:
 
-            logging.info( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
+            logging.debug( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
 
             return []
 
@@ -612,7 +611,7 @@ class PatchSystem( object ):
             Upgrades ToolBOSLib from 3.0 --> 3.1.
         """
         if self.details.packageName == 'ToolBOSLib':
-            logging.info( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
+            logging.debug( 'skipping ToolBOS packages to not patch backward-compatibility layers' )
             return []
 
         else:
@@ -762,6 +761,45 @@ class PatchSystem( object ):
         return modified
 
 
+    def _patchCIA1301( self, dryRun=False ):
+        """
+            Check files for outdated CSV keywords and remove
+            these keywords and expanded information from the source code
+        """
+        cmakeFile = 'CMakeLists.txt'
+
+        if not os.path.exists( cmakeFile ):
+            logging.debug( 'package has no %s, patch does not apply', cmakeFile )
+            return False
+
+        oldContent = FastScript.getFileContent( cmakeFile )
+
+        if 'cmake_minimum_required' not in oldContent:
+            logging.debug( '\'cmake_minimum_required()\' not found' )
+            logging.debug( 'package seems to not need compilation, patch does not apply' )
+            return False
+
+        found = re.search( r'(project\s*\(.+\))', oldContent )
+
+        if found:
+            logging.debug( 'found: %s', found.group(1) )
+            modified = []
+        else:
+            logging.debug( '\'project(Name)\' not found')
+
+            packageName = self.details.packageName
+            newContent = re.sub( r'(cmake_minimum_required\s*?\(.*?\)\n)',
+                                 r'\g<1>\nproject(%s)\n' % packageName,
+                                 oldContent )
+
+            Any.requireIsTextNonEmpty( newContent )
+            FastScript.setFileContent( cmakeFile, newContent )
+
+            modified = [ cmakeFile ]
+
+        return modified
+
+
     def getPatchesAvailable( self ):
         """
             Returns a list of available patches, each item in the list
@@ -863,7 +901,11 @@ class PatchSystem( object ):
 
                    ( 'removing outdated CVS keywords (CIA-1267)',
                      self._patchCIA1267,
-                     'removed outdated CVS keywords and related code (CIA-1267)' )]
+                     'removed outdated CVS keywords and related code (CIA-1267)' ),
+
+                   ( 'adding \'project(Name)\' to CMakeLists.txt (CIA-1301)',
+                     self._patchCIA1301,
+                     'added \'project(Name)\' to CMakeLists.txt (CIA-1301)' ) ]
 
         return result
 

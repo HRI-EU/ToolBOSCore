@@ -1,4 +1,30 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.12
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2206] CIA patch to add 'project(Name)' to CMakeLists.txt on Ubuntu 20.04
+
+
+CHANGES
+=======
+
+  - [TBCORE-2203] run{CLion,PyCharm}: purely launch the IDE,
+                  omit creating ".idea" directories from templates
+  - [TBCORE-2015] PackageCreator: updated default version of ToolBOSLib to 4.0
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2022] BST.py -i: fixed bug that only one file got installed
+                  when attempting to install same into multiple directories
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.11
 
 
@@ -118,7 +144,6 @@ CHANGES
 
 
 -----------------------------------------------------------------------------
-
 
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.3
 
