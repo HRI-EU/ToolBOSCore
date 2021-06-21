@@ -189,7 +189,7 @@ At loading time the Python code gets evaluated and the following variables are s
           see \ref ToolBOS_Util_BuildSystemTools_Installation </td>
  </tr>
  <tr>
-      <td>installSymlink</td>
+      <td>installSymlinks</td>
       <td>list of tuples</td>
       <td>symlinks to be created at install time,
           see \ref ToolBOS_Util_BuildSystemTools_Installation </td>

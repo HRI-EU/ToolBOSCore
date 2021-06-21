@@ -206,13 +206,7 @@ class DoxygenBackend( AbstractBackend ):
 
 
     def _createMainDoxyfile( self ):
-
-        if self.details.isPythonPackage() and \
-           getConfigOption( 'BST_useDoxypy' ) == True:
-            fileName = 'Doxyfile-Python'
-        else:
-            fileName = 'Doxyfile'
-
+        fileName = 'Doxyfile'
         content  = ''
         template = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                                  'etc', fileName )
