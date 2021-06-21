@@ -1,4 +1,22 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.13
+
+
+CHANGES
+=======
+
+  - [TBCORE-2211] BST.py -m: dropped doxypy-support (not really working)
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2205] PackageDetector got confused if Git repo has multiple remotes
+  - fixed typo in documentation
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.12
 
 
