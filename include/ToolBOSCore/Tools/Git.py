@@ -217,14 +217,14 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
         output = tmp.getvalue()
         # Any.requireIsTextNonEmpty( output )  # repo may not have any remote
 
-        tmp = re.search( r"^origin\s+(.+)\s\(fetch\)", output )
+        if output:
+            for line in output.splitlines():
+                tmp = re.match( r"^origin\s+(.*)\s\(fetch\)", line )
 
-        try:
-            origin = tmp.group(1)
-        except AttributeError:
-            raise ValueError( 'this Git repository has no "origin" remote peer configured')
+                if tmp:
+                    return tmp.group(1)
 
-        return origin
+        raise ValueError( 'this Git repository has no "origin" remote peer configured')
 
 
     def detectRepositoryRoot( self, path=None ):
