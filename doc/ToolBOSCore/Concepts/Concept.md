@@ -1,8 +1,6 @@
 ## Concepts
 
-
-![](ToolBOS-Logo-small.png)
-
+- @subpage Terminology
 - @subpage SIT
 - @subpage ProxyDirectory
 - @subpage QualityGuidelines
