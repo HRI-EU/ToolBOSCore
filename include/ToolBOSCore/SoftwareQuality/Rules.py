@@ -1666,7 +1666,7 @@ Specify an empty list if really nothing has to be executed.'''
         bstSourcePackage.retrieveDependencies( True )
 
         deps = bstSourcePackage.depSet
-        logging.info( "Package dependencies: %s", deps )
+        logging.debug( "Package dependencies: %s", deps )
 
         if deps:
             logging.info( "sourcing dependencies of %s", details.canonicalPath )
@@ -1751,7 +1751,11 @@ Specify an empty list if really nothing has to be executed.'''
                 failed, errors = Valgrind.checkExecutable( command, details,
                                                            stdout=stdout, stderr=stderr )
             except subprocess.CalledProcessError as e:
-                failed = True
+                # TBCORE-2118: executables may return non-zero exit codes,
+                # do not consider those as failure!
+
+                logging.debug( e )
+                failed = False
                 errors = []
 
             if failed:
@@ -1778,8 +1782,8 @@ Specify an empty list if really nothing has to be executed.'''
                        'no defects found by Valgrind' )
         else:
             result = ( FAILED, passedExecutables, failedExecutables,
-                       'Valgrind found %d defect%s' % ( failedExecutables,
-                                                        's' if failedExecutables > 1 else '' ) )
+                       '%d executable%s failed' % ( failedExecutables,
+                                                    's' if failedExecutables > 1 else '' ) )
 
         return result
 
