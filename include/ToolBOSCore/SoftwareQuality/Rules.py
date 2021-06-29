@@ -187,27 +187,26 @@ dialog.'''
             to GEN-02 only ASCII- or UTF-8 files shall be used, and German
             Umlauts or Japanese characters must be avoided.
         """
-        import chardet
-
         logging.debug( 'checking files for ASCII or UTF-8 charset' )
         passed = 0
         failed = 0
 
-        for filePath in files:
-            try:
-                content = FastScript.getFileContent( filePath, asBinary=True )
-            except ( IOError, OSError ) as e:
-                logging.error( e )
-                failed += 1
-                continue
+        stdout = io.StringIO()
 
-            encoding = chardet.detect( content )['encoding']
+        for filePath in sorted( files ):
+            stdout.truncate( 0 )
 
-            if encoding in ( 'ascii', 'utf-8' ):
+            cmd = 'file -b %s' % filePath
+            FastScript.execProgram( cmd, stdout=stdout )
+
+            encoding = stdout.getvalue().strip()
+
+            # besides UTF-8 we also accept UTF-16
+            if 'ASCII' in encoding or 'UTF-' in encoding:
                 logging.debug( '%s: %s', filePath, encoding )
                 passed += 1
             else:
-                logging.info( 'GEN02: %s: invalid file encoding (%s)',
+                logging.info( 'GEN02: %s: invalid file (%s)',
                               filePath, encoding )
                 failed += 1
 
