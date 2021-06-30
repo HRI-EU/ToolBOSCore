@@ -1,4 +1,23 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.14
+
+
+CHANGES
+=======
+
+  - [TBCORE-2118] SQ C12: do not use executable exit-code as error indicator
+  - documentation improvements
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2119] SQ GEN02: replaced unreliable 'chardet' Python-module
+  - fixed typo in documentation
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.13
 
 

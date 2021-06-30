@@ -11,6 +11,7 @@ This package contains:
 
 
 #### Setup
+
 * [Installing ToolBOS on disk](doc/ToolBOSCore/Setup/InstallingToolBOS.md)
 * [Shell configuration](doc/ToolBOSCore/Setup/ShellConfig.md)
 * [Sourcing additional packages](doc/ToolBOSCore/Setup/SourcingAdditionalPackages.md)
@@ -19,6 +20,7 @@ This package contains:
 
 #### Concepts
 
+* [Terminology](doc/ToolBOSCore/Concepts/Terminology.md)
 * [Software Installation Tree (SIT)](doc/ToolBOSCore/Concepts/SIT.md)
 * [Proxy Directory](doc/ToolBOSCore/Concepts/ProxyDirectory.md)
 * [Quality Guideline](doc/ToolBOSCore/Concepts/QualityGuidelines.md)

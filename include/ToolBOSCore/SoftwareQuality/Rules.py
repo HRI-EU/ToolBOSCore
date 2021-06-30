@@ -187,27 +187,26 @@ dialog.'''
             to GEN-02 only ASCII- or UTF-8 files shall be used, and German
             Umlauts or Japanese characters must be avoided.
         """
-        import chardet
-
         logging.debug( 'checking files for ASCII or UTF-8 charset' )
         passed = 0
         failed = 0
 
-        for filePath in files:
-            try:
-                content = FastScript.getFileContent( filePath, asBinary=True )
-            except ( IOError, OSError ) as e:
-                logging.error( e )
-                failed += 1
-                continue
+        stdout = io.StringIO()
 
-            encoding = chardet.detect( content )['encoding']
+        for filePath in sorted( files ):
+            stdout.truncate( 0 )
 
-            if encoding in ( 'ascii', 'utf-8' ):
+            cmd = 'file -b %s' % filePath
+            FastScript.execProgram( cmd, stdout=stdout )
+
+            encoding = stdout.getvalue().strip()
+
+            # besides UTF-8 we also accept UTF-16
+            if 'ASCII' in encoding or 'UTF-' in encoding:
                 logging.debug( '%s: %s', filePath, encoding )
                 passed += 1
             else:
-                logging.info( 'GEN02: %s: invalid file encoding (%s)',
+                logging.info( 'GEN02: %s: invalid file (%s)',
                               filePath, encoding )
                 failed += 1
 
@@ -1666,7 +1665,7 @@ Specify an empty list if really nothing has to be executed.'''
         bstSourcePackage.retrieveDependencies( True )
 
         deps = bstSourcePackage.depSet
-        logging.info( "Package dependencies: %s", deps )
+        logging.debug( "Package dependencies: %s", deps )
 
         if deps:
             logging.info( "sourcing dependencies of %s", details.canonicalPath )
@@ -1751,7 +1750,11 @@ Specify an empty list if really nothing has to be executed.'''
                 failed, errors = Valgrind.checkExecutable( command, details,
                                                            stdout=stdout, stderr=stderr )
             except subprocess.CalledProcessError as e:
-                failed = True
+                # TBCORE-2118: executables may return non-zero exit codes,
+                # do not consider those as failure!
+
+                logging.debug( e )
+                failed = False
                 errors = []
 
             if failed:
@@ -1778,8 +1781,8 @@ Specify an empty list if really nothing has to be executed.'''
                        'no defects found by Valgrind' )
         else:
             result = ( FAILED, passedExecutables, failedExecutables,
-                       'Valgrind found %d defect%s' % ( failedExecutables,
-                                                        's' if failedExecutables > 1 else '' ) )
+                       '%d executable%s failed' % ( failedExecutables,
+                                                    's' if failedExecutables > 1 else '' ) )
 
         return result
 
