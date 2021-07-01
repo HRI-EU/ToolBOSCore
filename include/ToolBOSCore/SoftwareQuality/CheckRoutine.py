@@ -425,7 +425,10 @@ class CheckRoutine( object ):
         """
         Any.requireIsTextNonEmpty( ruleID )
 
-        logging.info( 'checking rule: %s', ruleID )
+        ruleName = self.rules[ ruleID ].name
+        Any.requireIsTextNonEmpty( ruleName )
+
+        logging.info( 'checking rule: %s (%s)', ruleID, ruleName )
 
         if self.useOptFlags and ruleID in self.details.sqOptOutRules:
             result = ( DISABLED, None, None, 'explicitly opt-out in pkgInfo.py' )
