@@ -1,9 +1,12 @@
 ## Terminology
 This page explains various terminologies used throughout the ToolBOSCore toolchain.
 
+
 ### SIT root path
-  - main directory of the root SIT (main installation),
-    e.g.: `/hri/sit/latest`
+
+  - main directory of the root SIT (main installation), e.g.:
+
+    * `/hri/sit/latest`
 
 
 ### SIT proxy path
@@ -36,37 +39,37 @@ This page explains various terminologies used throughout the ToolBOSCore toolcha
     This is the *canonical path* of the package.
 
 
-### Package
-
-  - An instance of the High-Level Package API, f.i. "AbstractPackage" and
-    all its subclasses if no disambiguation is needed.
-
-  - Instances of sub-classes shall be named:
-    * bstpkg (for instances of class BSTPackage)
-    * debpkg (for instances of class DebianPackage)
-
-
 ### Package URL
 
   - Extended version, also O.S. distribution packages and/or specific SITs
     can be referenced, e.g.:
 
-    * `sit://Libraries/Serialize/3.0`
+    * `sit://DevelomentTools/ToolBOSCore/4.0`
     * `deb://binutils`
     * `rpm://gcc'
 
 
 ### Package name
 
-  - only the name of a package, e.g.:
+  - only the name-part of a package, e.g.:
 
-    * Serialize
+    * ToolBOSCore
     * gcc
 
 
 ### Package version
 
   - major.minor version of package, e.g.: 3.0
+
+
+### Package full version
+
+
+  - full allowed version string (see install conventions), e.g.:
+
+    * 3.0
+    * 3.0.42
+    * 3.0.42-experimental
 
 
 ### Package category
@@ -81,32 +84,5 @@ This page explains various terminologies used throughout the ToolBOSCore toolcha
 
   - absolute path to a package within a specific SIT, e.g.:
 
-    * /hri/sit/latest/Libraries/Serialize/3.0
-
-
-### Package ID
-
-  - integer number representing a given package within the SITDB
-
-
-### Package full version
-
-
-  - full allowed version string (see install conventions), e.g.:
-
-    * 3.0
-    * 3.0.42
-    * 3.0.42-experimental
-
-
-### details
-
-  - An instance of the Python class 'Exception' (and all its sub-classes), e.g.:
-  ```
-    try:
-        # whatever
-    except AssertionError as details:
-        # error handling
-  ```
-
+    * `/hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0`
 
