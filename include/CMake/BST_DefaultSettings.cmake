@@ -113,19 +113,9 @@ if(UNIX AND "${CMAKE_CROSSCOMPILING}" STREQUAL "FALSE")
 
 endif()
 
-# Generate a compiler.txt file
-# This file is used to get the compilers used to compile the project.
-# This information is then used when analyzing the files in the
-# Quality checker.
-add_custom_target(CompilersTxt ALL
-  COMMAND echo ${CMAKE_C_COMPILER}::${CMAKE_CXX_COMPILER} > compilers.txt
-  VERBATIM
-  COMMENT "Generating compilers.txt")
 
-
-# The above creation of compilers.txt might get superseded by the CMake
-# setting 'CMAKE_EXPORT_COMPILE_COMMANDS', which generates a JSON file with
-# all such details (see TBCORE-2102).
+# Generate a file 'compile_commands.json' with all build commands.
+# This file is used by some SQ checkers which do C/C++ file inspection.
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
