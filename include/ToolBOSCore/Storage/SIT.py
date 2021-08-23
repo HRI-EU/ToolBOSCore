@@ -594,8 +594,8 @@ def getProjects( path, keepPath = True, onError = None ):
 
     path           = os.path.normpath( path )
     projectList    = []
-    excludePattern = re.compile( "(parentTree|^\d+\.\d+)|.svn" )
-    criteria       = re.compile( "^(\d+)\.(\d+)(.*)" )
+    excludePattern = re.compile( r"(parentTree|^\d+\.\d+)|.svn" )
+    criteria       = re.compile( r"^(\d+)\.(\d+)(.*)" )
 
     for directory in FastScript.getDirsInDirRecursive( path, excludePattern,
                                                        onError=onError ):
@@ -673,7 +673,7 @@ def getActiveRevision( sitPath, project ):
         reliably be detected.
     """
     realpath   = os.path.realpath( os.path.join( sitPath, project ) )
-    regexp     = re.compile( "^(\d+)\.(\d+)\.(\d+)" )
+    regexp     = re.compile( r"^(\d+)\.(\d+)\.(\d+)" )
     tmp        = regexp.search( os.path.basename( realpath ) )
 
     if tmp:
@@ -735,7 +735,7 @@ def showStatistics():
     total       = []
     pkgRoots    = []
     pkgVersions = 0
-    regexp      = re.compile( "^(\d+)\.(\d+)$" )
+    regexp      = re.compile( r"^(\d+)\.(\d+)$" )
 
     Any.requireMsg( regexp, 'internal script error: empty regexp' )
 

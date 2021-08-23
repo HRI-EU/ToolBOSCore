@@ -396,7 +396,7 @@ class PackageDetector( object ) :
             RTMaps framework of Intempora, f.i. if the following file exists:
                * src/maps_*.cpp
         """
-        expr  = re.compile( '^maps_.*\.cpp' )
+        expr  = re.compile( r'^maps_.*\.cpp' )
         found = FastScript.findFiles( 'src', regexp=expr )
 
         return bool( found )            # True if at least one file found
