@@ -67,6 +67,7 @@ cd ${CWD}/test/Misc             && runTest ./TestMisc.sh
 cd ${CWD}/test/SIT              && runTest ./TestSIT.sh
 cd ${CWD}/test/UserSetup        && runTest ./TestUserSetup.sh
 
+cd ${CWD} && python -m pytest -v
 
 # we managed to get here --> success
 exit 0
