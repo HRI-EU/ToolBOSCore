@@ -395,6 +395,38 @@ def test_runDoc01_package_without_documentation( tmp_path ):
     assert result[0] == 'FAILED'
 
 
+def test_runDoc01_package_with_empty_README( tmp_path ):
+    """
+        test rule DOC01 for presence of documentation within the package by
+        providing a package with empty README.md file
+    """
+    from pathlib import Path
+
+    rule  = Rules.Rule_DOC01()
+    files = {}
+
+    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation
+    # without any documentation
+    FastScript.changeDirectory( tmp_path )
+
+    # create a new python package
+    creator = PackageCreator.PackageCreator_Python( 'MyPackage', '1.0', flatStyle=True )
+    creator.run()
+
+    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
+    FastScript.changeDirectory( MyPackageRoot )
+
+    # add an empty README.md file
+    Path('README.md').touch()
+
+    details = PackageDetector( MyPackageRoot )
+    details.retrieveMakefileInfo()
+
+    result = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
 def test_runDoc03_package_with_examples( toolBOSCoreDetector ):
     """
         test rule DOC03 for presence of examples within the package by providing

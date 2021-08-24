@@ -2535,9 +2535,12 @@ Hence a doxygen mainpage is not needed in such case.
             logging.debug( 'looking for documentation in: %s', filePath )
 
             if os.path.exists( filePath ):
-                found = True
-
-                logging.info( 'DOC01: found: %s', filePath )
+                if Any.isFileNonEmpty( filePath ):
+                    found = True
+                    logging.info( 'DOC01: found: %s', filePath )
+                else:
+                    found = False
+                    logging.info( 'DOC01: found empty file: %s', filePath )
 
                 if filePath in fileList:
                     content = FastScript.getFileContent( filePath )
