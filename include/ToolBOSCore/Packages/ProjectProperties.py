@@ -77,10 +77,10 @@ def isCanonicalPath( path ):
     global _regExpCanonicalPathWin
 
     #if not _regExpCanonicalPathUnix:
-    _regExpCanonicalPathUnix = re.compile( '^\w+\S*/\S+/\d+\.\d+$' )
+    _regExpCanonicalPathUnix = re.compile( r'^\w+\S*/\S+/\d+\.\d+$' )
 
     #if not _regExpCanonicalPathWin:
-    _regExpCanonicalPathWin = re.compile( '^\w+\S*\\\\\S+\\\\\d+\.\d+$' )
+    _regExpCanonicalPathWin = re.compile( r'^\w+\S*\\\\\S+\\\\\d+\.\d+$' )
 
     if _regExpCanonicalPathUnix.match( path ) or \
         _regExpCanonicalPathWin.match( path ):
@@ -252,7 +252,7 @@ def getPackageVersion( projectRootDir, verbatim = False ):
         return dirName
 
     # if the directory is called e.g. "2.10_experimental", return only "2.10"
-    tmp = re.search( "^(\d+\.\d+).*$", dirName )
+    tmp = re.search( r"^(\d+\.\d+).*$", dirName )
 
     return tmp.group(1) if tmp else dirName
 
@@ -275,7 +275,7 @@ def getPackageVersions( project, includePatchlevelVersions = False ):
         resultList = allVersionsList
     else:
         for version in allVersionsList:
-            if re.match( "^\d+\.\d+$", version ):
+            if re.match( r"^\d+\.\d+$", version ):
                 resultList.append( version )
 
     return resultList
@@ -526,7 +526,7 @@ def splitVersion( version ):
           * patchlevel
           * extra tag
     """
-    tmp = re.match( "^(\d+)\.(\d+)\.*(\d*)\.*(.*)$", version )
+    tmp = re.match( r"^(\d+)\.(\d+)\.*(\d*)\.*(.*)$", version )
 
     if tmp:
         return [ tmp.group(1), tmp.group(2), tmp.group(3), tmp.group(4) ]
