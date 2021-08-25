@@ -54,7 +54,7 @@ def getCategory( fileContent ):
     """
     Any.requireIsTextNonEmpty( fileContent )
 
-    pattern = 'BST_INSTALL_CATEGORY\s*?(\S+)\)'
+    pattern = r'BST_INSTALL_CATEGORY\s*?(\S+)\)'
 
     try:
         return re.search( pattern, fileContent ).group(1).strip()
@@ -70,7 +70,7 @@ def getDependencies( fileContent ):
     Any.requireIsTextNonEmpty( fileContent )
 
     depList = []
-    regexp  = re.compile( "^\s*bst_find_package\s*\((.*)\)\s*$" )
+    regexp  = re.compile( r"^\s*bst_find_package\s*\((.*)\)\s*$" )
 
     for line in fileContent.splitlines():
         tmp = regexp.search( line )

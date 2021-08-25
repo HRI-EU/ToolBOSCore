@@ -113,8 +113,14 @@ def errorParser( errorRoot, details ):
                 stackFrameObjPath = os.path.realpath( obj )
 
                 if stackFrameObjPath.startswith( details.topLevelDir ):
-                    fname  = frame.find( 'file' ).text
-                    lineno = frame.find( 'line' ).text
+                    fileNode = frame.find( 'file' )
+                    lineNode = frame.find( 'line' )
+
+                    if fileNode is not None:
+                        fname  = fileNode.text
+
+                    if lineNode is not None:
+                        lineno = lineNode.text
 
     return Error( kind, description, fname, lineno )
 

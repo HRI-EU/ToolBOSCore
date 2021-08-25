@@ -1,4 +1,29 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.15
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2215] added Terminology.md explaining specific concepts
+  - [TBCORE-2213] added requirements.txt for 'pip'
+
+
+CHANGES
+=======
+
+  - [TBCORE-2223] SQ DOC01: fail if README.md is empty file
+  - [TBCORE-2054] BST.py -q: show brief rule name/info during SQ checks
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2177] SQ C12: handle that project is compiled without debug-flags
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.14
 
 
