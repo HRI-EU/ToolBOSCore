@@ -1,4 +1,4 @@
-lxml==4.4.1
+lxml==4.6.3
 Mako==1.0.10
 psutil==5.6.3
 pyparsing==2.4.2
