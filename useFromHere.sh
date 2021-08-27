@@ -56,4 +56,10 @@ export LD_LIBRARY_PATH=${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY
 export PYTHONPATH=${TOOLBOSCORE_ROOT}/include:${TOOLBOSCORE_ROOT}/external:${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${PYTHONPATH}
 
 
+function bst {
+   BST.py "$@"
+}
+export -f bst
+
+
 # EOF
