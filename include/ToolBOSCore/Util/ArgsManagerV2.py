@@ -34,9 +34,9 @@
 #
 
 
-# outdated Python versions 2.6, 3.0 and 3.1 do not have "argparse" module
 import argparse
 import logging
+import sys
 import textwrap
 
 from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
@@ -93,10 +93,12 @@ class ArgsManager( argparse.ArgumentParser ):
     def run( self, argv=None ):
         # preparation
         self._addVerboseOption()
+        self._addVersionOption()
         self._setBugtrackerURL()
         self._setEpilog()
 
         # commandline parsing
+        self._handleVersionOption()
         self._main( argv )
 
         # post-processing
@@ -122,11 +124,25 @@ class ArgsManager( argparse.ArgumentParser ):
                            help='show debug messages' )
 
 
+    def _addVersionOption( self ):
+        self.add_argument( '-V', '--version',
+                           action='store_true',
+                           help='show version info and exit' )
+
+
     def _main( self, argv=None ):
         if self._allowUnknown:
             self._result, self._unhandled = self.parse_known_args( argv )
         else:
             self._result = self.parse_args( argv )
+
+
+    def _handleVersionOption( self ):
+        args = sys.argv
+
+        if '--version' in args or '-V' in args:
+            self._showVersionInfo()
+            raise SystemExit()
 
 
     def _setBugtrackerURL( self ):
@@ -185,6 +201,36 @@ class ArgsManager( argparse.ArgumentParser ):
 
         if self._supportInfo:
             self.epilog += self._supportInfo
+
+
+    def _showVersionInfo( self ):
+        """
+            Retrieves the program's filepath, locates the package's
+            top-level-directory, and makes use of PackageDetector to get
+            version numbers, patchlevels, and Git commit IDs (if possible).
+
+            Then these information are displayed on the console.
+        """
+        from ToolBOSCore.Packages import BSTPackage, PackageDetector, \
+                                         ProjectProperties
+
+        scriptPath  = sys.argv[0]
+        Any.requireIsTextNonEmpty( scriptPath )
+
+        projectRoot = ProjectProperties.detectTopLevelDir( scriptPath )
+        Any.requireIsDirNonEmpty( projectRoot )
+
+        bstpkg      = BSTPackage.BSTPackage()
+        bstpkg.open( projectRoot )
+
+        detector    = bstpkg.detector
+        Any.requireIsInstance( detector, PackageDetector.PackageDetector )
+
+        name        = detector.packageName
+        version     = detector.packageVersion
+        patchlevel  = detector.patchlevel
+
+        print( f'{name} {version}.{patchlevel}' )
 
 
 # EOF
