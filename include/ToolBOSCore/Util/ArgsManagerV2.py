@@ -229,8 +229,18 @@ class ArgsManager( argparse.ArgumentParser ):
         name        = detector.packageName
         version     = detector.packageVersion
         patchlevel  = detector.patchlevel
+        gitCommit   = detector.gitCommitIdShort
+        gitBranch   = detector.gitBranch
 
-        print( f'{name} {version}.{patchlevel}' )
+        msg         = f'{name} {version}'
+
+        if patchlevel is not None:
+            msg += f'.{patchlevel}'
+
+        if gitCommit is not None or gitBranch is not None:
+            msg += f" (Git commit {gitCommit} from {gitBranch} branch)"
+
+        print( msg )
 
 
 # EOF
