@@ -1,4 +1,4 @@
-usage: runKlocwork.py [-h] [-d PATH] [-v]
+usage: runKlocwork.py [-h] [-d PATH] [-v] [-V]
 
 Launches the Klocwork Desktop GUI to analyze the current package.
 
@@ -7,6 +7,7 @@ optional arguments:
   -d PATH, --dataDir PATH
                         Klocwork data dir. (default: /tmp)
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   runKlocwork.py

@@ -1,4 +1,4 @@
-usage: GitCheckout.py [-h] [-u USER] [-v] package
+usage: GitCheckout.py [-h] [-u USER] [-v] [-V] package
 
 Download the source code of a particular package from an SVN server
 into a local git repository (using the git-svn bridge). Mind that git
@@ -14,6 +14,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -u USER, --user USER  account name to use for SVN server
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   GitCheckout.py Libraries/MasterClock/1.6

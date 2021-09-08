@@ -1,4 +1,4 @@
-usage: ListDependencies.py [-h] [-d] [-f] [-l] [-m] [-r] [-v] package
+usage: ListDependencies.py [-h] [-d] [-f] [-l] [-m] [-r] [-v] [-V] package
 
 Lists the dependencies of a package, taken from the pkgInfo.py files
 in the Software Installation Tree (SIT). By default each package
@@ -15,6 +15,7 @@ optional arguments:
   -m, --missing-only  only list missing (implies "--list" and "--direct")
   -r, --reverse       find out who is depending on package
   -v, --verbose       show debug messages
+  -V, --version       show version info and exit
 
 examples:
   ListDependencies.py .

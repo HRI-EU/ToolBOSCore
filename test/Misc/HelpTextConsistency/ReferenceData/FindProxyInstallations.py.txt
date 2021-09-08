@@ -1,4 +1,4 @@
-usage: FindProxyInstallations.py [-h] [-v]
+usage: FindProxyInstallations.py [-h] [-v] [-V]
 
 Lists all packages installed only in your SIT sandbox ("proxy
 directory").
@@ -6,6 +6,7 @@ directory").
 optional arguments:
   -h, --help     show this help message and exit
   -v, --verbose  show debug messages
+  -V, --version  show version info and exit
 
 examples:
   %prog

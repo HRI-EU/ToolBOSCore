@@ -1,4 +1,4 @@
-usage: MSVC-Setup.py [-h] [-p PATH] [-m MSVC_VERSION] [-v]
+usage: MSVC-Setup.py [-h] [-p PATH] [-m MSVC_VERSION] [-v] [-V]
 
 Configures the user's shell environment to use MSVC (with Wine).
 
@@ -8,6 +8,7 @@ optional arguments:
   -m MSVC_VERSION, --msvc-version MSVC_VERSION
                         SDK version to setup (default: 2017)
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   MSVC-Setup.py
