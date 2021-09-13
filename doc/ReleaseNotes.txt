@@ -1,4 +1,23 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.16
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2227] ArgsParserV2.py: auto-add "--version" parameter
+  - [TBCORE-1756] several ToolBOSCore-parts now work standalone without SIT
+  - [EMI-290] FastScript.execProgram() gained 'encoding'-parameter
+
+
+CHANGES
+=======
+
+  - [CIA-1308] etc/ToolBOS.conf: updated Wine version to 5.0
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.15
 
 
