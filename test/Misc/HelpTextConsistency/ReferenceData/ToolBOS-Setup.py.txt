@@ -1,4 +1,4 @@
-usage: ToolBOS-Setup.py [-h] [-r PATH] [-p PATH] [-a] [-v]
+usage: ToolBOS-Setup.py [-h] [-r PATH] [-p PATH] [-a] [-v] [-V]
 
 Configures your shell for using the ToolBOS SDK.
 
@@ -11,6 +11,7 @@ optional arguments:
                         /home/<user>/.HRI/sit/latest)
   -a, --advanced        advanced config with SIT proxy directory
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   ToolBOS-Setup.py

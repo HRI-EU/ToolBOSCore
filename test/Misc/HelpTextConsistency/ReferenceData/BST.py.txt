@@ -1,7 +1,7 @@
 usage: BST.py [-h] [-a] [-B BUILD_TYPE] [-b] [-d] [--deprecate]
               [--deprecate-all] [-f] [--flat] [-i] [-j JOBS] [-k] [-l]
               [-M MESSAGE] [-m] [-n] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U]
-              [-u] [-x] [-y] [-z] [-v]
+              [-u] [-x] [-y] [-z] [-v] [-V]
 
 The Build System Tools (BST.py) are used for various tasks dealing
 with compiling, installing and maintaining software packages. They are
@@ -40,6 +40,7 @@ optional arguments:
   -y, --yes             reply "yes" to all prompts, f.i. run non-interactively
   -z, --zen             zen build mode (GUI)
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   BST.py                             # build (setup once + compile)

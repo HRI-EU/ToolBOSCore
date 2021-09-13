@@ -1,4 +1,4 @@
-usage: BootstrapSIT.py [-h] [-b] [-d] [-p PLATFORMS] [-r] [-v] path
+usage: BootstrapSIT.py [-h] [-b] [-d] [-p PLATFORMS] [-r] [-v] [-V] path
 
 Creates a minimalistic SIT which will only contain the ToolBOS SDK and
 some essential packages.
@@ -15,6 +15,7 @@ optional arguments:
                         separated)
   -r, --resolveLTS      copy content of LTS packages
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   BootstrapSIT.py -bd /tmp/newSIT

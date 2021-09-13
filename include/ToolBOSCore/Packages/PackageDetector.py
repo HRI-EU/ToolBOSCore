@@ -663,6 +663,9 @@ class PackageDetector( object ) :
         self.userSrcBashCode   = self._expandListOfStrings( self.userSrcBashCode )
         self.userSrcCmdCode    = self._expandListOfStrings( self.userSrcCmdCode )
 
+        if self.gitCommitIdLong:
+            self.gitCommitIdShort = self.gitCommitIdLong[0:7]
+
         Any.requireIsIn( self.installMode, ( 'clean', 'incremental' ),
                          'invalid value of "installMode" in pkgInfo.py' )
 

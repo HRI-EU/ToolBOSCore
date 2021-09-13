@@ -1,10 +1,11 @@
-usage: CreatePyCharmProject.py [-h] [-v]
+usage: CreatePyCharmProject.py [-h] [-v] [-V]
 
 Turns a software package into a project for the JetBrains PyCharm IDE.
 
 optional arguments:
   -h, --help     show this help message and exit
   -v, --verbose  show debug messages
+  -V, --version  show version info and exit
 
 examples:
   cd MyPackage/1.0

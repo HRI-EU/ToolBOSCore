@@ -1,5 +1,5 @@
 usage: UpdateProxyDir.py [-h] [-b] [-c] [-d] [-e] [-f] [-i] [-n] [-r] [-s]
-                         [-u] [-v]
+                         [-u] [-v] [-V]
 
 Update your Software Installation Tree (SIT) sandbox and ToolBOS
 settings (if necessary).
@@ -17,6 +17,7 @@ optional arguments:
   -s, --skip         skip clean-up of unused files in ~/.HRI
   -u, --no-upgrade   do not upgrade patchlevel-version symlinks
   -v, --verbose      show debug messages
+  -V, --version      show version info and exit
 
 examples:
   UpdateProxyDir.py
