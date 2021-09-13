@@ -1,4 +1,4 @@
-usage: AddGlobalInstallLogEntry.py [-h] [-d] [-n] [-t TYPE] [-v]
+usage: AddGlobalInstallLogEntry.py [-h] [-d] [-n] [-t TYPE] [-v] [-V]
                                    installRoot message
 
 This script creates a new global install log entry.
@@ -14,6 +14,7 @@ optional arguments:
   -n, --new             flag package as "new" (first installation)
   -t TYPE, --type TYPE  log entry type ("NEW" [=default], "FIX" or "DOC")
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   AddGlobalInstallLogEntry.py -d -t FIX "${SIT}/Libraries/Foo/1.0" "Message text"

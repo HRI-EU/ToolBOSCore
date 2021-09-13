@@ -1,4 +1,4 @@
-usage: SVNCheckout.py [-h] [-a] [-g] [-r REVISION] [-u USER] [-v] package
+usage: SVNCheckout.py [-h] [-a] [-g] [-r REVISION] [-u USER] [-v] [-V] package
 
 Download the source code of a particular package from SVN. By default
 will fetch the HEAD revision, but with "--global" will checkout the
@@ -17,6 +17,7 @@ optional arguments:
                         revision to checkout (default: HEAD)
   -u USER, --user USER  account name to use for SVN server
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   SVNCheckout.py -a Libraries/MasterClock/1.6       # full repository

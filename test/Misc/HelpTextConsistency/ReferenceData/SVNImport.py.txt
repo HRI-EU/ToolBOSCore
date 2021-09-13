@@ -1,4 +1,4 @@
-usage: SVNImport.py [-h] [-v]
+usage: SVNImport.py [-h] [-v] [-V]
 
 Imports everything from the current directory into SVN. The install
 category information is taken from the CMakeLists.txt file so please
@@ -8,6 +8,7 @@ directory which has all the version directories inside (see example).
 optional arguments:
   -h, --help     show this help message and exit
   -v, --verbose  show debug messages
+  -V, --version  show version info and exit
 
 examples:
   cd MyPackage

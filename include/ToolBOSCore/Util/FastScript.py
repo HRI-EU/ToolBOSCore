@@ -574,11 +574,13 @@ def execFile( filename ):
 
 def execProgram( cmd, workingDir = None, host = 'localhost',
                  stdin = None, stdout = None, stderr = None,
-                 username = None ):
+                 username = None, encoding = 'utf8' ):
     """
         Executes another program/command.
 
         You may redirect input/output streams by providing StringIO instances.
+        The input argument is passed to Popen.communicate() and thus to the subprocess’s stdin.
+        If used it must be a byte sequence, or a string if encoding is specified.
 
         If 'host' is different than the default 'localhost' or the actual
         hostname, an SSH tunnel will be opened and the command executed
@@ -628,7 +630,11 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
 
     if stdin:
         inStream = PIPE
-        inData   = stdin.read()
+
+        if encoding is None:
+            inData = stdin
+        else:
+            inData = stdin.read()
 
     if stdout:
         outStream = PIPE
@@ -642,7 +648,7 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
 
     p = Popen( cmd, stdin=inStream, stdout=outStream,
                stderr=errStream, cwd=localWorkingDir,
-               encoding='utf8' )
+               encoding=encoding )
 
 
     ( outData, errData ) = p.communicate( inData )
@@ -651,7 +657,10 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
     sys.stderr.flush()
 
     if stdout and outData:
-        stdout.writelines( outData )
+        if encoding is None:
+            stdout.writelines( str( outData ) )
+        else:
+            stdout.writelines( outData )
 
         stdout.flush()
 

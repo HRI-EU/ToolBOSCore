@@ -65,7 +65,7 @@ class TestBootstrap( unittest.TestCase ):
 
         # check if all essential packages are available
         for package in basePkgList:
-            Any.requireIsFile( os.path.join( outputDir, package, 'packageVar.cmake' ) )
+            Any.requireIsFile( os.path.join( outputDir, package, 'BashSrc' ) )
 
         # check for Module-Index directory
         Any.requireIsDir( os.path.join( outputDir, 'Modules', 'Index' ) )

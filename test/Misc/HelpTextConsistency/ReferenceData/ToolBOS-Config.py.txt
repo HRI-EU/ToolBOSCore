@@ -1,4 +1,5 @@
 usage: ToolBOS-Config.py [-h] [-f VAR] [-p VAR] [-r VAR] [-s EXPR] [-z] [-v]
+                         [-V]
 
 Configure ToolBOS SDK preferences.
 
@@ -12,6 +13,7 @@ optional arguments:
                         ("key=value")
   -z, --zen             open configuration GUI
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   ToolBOS-Config.py
@@ -19,7 +21,7 @@ examples:
   ToolBOS-Config.py -p defaultPlatform
   ToolBOS-Config.py -r "foo"
   ToolBOS-Config.py -s "defaultPlatform = 'qnx'"
-  ToolBOS-Config.py -s "foo=bar"
+  ToolBOS-Config.py -s "myList = [1,2,3,4]"
   ToolBOS-Config.py -z                   # opens GUI
 
 Please report bugs on JIRA (https://jira.honda-ri.de:8443).

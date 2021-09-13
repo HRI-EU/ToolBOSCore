@@ -1,4 +1,4 @@
-usage: Wine-Setup.py [-h] [-p PATH] [-v]
+usage: Wine-Setup.py [-h] [-p PATH] [-v] [-V]
 
 Initial configuration of Wine, e.g. for cross-compilation with BST.py.
 
@@ -6,6 +6,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -p PATH, --path PATH  config directory (default: $HOME/.wine)
   -v, --verbose         show debug messages
+  -V, --version         show version info and exit
 
 examples:
   Wine-Setup.py

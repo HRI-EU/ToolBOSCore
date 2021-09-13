@@ -47,6 +47,7 @@ sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           doc/ToolBOSCore/Concepts/Terminology.md \
                                           include/ToolBOSCore/Settings/ToolBOSConf.py \
                                           test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
+                                          useFromHere.sh \
                                           useFromHere.bat
 
 
