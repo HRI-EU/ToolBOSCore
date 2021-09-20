@@ -1,4 +1,22 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.17
+
+
+NEW FEATURES
+============
+
+  - [EMI-347] Any.py: added isWritableDir() and requireIsWriteableDir()
+  - [EMI-297] FastScript.py: added chgrpRecursive()
+
+
+CHANGES
+=======
+
+  - etc/ToolBOS.conf: updated Git version to 2.30
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.16
 
 
