@@ -662,7 +662,8 @@ def requireIsWritableDir( path ):
     requireIsTextNonEmpty( path )
     requireIsDir( path )
 
-    requireMsg( os.access( path, os.W_OK ), path + ": No writing permissions for this directory" )
+    requireMsg( isWritableDir( path ),
+                path + ": No writing permissions for this directory" )
 
 
 #----------------------------------------------------------------------------
