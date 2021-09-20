@@ -624,7 +624,7 @@ def requireIsInstance( obj, classType, msg=None ):
 
 def isInstanceOrNone( obj, classType ):
     """
-        Returns a boolean whether or not 'obj' is instanceof class
+        Returns a boolean whether or not 'obj' is instance of class
         'classType' (not as string, pass as real class!), or None.
 
         This function can be used for checking parameters that must be of a
@@ -646,6 +646,24 @@ def requireIsInstanceOrNone( obj, classType, msg=None ):
     msg = msg or '{} ({}): Neither an instance of class "{}", nor None'.format( str( obj ), type( obj ), classType )
 
     requireMsg( isInstanceOrNone( obj, classType ), msg )
+
+
+def isWritableDir( path ):
+    """
+        Returns a boolean whether or not 'path' is a writable directory.
+    """
+    return os.access( path, os.W_OK )
+
+
+def requireIsWritableDir( path ):
+    """
+        Throws an AssertionError if 'path' is not a writable directory.
+    """
+    requireIsTextNonEmpty( path )
+    requireIsDir( path )
+
+    requireMsg( isWritableDir( path ),
+                path + ": No writing permissions for this directory" )
 
 
 #----------------------------------------------------------------------------

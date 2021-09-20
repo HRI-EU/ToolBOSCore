@@ -987,6 +987,40 @@ def setGroupPermission( path, groupName, mode ):
         pass
 
 
+def chgrpRecursive( path, groupName ):
+    """
+        Changes the group of the file or directory <path> recursively
+        so that the given path and files are owned by the group specified in
+        <groupName>. Given group <groupName> has to exist.
+
+        For example, to make a directory owned by the group 'hriasc':
+        FastScript.chgrpRecursive( '/path', 'hriasc' )
+    """
+    from grp import getgrnam
+
+    Any.requireIsTextNonEmpty( path )
+    Any.requireIsTextNonEmpty( groupName )
+
+    try:
+        groupid = getgrnam( groupName ).gr_gid
+    except KeyError:
+        raise OSError( '%s: No such group' % groupName )
+
+    userid = -1
+    os.chown( path, userid, groupid )
+
+    for dirpath, dirs, files in os.walk( path ):
+        for item in dirs:
+            path = os.path.join( dirpath, item )
+            logging.debug( "chgrp %s %s", groupName, path )
+            os.chown( path, userid, groupid )
+
+        for item in files:
+            path = os.path.join( dirpath, item )
+            logging.debug( "chgrp %s %s", groupName, path )
+            os.chown( os.path.join( dirpath, item ), userid, groupid )
+
+
 def getCurrentUserID():
     """
         Returns the UID of the current process.
