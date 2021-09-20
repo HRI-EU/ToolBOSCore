@@ -987,14 +987,14 @@ def setGroupPermission( path, groupName, mode ):
         pass
 
 
-def chownRecursive( path, groupName ):
+def chgrpRecursive( path, groupName ):
     """
-        Changes the ownership of the file or directory <path> recursively
+        Changes the group of the file or directory <path> recursively
         so that the given path and files are owned by the group specified in
         <groupName>. Given group <groupName> has to exist.
 
-        For example, to make a directory owned by 'hriasc':
-        FastScript.chownRecursive( '/path', 'hriasc' )
+        For example, to make a directory owned by the group 'hriasc':
+        FastScript.chgrpRecursive( '/path', 'hriasc' )
     """
     from grp import getgrnam
 
@@ -1004,7 +1004,7 @@ def chownRecursive( path, groupName ):
     try:
         groupid = getgrnam( groupName ).gr_gid
     except KeyError:
-        raise OSError( 'unknown group \'' + groupName + '\' - expected existing group')
+        raise OSError( '%s: No such group' % groupName )
 
     userid = -1
     os.chown( path, userid, groupid )
@@ -1012,12 +1012,12 @@ def chownRecursive( path, groupName ):
     for dirpath, dirs, files in os.walk( path ):
         for item in dirs:
             path = os.path.join( dirpath, item )
-            logging.debug( "chown :%d %s", groupid, path )
+            logging.debug( "chgrp %s %s", groupName, path )
             os.chown( path, userid, groupid )
 
         for item in files:
             path = os.path.join( dirpath, item )
-            logging.debug( "chown :%d %s", groupid, path )
+            logging.debug( "chgrp %s %s", groupName, path )
             os.chown( os.path.join( dirpath, item ), userid, groupid )
 
 
