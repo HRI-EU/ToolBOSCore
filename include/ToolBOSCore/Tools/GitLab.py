@@ -85,6 +85,43 @@ class GitLabServer( object ):
         return result
 
 
+    def getProjectsInGroup( self, groupName:str ) -> list:
+        """
+            Returns a list of all projects (repositories) within
+            the given group. Items are of type GitLab instances.
+        """
+        Any.requireIsTextNonEmpty( groupName )
+
+        try:
+            allProjects = self._gl.projects.list( all=True, as_list=True )
+        except gitlab.GitlabGetError as e:
+            raise ValueError( e )
+
+        resultList = []
+
+        for project in allProjects:
+            if project.namespace['path'] == groupName:
+                resultList.append( project )
+
+        return resultList
+
+
+    def getProjectNamesInGroup( self, groupName:str ) -> list:
+        """
+            Returns a list of all project names (repository names) within
+            the given group. Items are of type 'str'.
+        """
+        Any.requireIsTextNonEmpty( groupName )
+
+        projectList = self.getProjectsInGroup( groupName )
+        resultList  = []
+
+        for project in projectList:
+            resultList.append( project.name )
+
+        return sorted( resultList )
+
+
     def getProject( self, path ):
         """
             Returns a dict with plenty of information about a certain
