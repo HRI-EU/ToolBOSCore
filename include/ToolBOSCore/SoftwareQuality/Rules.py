@@ -51,7 +51,7 @@ from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.BSTPackage              import BSTSourcePackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Platforms.Platforms              import getHostPlatform
-from ToolBOSCore.Settings.ProcessEnv              import source, sourceFromHere
+from ToolBOSCore.Settings                         import ProcessEnv
 from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
@@ -193,15 +193,17 @@ dialog.'''
             Umlauts or Japanese characters must be avoided.
         """
         logging.debug( 'checking files for ASCII or UTF-8 charset' )
-        passed = 0
-        failed = 0
+        passed  = 0
+        failed  = 0
+        utility = 'file'
+        stdout  = io.StringIO()
 
-        stdout = io.StringIO()
+        ProcessEnv.requireCommand( utility )
 
         for filePath in sorted( files ):
             stdout.truncate( 0 )
 
-            cmd = 'file -b %s' % filePath
+            cmd = f'{utility} -b {filePath}'
             FastScript.execProgram( cmd, stdout=stdout )
 
             encoding = stdout.getvalue().strip()
@@ -1701,7 +1703,7 @@ Specify an empty list if really nothing has to be executed.'''
         # source the package before running Valgrind
 
         try:
-            sourceFromHere()
+            ProcessEnv.sourceFromHere()
             logging.debug( "sourcing %s", os.getcwd() )
         except AssertionError as e:
             logging.error( e )
@@ -1722,7 +1724,7 @@ Specify an empty list if really nothing has to be executed.'''
         if deps:
             logging.info( "sourcing dependencies of %s", details.canonicalPath )
             for dep in deps:
-                source( SIT.strip( dep ) )
+                ProcessEnv.source( SIT.strip( dep ) )
                 logging.info( "sourcing %s", dep )
 
         # finally run Valgrind
