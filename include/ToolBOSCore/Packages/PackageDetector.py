@@ -373,10 +373,18 @@ class PackageDetector( object ) :
 
         isBBDMAll        = self.packageName == 'BBDMAll'
         isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
+                           self.packageCategory.startswith( 'Modules/ROS' ) or \
                            self.packageCategory.startswith( 'Modules/RTMaps' )
         result           = ( not isBBDMAll ) & isModuleCategory
 
         return result
+
+
+    def isROSComponent( self ):
+        """
+            Returns True if the install category is 'Modules/ROS'.
+        """
+        return self.packageCategory == 'Modules/ROS'
 
 
     def isVirtualModule( self ):
