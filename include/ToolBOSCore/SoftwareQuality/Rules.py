@@ -62,7 +62,7 @@ from ToolBOSCore.Util                             import Any, FastScript
 
 
 ALL_FILE_EXTENSIONS     = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
-                            '.java', '.m', '.py' )
+                            '.java', '.m', '.py', '.bash', '.sh' )
 
 C_FILE_EXTENSIONS       = ( '.c', '.h', '.inc' )
 
@@ -72,6 +72,7 @@ C_HEADER_EXTENSIONS     = ( '.h', )
 
 C_CPP_HEADER_EXTENSIONS = ('.h', '.hpp', 'hh', 'hxx')
 
+BASH_FILE_EXTENSIONS    = ('.bash', '.sh')
 
 class AbstractRule( object ):
 
@@ -3162,6 +3163,249 @@ applications.'''
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
 
 
+class Rule_BASH01( AbstractRule ):
+
+    name        = 'quote strings, variables, and command-substitutions'
+
+    brief       = '''Strings, variables, and command-substitutions should
+always be quoted, unless word-splitting is explicitly desired.'''
+
+    description = '''Quoting prevents word-splitting, which is done
+automatically by bash, and can result in more arguments being given to the
+preceding command or in spaces not being honored.'''
+
+    goodExample = '''
+    users=('Adam Wilson' 'Brian May' 'Maggy Reilly')
+    for user in "${users[@]}"; do
+        echo "${user}"
+    done
+    '''
+
+    badExample  = '''
+    users=('Adam Wilson' 'Brian May' 'Maggy Reilly')
+    for user in ${users[@]}; do
+        echo ${user}
+    done
+    '''
+
+    seeAlso     = { 'Shellcheck SC2086, SC2046, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
+                    'Bash Pitfalls': 'http://mywiki.wooledge.org/BashPitfalls#echo_.24foo' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
+class Rule_BASH02( AbstractRule ):
+
+    name        = 'always use [[ for tests in bash'
+
+    brief       = '''Always use the safe built-in [[ for tests in bash-scripts.'''
+
+    description = '''This construct is safer than the single [, because expressions
+work as expected. The single [ has quirky behavior for e.g. comparisons with < and >,
+which are almost always interpreted as redirection and definitely not what you
+intended. [[ parses the whole command before it is being expanded, which yields
+correct evaluation of expressions with empty variables (if quoting is omitted).
+This makes it safer.
+This construct is also faster, because it is a bash-builtin, whereas the single
+[ spawns a separate process.'''
+
+    goodExample = '''
+    var=a
+    [[ $var > b ]] && echo "True"|| echo "False"
+    '''
+
+    badExample  = '''
+    var=a
+    [ $var > b ] && echo "True"|| echo "False"
+    '''
+
+    seeAlso     = { 'Bash best practices': 'https://mywiki.wooledge.org/BashGuide/Practices#Bash_Tests' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
+class Rule_BASH03( AbstractRule ):
+
+    name        = 'use $() instead of back-ticks'
+
+    brief       = '''Use $() instead of back-ticks for command-substitution.'''
+
+    description = '''The backticks for command-substitution are deprecated and
+problematic:
+
+1. Backslashes are not handled as you would expect, e.g. "\\\\a" produces "a" and
+not "\\a".
+
+2. Nesting backticks and quotes is difficult, as the backticks and nested
+quotes inside backticks need to be escaped.
+
+3. Not all valid scripts can be embedded in backticks.
+The above issues do not exist for $(). This is accomplished by $() enforcing a
+new context for quoting and by separately parsing the contents inside the
+parenthesis.
+'''
+
+    goodExample = '''
+    a=$(dirname $(which grep))
+    '''
+
+    badExample  = '''
+    a=`dirname \`which grep\``
+    '''
+
+    seeAlso     = { 'Shellcheck SC2006': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
+                    'BashFAQ': 'http://mywiki.wooledge.org/BashFAQ/082',
+                    'Bash-hackers': 'https://wiki.bash-hackers.org/syntax/expansion/cmdsubst' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
+class Rule_BASH04( AbstractRule ):
+
+    name        = 'use an array when passing args'
+
+    brief       = '''Use an array instead of one string when passing arguments.'''
+
+    description = '''Arguments should always be passed as an array to a script
+or function. Splitting a string into separate parts that contain spaces is
+problematic: either it does not split at all or the separate parts
+split at their spaces, too. Furthermore, single quotes used to mark a part
+will remain on the extracted part and have to be stripped. All this will
+make the code much more complicated. The handling of an array on the other
+hand is straight-forward.
+'''
+
+    goodExample = '''
+    users=('Adam Wilson' 'Brian May' 'Maggy Reilly')
+    for user in "${users[@]}"; do
+       echo "${user}"
+    done
+    '''
+
+    badExample  = '''
+    users="'Adam Wilson' 'Brian May' 'Maggy Reilly'"
+    for user in ${users}; do
+       echo "${user}"
+    done
+    '''
+
+    seeAlso     = { 'Shellcheck SC2089, SC2090': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
+class Rule_BASH05( AbstractRule ):
+
+    name        = 'use long form of parameter'
+
+    brief       = '''Use the long form of parameters if available to keep scripts readable.'''
+
+    description = '''External programs like e.g. grep, find, or rsync have a
+lot of parameters. From the short form of those parameters it is not always
+obvious what they are for. The long form on the other hand is mostly
+descriptive and does not need any further explanation through e.g.
+comments. Using the long form (if available) will make scripts more
+readable and a little more self-explanatory.
+'''
+
+    goodExample = '''
+    date | grep --extended-regexp --only-matching '([0-9]{2}[:]){2}[0-9]{2}'
+    '''
+
+    badExample  = '''
+    date | grep -Eo '([0-9]{2}[:]){2}[0-9]{2}'
+    '''
+
+    seeAlso     = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
+class Rule_BASH06( AbstractRule ):
+
+    name        = 'use curly brackets'
+
+    brief       = '''Use curly brackets when referring to variables.'''
+
+    description = '''Curly braces are needed for
+
+1. expanding variables into strings, e.g. ${var}appendage,
+
+2. array-references, e.g. ${array[2]},
+
+3. parameter-expansion, e.g. ${filename%.*}
+
+4. expanding positional parameters > 9, e.g. ${10}, ${11}, ...
+
+To deliver a consistent appearance throughout the whole script you should
+use braces even if they are not strictly necessary. This will prevent
+forgetting the braces if they are needed, which will lead to strange
+errors or behaviour.
+'''
+
+    goodExample = '''
+    echo ${foo}
+    '''
+
+    badExample  = '''
+    echo $foo
+    '''
+
+    seeAlso     = { 'Shellcheck': 'https://github.com/koalaman/shellcheck/wiki/SC2250',
+                    'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
+class Rule_BASH07( AbstractRule ):
+
+    name        = 'use set -euo pipefail'
+
+    brief       = '''Use set -euo pipefail to abort script on errors and unbound variables.'''
+
+    description = '''The command set -euo pipefail should be placed at the top
+of the script right after shebang. This has the following consequences for
+the rest of the script:
+
+1. If a pipeline, simple-command, list, or compound-command exits with a
+non-zero status, the script is immediately exited.
+
+2. Unset variables or parameters are treated as an error and the script
+exits immediately.
+
+3. If one command in a pipeline returns with a non-zero status the whole
+pipeline fails.
+
+These consequences make the script safer, because an immediate exit after
+an error prevents an execution of subsequent commands in an erroneous
+context, which is the default for bash.
+'''
+
+    goodExample = '''
+    #!/bin/bash
+    set -euo pipefail
+
+    SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+
+    . ${SCRIPT_DIR}/config/defaults.config
+
+    ...
+    '''
+
+    badExample  = '''
+    #!/bin/bash
+    SCRIPT_DIR=$(dirname $(readlink -f "$0"))
+
+    . ${SCRIPT_DIR}/config/defaults.config
+
+    ...
+    '''
+
+    seeAlso     = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+
+    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+
 def findNonAsciiCharacters( filePath, rule ):
     content = FastScript.getFileContent( filePath, splitLines=True )
     passed  = 0
@@ -3295,7 +3539,7 @@ def getRules():
     # keep sorting as appears in SQ Guideline
 
     for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
-                      'MT', 'SPEC' ):
+                      'MT', 'SPEC', 'BASH' ):
         for i in range(50):
 
             ruleID = '%s%02d' % ( category, i )
