@@ -3172,13 +3172,20 @@ always be quoted, unless word-splitting is explicitly desired.'''
 
     description = '''Quoting prevents word-splitting, which is done
 automatically by bash, and can result in more arguments being given to the
-preceding command or in spaces not being honored.'''
+preceding command or in spaces not being honored.
+'''
 
     goodExample = '''
     users=('Adam Wilson' 'Brian May' 'Maggy Reilly')
     for user in "${users[@]}"; do
         echo "${user}"
     done
+
+Output:
+
+    Adam Wilson
+    Brian May
+    Maggy Reilly
     '''
 
     badExample  = '''
@@ -3186,6 +3193,15 @@ preceding command or in spaces not being honored.'''
     for user in ${users[@]}; do
         echo ${user}
     done
+
+Output:
+
+    Adam
+    Wilson
+    Brian
+    May
+    Maggy
+    Reilly
     '''
 
     seeAlso     = { 'Shellcheck SC2086, SC2046, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
@@ -3327,7 +3343,7 @@ class Rule_BASH06( AbstractRule ):
 
     brief       = '''Use curly brackets when referring to variables.'''
 
-    description = '''Curly braces are needed for
+    description = '''Curly brackets are needed for
 
 1. expanding variables into strings, e.g. ${var}appendage,
 
@@ -3338,7 +3354,7 @@ class Rule_BASH06( AbstractRule ):
 4. expanding positional parameters > 9, e.g. ${10}, ${11}, ...
 
 To deliver a consistent appearance throughout the whole script you should
-use braces even if they are not strictly necessary. This will prevent
+use curly brackets even if they are not strictly necessary. This will prevent
 forgetting the braces if they are needed, which will lead to strange
 errors or behaviour.
 '''
@@ -3361,10 +3377,10 @@ class Rule_BASH07( AbstractRule ):
 
     name        = 'use set -euo pipefail'
 
-    brief       = '''Use set -euo pipefail to abort script on errors and unbound variables.'''
+    brief       = '''Use `set -euo pipefail` to abort script on errors and unbound variables.'''
 
-    description = '''The command set -euo pipefail should be placed at the top
-of the script right after shebang. This has the following consequences for
+    description = '''The command `set -euo pipefail` should be placed at the top
+of the script right after the copyright-header. This has the following consequences for
 the rest of the script:
 
 1. If a pipeline, simple-command, list, or compound-command exits with a
@@ -3379,10 +3395,33 @@ pipeline fails.
 These consequences make the script safer, because an immediate exit after
 an error prevents an execution of subsequent commands in an erroneous
 context, which is the default for bash.
+
+To facilitate debugging you can use  `set -x` as follows:
+
+    if [[ "${VERBOSE}" == "TRUE" ]]
+    then
+        set -x
+    else
+    
+`set -x` will print every line in the script before it being executed. It can be
+placed anywhere after `set -euo pipefail`.
 '''
 
     goodExample = '''
     #!/bin/bash
+    #
+    # <description>
+    #
+    # Copyright (C)
+    # Honda Research Institute Europe GmbH
+    # Carl-Legien-Str. 30
+    # 63073 Offenbach/Main
+    # Germany
+    #
+    # UNPUBLISHED PROPRIETARY MATERIAL.
+    # ALL RIGHTS RESERVED.
+    #
+    #
     set -euo pipefail
 
     SCRIPT_DIR=$(dirname $(readlink -f "$0"))
