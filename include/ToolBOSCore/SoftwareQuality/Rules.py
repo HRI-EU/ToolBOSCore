@@ -1657,7 +1657,7 @@ in the sqCheckExe variable in pkgInfo.py, e.g.:
                    'test/${MAKEFILE_PLATFORM}/main foo --bar']
 
 Please specify a list of commands, including arguments (if any), that
-shall be analyzed by the check routine. 
+shall be analyzed by the check routine.
 No issues shall be found during execution of unittests also.
 
 The paths to the executables are interpreted as relative to the package root.
@@ -3375,7 +3375,7 @@ errors or behaviour.
 
 class Rule_BASH07( AbstractRule ):
 
-    name        = 'use set -euo pipefail'
+    name        = 'use "set -euo pipefail"'
 
     brief       = '''Use `set -euo pipefail` to abort script on errors and unbound variables.'''
 
@@ -3402,42 +3402,31 @@ To facilitate debugging you can use  `set -x` as follows:
     then
         set -x
     else
-    
+
 `set -x` will print every line in the script before it being executed. It can be
 placed anywhere after `set -euo pipefail`.
 '''
 
     goodExample = '''
-    #!/bin/bash
-    #
-    # <description>
-    #
-    # Copyright (C)
-    # Honda Research Institute Europe GmbH
-    # Carl-Legien-Str. 30
-    # 63073 Offenbach/Main
-    # Germany
-    #
-    # UNPUBLISHED PROPRIETARY MATERIAL.
-    # ALL RIGHTS RESERVED.
-    #
-    #
+    [...]
+
     set -euo pipefail
 
     SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 
-    . ${SCRIPT_DIR}/config/defaults.config
+    source ${SCRIPT_DIR}/config/defaults.config
 
-    ...
+    [...]
     '''
 
     badExample  = '''
-    #!/bin/bash
+    [...]
+
     SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 
-    . ${SCRIPT_DIR}/config/defaults.config
+    source ${SCRIPT_DIR}/config/defaults.config
 
-    ...
+    [...]
     '''
 
     seeAlso     = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
