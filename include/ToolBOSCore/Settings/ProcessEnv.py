@@ -162,6 +162,16 @@ def which( command ):
     return None
 
 
+def requireCommand( command:str ) -> None:
+    """
+        Throws an EnvironmentError if 'command' is not installed.
+    """
+    Any.requireIsTextNonEmpty( command )
+
+    if not which( command ):
+        raise EnvironmentError( f'{command}: command not found' )
+
+
 def _expandSysPath():
     """
         Checks which entries of PYTHONPATH are not in sys.path, yet,

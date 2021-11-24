@@ -162,6 +162,7 @@ class PackageDetector( object ) :
 
         cmakePath              = os.path.join( projectRoot, 'CMakeLists.txt' )
         self.hasCMakeLists     = os.path.exists( cmakePath )
+        self.buildCommand      = None
 
         self.topLevelDir       = projectRoot
         self.packageName       = ProjectProperties.getPackageName( self.topLevelDir )
@@ -372,10 +373,18 @@ class PackageDetector( object ) :
 
         isBBDMAll        = self.packageName == 'BBDMAll'
         isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
+                           self.packageCategory.startswith( 'Modules/ROS' ) or \
                            self.packageCategory.startswith( 'Modules/RTMaps' )
         result           = ( not isBBDMAll ) & isModuleCategory
 
         return result
+
+
+    def isROSComponent( self ):
+        """
+            Returns True if the install category is 'Modules/ROS'.
+        """
+        return self.packageCategory == 'Modules/ROS'
 
 
     def isVirtualModule( self ):
@@ -595,6 +604,7 @@ class PackageDetector( object ) :
         # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
         self.useClang          = getValue( 'BST_useClang',     self.useClang )
+        self.buildCommand      = getValue( 'buildCommand',     'BST.py -sb' )
         self.buildDependencies = getValue( 'buildDepends',     self.buildDependencies )
         self.buildDependsArch  = getValue( 'buildDependsArch', self.buildDependsArch )
         self.packageCategory   = getValue( 'category',         self.packageCategory )

@@ -34,11 +34,13 @@
 #
 
 
+import io
 import logging
 import re
 import urllib.parse
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Settings import ProcessEnv
+from ToolBOSCore.Util     import Any, FastScript
 
 FastScript.tryImport( 'gitlab' )
 import gitlab
@@ -50,7 +52,7 @@ urllib3.disable_warnings()
 
 class GitLabServer( object ):
 
-    def __init__( self, serverURL, token ):
+    def __init__( self, serverURL:str, token:str ):
         """
             Establishes a connection to the specified GitLab server
             using the 'gitlab' Python module.
@@ -65,7 +67,9 @@ class GitLabServer( object ):
         Any.requireIsTextNonEmpty( serverURL )
         Any.requireIsMatching( serverURL, '^http.+' )
 
-        self._gl = gitlab.Gitlab( serverURL, ssl_verify=False, private_token=token )
+        self._token     = token
+        self._serverURL = serverURL
+        self._gl        = gitlab.Gitlab( serverURL, ssl_verify=False, private_token=token )
         Any.requireIsInstance( self._gl, gitlab.Gitlab )
 
 
@@ -85,6 +89,38 @@ class GitLabServer( object ):
         return result
 
 
+    def getProjectsInGroup( self, groupName:str ) -> list:
+        """
+            Returns a list of all projects (repositories) within
+            the given group. Items are of type GitLab instances.
+        """
+        Any.requireIsTextNonEmpty( groupName )
+
+        resultList = []
+
+        for project in self.getProjects():
+            if project.namespace['path'] == groupName:
+                resultList.append( project )
+
+        return resultList
+
+
+    def getProjectNamesInGroup( self, groupName:str ) -> list:
+        """
+            Returns a list of all project names (repository names) within
+            the given group. Items are of type 'str'.
+        """
+        Any.requireIsTextNonEmpty( groupName )
+
+        projectList = self.getProjectsInGroup( groupName )
+        resultList  = []
+
+        for project in projectList:
+            resultList.append( project.name )
+
+        return sorted( resultList )
+
+
     def getProject( self, path ):
         """
             Returns a dict with plenty of information about a certain
@@ -99,6 +135,53 @@ class GitLabServer( object ):
 
         except gitlab.GitlabGetError as e:
             raise ValueError( '%s: %s' % ( path, e ) )
+
+
+    def getProjects( self ):
+        """
+            Returns a list of handles to all GitLab repositories.
+        """
+        try:
+            return self._gl.projects.list( all=True, as_list=True )
+        except gitlab.GitlabGetError as e:
+            raise ValueError( e )
+
+
+    def getProjectID( self, path:str ) -> int:
+        """
+            Returns the integer ID used internally by GitLab.
+        """
+        Any.requireIsTextNonEmpty( path )
+
+        project = self.getProject( path )
+        Any.requireIsInt( project.id )
+
+        return project.id
+
+
+    def setVariable( self, projectID:int, variable:str, value:str ):
+        """
+            Sets the given GitLab project variable for the project
+            to the provided value.
+
+            Example:
+                set( 200, 'remove_source_branch_after_merge', 'true' )
+
+            Note that the value is a string, not a boolean.
+        """
+        Any.requireIsIntNotZero( projectID )
+        Any.requireIsTextNonEmpty( variable )
+        Any.requireIsTextNonEmpty( value )
+
+        ProcessEnv.requireCommand( 'curl' )
+
+        cmd = f'curl --insecure -X PUT -d {variable}={value} ' + \
+              f'"{self._serverURL}/api/v4/projects/{projectID}?private_token={self._token}"'
+
+        verbose = Any.getDebugLevel() > 3
+        output  = None if verbose else io.StringIO()
+
+        FastScript.execProgram( cmd, stdout=output, stderr=output )
 
 
 class GitLabRepo( object ):
