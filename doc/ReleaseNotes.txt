@@ -1,11 +1,39 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.18
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2245] Klocwork: allow specifying custom build command via pkgInfo.py
+  - [TBCORE-2242] Software Quality rules for shellscripts
+  - [TBCORE-1919] TerminalWidget: added search field + text highlighting
+  - [SSE-INTRO #42] added PackageDetector.isROSComponent()
+  - [SSE-INTRO #35] SQ GEN02: check that 'file'-utility is installed
+  - [SSE-INTRO #27] GitLab.py: added functions to query projects in certain group
+
+
+CHANGES
+=======
+
+  - [TBCORE-2244] Klocwork: show progress output in verbose mode
+
+
+FIXED BUGS
+==========
+
+  - [SSE-INTRO #42] Debian.py: avoid name-clash of attribute and method name
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.17
 
 
 NEW FEATURES
 ============
 
-  - [EMI-347] Any.py: added isWritableDir() and requireIsWriteableDir()
+  - [EMI-347] Any.py: added isWritableDir() and requireIsWritableDir()
   - [EMI-297] FastScript.py: added chgrpRecursive()
 
 
