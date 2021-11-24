@@ -37,7 +37,7 @@
 import logging
 import os
 
-from PyQt5.QtCore    import pyqtSignal, Qt, QProcess
+from PyQt5.QtCore    import pyqtSignal, Qt, QProcess, QRegularExpression
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
@@ -113,8 +113,10 @@ class TerminalWidget( QWidget, object ):
         self._warningHighlightColor = warningHighlightColor
         self._errorHighlightColor   = errorHighlightColor
 
+        self._defaultFont = QFont( 'Arial', 8 )
+
         self.hostnameField = QLineEdit( parent )
-        self.hostnameField.setFont( QFont( 'Arial', 8 ) )
+        self.hostnameField.setFont( self._defaultFont )
         self.hostnameField.setToolTip( 'hostname' )
         self.hostnameField.setText( self.hostname )
         self.hostnameField.setReadOnly( readonly )
@@ -125,7 +127,7 @@ class TerminalWidget( QWidget, object ):
         self.sepLabel  = QLabel( ':', parent )
 
         self.pathField = QLineEdit( parent )
-        self.pathField.setFont( QFont( 'Arial', 8 ) )
+        self.pathField.setFont( self._defaultFont )
         self.pathField.setToolTip( 'working directory (to change it type "cd ..." in operator shell below)' )
         self.pathField.setText( self.path )
 
@@ -138,6 +140,17 @@ class TerminalWidget( QWidget, object ):
         self.xtermButton = QPushButton()
         self.xtermButton.setIcon( IconProvider.getIcon( 'utilities-terminal' ) )
         self.xtermButton.setToolTip( 'open xterm' )
+
+        # search bar
+        self.searchBar = QLineEdit( parent )
+        self.searchBar.setFont( self._defaultFont )
+        self.searchBar.setToolTip( 'search' )
+
+        # noinspection PyUnresolvedReferences
+        self.searchBar.textChanged.connect( self._onSearchBarFieldInput )
+
+        self.searchBarLabel = QLabel( 'Search...', parent )
+        self.searchBarLabel.setFont( self._defaultFont )
 
         # noinspection PyUnresolvedReferences
         self.xtermButton.pressed.connect( self._onXtermButton )
@@ -154,6 +167,16 @@ class TerminalWidget( QWidget, object ):
         self.locationWidget = QWidget( parent )
         self.locationWidget.setLayout( self.hLayout )
 
+        self.hFooterLayout = QHBoxLayout()
+        self.hFooterLayout.setContentsMargins( 0, 0, 0, 0 )
+        self.hFooterLayout.addWidget( self.searchBarLabel )
+        self.hFooterLayout.addWidget( self.searchBar )
+        self.hFooterLayout.setStretchFactor( self.searchBar, 2 )
+
+        self.footerWidget = QWidget( parent )
+        self.footerWidget.setLayout( self.hFooterLayout )
+        self.footerWidget.setHidden( True )
+
         self.textField = self._TerminalTextEdit( warningColor=warningHighlightColor,
                                                  errorColor=errorHighlightColor,
                                                  parent=parent )
@@ -164,12 +187,23 @@ class TerminalWidget( QWidget, object ):
         self.textField.terminateThisProcess.connect( self.terminateThis )
         self.textField.terminateAllProcesses.connect( self.emitTerminateAll )
         self.textField.standaloneRequest.connect( self.toggleStandalone )
+        self.textField.findRequest.connect( self.toggleSearch )
 
         self.vLayout = QVBoxLayout()
         self.vLayout.addWidget( self.locationWidget )
         self.vLayout.addWidget( self.textField )
+        self.vLayout.addWidget( self.footerWidget )
 
         self.setLayout( self.vLayout )
+
+
+    def isSearchBarVisibile( self ):
+        return self.footerWidget.isVisible()
+
+
+    def searchBarVisibility( self, state ):
+        Any.requireIsBool( state )
+        self.footerWidget.setHidden( not state )
 
 
     def clear( self ):
@@ -423,6 +457,10 @@ class TerminalWidget( QWidget, object ):
             self.taskProcess.terminate()
 
 
+    def toggleSearch( self ):
+        self.searchBarVisibility( not self.isSearchBarVisibile() )
+
+
     def toggleStandalone( self):
         self.standalone = not self.standalone
 
@@ -482,6 +520,12 @@ class TerminalWidget( QWidget, object ):
         self.setup()
 
         self.hostChanged.emit( self.hostname )
+
+
+    def _onSearchBarFieldInput( self ):
+        if self.searchBar.isModified():
+            searchText = self.searchBar.text()
+            self.textField.findAndHighlightAll( searchText )
 
 
     def _onPathFieldInput( self ):
@@ -560,6 +604,40 @@ class TerminalWidget( QWidget, object ):
         standaloneRequest     = pyqtSignal()
         terminateThisProcess  = pyqtSignal()
         terminateAllProcesses = pyqtSignal()
+        findRequest           = pyqtSignal()
+
+
+        class _SearchHighlighter( QSyntaxHighlighter ):
+
+            def __init__( self, parent=None, pattern=None ):
+                super( QSyntaxHighlighter, self ).__init__( parent )
+
+                self.keywordFormat = QTextCharFormat()
+                self.keywordFormat.setForeground( Qt.darkBlue )
+                self.keywordFormat.setFontWeight( QFont.Bold )
+
+                if pattern:
+                    self.highlightingRules = [ ( QRegularExpression( pattern ), self.keywordFormat ) ]
+                else:
+                    self.highlightingRules = []
+
+            def setPattern( self, pattern=None ):
+                if pattern:
+                    self.highlightingRules = [ ( QRegularExpression( pattern ), self.keywordFormat ) ]
+                else:
+                    self.highlightingRules = []
+
+
+            def highlightBlock( self, text ):
+                for pattern, format in self.highlightingRules:
+                    globalMatch = pattern.globalMatch( text )
+                    while globalMatch.hasNext():
+                        match = globalMatch.next()
+                        length = match.capturedLength()
+                        start = match.capturedStart()
+                        self.setFormat( start, length, format )
+
+                self.setCurrentBlockState( 0 )
 
 
         def __init__( self, warningColor=lightOrange,
@@ -603,6 +681,8 @@ class TerminalWidget( QWidget, object ):
 
             self._highlightBlockError = QTextBlockFormat()
             self._highlightBlockError.setBackground( errorColor )
+
+            self._searchHighlighter = self._SearchHighlighter()
 
 
         def getColor( self ):
@@ -726,6 +806,18 @@ class TerminalWidget( QWidget, object ):
                 scrollBar.setValue( oldScrollBarPos )
 
 
+        def findAndHighlightAll( self, text ):
+            Any.requireIsText( text )
+
+            # Disable the highlighting
+            self._searchHighlighter.setDocument( None )
+
+            # if we have something to search
+            if text:
+                self._searchHighlighter.setPattern( text )
+                self._searchHighlighter.setDocument( self.document() )
+
+
         def _freeze( self ):
             self.writeText( '[Terminal frozen]\n' )
             self._frozen = True
@@ -737,7 +829,6 @@ class TerminalWidget( QWidget, object ):
 
         def _showContextMenu( self, pos ):
             menu = self.createStandardContextMenu()
-
 
             standaloneAction = QAction( self )
             standaloneAction.triggered.connect( lambda: self.standaloneRequest.emit() )
@@ -799,6 +890,14 @@ class TerminalWidget( QWidget, object ):
             closeAction.setEnabled( self._tooltipText != 'localhost' )
 
             menu.addAction( closeAction )
+
+            # Search
+            searchAction = QAction( self )
+            searchAction.setText('Find...')
+            searchAction.triggered.connect( self.findRequest.emit )
+
+            menu.addSeparator()
+            menu.addAction( searchAction )
 
             menu.exec_( self.mapToGlobal( pos ) )
 
