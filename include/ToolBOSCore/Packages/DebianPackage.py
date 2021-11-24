@@ -50,7 +50,7 @@ class DebianPackage( AbstractPackage ) :
     def __init__( self, url ):
         super( DebianPackage, self ).__init__( url )
 
-        self.isInstalled = None
+        self._isInstalled = None
         self.name        = ProjectProperties.splitURL( url )[1]
         self.url         = url
 
@@ -70,11 +70,11 @@ class DebianPackage( AbstractPackage ) :
         # are present (unless sth. is really broken).
 
         try:
-            self.isInstalled = Debian.isInstalled( self.name )
+            self._isInstalled = Debian.isInstalled( self.name )
             self.depSet      = set()
             self.depTree     = list()
         except subprocess.CalledProcessError:
-            self.isInstalled = False
+            self._isInstalled = False
             raise EnvironmentError( '%s: Not installed on this system' % self.name )
 
 

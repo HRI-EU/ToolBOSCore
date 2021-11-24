@@ -42,7 +42,7 @@ import shlex
 import subprocess
 import tempfile
 
-from ToolBOSCore.Packages  import PackageCreator
+from ToolBOSCore.Packages  import PackageCreator, PackageDetector
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ProcessEnv
 from ToolBOSCore.Settings  import ToolBOSConf
@@ -103,12 +103,16 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
     if ProcessEnv.which( 'kwinject' ) is None:
         msg = '%s not installed for platform=%s' % ( kwPackage, hostPlatform )
-
         raise EnvironmentError( msg )
 
 
+    # check for build command settings in pkgInfo.py, otherwise fallback to default
+    detector          = PackageDetector.PackageDetector()
+    detector.retrieveMakefileInfo()
+    Any.requireIsTextNonEmpty( detector.buildCommand )
+
     # inspect the build process to capture source files, defines, flags,...
-    cmd = 'kwinject -o %s %s' % ( buildSpec, 'BST.py -sb' )
+    cmd = 'kwinject -o %s %s' % ( buildSpec, detector.buildCommand )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
     Any.requireIsFileNonEmpty( buildSpec )
 
