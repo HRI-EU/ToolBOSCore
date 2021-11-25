@@ -788,7 +788,7 @@ class PackageCreator_JetBrains_Common_Config( PackageCreator ):
             wc  = SVN.WorkingCopy()
             url = wc.getRepositoryURL()
 
-        except subprocess.CalledProcessError as details:
+        except ( FileNotFoundError, subprocess.CalledProcessError ) as details:
             # most likely is no working copy --> ignore
             url = None
             logging.debug( details )
