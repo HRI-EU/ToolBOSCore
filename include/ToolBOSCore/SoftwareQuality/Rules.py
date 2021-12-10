@@ -1579,7 +1579,7 @@ once in a while inspect your code using Klocwork.'''
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
         failed = 0
-        output = io.StringIO() if Any.getDebugLevel() < 3 else None
+        output = io.StringIO()
         error  = False
         kwDir  = tempfile.mkdtemp( prefix='klocwork-' )
 
@@ -1587,6 +1587,7 @@ once in a while inspect your code using Klocwork.'''
         # failed/passed files like this, instead later on we parse the output.
 
         try:
+            logging.info( 'performing source code analysis using Klocwork, this may take some time...' )
             Klocwork.createLocalProject( kwDir, output, output )
             Klocwork.codeCheck( kwDir, output, output )
 
