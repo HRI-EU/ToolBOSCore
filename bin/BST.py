@@ -626,7 +626,7 @@ try:
         Klocwork.createLocalProject()
 
         logging.info( 'performing static source code analysis' )
-        Klocwork.codeCheck()
+        Klocwork.codeCheck( logToConsole=True )
 
 
     if quality:

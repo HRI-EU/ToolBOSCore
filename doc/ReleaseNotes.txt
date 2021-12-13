@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.19
+
+
+CHANGES
+=======
+
+  - [TBCORE-2244] Klocwork: show progress output in verbose mode (refinement)
+
+
+INTERNAL
+========
+
+  - [TBCORE-2256] SQ PY05: handle if Subversion is not installed
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.18
 
 

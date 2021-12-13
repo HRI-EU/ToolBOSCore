@@ -1579,7 +1579,7 @@ once in a while inspect your code using Klocwork.'''
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
         failed = 0
-        output = io.StringIO() if Any.getDebugLevel() < 3 else None
+        output = io.StringIO()
         error  = False
         kwDir  = tempfile.mkdtemp( prefix='klocwork-' )
 
@@ -1588,7 +1588,7 @@ once in a while inspect your code using Klocwork.'''
 
         try:
             Klocwork.createLocalProject( kwDir, output, output )
-            Klocwork.codeCheck( kwDir, output, output )
+            Klocwork.codeCheck( kwDir, output, output, logToConsole=True )
 
             if Any.getDebugLevel() > 3:
                 logging.info( 'output:\n%s', output.getvalue() )
