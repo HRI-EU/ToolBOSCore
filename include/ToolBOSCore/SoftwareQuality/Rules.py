@@ -1587,9 +1587,8 @@ once in a while inspect your code using Klocwork.'''
         # failed/passed files like this, instead later on we parse the output.
 
         try:
-            logging.info( 'performing source code analysis using Klocwork, this may take some time...' )
             Klocwork.createLocalProject( kwDir, output, output )
-            Klocwork.codeCheck( kwDir, output, output )
+            Klocwork.codeCheck( kwDir, output, output, logToConsole=True )
 
             if Any.getDebugLevel() > 3:
                 logging.info( 'output:\n%s', output.getvalue() )

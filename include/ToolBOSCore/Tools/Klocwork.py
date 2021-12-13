@@ -111,11 +111,14 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
     detector.retrieveMakefileInfo()
     Any.requireIsTextNonEmpty( detector.buildCommand )
 
+    logging.info( 'running build inspection (kwinject)' )
+
     # inspect the build process to capture source files, defines, flags,...
     cmd = 'kwinject -o %s %s' % ( buildSpec, detector.buildCommand )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
     Any.requireIsFileNonEmpty( buildSpec )
 
+    logging.info( 'running project configuration (kwcheck)' )
 
     # create Klocwork project directory
     cmd = 'kwcheck create --license-host %s --license-port %d -pd %s -sd %s %s' % \
@@ -124,6 +127,7 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
     Any.requireIsDir( kwlpDir )
     Any.requireIsDir( kwpsDir )
 
+    logging.info( 'running project setup (kwimport)' )
 
     # import the build specification into project directory
     cmd = 'kwcheck import -pd %s %s' % ( kwlpDir, buildSpec )
@@ -161,12 +165,14 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
                         os.path.join( dstDir, 'workingsets.xml' ) )
 
 
-def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None ):
+def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None, logToConsole=False ):
     """
         Performs a CLI-analysis of the project.
 
         Note that the Klocwork-project must have been created before,
         e.g. using createLocalProject().
+
+        'stderr' is obsolete and shall no longer be used.
     """
     Any.requireIsDirNonEmpty( klocworkDir )
 
@@ -177,8 +183,39 @@ def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None ):
     kwlpDir = os.path.join( klocworkDir, '.kwlp' )
     Any.requireIsDirNonEmpty( kwlpDir )
 
-    cmd     = 'kwcheck run -pd %s' % kwlpDir
-    FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
+    logging.info( 'running source-code analysis (kwcheck)' )
+
+    cmd = 'kwcheck run -pd %s' % kwlpDir
+
+    # TBCORE-2244 Klocwork may take some time. If we don't print out any
+    # progress information the user may think the tool crashed or hangs.
+    # And if it really hangs we have no idea why. Therefore we always
+    # print the output to console, optionally capture it into the logfile.
+
+    pipe = subprocess.Popen( shlex.split( cmd ),
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             encoding='utf8' )
+
+    while pipe.poll() is None:
+        outLine = pipe.stdout.readline()
+
+        if outLine:
+            if stdout:
+                stdout.write( outLine )
+                stdout.flush()
+
+            if logToConsole:
+                logging.info( outLine.rstrip() )
+
+        errLine = pipe.stdout.readline()
+
+        if errLine:
+            if stderr:
+                stderr.write( errLine )
+                stderr.flush()
+
+            if logToConsole:
+                logging.info( errLine.rstrip() )
 
 
 def parseCodeCheckResult( output ):
