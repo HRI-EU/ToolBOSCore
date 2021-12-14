@@ -1588,6 +1588,9 @@ once in a while inspect your code using Klocwork.'''
 
         except ( AssertionError, subprocess.CalledProcessError,
                  EnvironmentError, RuntimeError ) as details:
+
+            logging.info( 'output:\n%s', output.getvalue() )
+
             logging.error( 'C10: %s', details )
             failed += 1
             error   = True
