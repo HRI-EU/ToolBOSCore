@@ -973,8 +973,6 @@ causing data loss or inconsistent states.'''
         """
             Checks if exit() and friends are used.
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
 
         logging.debug( 'looking for direct exit() in code' )
         failed = 0
@@ -1162,9 +1160,6 @@ b, instead of being 33 like it should, would actually be replaced with
             fit to such conventions. Therefore we define a whitelist for such
             known macros here.
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( 'checking C/C++ macro prefixes' )
         passed               = 0
         failed               = 0
@@ -1272,9 +1267,6 @@ updated and still passes parameters.'''
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
-        if not details.isCPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C code found in src/'
-
         logging.debug( 'looking for function prototypes with no information about the arguments' )
         platform             = getHostPlatform( )
         headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
@@ -1355,9 +1347,6 @@ and other compile errors.'''
                 ...
                 #endif
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( 'checking header file inclusion guards' )
 
         blacklist = frozenset( [ 'documentation.h' ] )
@@ -1573,9 +1562,6 @@ once in a while inspect your code using Klocwork.'''
         """
             Execute the Klocwork source code analyzer in CLI mode.
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( 'performing source code analysis using Klocwork' )
         passed = 0
         failed = 0
@@ -1922,9 +1908,6 @@ circumstances.'''
     sqLevel     = frozenset( [ 'safety' ] )
 
     def run( self, details, files ):
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( 'checking C/C++ function-like macro presence' )
         passed   = 0
         failed   = 0
@@ -2745,9 +2728,6 @@ label declared later in the same function.'''
         """
             Safety-critical applications shall hardly use 'goto'.
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( 'looking for "goto"-statement' )
         found  = 0
 
@@ -2839,9 +2819,6 @@ literals their use in safety-critical application is highly discouraged.'''
         """
             Checks if any of the files provided makes use of multi-byte characters.
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( 'looking for multibyte-characters usage' )
 
         platform  = getHostPlatform()
@@ -2976,9 +2953,6 @@ of code variants.'''
         """
             Checks that public C/C++ functions are not exposed as 'inline'.
         """
-        if not details.isCPackage() and not details.isCppPackage():
-            return NOT_APPLICABLE, 0, 0, 'no C/C++ code found in src/'
-
         logging.debug( "looking for public functions declared 'inline'" )
         passed = 0
         failed = 0
