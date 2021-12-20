@@ -191,10 +191,21 @@ then
     fi
 
 
-    # SIT location
+    # SIT location (optional)
     if [[ -z "${SIT}" ]]
     then
-        export SIT=/hri/sit/${SIT_VERSION}
+        # Fallback to default location if user did specify one,
+        # however leave $SIT unset if default path does not exist.
+        #
+        # Though the majority of tools need a $SIT location, there is
+        # enough functionality that works without.
+
+        SIT_DEFAULT_PATH=/hri/sit/${SIT_VERSION}
+
+        if [[ -d "${SIT_DEFAULT_PATH}" ]]
+        then
+            export SIT=/hri/sit/${SIT_VERSION}
+        fi
     fi
 
 
