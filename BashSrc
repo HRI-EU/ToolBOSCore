@@ -79,9 +79,9 @@ then
     # such branch), we keep the version as-is.
     if [[ ! ${TOOLBOS_VERSION_FULL} =~ "_" && -z ${TOOLBOSCORE_AUTO_VERSION} ]]
     then
-      TOOLBOS_VERSION=$(expr "$TOOLBOS_VERSION_FULL" : '\([[:digit:]]*\.[[:digit:]]*\)')
+        TOOLBOS_VERSION=$(expr "$TOOLBOS_VERSION_FULL" : '\([[:digit:]]*\.[[:digit:]]*\)')
     else
-      TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
+        TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
     fi
 
     export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/4.0 ${TOOLBOSCORE_SOURCED}"
