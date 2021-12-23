@@ -56,6 +56,12 @@
 #
 
 
+if [[ -z ${TOOLBOSCORE_SOURCED+x} ]]
+then
+    export TOOLBOSCORE_SOURCED=""
+fi
+
+
 # avoid multiple inclusion
 if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/4.0" ]]
 then
@@ -77,6 +83,12 @@ then
     # An exception of this is when sourcing the BashSrc from an SVN branch
     # named e.g. "2.0_devel". If we find an underscore (likely indicating
     # such branch), we keep the version as-is.
+
+    if [[ -z ${TOOLBOSCORE_AUTO_VERSION+x} ]]
+    then
+        export TOOLBOSCORE_AUTO_VERSION=""
+    fi
+
     if [[ ! ${TOOLBOS_VERSION_FULL} =~ "_" && -z ${TOOLBOSCORE_AUTO_VERSION} ]]
     then
         TOOLBOS_VERSION=$(expr "$TOOLBOS_VERSION_FULL" : '\([[:digit:]]*\.[[:digit:]]*\)')
