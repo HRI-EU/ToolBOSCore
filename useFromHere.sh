@@ -37,17 +37,43 @@
 #
 
 
-SCRIPT_PATH=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+# define env.variable if not set, yet
 
-OLD_TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}
-NEW_TOOLBOSCORE_ROOT=$(builtin cd ${SCRIPT_PATH}; pwd)
+if [[ -z ${LD_LIBRARY_PATH+x} ]]
+then
+    export LD_LIBRARY_PATH=""
+fi
 
-echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
-
-if [[ -z "${MAKEFILE_PLATFORM}" ]]
+if [[ -z ${MAKEFILE_PLATFORM+x} ]]
 then
     export MAKEFILE_PLATFORM=bionic64
 fi
+
+if [[ -z ${PYTHONPATH+x} ]]
+then
+    export PYTHONPATH=""
+fi
+
+if [[ -z ${PYTHONPATH+x} ]]
+then
+    export PYTHONPATH=""
+fi
+
+if [[ -z ${SIT+x} ]]
+then
+    export SIT="/hri/sit/latest"
+fi
+
+if [[ -z ${TOOLBOSCORE_ROOT+x} ]]
+then
+    export TOOLBOSCORE_ROOT=""
+fi
+
+
+SCRIPT_PATH=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
+OLD_TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}
+NEW_TOOLBOSCORE_ROOT=$(builtin cd ${SCRIPT_PATH}; pwd)
+echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
 
 export TOOLBOSCORE_ROOT=${NEW_TOOLBOSCORE_ROOT}
 export TOOLBOSCORE_SOURCED=DevelopmentTools/ToolBOSCore/4.0
