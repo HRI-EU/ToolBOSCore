@@ -3411,6 +3411,40 @@ placed anywhere after `set -euo pipefail`.
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
 
+    def run( self, details, files ):
+        """
+            Checks that Bash-scripts have a set -euo pipefail or
+            a set -euxo pipefail line.
+        """
+        logging.debug( "looking for 'set -euo pipefail' or 'set -euxo pipefail'" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            lines = FastScript.getFileContent( filePath, splitLines=True )
+            foundSet = False
+            for line in lines:
+                if line.find( 'set -euo pipefail' ) != -1 or \
+                    line.find( 'set -euxo pipefail') != -1:
+                    foundSet = True
+                    break
+            if not foundSet:
+                logging.info( "BASH07: %s: no 'set -euo pipefail' or 'set -euxo pipefail' found",
+                              filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "'set -euo pipefail' found" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "no 'set -euo pipefail' found" )
+
+        return result
+
+
 def findNonAsciiCharacters( filePath, rule ):
     content = FastScript.getFileContent( filePath, splitLines=True )
     passed  = 0

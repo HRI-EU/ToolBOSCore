@@ -632,4 +632,34 @@ def test_runC16_package_without_function_like_defines( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+def test_runBASH07_script_without_set( toolBOSCoreDetector ):
+    """
+        test rule BASH07 for 'set -euo pipefail' by providing files
+        without 'set -euo pipefail'
+    """
+    rule    = Rules.Rule_BASH07()
+    details = toolBOSCoreDetector
+
+    files   = { 'compile.sh',
+                'useFromHere.sh',
+                'include/UnpackSources.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH07_script_with_set( toolBOSCoreDetector ):
+    """
+        test rule BASH07 for 'set -euo pipefail' by providing files
+        with 'set -euxo pipefail'
+    """
+    rule    = Rules.Rule_BASH07()
+    details = toolBOSCoreDetector
+
+    files   = { 'ci-test.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
 # EOF

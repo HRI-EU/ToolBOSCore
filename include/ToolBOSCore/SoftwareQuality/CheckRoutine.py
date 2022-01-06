@@ -476,7 +476,11 @@ class CheckRoutine( object ):
         rule = self.rules[ ruleID ]
 
         if ruleID in self.rulesImplemented:
-            result = rule.run( self.details, self.files )
+            if ruleID.startswith('BASH'):
+                files = self.bashFiles
+            else:
+                files = self.files
+            result = rule.run( self.details, files )
         else:
             result = ( NOT_IMPLEMENTED, None, None, None )
 
