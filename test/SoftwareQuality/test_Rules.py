@@ -632,6 +632,39 @@ def test_runC16_package_without_function_like_defines( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
+    """
+        test rule BASH06 with scripts that have references to
+        variables without braces'
+    """
+    rule    = Rules.Rule_BASH06()
+    details = toolBOSCoreDetector
+
+    files   = { 'include/Unittest.bash',
+                'bin/RunFromSourceTree.sh',
+                'bin/RunFromSourceTree.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
+    """
+        test rule BASH06 with scripts that only have references to
+        variables with braces'
+    """
+    rule    = Rules.Rule_BASH06()
+    details = toolBOSCoreDetector
+
+    files   = { 'ci-test.sh',
+                'unittest.sh'}
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
 def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     """
         test rule BASH07 for 'set -euo pipefail' by providing files
@@ -662,4 +695,6 @@ def test_runBASH07_script_with_set( toolBOSCoreDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == 'OK'
+
+
 # EOF

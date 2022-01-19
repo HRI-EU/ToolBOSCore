@@ -57,7 +57,7 @@ from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import CMake, Klocwork,\
                                                          Matlab, PyCharm,\
-                                                         Valgrind
+                                                         Valgrind, Shellcheck
 from ToolBOSCore.Util                             import Any, FastScript
 
 
@@ -3316,11 +3316,11 @@ readable and a little more self-explanatory.
 
 class Rule_BASH06( AbstractRule ):
 
-    name        = 'use curly brackets'
+    name        = 'use braces'
 
-    brief       = '''Use curly brackets when referring to variables.'''
+    brief       = '''Use braces when referring to variables.'''
 
-    description = '''Curly brackets are needed for
+    description = '''Braces are needed for
 
 1. expanding variables into strings, e.g. ${var}appendage,
 
@@ -3331,7 +3331,7 @@ class Rule_BASH06( AbstractRule ):
 4. expanding positional parameters > 9, e.g. ${10}, ${11}, ...
 
 To deliver a consistent appearance throughout the whole script you should
-use curly brackets even if they are not strictly necessary. This will prevent
+use braces even if they are not strictly necessary. This will prevent
 forgetting the braces if they are needed, which will lead to strange
 errors or behaviour.
 '''
@@ -3348,6 +3348,31 @@ errors or behaviour.
                     'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that variables in Bash-scripts are referred to using braces.
+        """
+        logging.debug( "checking that variables are referred to using braces" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath, '2250', 'require-variable-braces')
+            if results[0] == True:
+                logging.info( "BASH06: %s: variables referred to without braces", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "all variables referred to with braces" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "some variables referred to without braces" )
+
+        return result
 
 
 class Rule_BASH07( AbstractRule ):
