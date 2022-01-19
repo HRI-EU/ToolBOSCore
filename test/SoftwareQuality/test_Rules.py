@@ -632,6 +632,38 @@ def test_runC16_package_without_function_like_defines( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
+    """
+        test rule BASH03 with scripts that use backticks for
+        command-substitution'
+    """
+    rule    = Rules.Rule_BASH03()
+    details = toolBOSCoreDetector
+
+    files   = { 'include/RTMaps/AddDRMSignature.sh',
+                'bin/RunFromSourceTree.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
+    """
+        test rule BASH03 with scripts that do not use backticks for
+        command-substitution'
+    """
+    rule    = Rules.Rule_BASH03()
+    details = toolBOSCoreDetector
+
+    files   = { 'useFromHere.sh',
+                'unittest.sh'}
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
 def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
     """
         test rule BASH06 with scripts that have references to

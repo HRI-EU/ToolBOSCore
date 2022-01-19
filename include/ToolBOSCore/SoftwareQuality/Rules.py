@@ -3252,6 +3252,31 @@ parenthesis.
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
+    def run( self, details, files ):
+        """
+            Checks that $() is used for command-substitution instead of backticks.
+        """
+        logging.debug( "checking that $() is used for command-substitution" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath, '2006' )
+            if results[0] == True:
+                logging.info( "BASH03: %s: command-substitution with backticks", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "exclusively used $() for command-substitution" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "some command-substitutions have been done using backticks" )
+
+        return result
+
 
 class Rule_BASH04( AbstractRule ):
 
