@@ -1,4 +1,32 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.20
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2265] Windows cross-compilation running on Ubuntu 20.0
+
+
+CHANGES
+=======
+
+  - [TBCORE-2244] Klocwork: show details in case of kwinject errors
+  - requirements.txt: less strict on version numbers
+  - dropped CmdSrcMinGW.bat (outdated+unused)
+  - SQ C-rules: removed check for sourcecode under src/ as some packages
+    do not adhere to this convention
+
+
+INTERNAL
+========
+
+  - [TBCORE-2231] initial GitLab CI configuration
+
+
+-----------------------------------------------------------------------------
+
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.19
 
 
