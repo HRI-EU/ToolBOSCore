@@ -14,21 +14,29 @@
 #
 
 
-category         = 'DevelopmentTools'
-
-section          = 'DevelopmentTools'
-
-version          = '4.0'
-
 name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
+version          = '4.0'
+
+section          = 'DevelopmentTools'
+
+category         = 'DevelopmentTools'
+
+patchlevel       = 0
+
+maintainer       = ( 'mstein', 'Marijke Stein' )
+
+gitBranch        = 'TBCORE-2231-GitLabCI'
+
+gitCommitID      = '020950dfc0913a1a18b80335f25dd7b1335b0d48'
+
+gitOrigin        = 'https://github.com/HRI-EU/ToolBOSCore.git'
+
 gitRelPath       = ''
 
 gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore.git'
-
-gitOrigin        = 'https://github.com/HRI-EU/ToolBOSCore.git'
 
 recommends       = [ 'deb://git',
                      'sit://External/CMake/3.4',

@@ -1,0 +1,36 @@
+#
+#  GitLab CI/CD configuration
+#
+#  Copyright (C)
+#  Honda Research Institute Europe GmbH
+#  Carl-Legien-Str. 30
+#  63073 Offenbach/Main
+#  Germany
+#
+#  UNPUBLISHED PROPRIETARY MATERIAL.
+#  ALL RIGHTS RESERVED.
+#
+#
+
+
+default:
+    image: dmz-gitlab.honda-ri.de:5050/gitlabrunner/buildcontainers/hri-eu-main:latest
+    interruptible: true
+
+stages:
+    - test
+    - check
+
+test:
+    stage: test
+    script:
+        - ./ci-test.sh
+
+check:
+    stage: check
+    script:
+        - ./ci-check.sh
+    allow_failure: true
+
+
+# EOF

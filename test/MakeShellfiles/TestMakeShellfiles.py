@@ -39,6 +39,7 @@ import logging
 import os
 import unittest
 
+from ToolBOSCore.Packages                import PackageDetector
 from ToolBOSCore.Packages.PackageCreator import makeShellfiles
 from ToolBOSCore.Settings                import ToolBOSConf
 from ToolBOSCore.Util                    import FastScript
@@ -52,7 +53,10 @@ class TestMakeShellfiles( unittest.TestCase ):
             Any.setDebugLevel( 1 )
 
     def test_makeShellfiles( self ):
-        projectRoot    = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
+        detector       = PackageDetector.PackageDetector()
+        detector.retrieveMakefileInfo()
+
+        projectRoot    = detector.topLevelDir
         installDir     = os.path.join( projectRoot, 'install' )
         fileNamePrefix = ToolBOSConf.packageName + '-'
 
@@ -70,15 +74,21 @@ class TestMakeShellfiles( unittest.TestCase ):
             expectedContent = FastScript.getFileContent( expectedFile )
             resultContent   = FastScript.getFileContent( resultFile )
 
-            # check if each line occurs in 'resultContent', except the line
-            # of the SVN revision as this frequently changes
+            # check if each line occurs in 'resultContent',
+            # except volatile data
             for line in expectedContent.splitlines():
-                if not line.startswith( 'revision' ):
-                    try:
-                        self.assertTrue( resultContent.find( line ) != -1 )
-                    except AssertionError:
-                        logging.error( 'line not found: %s', line )
-                        raise
+                if line.startswith( 'gitOrigin' ) or \
+                   line.startswith( 'gitBranch' ) or \
+                   line.startswith( 'gitCommitID' ) or \
+                   line.startswith( 'patchlevel' ) or \
+                   line.startswith( 'maintainer' ):
+                    continue
+
+                try:
+                    self.assertTrue( resultContent.find( line ) != -1 )
+                except AssertionError:
+                    logging.error( '%s: line not found: %s', resultFile, line )
+                    raise
 
 
 if __name__ == '__main__':
