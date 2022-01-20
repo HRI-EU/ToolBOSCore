@@ -49,7 +49,7 @@ delete           = [ '*py.class' ]
 
 usePatchlevels   = True
 
-patchlevel       = 19
+patchlevel       = 20
 
 install          = [ 'external',
                      'share' ]
@@ -76,6 +76,9 @@ sqLevel          = 'advanced'
 # HRI-EU copyright header has been replaced by typical BSD 3-clause license preamble
 
 sqOptOutRules    = [ 'C10' ]
+
+# opt-out testcase data that would provoke a failure of SQ check onto this package
+sqOptOutDirs     = [ 'test/SoftwareQuality/TestData' ]
 
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'C10'  : 'do not invoke Klocwork on example files' }

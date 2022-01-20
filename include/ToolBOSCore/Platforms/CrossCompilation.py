@@ -240,6 +240,10 @@ def _switchEnv_bionic64_to_windowsamd64vs2017():
     _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
 
 
+def _switchEnv_focal64_to_windowsamd64vs2017():
+    _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
+
+
 def _switchEnv_bionic64_to_peakcan():
     _switchEnv_linuxIntelToARM( 'peakcan' )
 
