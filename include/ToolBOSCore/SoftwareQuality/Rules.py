@@ -3181,10 +3181,38 @@ Output:
     Reilly
     '''
 
-    seeAlso     = { 'Shellcheck SC2086, SC2046, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
+    seeAlso     = { 'Shellcheck SC2046, SC2048, SC2068, SC2248, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
                     'Bash Pitfalls': 'http://mywiki.wooledge.org/BashPitfalls#echo_.24foo' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that strings, variables, and command-substitutions in Bash-scripts
+            are quoted to avoid word-splitting and globbing.
+        """
+        logging.debug( "checking that strings, variables, substitutions are quoted" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath,
+                                              '2046,2048,2068,2086,2248',
+                                              'quote-safe-variables')
+            if results[0] == True:
+                logging.info( "BASH01: %s: unquoted strings, variables, substitutions", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "all strings, variables, and substitutions have been quoted" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "unquoted strings, variables, or substitutions" )
+
+        return result
 
 
 class Rule_BASH02( AbstractRule ):
@@ -3294,22 +3322,55 @@ hand is straight-forward.
 '''
 
     goodExample = '''
-    users=('Adam Wilson' 'Brian May' 'Maggy Reilly')
-    for user in "${users[@]}"; do
-       echo "${user}"
-    done
+    #!/bin/bash
+    args=(--only-matching --no-filename "args for grep")
+    grep "${args[@]}" "${0}"
+
+output:
+
+    args for grep
     '''
 
     badExample  = '''
-    users="'Adam Wilson' 'Brian May' 'Maggy Reilly'"
-    for user in ${users}; do
-       echo "${user}"
-    done
+    #!/bin/bash
+    args='--only-matching --no-filename "args for grep"'
+    grep ${args} "${0}"
+
+output:
+
+    grep: for: No such file or directory
+    grep: grep": No such file or directory
+    "args
     '''
 
     seeAlso     = { 'Shellcheck SC2089, SC2090': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that an array is used instead of a string when passing arguments.
+        """
+        logging.debug( "checking that an array is used instead of a string when passing arguments" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath, '2089,2090' )
+            if results[0] == True:
+                logging.info( "BASH04: %s: string used for passing arguments", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "exclusively used arrays for passing arguments" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "some arguments have been passed using strings" )
+
+        return result
 
 
 class Rule_BASH05( AbstractRule ):
