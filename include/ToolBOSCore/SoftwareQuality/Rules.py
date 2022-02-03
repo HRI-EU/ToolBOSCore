@@ -3242,7 +3242,7 @@ parenthesis.
     a=$(dirname $(which grep))
     '''
 
-    badExample  = '''
+    badExample  = r'''
     a=`dirname \`which grep\``
     '''
 

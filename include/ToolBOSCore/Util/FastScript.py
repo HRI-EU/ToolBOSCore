@@ -52,7 +52,7 @@ from ToolBOSCore.Util import Any
 
 
 def getDirsInDir( path = '.', excludePattern = None, onError = None ):
-    """
+    r"""
         Return all directories within a specified one, except "." and "..".
         You may specify a regular expression for directories to be excluded:
 
@@ -107,7 +107,7 @@ def getDirsInDirRecursive( path = '.',
                            excludePattern = None,
                            keepSubDirs    = True,
                            onError        = None ):
-    """
+    r"""
         Unlike to FastScript.getDirsInDir() this one recursively returns all
         directories within a given one. You may specify a regular expression
         for directories to be excluded. If "keepSubDirs" is True the path to
