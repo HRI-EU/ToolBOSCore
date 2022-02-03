@@ -453,7 +453,7 @@ copyright       =
 
         from ToolBOSCore.Packages.CopyrightHeader import getCopyright
 
-        self._defaultCopyrightHeader = getCopyright()
+        self._defaultCopyrightHeader = getCopyright().splitlines()
 
 
     def run( self, details, files ):
