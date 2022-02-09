@@ -34,13 +34,16 @@
 #
 
 
+set -euo pipefail
+
+
 DESCRIPTION="MemoryScape"
 TOOLBOS_CONF_KEY=package_totalview
 
 
 if [[ "$1" == '-h' || "$1" == '--help' ]]
 then
-    SCRIPTNAME=$(basename $0)
+    SCRIPTNAME=$(basename "${0}")
 
     echo -e "\nLaunches the latest stable version of ${DESCRIPTION}\n"
 
@@ -55,12 +58,16 @@ then
 fi
 
 
+set -euxo pipefail
+
+
 # launch the application
 echo "Launching ${DESCRIPTION}..."
 PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
-source ${SIT}/${PACKAGE}/BashSrc
+# shellcheck source=/hri/sit/latest/External/totalview/2020.0/BashSrc
+source "${SIT}/${PACKAGE}/BashSrc"
 
-memscape -newUI $*
+exec memscape -newUI $*
 
 
 # EOF
