@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.21
+
+
+CHANGES
+=======
+
+  - updated recommended ToolBOS Middleware version to 4.1
+
+
+INTERNAL
+========
+
+  - [TBCORE-2228] fixed some Python 3.9 deprecation warnings
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.20
 
 
@@ -25,7 +42,6 @@ INTERNAL
 
 
 -----------------------------------------------------------------------------
-
 
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.19
 
