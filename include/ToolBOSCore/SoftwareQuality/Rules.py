@@ -50,12 +50,11 @@ from ToolBOSCore.BuildSystem                      import BuildSystemTools
 from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.BSTPackage              import BSTSourcePackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
-from ToolBOSCore.Platforms.Platforms              import getHostPlatform
 from ToolBOSCore.Settings                         import ProcessEnv
 from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
-from ToolBOSCore.Tools                            import CMake, Klocwork,\
+from ToolBOSCore.Tools                            import Klocwork,\
                                                          Matlab, PyCharm,\
                                                          Valgrind
 from ToolBOSCore.Util                             import Any, FastScript
@@ -3186,95 +3185,6 @@ def findNonAsciiCharacters( filePath, rule ):
 
 
     return passed, failed
-
-
-def createCParser( filePath, details, headerAndLanguageMap ):
-
-    Any.requireMsg( Any.isDir( details.buildDirArch ),
-                    "%s: No such directory (forgot to compile?)" % details.buildDirArch )
-
-    # this check can be removed in future when only bionic64 or its successor
-    # are in use
-
-    hostPlatform = getHostPlatform()
-    msg          = 'check function not supported on platform=%s (only on bionic64)' % hostPlatform
-
-    if hostPlatform != 'bionic64':
-        raise EnvironmentError( msg )
-
-
-    try:
-        from ToolBOSCore.SoftwareQuality.CAnalyzer import CParser
-    except ModuleNotFoundError as e:
-        raise EnvironmentError( e )
-
-
-    _, ext       = os.path.splitext( filePath )
-    platform     = getHostPlatform()
-    targetName   = details.packageName + '-global'
-
-    try:
-        includePaths = CMake.getIncludePathsAsList( platform, targetName )
-        includes     = [ '-I' + includeDir for includeDir in includePaths ]
-        cflagsList   = CMake.getCDefinesAsList( platform, targetName )
-        cflags       = [ '-D' + cflag for cflag in cflagsList ]
-        args         = includes + cflags
-    except ( AssertionError, IOError ) as e:
-        # most likely the depend.make does not exist for this target,
-        # this might happen if there are no dependencies by the target
-        # or if this is a pseudo-target such as "doc" coming from
-        # FindDoxygen.cmake
-        logging.debug( e )
-        logging.debug( 'ignoring target: %s', targetName )
-        return None
-
-    # checking if the header file has been included in C files, C++ files or both
-    if ext.lower() == '.h':
-        # we default to C++ as the c++ compiler should correctly parse C headers,
-        # and there is also a common use case for seemingly unused header files in
-        # C++, namely templates.
-        langs          = headerAndLanguageMap.get( filePath, ['c++'] )
-        usedInCFiles   = 'c' in langs
-        usedInCXXFiles = 'c++' in langs
-
-        if usedInCFiles and (not usedInCXXFiles):
-            # header only included in C files
-            isCPlusPlus = False
-        elif usedInCXXFiles and (not usedInCFiles):
-            # header only included in C++ files
-            isCPlusPlus = True
-        elif usedInCXXFiles and usedInCFiles:
-            # header included in both C and C++ files
-            logging.warning( '%s included in both C and CPP files, parsing it as C++', filePath )
-            isCPlusPlus = True
-        else:
-            # should never enter here
-            logging.error(
-                '%s does not appear to be included in any project C or C++ files, parsing it as C++',
-                filePath )
-            isCPlusPlus = True
-    else:
-        # hpp files, treating as c++
-        isCPlusPlus = True
-
-    # set default switches, this is needed at least for c++ (for macro analysis)
-    switches = CMake.getStdSwitches( platform, targetName )
-
-    if isCPlusPlus:
-        stdSwitch = switches.cpp
-    else:
-        stdSwitch = switches.c
-
-    # parse the file
-    logging.debug( '%s: isCPlusPlus = %s', filePath, isCPlusPlus )
-    langStd = stdSwitch[5:]
-
-    return CParser( filePath,
-                    isCPlusPlus,
-                    langStd,
-                    args=args + [ stdSwitch ],
-                    includepaths=includePaths,
-                    defines=cflagsList )
 
 
 def getRules():

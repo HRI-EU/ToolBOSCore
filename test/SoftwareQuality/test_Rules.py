@@ -499,25 +499,6 @@ def test_runC01_package_without_exit_calls( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
-def test_runC03_macros_prefixed_with_module_name( toolBOSLibDetector ):
-    """
-        test rule C03 that C/C++ macros are prefixed with the package or module name
-        by providing files with uppercase macro names and prefixed with the package
-        or module name
-    """
-    rule    = Rules.Rule_C03()
-    details = toolBOSLibDetector
-    files   = { 'src/AnyLog.c',
-                'src/ArrayList.h',
-                'examples/BerkeleySocketServer.c',
-                'src/IOChannelGenericMem.c',
-                'test/General/TestGeneral.cpp' }
-
-    result  = rule.run( details, files )
-
-    assert result[0] == 'OK'
-
-
 def test_runC05_with_multi_inclusion_safeguards( toolBOSLibDetector ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
@@ -604,32 +585,6 @@ def test_runC10_package_with_Klocwork_issues( toolBOSLibDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == 'FAILED'
-
-
-def test_runC16_package_without_function_like_defines( toolBOSLibDetector ):
-    """
-        test rule C16 that checks for C/C++ function-like macro presence,
-        by providing a package without function-like defines
-    """
-    rule    = Rules.Rule_C16()
-    details = toolBOSLibDetector
-    files   = { 'src/FileSystem.h',
-                'src/Barrier.c',
-                'src/BBDMSerialize.c',
-                'src/AnyLog.c',
-                'src/ArrayList.h',
-                'examples/BerkeleySocketServer.c' }
-
-    # C16 rule needs the package to be build before running the checker
-    if not os.path.isdir( details.buildDirArch ):
-        from ToolBOSCore.BuildSystem import BuildSystemTools
-
-        bst = BuildSystemTools.BuildSystemTools()
-        bst.compile()
-
-    result = rule.run( details, files )
-
-    assert result[0] == 'OK'
 
 
 # EOF
