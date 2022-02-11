@@ -1145,97 +1145,6 @@ b, instead of being 33 like it should, would actually be replaced with
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
-    def run( self, details, files ):
-        """
-            Checks that C/C++ macros are prefixed with the package or
-            module name (for scoping), e.g.:
-
-                good:
-                #define BERKELEYSOCKET_BUFFLEN_DEFAULT ( 255 )
-
-                bad:
-                #define BUFFLEN_DEFAULT ( 255 )
-
-            Macros from the Standard Library and other toolkits usually do not
-            fit to such conventions. Therefore we define a whitelist for such
-            known macros here.
-        """
-        logging.debug( 'checking C/C++ macro prefixes' )
-        passed               = 0
-        failed               = 0
-        whitelist            = frozenset( [ '__CL_ENABLE_EXCEPTIONS' ] )
-        platform             = getHostPlatform( )
-
-        # ensure the package has been built
-        bst = BuildSystemTools.BuildSystemTools()
-
-        if not os.path.exists( bst.getBuildDir() ):
-            logging.debug( 'build dir. not found, performing build configuration' )
-            bst.compile()
-
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-        logging.debug( 'language map: %s', headerAndLanguageMap )
-
-        try:
-            for filePath in files:
-                _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_HEADER_EXTENSIONS:
-                    basename     = os.path.basename( filePath )
-                    module       = os.path.splitext( basename )[0]
-                    moduleUpper  = module.upper()
-                    packageUpper = details.packageName.upper()
-
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    for define in parser.localMacros:
-
-                        if define in whitelist:
-                            logging.debug( 'found whitelisted: %s', define )
-                            continue
-
-                        # ignore underscores (this could be made more strict in
-                        # future --> remove this replacement)
-                        defineShort = define.replace( '_', '' )
-
-
-                        # defines must start uppercase
-                        if not defineShort[0].isupper():
-                            logging.info( 'C03: %s: define "%s" is not uppercase',
-                                          filePath, define )
-                            failed += 1
-
-                        # check if define starts with package or module name
-                        elif define.find( moduleUpper ) == -1 and \
-                             define.find( packageUpper ) == -1:
-
-                            if moduleUpper == packageUpper:
-                                logging.info( 'C03: %s: define "%s" not prefixed with "%s"',
-                                              filePath, define, packageUpper )
-                            else:
-                                logging.info( 'C03: %s: define "%s" not prefixed with "%s" or "%s"',
-                                              filePath, define, packageUpper, moduleUpper )
-
-                            failed += 1
-                        else:
-                            passed += 1
-
-            if failed == 0:
-                result = ( OK, passed, failed,
-                           'all C/C++ macros prefixed with module name' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'invalid C/C++ macro names found' )
-
-        except EnvironmentError as e:
-            logging.error( e )
-            result = ( FAILED, passed, failed, e )
-
-
-        return result
-
 
 class Rule_C04( AbstractRule ):
 
@@ -1265,49 +1174,6 @@ updated and still passes parameters.'''
                     'https://wiki.sei.cmu.edu/confluence/display/c/DCL20-C.+Explicitly+specify+void+when+a+function+accepts+no+arguments' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
-
-    def run( self, details, files ):
-        logging.debug( 'looking for function prototypes with no information about the arguments' )
-        platform             = getHostPlatform( )
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-        failed               = 0
-        passed               = 0
-
-        try:
-
-            for filePath in files:
-                _, ext = os.path.splitext( filePath )
-
-                if ext in C_FILE_EXTENSIONS:
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    protos = parser.getFunctionPrototypesWithoutParameters( filePath )
-
-                    if protos:
-                        failed += 1
-
-                        for proto, line in protos:
-                            msg = 'C04: %s:%d - void-function with ambiguous argument list'
-                            logging.info( msg, filePath, line, proto )
-                    else:
-                        passed += 1
-
-            if failed == 0:
-                result = ( OK, passed, failed,
-                           'no void-functions with ambiguous arguments found' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'void-functions with ambiguous arguments found' )
-
-        except EnvironmentError as e:
-            logging.error( e )
-            result = ( FAILED, passed, failed, e )
-
-
-        return result
 
 
 class Rule_C05( AbstractRule ):
@@ -1909,53 +1775,6 @@ circumstances.'''
                     'https://wiki.sei.cmu.edu/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
 
     sqLevel     = frozenset( [ 'safety' ] )
-
-    def run( self, details, files ):
-        logging.debug( 'checking C/C++ function-like macro presence' )
-        passed   = 0
-        failed   = 0
-        platform = getHostPlatform()
-
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-        logging.debug( 'language map: %s', headerAndLanguageMap )
-
-        try:
-
-            for filePath in files:
-                _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
-
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    for define in parser.localMacros.values():
-
-                        if not define.name.isupper():
-                            logging.info( 'C16: %s:%d - define "%s" is not uppercase',
-                                            filePath, define.location[ 1 ], define.name )
-                            failed += 1
-
-                    for define in parser.localFnMacros.values():
-
-                        logging.info( 'C16: %s:%d - function-like define "%s"',
-                                        filePath, define.location[ 1 ], define.name )
-
-                    failed += len( parser.localFnMacros )
-
-            if failed == 0:
-                result = ( OK, passed, failed,
-                           'No function-like defines found' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'Function-like defines found' )
-
-        except EnvironmentError as e:
-            logging.error( e )
-            result = ( FAILED, passed, failed, e )
-
-        return result
 
 
 class Rule_PY01( RemovedRule ):
@@ -2816,70 +2635,6 @@ literals their use in safety-critical application is highly discouraged.'''
         intersection = p & cls.badTypes
 
         return intersection
-
-
-    def run( self, details, files ):
-        """
-            Checks if any of the files provided makes use of multi-byte characters.
-        """
-        logging.debug( 'looking for multibyte-characters usage' )
-
-        platform  = getHostPlatform()
-        passed    = 0
-        failed    = 0
-
-        headerAndLanguageMap = CMake.getHeaderAndLanguageMap( platform )
-        logging.debug( 'language map: %s', headerAndLanguageMap )
-
-        try:
-
-            for filePath in files:
-                _, ext = os.path.splitext( filePath )
-                if ext in C_CPP_FILE_EXTENSIONS:
-
-                    parser = createCParser( filePath, details, headerAndLanguageMap )
-
-                    if not parser:
-                        continue
-
-                    logging.debug( 'checking %s', filePath )
-
-                    funCalls = parser.getFunctionCalls( filePath )
-                    decls    = parser.getVariableDeclarations( filePath )
-
-                    for fun, line in funCalls:
-                        if fun in self.badFunctions:
-                            logging.info( 'SAFE05: %s:%d - Unsafe function call %s',
-                                          filePath, line, fun )
-
-                    for decl, typ, line in decls:
-                        if self.check_type( typ ):
-                            logging.info( 'SAFE05: %s:%d - Unsafe declaration %s %s',
-                                          filePath, line, typ, decl )
-
-                    passedInFile, failedInFile = findNonAsciiCharacters( filePath,
-                                                                         'SAFE05')
-
-
-                    if passedInFile > 0:
-                        passed += 1
-
-                    if failedInFile > 0:
-                        failed += 1
-
-            if failed == 0:
-                result = ( OK, passed, failed,
-                           'No wchar-functions found' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'wchar-functions found' )
-
-        except EnvironmentError as e:
-            logging.error( e )
-            result = ( FAILED, passed, failed, e )
-
-
-        return result
 
 
 class Rule_SAFE06( AbstractRule ):
