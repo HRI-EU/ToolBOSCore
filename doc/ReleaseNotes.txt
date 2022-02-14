@@ -1,4 +1,17 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.22
+
+
+CHANGES
+=======
+
+  - [TBCORE-2286] dropped SQ checker implementation of rules C03,C04,C16,SAFE05
+                  (unreliable, segfaults, too many dependencies and restrictions)
+  - dropped unused FreezeSIT.sh
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.21
 
 
