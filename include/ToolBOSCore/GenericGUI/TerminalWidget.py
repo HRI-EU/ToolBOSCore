@@ -954,6 +954,7 @@ class MultiTermWidget( QGroupBox, object ):
 
         if not self._currentContainer:
             hlayout = QHBoxLayout()
+            hlayout.setContentsMargins( 0, 0, 0, 0 )
             hlayout.addWidget( self._currentHSplitter )
 
             self._currentContainer = QWidget()
