@@ -1,4 +1,16 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.23
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-1431,1920] TerminalWidget console outputs (used by BST.py's Zen
+    Build Mode and DTBOS) can now be adjusted in width and height
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.22
 
 
