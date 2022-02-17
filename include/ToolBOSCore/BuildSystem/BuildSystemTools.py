@@ -79,6 +79,9 @@ class BuildSystemTools( object ):
         self._cmakeModPath   = None
         self._cmakeOptions   = FastScript.getEnv( 'BST_CMAKE_OPTIONS' )
 
+        self._detector       = PackageDetector( self._sourceTree )
+        self._detector.retrieveMakefileInfo()
+
         try:
             self._parallelJobs = int( FastScript.getEnv( 'BST_BUILD_JOBS' ) )
         except ( KeyError, TypeError, ValueError ):
@@ -332,7 +335,7 @@ class BuildSystemTools( object ):
         return canonicalPath
 
 
-    def _assembleScriptCmd( self, name ):
+    def _assembleScriptCmd( self, name, forceFilePath=None ):
         Any.requireIsTextNonEmpty( name )
 
         # When compiling natively, under Linux the *.sh and on Windows the
@@ -350,6 +353,9 @@ class BuildSystemTools( object ):
             cmd      = filename
         else:
             filename = '%s.sh' % name
+
+            if forceFilePath:
+                filename = forceFilePath
 
             if Any.getDebugLevel() > 3:
                 cmd = 'bash -x ./%s' % filename
@@ -517,8 +523,14 @@ class BuildSystemTools( object ):
 
             coreScript = self._assembleScriptCmd( name )[0]
 
-            if os.path.exists( coreScript ):
+            if name in self._detector.scripts:
+                filePath = self._detector.scripts[ name ]
+                Any.requireIsFileNonEmpty( filePath )
+                status = self._runScript( name, filePath=filePath )
+
+            elif os.path.exists( coreScript ):
                 status = self._runScript( name )
+
             else:
                 status = corefunc()
 
@@ -609,10 +621,10 @@ class BuildSystemTools( object ):
         return True
 
 
-    def _runScript( self, name ):
+    def _runScript( self, name, filePath=None ):
         Any.requireIsTextNonEmpty( name )
 
-        ( filename, cmd ) = self._assembleScriptCmd( name )
+        ( filename, cmd ) = self._assembleScriptCmd( name, forceFilePath=filePath )
         status = True
 
         if os.path.exists( filename ):

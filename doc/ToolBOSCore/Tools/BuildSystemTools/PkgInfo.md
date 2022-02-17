@@ -39,6 +39,11 @@ At loading time the Python code gets evaluated and the following variables are s
           Application or External etc.)</td>
  </tr>
  <tr>
+      <td>scripts</td>
+      <td>dict { string: string }</td>
+      <td>customize scripts invoked by BST.py</td>
+ </tr>
+ <tr>
    <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
        colspan="3">package interrelationship</td>
  </tr>

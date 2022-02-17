@@ -192,6 +192,8 @@ class PackageDetector( object ) :
         self.testDir           = os.path.join( self.topLevelDir, 'test' )
         self.testDirArch       = os.path.join( self.topLevelDir, 'test', hostPlatform )
 
+        self.scripts           = {}
+
         if self.hasCMakeLists:
             # source tree, C/C++ package
             self.cmakelistsContent = FastScript.getFileContent( cmakePath )
@@ -648,6 +650,7 @@ class PackageDetector( object ) :
         self.svnRepositoryURL  = getValue( 'repositoryUrl',    self.svnRepositoryURL )
         self.svnRevision       = getValue( 'revision',         self.svnRevision )
         self.svnRevisionForCIA = getValue( 'revisionForCIA',   self.svnRevisionForCIA )
+        self.scripts           = getValue( 'scripts',          self.scripts )
         self.sqComments        = getValue( 'sqComments',       self.sqComments )
         self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )
         self.sqLevel           = getValue( 'sqLevel',          self.sqLevel )
