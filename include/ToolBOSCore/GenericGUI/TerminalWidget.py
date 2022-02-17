@@ -925,18 +925,19 @@ class MultiTermWidget( QGroupBox, object ):
 
         super( QGroupBox, self ).__init__( 'console outputs', parent )
 
-        self._terminals = []
-        self.layout     = QVBoxLayout()
+        self._terminals          = []
+        self.layout              = QVBoxLayout()
+
         # Control the vertical resizing between Containers
-        self.vsplitter  = QSplitter( Qt.Vertical )
-        self._maxCols   = 3
-        self._rowContainers = []
-        self._rowSplitter = []
-        self._currentContainer = None
-        self._currentHSplitter = None
+        self._colSplitter        = QSplitter( Qt.Vertical )
+        self._maxCols            = 3
+        self._rowContainers      = []
+        self._rowSplitter        = []
+        self._currentContainer   = None
+        self._currentRowSplitter = None
 
         self.layout.setContentsMargins( 0, 0, 0, 0 )   # no add. margin
-        self.layout.addWidget( self.vsplitter )
+        self.layout.addWidget( self._colSplitter )
         self.setLayout( self.layout )
 
 
@@ -947,24 +948,26 @@ class MultiTermWidget( QGroupBox, object ):
         """
         self._terminals.append( terminal )
 
-        if not self._currentHSplitter or ( self._currentHSplitter and self._currentHSplitter.count() >= self._maxCols ):
-            self._currentHSplitter = QSplitter( Qt.Horizontal )
-            self._rowSplitter.append( self._currentHSplitter )
+        if not self._currentRowSplitter or \
+                ( self._currentRowSplitter and
+                  self._currentRowSplitter.count() >= self._maxCols ):
+            self._currentRowSplitter = QSplitter( Qt.Horizontal )
+            self._rowSplitter.append( self._currentRowSplitter )
             self._currentContainer = None
 
         if not self._currentContainer:
-            hlayout = QHBoxLayout()
-            hlayout.setContentsMargins( 0, 0, 0, 0 )
-            hlayout.addWidget( self._currentHSplitter )
+            hLayout = QHBoxLayout()
+            hLayout.setContentsMargins( 0, 0, 0, 0 )
+            hLayout.addWidget( self._currentRowSplitter )
 
             self._currentContainer = QWidget()
             self._rowContainers.append( self._currentContainer )
-            self._currentContainer.setLayout( hlayout )
+            self._currentContainer.setLayout( hLayout )
 
-            self.vsplitter.addWidget( self._currentContainer )
+            self._colSplitter.addWidget( self._currentContainer )
 
-        self._currentHSplitter.addWidget( terminal )
-        self.setHaveTerminateAll( len(self._terminals) > 1 )
+        self._currentRowSplitter.addWidget( terminal )
+        self.setHaveTerminateAll( len( self._terminals ) > 1 )
 
         # ensure to only connect exactly once even if this addTerminal()
         # might be called repetitive on the same terminal, otherwise
@@ -994,7 +997,7 @@ class MultiTermWidget( QGroupBox, object ):
         self._rowContainers = []
         self._rowSplitter = []
         self._currentContainer = None
-        self._currentHSplitter = None
+        self._currentRowSplitter = None
 
 
     def getTerminals( self ):
