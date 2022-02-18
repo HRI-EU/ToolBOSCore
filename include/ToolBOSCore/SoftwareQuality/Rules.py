@@ -1841,7 +1841,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
                     if tmp:
                         # Attention: regexp contains one underscore, so we
                         # must check against "_init__" to match "__init__"
-                        if tmp.group(1) != 'self' and tmp.group(2) != '_init__':
+                        if tmp.group(1) not in ( 'self', 'cls' ) and tmp.group(2) != '_init__':
                             logging.info( 'PY02: %s: access to private member (%s)',
                                           filePath, tmp.group() )
                             found += 1
