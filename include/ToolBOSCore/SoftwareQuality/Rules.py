@@ -186,6 +186,8 @@ dialog.'''
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
+    utility = 'file'
+
     def run( self, details, files ):
         """
             Attempts to find special characters in source files. According
@@ -193,28 +195,16 @@ dialog.'''
             Umlauts or Japanese characters must be avoided.
         """
         logging.debug( 'checking files for ASCII or UTF-8 charset' )
+
         passed  = 0
         failed  = 0
-        utility = 'file'
-        stdout  = io.StringIO()
-
-        ProcessEnv.requireCommand( utility )
+        ProcessEnv.requireCommand( self.utility )
 
         for filePath in sorted( files ):
-            stdout.truncate( 0 )
 
-            cmd = f'{utility} -b {filePath}'
-            FastScript.execProgram( cmd, stdout=stdout )
-
-            encoding = stdout.getvalue().strip()
-
-            # besides UTF-8 we also accept UTF-16
-            if 'ASCII' in encoding or 'UTF-' in encoding:
-                logging.debug( '%s: %s', filePath, encoding )
+            if self._checkFile( filePath ) is True:
                 passed += 1
             else:
-                logging.info( 'GEN02: %s: invalid file (%s)',
-                              filePath, encoding )
                 failed += 1
 
         if failed == 0:
@@ -226,6 +216,30 @@ dialog.'''
 
         return result
 
+    def _checkFile( self, filePath ):
+        # empty files will pass
+        if Any.isEmptyFile( filePath ):
+            logging.debug( '%s: file is empty', filePath )
+            return True
+        else:
+            stdout = io.StringIO()
+            stdout.truncate( 0 )
+
+            cmd = f'{self.utility} -b {filePath}'
+            FastScript.execProgram( cmd, stdout=stdout )
+
+            encoding = stdout.getvalue().strip()
+
+            # besides UTF-8 we also accept UTF-16
+            if 'ASCII' in encoding or 'UTF-' in encoding:
+                logging.debug( '%s: %s', filePath, encoding )
+                result = True
+            else:
+                logging.info( 'GEN02: %s: invalid file (%s)',
+                             filePath, encoding )
+                result = False
+
+            return result
 
 class Rule_GEN03( AbstractRule ):
 
