@@ -3517,9 +3517,11 @@ placed anywhere after `set -euo pipefail`.
     [...]
     '''
 
-    seeAlso     = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+    seeAlso      = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
-    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+    sqLevel      = frozenset( [ 'basic', 'advanced' ] )
+
+    skippedFiles = [ 'BashSrc', 'useFromHere.sh' ]
 
 
     def run( self, details, files ):
@@ -3531,12 +3533,13 @@ placed anywhere after `set -euo pipefail`.
         passed = 0
         failed = 0
 
+        files = filter( lambda f: os.path.basename( f ) not in self.skippedFiles, files )
         for filePath in files:
             lines = FastScript.getFileContent( filePath, splitLines=True )
             foundSet = False
             for line in lines:
                 if line.find( 'set -euo pipefail' ) != -1 or \
-                    line.find( 'set -euxo pipefail') != -1:
+                   line.find( 'set -euxo pipefail' ) != -1:
                     foundSet = True
                     break
             if not foundSet:

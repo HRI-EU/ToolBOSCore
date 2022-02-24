@@ -762,7 +762,6 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     details = toolBOSCoreDetector
 
     files   = { 'compile.sh',
-                'useFromHere.sh',
                 'include/UnpackSources.sh' }
 
     result  = rule.run( details, files )
@@ -770,15 +769,16 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     assert result[0] == 'FAILED'
 
 
-def test_runBASH07_script_with_set( toolBOSCoreDetector ):
+def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
     """
         test rule BASH07 for 'set -euo pipefail' by providing files
-        with 'set -euxo pipefail'
+        with 'set -euxo pipefail' or files that are ignored
     """
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'ci-test.sh' }
+    files   = { 'ci-test.sh',
+                'useFromHere.sh' }
 
     result  = rule.run( details, files )
 
