@@ -587,4 +587,183 @@ def test_runC10_package_with_Klocwork_issues( toolBOSLibDetector ):
     assert result[0] == 'FAILED'
 
 
+def test_runC16_package_without_function_like_defines( toolBOSLibDetector ):
+    """
+        test rule C16 that checks for C/C++ function-like macro presence,
+        by providing a package without function-like defines
+    """
+    rule    = Rules.Rule_C16()
+    details = toolBOSLibDetector
+    files   = { 'src/FileSystem.h',
+                'src/Barrier.c',
+                'src/BBDMSerialize.c',
+                'src/AnyLog.c',
+                'src/ArrayList.h',
+                'examples/BerkeleySocketServer.c' }
+
+    # C16 rule needs the package to be build before running the checker
+    if not os.path.isdir( details.buildDirArch ):
+        from ToolBOSCore.BuildSystem import BuildSystemTools
+
+        bst = BuildSystemTools.BuildSystemTools()
+        bst.compile()
+
+    result = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runBASH01_script_without_quotes( toolBOSCoreDetector ):
+    """
+        test rule BASH01 with scripts that have variables without quotes
+    """
+    rule    = Rules.Rule_BASH01()
+    details = toolBOSCoreDetector
+
+    files   = { 'test/SoftwareQuality/TestData/withoutQuotes.bash' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH01_script_with_quotes( toolBOSCoreDetector ):
+    """
+        test rule BASH01 with scripts that have no unquoted variables
+    """
+    rule    = Rules.Rule_BASH01()
+    details = toolBOSCoreDetector
+
+    files   = { 'test/SoftwareQuality/TestData/withQuotes.bash'}
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
+    """
+        test rule BASH03 with scripts that use backticks for
+        command-substitution
+    """
+    rule    = Rules.Rule_BASH03()
+    details = toolBOSCoreDetector
+
+    files   = { 'include/RTMaps/AddDRMSignature.sh',
+                'bin/RunFromSourceTree.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
+    """
+        test rule BASH03 with scripts that do not use backticks for
+        command-substitution
+    """
+    rule    = Rules.Rule_BASH03()
+    details = toolBOSCoreDetector
+
+    files   = { 'useFromHere.sh',
+                'unittest.sh'}
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runBASH04_script_args_in_string( toolBOSCoreDetector ):
+    """
+        test rule BASH04 with scripts that pass args in a string
+    """
+    rule    = Rules.Rule_BASH04()
+    details = toolBOSCoreDetector
+
+    files   = { 'test/SoftwareQuality/TestData/argsInString.bash' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH04_script_args_in_array( toolBOSCoreDetector ):
+    """
+        test rule BASH04 with scripts that pass args in an array
+    """
+    rule    = Rules.Rule_BASH04()
+    details = toolBOSCoreDetector
+
+    files   = { 'test/SoftwareQuality/TestData/argsInArray.bash'}
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
+    """
+        test rule BASH06 with scripts that have references to
+        variables without braces'
+    """
+    rule    = Rules.Rule_BASH06()
+    details = toolBOSCoreDetector
+
+    files   = { 'include/Unittest.bash',
+                'bin/RunFromSourceTree.sh',
+                'bin/RunFromSourceTree.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
+    """
+        test rule BASH06 with scripts that only have references to
+        variables with braces'
+    """
+    rule    = Rules.Rule_BASH06()
+    details = toolBOSCoreDetector
+
+    files   = { 'ci-test.sh',
+                'unittest.sh'}
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runBASH07_script_without_set( toolBOSCoreDetector ):
+    """
+        test rule BASH07 for 'set -euo pipefail' by providing files
+        without 'set -euo pipefail'
+    """
+    rule    = Rules.Rule_BASH07()
+    details = toolBOSCoreDetector
+
+    files   = { 'compile.sh',
+                'include/UnpackSources.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
+def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
+    """
+        test rule BASH07 for 'set -euo pipefail' by providing files
+        with 'set -euxo pipefail' or files that are ignored
+    """
+    rule    = Rules.Rule_BASH07()
+    details = toolBOSCoreDetector
+
+    files   = { 'ci-test.sh',
+                'useFromHere.sh' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
 # EOF
