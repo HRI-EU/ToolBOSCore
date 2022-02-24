@@ -1,4 +1,23 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.24
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2276] customize path to scripts invoked by BST.py actions
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2283] SQ PY02: accept class internal access with 'cls'
+  - [TBCORE-2279] SQ GEN02: consider empty files as OK
+  - [GitHub #6] SQ DOC04: fixed check for default copyright header
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.23
 
 
