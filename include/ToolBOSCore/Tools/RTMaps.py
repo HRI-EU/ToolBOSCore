@@ -217,7 +217,7 @@ def registerNormalPackage( package, sitProxyPath=None, indexBaseDir=None, dryRun
         msg = "%s: unable to retrieve dependencies, please check SIT installation" % package
         raise ValueError( msg )
 
-    expr = re.compile( '^sit://External/RTMaps/(\d+\.\d+)' )
+    expr = re.compile( r'^sit://External/RTMaps/(\d+\.\d+)' )
 
 
     # detect RTMaps version used by package

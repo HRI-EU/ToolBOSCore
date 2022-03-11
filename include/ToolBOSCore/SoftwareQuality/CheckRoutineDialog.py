@@ -142,7 +142,7 @@ class CheckRoutineDialog( QDialog, object ):
         self._vHeader.hide()
 
         i       = 0
-        expr    = re.compile( "^([A-Z]+)\d+$" )
+        expr    = re.compile( r"^([A-Z]+)\d+$" )
         prevKey = None
 
         for ( ruleID, rule ) in self._allRules:
