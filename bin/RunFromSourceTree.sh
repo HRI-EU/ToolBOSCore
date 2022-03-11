@@ -55,58 +55,31 @@ fi
 
 function print_help()
 {
-  PROGNAME=$(basename "$0")
+    PROGNAME=$(basename "$0")
 
-  echo ""
-  echo "This script tests for the ./install/BashSrc, creates it if not "
-  echo "present, sets the LD_LIBRARY_PATH to the local ./lib/<platform> "
-  echo "directory and executes the specified program."
-  echo ""
-  echo "Usage: $PROGNAME <executable>"
-  echo ""
-  echo "Parameters:"
-  echo "        executable      the file to be executed"
-  echo ""
-  echo "Options:"
-  echo "        -h, --help      display this help and exit"
-  echo ""
-  echo "Examples:"
-  echo "        $PROGNAME ./examples/${MAKEFILE_PLATFORM}/myExample"
-  echo ""
-  echo "Please report bugs on JIRA (${TOOLBOS_CONF_BUGTRACK_URL})."
+    echo ""
+    echo "This script tests for the ./install/BashSrc, creates it if not "
+    echo "present, sets the LD_LIBRARY_PATH to the local ./lib/<platform> "
+    echo "directory and executes the specified program."
+    echo ""
+    echo "Usage: $PROGNAME <executable>"
+    echo ""
+    echo "Parameters:"
+    echo "        executable      the file to be executed"
+    echo ""
+    echo "Options:"
+    echo "        -h, --help      display this help and exit"
+    echo ""
+    echo "Examples:"
+    echo "        $PROGNAME ./examples/${MAKEFILE_PLATFORM}/myExample"
+    echo ""
+    echo "Please report bugs on JIRA (${TOOLBOS_CONF_BUGTRACK_URL})."
 
-  exit
+    exit
 }
 
-
-# Find <target> in current or parent-directories. Print directory to
-# stdout when found. Stop at root (/) if <target> not found.
-function rfind()
-{
-    local target=${1}
-    local retStatus=1
-
-    local currentDir=${PWD}
-    while [ "${PWD}" != "/" ]; do
-        if [ -e "${target}" ]; then
-            echo "${PWD}"
-            retStatus=0
-	    break
-        fi
-        cd ..
-    done
-
-    cd "${currentDir}" || exit
-    return ${retStatus}
-}
-
-
-#----------------------------------------------------------------------------
-# init the variables
 
 CWD=$(pwd)
-INSTALL_DIR=install
-FILENAME=BashSrc
 
 
 while :
@@ -177,33 +150,6 @@ then
 fi
 
 
-function runCommand
-{
-    COMMAND=$1
-
-    if [[ -z "${COMMAND}" ]]
-    then
-        echo "Internal script error :-/"
-        exit 1
-    fi
-
-
-    if [[ $VERBOSE == "TRUE" ]]
-    then
-        echo -e "\n\n\033[1;31m$ ${COMMAND}\033[0m"
-    fi
-
-
-    eval "${COMMAND}"
-
-
-    if [[ "${?}" != 0 ]]
-    then
-        exit 1
-    fi
-}
-
-
 #----------------------------------------------------------------------------
 # source the regular BashSrc from the source tree if existing
 
@@ -218,9 +164,9 @@ fi
 
 cd "${CWD}" || exit
 
-if [[ $VERBOSE == "TRUE" && ! -r ./${INSTALL_DIR}/${FILENAME} ]]
+if [[ $VERBOSE == "TRUE" && ! -r ./install/BashSrc ]]
 then
-    echo -e "\n./${INSTALL_DIR}/${FILENAME}: No such file\n"
+    echo -e "\n./install/BashSrc: No such file\n"
 fi
 
 
@@ -233,10 +179,10 @@ fi
 
 # unset LD_LIBRARY_PATH
 
-if [[ -r "./${INSTALL_DIR}/${FILENAME}" ]]
+if [[ -r "./install/BashSrc" ]]
 then
     # shellcheck source=./install/BashSrc
-    source "./${INSTALL_DIR}/${FILENAME}"
+    source "./install/BashSrc"
 fi
 
 
