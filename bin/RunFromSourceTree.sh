@@ -1,8 +1,7 @@
 #!/bin/bash
 #
 #  sources the BashSrc, sets the LD_LIBRARY_PATH to the local ./lib/<platform>
-#  directory and executes the program, alternatively supports executing Windows
-#  executables under Linux using WINE
+#  directory and executes the program
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -70,7 +69,6 @@ function print_help()
   echo ""
   echo "Options:"
   echo "        -h, --help      display this help and exit"
-  echo "        -p <platform>   run with settings for a different platform"
   echo ""
   echo "Examples:"
   echo "        $PROGNAME ./examples/${MAKEFILE_PLATFORM}/myExample"
@@ -109,8 +107,6 @@ function rfind()
 CWD=$(pwd)
 INSTALL_DIR=install
 FILENAME=BashSrc
-HOST_PLATFORM="${MAKEFILE_PLATFORM}"
-TARGET_PLATFORM="${MAKEFILE_PLATFORM}"
 
 
 while :
@@ -120,12 +116,6 @@ do
 
     -h|--help)
         print_help "${0}"
-        shift
-        ;;
-
-    -p|--platform)
-        shift
-        TARGET_PLATFORM=$1
         shift
         ;;
 
@@ -178,8 +168,6 @@ else
     EXECUTABLE_DIR=${CWD}/$(dirname "${EXECUTABLE_BIN}")
 fi
 
-# this is the pattern used to find the version in the path
-PATTERN='\(.*/[0-9]\+\.[0-9]\+\)'
 
 if [[ "${VERBOSE}" == "TRUE" ]]
 then
@@ -187,15 +175,6 @@ then
     echo "EXECUTABLE_DIR:    ${EXECUTABLE_DIR}"
     echo "MAKEFILE_PLATFORM: ${MAKEFILE_PLATFORM}"
 fi
-
-
-#==============================================================================
-# Main Part
-#
-#   - Linux:   source dependent packages and tweak LD_LIBRARY_PATH to execute
-#   - Windows: generate LibIndex and launch *.exe under Wine
-#
-#==============================================================================
 
 
 function runCommand
@@ -225,120 +204,72 @@ function runCommand
 }
 
 
-if [[ "${TARGET_PLATFORM}" =~ "windows" ]]
+#----------------------------------------------------------------------------
+# source the regular BashSrc from the source tree if existing
+
+if [[ $VERBOSE == "TRUE" ]]
 then
-    # detect CANONICAL_PATH of current package
-    source "${TOOLBOSCORE_ROOT}/include/MakefileSystem.bash"
-
-    # load Windows-support backend
-    source "${SIT}/DevelopmentTools/ToolBOSPluginWindows/1.2/BashSrc"
-
-    if [[ -z "${WINEPREFIX}" ]]
-    then
-        WINEPREFIX=${HOME}/.wine
-    fi
-
-    LIBINDEX_LINK=${WINEPREFIX}/drive_c/LibIndex
-    LIBINDEX_DIR=${CWD}/build/${TARGET_PLATFORM}/LibIndex
-
-
-    runCommand "rm -rf ${LIBINDEX_DIR}"
-    runCommand "rm -f ${LIBINDEX_LINK}"
-
-
-    ARG_1=LibIndexLink
-    ARG_2=OutputDir
-    ARG_3="package=${CANONICAL_PATH} outputDir=${LIBINDEX_DIR} platform=${TARGET_PLATFORM} fromSourceTree=true"
-
-    if [[ $VERBOSE == "TRUE" ]]
-    then
-        runCommand "ExportWizard.py -v ${ARG_1} ${ARG_2} \"${ARG_3}\""
-    else
-        # disable Wine debug messages
-        export WINEDEBUG=-all
-
-        runCommand "ExportWizard.py ${ARG_1} ${ARG_2} \"${ARG_3}\""
-    fi
-
-
-    # put this project's libraries into LibIndex
-    runCommand "ln -sf ${CWD}/lib/${TARGET_PLATFORM}/* ${LIBINDEX_DIR}/lib/${TARGET_PLATFORM}"
-
-    # create symlink to LibIndex under ~/.wine/drive_c/LibIndex
-    runCommand "ln -s ${LIBINDEX_DIR} ${LIBINDEX_LINK}"
-
-    MAKEFILE_PLATFORM=${TARGET_PLATFORM}
-
-    runCommand "wine $*"
-
+    echo -e "\n\n\033[1;31m$ BST.py --shellfiles\033[0m"
+    BST.py --shellfiles
 else
-
-    #----------------------------------------------------------------------------
-    # source the regular BashSrc from the source tree if existing
-
-    if [[ $VERBOSE == "TRUE" ]]
-    then
-        echo -e "\n\n\033[1;31m$ BST.py --shellfiles\033[0m"
-        BST.py --shellfiles
-    else
-        BST.py --shellfiles 2> /dev/null
-    fi
-
-
-    cd "${CWD}" || exit
-
-    if [[ $VERBOSE == "TRUE" && ! -r ./${INSTALL_DIR}/${FILENAME} ]]
-    then
-        echo -e "\n./${INSTALL_DIR}/${FILENAME}: No such file\n"
-    fi
-
-
-    #----------------------------------------------------------------------------
-    # start with a freshly set up LD_LIBRARY_PATH
-
-    # disabled unsetting LD_LIBRARY_PATH as it will cause packages not be
-    # re-sourced again (checking for double-sourcing is now done via separate
-    # env.variable TOOLBOSCORE_SOURCED, instead of LD_LIBRARY_PATH itself
-
-    # unset LD_LIBRARY_PATH
-
-    if [[ -r "./${INSTALL_DIR}/${FILENAME}" ]]
-    then
-        source "./${INSTALL_DIR}/${FILENAME}"
-    fi
-
-
-    #----------------------------------------------------------------------------
-    # put locally compiled libraries at the beginning of the library search path
-
-    export LD_LIBRARY_PATH=./lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
-
-
-    #----------------------------------------------------------------------------
-    # show effectively used libraries (PATH in case of Windows, LD_LIBRARY_PATH else)
-
-    if [[ "${VERBOSE}" == "TRUE" ]]
-    then
-        echo -e "\n\n\033[1;31m$ echo \$LD_LIBRARY_PATH\033[0m"
-        echo "${LD_LIBRARY_PATH}" | tr ":" "\n"
-    fi
-
-
-    #----------------------------------------------------------------------------
-    # execute the binary (with parameters given on cmdline)
-
-    if [[ "${VERBOSE}" == "TRUE" ]]
-    then
-        echo -e "\n\n\033[1;31m$ ldd ${EXECUTABLE_BIN}\033[0m"
-        ldd "${EXECUTABLE_BIN}"
-    fi
-
-    "$@"
-    STATUS=$?
-
-
-    exit ${STATUS}
+    BST.py --shellfiles 2> /dev/null
 fi
+
+
+cd "${CWD}" || exit
+
+if [[ $VERBOSE == "TRUE" && ! -r ./${INSTALL_DIR}/${FILENAME} ]]
+then
+    echo -e "\n./${INSTALL_DIR}/${FILENAME}: No such file\n"
+fi
+
+
+#----------------------------------------------------------------------------
+# start with a freshly set up LD_LIBRARY_PATH
+
+# disabled unsetting LD_LIBRARY_PATH as it will cause packages not be
+# re-sourced again (checking for double-sourcing is now done via separate
+# env.variable TOOLBOSCORE_SOURCED, instead of LD_LIBRARY_PATH itself
+
+# unset LD_LIBRARY_PATH
+
+if [[ -r "./${INSTALL_DIR}/${FILENAME}" ]]
+then
+    # shellcheck source=./install/BashSrc
+    source "./${INSTALL_DIR}/${FILENAME}"
+fi
+
+
+#----------------------------------------------------------------------------
+# put locally compiled libraries at the beginning of the library search path
+
+export LD_LIBRARY_PATH=./lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
+
+
+#----------------------------------------------------------------------------
+# show effectively used libraries
+
+if [[ "${VERBOSE}" == "TRUE" ]]
+then
+    echo -e "\n\n\033[1;31m$ echo \$LD_LIBRARY_PATH\033[0m"
+    echo "${LD_LIBRARY_PATH}" | tr ":" "\n"
+fi
+
+
+#----------------------------------------------------------------------------
+# execute the binary (with parameters given on cmdline)
+
+if [[ "${VERBOSE}" == "TRUE" ]]
+then
+    echo -e "\n\n\033[1;31m$ ldd ${EXECUTABLE_BIN}\033[0m"
+    ldd "${EXECUTABLE_BIN}"
+fi
+
+"$@"
+STATUS=$?
+
+
+exit ${STATUS}
 
 
 echo "Internal script error (how did you get here??)"
