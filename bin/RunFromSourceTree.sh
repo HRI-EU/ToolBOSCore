@@ -156,7 +156,12 @@ fi
 EXECUTABLE_BIN=$1
 
 
-set -euxo pipefail
+if [[ "${VERBOSE}" == "TRUE" ]]
+then
+    set -euxo pipefail
+else
+    set -euo pipefail
+fi
 
 
 #----------------------------------------------------------------------------
@@ -188,18 +193,12 @@ fi
 # this is the pattern used to find the version in the path
 PATTERN='\(.*/[0-9]\+\.[0-9]\+\)'
 
-# the VERSION PATH contains the substring of EXECUTABLE_PATH until the last instance of PATTERN (included).
-# the //\..\// sequence escapes all the occurrences of double backslashes that invalidate the path
-VERSION_PATH=`expr match "${EXECUTABLE_PATH//\..\//}" $PATTERN`
-
 if [[ "${VERBOSE}" == "TRUE" ]]
 then
     echo "EXECUTABLE_PATH:   ${EXECUTABLE_PATH}"
     echo "EXECUTABLE_DIR:    ${EXECUTABLE_DIR}"
     echo "MAKEFILE_PLATFORM: ${MAKEFILE_PLATFORM}"
-    echo "VERSION_PATH:      ${VERSION_PATH}"
 fi
-
 
 
 #==============================================================================
@@ -289,14 +288,6 @@ else
     #----------------------------------------------------------------------------
     # source the regular BashSrc from the source tree if existing
 
-    CWD=$(pwd)
-
-        exit 1
-    fi
-
-    cd ${VERSION_PATH}
-
-
     if [[ $VERBOSE == "TRUE" ]]
     then
         echo -e "\n\n\033[1;31m$ BST.py --shellfiles\033[0m"
@@ -308,9 +299,9 @@ else
 
     cd "${CWD}" || exit
 
-    if [[ $VERBOSE == "TRUE" && ! -r ${VERSION_PATH}/${INSTALL_DIR}/${FILENAME} ]]
+    if [[ $VERBOSE == "TRUE" && ! -r ./${INSTALL_DIR}/${FILENAME} ]]
     then
-        echo -e "\n${VERSION_PATH}/${INSTALL_DIR}/${FILENAME}: No such file\n"
+        echo -e "\n./${INSTALL_DIR}/${FILENAME}: No such file\n"
     fi
 
 
@@ -323,50 +314,16 @@ else
 
     # unset LD_LIBRARY_PATH
 
-    if [[ -r ${VERSION_PATH}/${INSTALL_DIR}/${FILENAME} ]]
+    if [[ -r "./${INSTALL_DIR}/${FILENAME}" ]]
     then
-        source ${VERSION_PATH}/${INSTALL_DIR}/${FILENAME}
+        source "./${INSTALL_DIR}/${FILENAME}"
     fi
-
-
-    #----------------------------------------------------------------------------
-    # save current position and change into executable-directory
-
-    CWD=$(pwd)
-    if [[ ! -d $EXECUTABLE_DIR ]]; then
-        echo ""
-        echo "The executable is not in a valid directory."
-        echo ""
-        exit 1;
-    fi
-
-    cd "${EXECUTABLE_DIR}" || exit
-
-
-    if [[ -r ${FILENAME} ]]; then
-        FILENAME_PATH=`pwd`/${FILENAME}
-        source $FILENAME_PATH
-        break
-    fi
-
-    if [[ `pwd` == ${VERSION_PATH} ]];
-    then
-        break
-    fi
-
-    # Security loop stopper
-    let COUNTER=COUNTER-1
-
-    cd ..
-    done
-
-    cd $CWD
 
 
     #----------------------------------------------------------------------------
     # put locally compiled libraries at the beginning of the library search path
 
-    export LD_LIBRARY_PATH=${VERSION_PATH}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=./lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
 
 
     #----------------------------------------------------------------------------
