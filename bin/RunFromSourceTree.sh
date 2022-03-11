@@ -36,8 +36,18 @@
 #
 
 
+set -eo pipefail
+
+
 # read TOOLBOS_CONF_BUGTRACK_URL from settings file:
-source ${TOOLBOSCORE_ROOT}/etc/ToolBOS.conf.sh
+source "${TOOLBOSCORE_ROOT}/etc/ToolBOS.conf.sh"
+
+
+if [[ -z ${VERBOSE+x} ]]
+then
+    export VERBOSE="FALSE"
+fi
+
 
 
 #----------------------------------------------------------------------------
@@ -46,7 +56,7 @@ source ${TOOLBOSCORE_ROOT}/etc/ToolBOS.conf.sh
 
 function print_help()
 {
-  PROGNAME=`basename "$0"`
+  PROGNAME=$(basename "$0")
 
   echo ""
   echo "This script tests for the ./install/BashSrc, creates it if not "
@@ -89,7 +99,7 @@ function rfind()
         cd ..
     done
 
-    cd ${currentDir}
+    cd "${currentDir}" || exit
     return ${retStatus}
 }
 
@@ -101,8 +111,8 @@ CWD=$(pwd)
 INSTALL_DIR=install
 RUN_DEBUGGER=No
 FILENAME=BashSrc
-HOST_PLATFORM=${MAKEFILE_PLATFORM}
-TARGET_PLATFORM=${MAKEFILE_PLATFORM}
+HOST_PLATFORM="${MAKEFILE_PLATFORM}"
+TARGET_PLATFORM="${MAKEFILE_PLATFORM}"
 
 
 while :
@@ -111,7 +121,7 @@ do
     case $1 in
 
     -h|--help)
-        print_help $0
+        print_help "${0}"
         shift
         ;;
 
@@ -140,36 +150,39 @@ done
 
 if [[ $1 == "" ]]
 then
-    print_help $0
+    print_help "${0}"
 fi
 
 EXECUTABLE_BIN=$1
 
 
+set -euxo pipefail
+
+
 #----------------------------------------------------------------------------
 # the executable passed as argument must be a file, readable and an executable
 
-if [[ ! -s ${EXECUTABLE_BIN} ||
-      ! -r ${EXECUTABLE_BIN} ||
-      ! -x ${EXECUTABLE_BIN} ||
-      ! -f ${EXECUTABLE_BIN} ]]
+if [[ ! -s "${EXECUTABLE_BIN}" ||
+      ! -r "${EXECUTABLE_BIN}" ||
+      ! -x "${EXECUTABLE_BIN}" ||
+      ! -f "${EXECUTABLE_BIN}" ]]
 then
 
-  if [[ `which ${EXECUTABLE_BIN}` == "" ]]
-  then
-    echo ""
-    echo "${EXECUTABLE_BIN}: No such file (or permission denied)"
-    echo ""
-    exit 1;
-  else
-    # the EXECUTABLE_PATH is created assuming the script is executed inside the version subdir
-    EXECUTABLE_PATH=${CWD}
-    EXECUTABLE_DIR=${CWD}
-  fi
+    if [[ $(which "${EXECUTABLE_BIN}") == "" ]]
+        then
+        echo ""
+        echo "${EXECUTABLE_BIN}: No such file (or permission denied)"
+        echo ""
+        exit 1;
+    else
+        # the EXECUTABLE_PATH is created assuming the script is executed inside the version subdir
+        EXECUTABLE_PATH=${CWD}
+        EXECUTABLE_DIR=${CWD}
+    fi
 else
-  # the EXECUTABLE_PATH is created assuming the script is executed inside the version subdir
-  EXECUTABLE_PATH=${CWD}/${EXECUTABLE_BIN}
-  EXECUTABLE_DIR=${CWD}/$(dirname "${EXECUTABLE_BIN}")
+    # the EXECUTABLE_PATH is created assuming the script is executed inside the version subdir
+    EXECUTABLE_PATH=${CWD}/${EXECUTABLE_BIN}
+    EXECUTABLE_DIR=${CWD}/$(dirname "${EXECUTABLE_BIN}")
 fi
 
 # this is the pattern used to find the version in the path
@@ -179,14 +192,7 @@ PATTERN='\(.*/[0-9]\+\.[0-9]\+\)'
 # the //\..\// sequence escapes all the occurrences of double backslashes that invalidate the path
 VERSION_PATH=`expr match "${EXECUTABLE_PATH//\..\//}" $PATTERN`
 
-# If VERSION_PATH is empty, we probably do not have a version-dir. Then we will
-# search upward for pkgInfo.py to find the top-level source-directory.
-if [[ ${VERSION_PATH} == "" ]]
-then
-    VERSION_PATH=$(rfind pkgInfo.py)
-fi
-
-if [[ $VERBOSE == "TRUE" ]]
+if [[ "${VERBOSE}" == "TRUE" ]]
 then
     echo "EXECUTABLE_PATH:   ${EXECUTABLE_PATH}"
     echo "EXECUTABLE_DIR:    ${EXECUTABLE_DIR}"
@@ -212,7 +218,7 @@ function runCommand
     if [[ -z "${COMMAND}" ]]
     then
         echo "Internal script error :-/"
-        exit -1
+        exit 1
     fi
 
 
@@ -222,12 +228,12 @@ function runCommand
     fi
 
 
-    eval ${COMMAND}
+    eval "${COMMAND}"
 
 
-    if [[ $? != 0 ]]
+    if [[ "${?}" != 0 ]]
     then
-        exit -1
+        exit 1
     fi
 }
 
@@ -235,10 +241,10 @@ function runCommand
 if [[ "${TARGET_PLATFORM}" =~ "windows" ]]
 then
     # detect CANONICAL_PATH of current package
-    source ${TOOLBOSCORE_ROOT}/include/MakefileSystem.bash
+    source "${TOOLBOSCORE_ROOT}/include/MakefileSystem.bash"
 
     # load Windows-support backend
-    source ${SIT}/DevelopmentTools/ToolBOSPluginWindows/1.2/BashSrc
+    source "${SIT}/DevelopmentTools/ToolBOSPluginWindows/1.2/BashSrc"
 
     if [[ -z "${WINEPREFIX}" ]]
     then
@@ -283,12 +289,7 @@ else
     #----------------------------------------------------------------------------
     # source the regular BashSrc from the source tree if existing
 
-    CWD=`pwd`
-
-    if [[ ! -d ${VERSION_PATH} ]]; then
-        echo ""
-        echo "${VERSION_PATH}: No such directory"
-        echo ""
+    CWD=$(pwd)
 
         exit 1
     fi
@@ -305,7 +306,7 @@ else
     fi
 
 
-    cd $CWD
+    cd "${CWD}" || exit
 
     if [[ $VERBOSE == "TRUE" && ! -r ${VERSION_PATH}/${INSTALL_DIR}/${FILENAME} ]]
     then
@@ -331,7 +332,7 @@ else
     #----------------------------------------------------------------------------
     # save current position and change into executable-directory
 
-    CWD=`pwd`
+    CWD=$(pwd)
     if [[ ! -d $EXECUTABLE_DIR ]]; then
         echo ""
         echo "The executable is not in a valid directory."
@@ -339,16 +340,8 @@ else
         exit 1;
     fi
 
-    cd ${EXECUTABLE_DIR}
+    cd "${EXECUTABLE_DIR}" || exit
 
-
-    #----------------------------------------------------------------------------
-    # try to load BashSrc files somewhere in the path to the binary
-
-    COUNTER="3"
-
-    while [ $COUNTER -ne 0 ]
-    do
 
     if [[ -r ${FILENAME} ]]; then
         FILENAME_PATH=`pwd`/${FILENAME}
@@ -379,10 +372,10 @@ else
     #----------------------------------------------------------------------------
     # show effectively used libraries (PATH in case of Windows, LD_LIBRARY_PATH else)
 
-    if [[ $VERBOSE == "TRUE" ]]
+    if [[ "${VERBOSE}" == "TRUE" ]]
     then
         echo -e "\n\n\033[1;31m$ echo \$LD_LIBRARY_PATH\033[0m"
-        echo $LD_LIBRARY_PATH | tr ":" "\n"
+        echo "${LD_LIBRARY_PATH}" | tr ":" "\n"
     fi
 
 
@@ -392,7 +385,7 @@ else
     if [[ "${VERBOSE}" == "TRUE" ]]
     then
         echo -e "\n\n\033[1;31m$ ldd ${EXECUTABLE_BIN}\033[0m"
-        ldd ${EXECUTABLE_BIN}
+        ldd "${EXECUTABLE_BIN}"
     fi
 
     if [ "${RUN_DEBUGGER}" == "Yes" ]
@@ -411,7 +404,7 @@ fi
 
 
 echo "Internal script error (how did you get here??)"
-exit -42
+exit 42
 
 
 # EOF
