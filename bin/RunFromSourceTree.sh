@@ -104,8 +104,6 @@ then
     print_help "${0}"
 fi
 
-EXECUTABLE_BIN=$1
-
 
 if [[ "${VERBOSE}" == "TRUE" ]]
 then
@@ -118,35 +116,17 @@ fi
 #----------------------------------------------------------------------------
 # the executable passed as argument must be a file, readable and an executable
 
-if [[ ! -s "${EXECUTABLE_BIN}" ||
-      ! -r "${EXECUTABLE_BIN}" ||
-      ! -x "${EXECUTABLE_BIN}" ||
-      ! -f "${EXECUTABLE_BIN}" ]]
+PROGRAM=$1
+
+if [[ ! -s "${PROGRAM}" ||
+      ! -r "${PROGRAM}" ||
+      ! -x "${PROGRAM}" ||
+      ! -f "${PROGRAM}" ]]
 then
-
-    if [[ $(which "${EXECUTABLE_BIN}") == "" ]]
-        then
-        echo ""
-        echo "${EXECUTABLE_BIN}: No such file (or permission denied)"
-        echo ""
-        exit 1;
-    else
-        # the EXECUTABLE_PATH is created assuming the script is executed inside the version subdir
-        EXECUTABLE_PATH=${CWD}
-        EXECUTABLE_DIR=${CWD}
-    fi
-else
-    # the EXECUTABLE_PATH is created assuming the script is executed inside the version subdir
-    EXECUTABLE_PATH=${CWD}/${EXECUTABLE_BIN}
-    EXECUTABLE_DIR=${CWD}/$(dirname "${EXECUTABLE_BIN}")
-fi
-
-
-if [[ "${VERBOSE}" == "TRUE" ]]
-then
-    echo "EXECUTABLE_PATH:   ${EXECUTABLE_PATH}"
-    echo "EXECUTABLE_DIR:    ${EXECUTABLE_DIR}"
-    echo "MAKEFILE_PLATFORM: ${MAKEFILE_PLATFORM}"
+    echo ""
+    echo "${PROGRAM}: No such file (or permission denied)"
+    echo ""
+    exit 1;
 fi
 
 
@@ -207,8 +187,8 @@ fi
 
 if [[ "${VERBOSE}" == "TRUE" ]]
 then
-    echo -e "\n\n\033[1;31m$ ldd ${EXECUTABLE_BIN}\033[0m"
-    ldd "${EXECUTABLE_BIN}"
+    echo -e "\n\n\033[1;31m$ ldd ${PROGRAM}\033[0m"
+    ldd "${PROGRAM}"
 fi
 
 "$@"
@@ -216,10 +196,6 @@ STATUS=$?
 
 
 exit ${STATUS}
-
-
-echo "Internal script error (how did you get here??)"
-exit 42
 
 
 # EOF
