@@ -70,7 +70,6 @@ function print_help()
   echo ""
   echo "Options:"
   echo "        -h, --help      display this help and exit"
-  echo "        -d, --debug     execute under GNU Data Display Debugger (ddd)"
   echo "        -p <platform>   run with settings for a different platform"
   echo ""
   echo "Examples:"
@@ -109,7 +108,6 @@ function rfind()
 
 CWD=$(pwd)
 INSTALL_DIR=install
-RUN_DEBUGGER=No
 FILENAME=BashSrc
 HOST_PLATFORM="${MAKEFILE_PLATFORM}"
 TARGET_PLATFORM="${MAKEFILE_PLATFORM}"
@@ -128,16 +126,6 @@ do
     -p|--platform)
         shift
         TARGET_PLATFORM=$1
-        shift
-        ;;
-
-    -d|--debug)
-        if [[ "y" == "${DEBUGGER}y" ]]
-        then
-            DEBUGGER=gdb
-        fi
-
-        RUN_DEBUGGER='Yes'
         shift
         ;;
 
@@ -345,15 +333,8 @@ else
         ldd "${EXECUTABLE_BIN}"
     fi
 
-    if [ "${RUN_DEBUGGER}" == "Yes" ]
-    then
-        echo "Starting the application using the debugger $DEBUGGER"
-        $DEBUGGER "$@"
-        STATUS=$?
-    else
-        "$@"
-        STATUS=$?
-    fi
+    "$@"
+    STATUS=$?
 
 
     exit ${STATUS}
