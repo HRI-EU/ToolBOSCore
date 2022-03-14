@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
-#  JetBrains IDE launcher
+#  run shellcheck on project
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,40 +35,49 @@
 #
 
 
-set -euo pipefail
+import io
+import logging
+import subprocess
+
+from ToolBOSCore.Settings import ProcessEnv
+from ToolBOSCore.Util     import FastScript
 
 
-DESCRIPTION="MemoryScape"
-TOOLBOS_CONF_KEY=package_totalview
+def checkScript( scriptPath, codes, enable=None ):
+    ProcessEnv.requireCommand( 'shellcheck' )
+
+    stdout         = io.StringIO()
+    stderr         = io.StringIO()
+    failed         = False
+    reportedIssues = []
 
 
-if [[ "$1" == '-h' || "$1" == '--help' ]]
-then
-    SCRIPTNAME=$(basename "${0}")
+    # We use the gcc-style error-reporting of shellcheck, since it is compact
+    # and we do not need to really parse the output.
+    # We always know which codes have been checked, because we pass them with
+    # --include.
+    # .shellcheckrc-files are ignored, so that people don't bypass the checks.
+    # The shell-dialect is fixed as "bash".
+    #
+    cmd = f'shellcheck --format=gcc --include={codes} --norc --shell=bash {scriptPath}'
 
-    echo -e "\nLaunches the latest stable version of ${DESCRIPTION}\n"
+    if enable:
+        cmd += f' --enable={enable}'
 
-    echo -e "Usage: ${SCRIPTNAME} [--help]\n"
+    try:
+        FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
+    except subprocess.CalledProcessError as e:
+        if stderr.getvalue() != '':  # We have a real error.
+            logging.error( stderr.getvalue() )
+            raise e
+        else:  # Just non-zero exit-status of shellcheck, i.e. issues found.
+            reportedIssues = stdout.getvalue().splitlines()
+            failed = True
 
-    echo -e "options:"
-    echo -e "  -h|--help       show this help and exit\n"
+    stdout.close()
+    stderr.close()
 
-    echo -e "Examples: ${SCRIPTNAME}\n"
-
-    exit 0
-fi
-
-
-set -euxo pipefail
-
-
-# launch the application
-echo "Launching ${DESCRIPTION}..."
-PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
-# shellcheck source=/hri/sit/latest/External/totalview/2020.0/BashSrc
-source "${SIT}/${PACKAGE}/BashSrc"
-
-exec memscape -newUI $*
+    return failed, reportedIssues
 
 
 # EOF

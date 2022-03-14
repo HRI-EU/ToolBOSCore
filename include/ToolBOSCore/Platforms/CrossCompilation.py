@@ -346,7 +346,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
         FastScript.setEnv( 'MT_CMD', pdkBasePath + '''Bin\\mt.exe''' )
         FastScript.setEnv( 'DUMPBIN_CMD', compilerBasePath + '''Bin\\dumpbin.exe''' )
 
-    tmp        = re.match( "^(\S+)-(\S+)-vs(\d+)$", targetPlatform )
+    tmp        = re.match( r"^(\S+)-(\S+)-vs(\d+)$", targetPlatform )
     targetArch = tmp.group(2)
     sdk        = int(tmp.group(3))
 

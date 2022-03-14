@@ -86,8 +86,8 @@ def findProxyInstallations( checkLinks = False ):
     resultList     = []
     sit            = SIT.getPath()
     sitParent      = SIT.getParentPath()    # support cascaded proxies
-    excludePattern = re.compile( '^(parentTree|\d+\.\d+.*)$' )
-    criteria       = re.compile( "^(\d+)\.(\d+)(.*)" )
+    excludePattern = re.compile( r'^(parentTree|\d+\.\d+.*)$' )
+    criteria       = re.compile( r"^(\d+)\.(\d+)(.*)" )
 
     Any.requireIsDir( sit )
     Any.requireIsDir( sitParent )
@@ -401,7 +401,7 @@ def _removeEmptyCategories( sitRootPkgList, sitProxyPkgList,
                 candidates.add( candidate )
 
     # path must not contain anything like a version string
-    expr       = re.compile( '/\d+\.\d+' )
+    expr       = re.compile( r'/\d+\.\d+' )
     noMatch    = lambda p: not( expr.search( p ) )
     candidates = filter( noMatch, candidates )
 

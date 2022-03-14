@@ -34,14 +34,17 @@
 #
 
 
+set -euo pipefail
+
+
 DESCRIPTION="CLion IDE"
 TOOLBOS_CONF_KEY=package_clion
 
 IDE_PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
 
-if [[ "${BASH_ARGV}" != "" ]]
+if [[ "$#" != 0 ]]
 then
-    SCRIPTNAME=$(basename $0)
+    SCRIPTNAME=$(basename "$0")
 
     echo -e "\nLaunches the ${DESCRIPTION} pre-configured for this package.\n"
 
@@ -59,7 +62,7 @@ fi
 if [[ ! -e "${SIT}/External/OracleJava/1.0/BashSrc" ]]
 then
     echo -e "\nOracle Java is required. Please run 'UpdateProxyDir.py' to get it.\n "
-    exit -1
+    exit 1
 fi
 
 
@@ -80,7 +83,7 @@ then
     export LD_LIBRARY_PATH=${CWD}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
 
     echo -e "\nLD_LIBRARY_PATH:"
-    echo ${LD_LIBRARY_PATH} | tr ":" "\n"
+    echo "${LD_LIBRARY_PATH}" | tr ":" "\n"
     echo -e "\n"
 
 fi
@@ -90,8 +93,9 @@ CMD="clion.sh $(pwd)"
 
 # launch the application
 echo "Launching ${DESCRIPTION}..."
-source ${SIT}/${IDE_PACKAGE}/BashSrc
-${CMD}
+# shellcheck source=/hri/sit/latest/External/CLion/2021.1/BashSrc
+source "${SIT}/${IDE_PACKAGE}/BashSrc"
+exec ${CMD}
 
 
 # EOF

@@ -56,7 +56,7 @@ from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import Klocwork,\
                                                          Matlab, PyCharm,\
-                                                         Valgrind
+                                                         Valgrind, Shellcheck
 from ToolBOSCore.Util                             import Any, FastScript
 
 
@@ -2949,10 +2949,38 @@ Output:
     Reilly
     '''
 
-    seeAlso     = { 'Shellcheck SC2086, SC2046, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
+    seeAlso     = { 'Shellcheck SC2046, SC2048, SC2068, SC2248, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
                     'Bash Pitfalls': 'http://mywiki.wooledge.org/BashPitfalls#echo_.24foo' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that strings, variables, and command-substitutions in Bash-scripts
+            are quoted to avoid word-splitting and globbing.
+        """
+        logging.debug( "checking that strings, variables, substitutions are quoted" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath,
+                                              '2046,2048,2068,2086,2248',
+                                              'quote-safe-variables')
+            if results[0] == True:
+                logging.info( "BASH01: %s: unquoted strings, variables, substitutions", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "all strings, variables, and substitutions have been quoted" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "unquoted strings, variables, or substitutions" )
+
+        return result
 
 
 class Rule_BASH02( AbstractRule ):
@@ -3020,6 +3048,31 @@ parenthesis.
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
+    def run( self, details, files ):
+        """
+            Checks that $() is used for command-substitution instead of backticks.
+        """
+        logging.debug( "checking that $() is used for command-substitution" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath, '2006' )
+            if results[0] == True:
+                logging.info( "BASH03: %s: command-substitution with backticks", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "exclusively used $() for command-substitution" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "some command-substitutions have been done using backticks" )
+
+        return result
+
 
 class Rule_BASH04( AbstractRule ):
 
@@ -3037,22 +3090,55 @@ hand is straight-forward.
 '''
 
     goodExample = '''
-    users=('Adam Wilson' 'Brian May' 'Maggy Reilly')
-    for user in "${users[@]}"; do
-       echo "${user}"
-    done
+    #!/bin/bash
+    args=(--only-matching --no-filename "args for grep")
+    grep "${args[@]}" "${0}"
+
+output:
+
+    args for grep
     '''
 
     badExample  = '''
-    users="'Adam Wilson' 'Brian May' 'Maggy Reilly'"
-    for user in ${users}; do
-       echo "${user}"
-    done
+    #!/bin/bash
+    args='--only-matching --no-filename "args for grep"'
+    grep ${args} "${0}"
+
+output:
+
+    grep: for: No such file or directory
+    grep: grep": No such file or directory
+    "args
     '''
 
     seeAlso     = { 'Shellcheck SC2089, SC2090': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that an array is used instead of a string when passing arguments.
+        """
+        logging.debug( "checking that an array is used instead of a string when passing arguments" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath, '2089,2090' )
+            if results[0] == True:
+                logging.info( "BASH04: %s: string used for passing arguments", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "exclusively used arrays for passing arguments" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "some arguments have been passed using strings" )
+
+        return result
 
 
 class Rule_BASH05( AbstractRule ):
@@ -3084,11 +3170,11 @@ readable and a little more self-explanatory.
 
 class Rule_BASH06( AbstractRule ):
 
-    name        = 'use curly brackets'
+    name        = 'use braces'
 
-    brief       = '''Use curly brackets when referring to variables.'''
+    brief       = '''Use braces when referring to variables.'''
 
-    description = '''Curly brackets are needed for
+    description = '''Braces are needed for
 
 1. expanding variables into strings, e.g. ${var}appendage,
 
@@ -3099,7 +3185,7 @@ class Rule_BASH06( AbstractRule ):
 4. expanding positional parameters > 9, e.g. ${10}, ${11}, ...
 
 To deliver a consistent appearance throughout the whole script you should
-use curly brackets even if they are not strictly necessary. This will prevent
+use braces even if they are not strictly necessary. This will prevent
 forgetting the braces if they are needed, which will lead to strange
 errors or behaviour.
 '''
@@ -3116,6 +3202,31 @@ errors or behaviour.
                     'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+
+    def run( self, details, files ):
+        """
+            Checks that variables in Bash-scripts are referred to using braces.
+        """
+        logging.debug( "checking that variables are referred to using braces" )
+        passed = 0
+        failed = 0
+
+        for filePath in files:
+            results = Shellcheck.checkScript( filePath, '2250', 'require-variable-braces')
+            if results[0] == True:
+                logging.info( "BASH06: %s: variables referred to without braces", filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "all variables referred to with braces" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "some variables referred to without braces" )
+
+        return result
 
 
 class Rule_BASH07( AbstractRule ):
@@ -3174,9 +3285,46 @@ placed anywhere after `set -euo pipefail`.
     [...]
     '''
 
-    seeAlso     = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+    seeAlso      = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
-    sqLevel     = frozenset( [ 'basic', 'advanced' ] )
+    sqLevel      = frozenset( [ 'basic', 'advanced' ] )
+
+    skippedFiles = [ 'BashSrc', 'useFromHere.sh' ]
+
+
+    def run( self, details, files ):
+        """
+            Checks that Bash-scripts have a set -euo pipefail or
+            a set -euxo pipefail line.
+        """
+        logging.debug( "looking for 'set -euo pipefail' or 'set -euxo pipefail'" )
+        passed = 0
+        failed = 0
+
+        files = filter( lambda f: os.path.basename( f ) not in self.skippedFiles, files )
+        for filePath in files:
+            lines = FastScript.getFileContent( filePath, splitLines=True )
+            foundSet = False
+            for line in lines:
+                if line.find( 'set -euo pipefail' ) != -1 or \
+                   line.find( 'set -euxo pipefail' ) != -1:
+                    foundSet = True
+                    break
+            if not foundSet:
+                logging.info( "BASH07: %s: no 'set -euo pipefail' or 'set -euxo pipefail' found",
+                              filePath )
+                failed += 1
+            else:
+                passed += 1
+
+        if failed == 0:
+            result = ( OK, passed, failed,
+                       "'set -euo pipefail' found" )
+        else:
+            result = ( FAILED, passed, failed,
+                       "no 'set -euo pipefail' found" )
+
+        return result
 
 
 def findNonAsciiCharacters( filePath, rule ):

@@ -75,13 +75,16 @@ class CheckRoutine( object ):
         self.excludeFiles     = set()
 
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
-                                  '.java', '.m' }
+                                  '.java', '.m', '.bash', '.sh' }
+
+        self.bashExts         = { '.bash', '.sh' }
 
         self.sqLevelToRun     = None   # level to use for this SQ check run
 
         self.useOptFlags      = True   # disabled when invoking setRules()
 
         self.files            = set()  # final list of files to check
+        self.bashFiles        = set()  # list of Bash-files to check
 
         self.rules            = {}     # { ID: obj } of all rules (None if n/a)
         self.ruleIDs          = set()  # IDs of all SQ rules, not ordered
@@ -281,6 +284,9 @@ class CheckRoutine( object ):
         self._setupOptOutDirs()
         self._setupOptOutFiles()
         self._setupOptInFiles()
+        self._setupBashFiles()
+
+        logging.debug( "bashFiles = %s", str(self.bashFiles) )
 
 
     def showSummary( self, state ):
@@ -397,6 +403,16 @@ class CheckRoutine( object ):
             self.rulesToRun = forceRules
 
 
+    def _populateBashFiles(self):
+        for filePath in self.files:
+            fileExt = os.path.splitext( filePath )[-1]
+            if fileExt in self.bashExts:
+                self.bashFiles.add( filePath )
+            else:
+                content = FastScript.getFileContent( filePath, True )
+                if len(content) > 0 and 'bash' in content[0].lower():
+                    self.bashFiles.add( filePath )
+
     def _printEnabled( self ):
         """
             Print the final list of files and rules, for debugging purposes
@@ -460,7 +476,11 @@ class CheckRoutine( object ):
         rule = self.rules[ ruleID ]
 
         if ruleID in self.rulesImplemented:
-            result = rule.run( self.details, self.files )
+            if ruleID.startswith('BASH'):
+                files = self.bashFiles
+            else:
+                files = self.files
+            result = rule.run( self.details, files )
         else:
             result = ( NOT_IMPLEMENTED, None, None, None )
 
@@ -555,6 +575,12 @@ class CheckRoutine( object ):
             self.excludeFile( filename )
 
 
+    def _setupBashFiles( self ):
+        if self.hasRule( 'BASH' ):
+            logging.debug( 'populating bashFiles' )
+            self._populateBashFiles()
+
+
     def _showSummary( self ):
         """
             Shows a summary of the execution results.
@@ -606,6 +632,13 @@ class CheckRoutine( object ):
 
                     logging.info( '%8s: "%s"', ruleID, comment )
                     logging.info( '' )
+
+
+    def hasRule( self, ruleType ):
+        for rule in self.rulesToRun:
+            if ruleType in rule:
+                return True
+        return False
 
 
 # EOF
