@@ -1,4 +1,30 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.25
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2073] added Software Quality checks for Bash scripts
+                  (BASH03, -04, -06 and -07)
+
+CHANGES
+=======
+
+  - [TBCORE-2182] RunFromSourceTree.sh: support execution within packages w/o version dir.
+  - [TBCORE-2182] RunFromSourceTree.sh: assume execution from top-level dir.
+  - [TBCORE-2182] RunFromSourceTree.sh: dropped unused debugger-integration
+  - [TBCORE-2182] RunFromSourceTree.sh: dropped unused Wine-integration
+
+INTERNAL
+========
+
+  - [TBCORE-2267] improved quality of several shellscripts
+  - [TBCORE-2228] fixed some more Python 3.9 deprecation warnings
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.24
 
 
