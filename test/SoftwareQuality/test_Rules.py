@@ -621,8 +621,7 @@ def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH03()
     details = toolBOSCoreDetector
 
-    files   = { 'include/RTMaps/AddDRMSignature.sh',
-                'bin/RunFromSourceTree.sh' }
+    files   = { 'test/SoftwareQuality/TestData/withBackticks.bash' }
 
     result  = rule.run( details, files )
 
@@ -637,8 +636,7 @@ def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH03()
     details = toolBOSCoreDetector
 
-    files   = { 'useFromHere.sh',
-                'unittest.sh'}
+    files   = { 'test/SoftwareQuality/TestData/withoutBackticks.bash' }
 
     result  = rule.run( details, files )
 
@@ -681,9 +679,7 @@ def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH06()
     details = toolBOSCoreDetector
 
-    files   = { 'include/Unittest.bash',
-                'bin/RunFromSourceTree.sh',
-                'bin/RunFromSourceTree.sh' }
+    files   = { 'test/SoftwareQuality/TestData/withoutBraces.bash' }
 
     result  = rule.run( details, files )
 
@@ -698,8 +694,7 @@ def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH06()
     details = toolBOSCoreDetector
 
-    files   = { 'ci-test.sh',
-                'unittest.sh'}
+    files   = { 'test/SoftwareQuality/TestData/withBraces.bash' }
 
     result  = rule.run( details, files )
 
