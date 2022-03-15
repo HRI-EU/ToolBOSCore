@@ -40,7 +40,7 @@ set -euo pipefail
 DESCRIPTION="CLion IDE"
 TOOLBOS_CONF_KEY=package_clion
 
-IDE_PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
+IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
 
 if [[ "$#" != 0 ]]
 then
@@ -95,7 +95,7 @@ CMD="clion.sh $(pwd)"
 echo "Launching ${DESCRIPTION}..."
 # shellcheck source=/hri/sit/latest/External/CLion/2021.1/BashSrc
 source "${SIT}/${IDE_PACKAGE}/BashSrc"
-exec ${CMD}
+exec "${CMD}"
 
 
 # EOF

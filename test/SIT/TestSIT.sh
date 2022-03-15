@@ -34,19 +34,19 @@
 #
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
-cd ${CWD}/Bootstrap      && runTest ./TestBootstrap.py
-cd ${CWD}/DeprecatedFlag && runTest ./TestDeprecatedFlag.py
+cd "${CWD}/Bootstrap"      && runTest ./TestBootstrap.py
+cd "${CWD}/DeprecatedFlag" && runTest ./TestDeprecatedFlag.py
 
 
 if [[ "${CIA}" != "TRUE" ]]
 then
     # Disabled during CIA because no proxy directory present at that time.
     #
-    cd ${CWD}/ProxyDirectory && runTest ./TestProxyDirectory.py
+    cd "${CWD}/ProxyDirectory" && runTest ./TestProxyDirectory.py
 fi
 
 

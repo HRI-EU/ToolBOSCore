@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 
-source ${TOOLBOSCORE_ROOT}/include/SIT.bash
+source "${TOOLBOSCORE_ROOT}/include/SIT.bash"
 
 
 #----------------------------------------------------------------------------
@@ -75,10 +75,10 @@ else
 fi
 
 
-PROJECT_NAME=$(basename $(dirname $PWD))
-PROJECT_VERSION=$(basename $PWD)                # 2 digits
-PROJECT_VERSION_MAJOR=$(echo ${PROJECT_VERSION} | awk -F. '{ print $1 }')
-PROJECT_VERSION_MINOR=$(echo ${PROJECT_VERSION} | awk -F. '{ print $2 }')
+PROJECT_NAME=$(basename "$(dirname "${PWD}")")
+PROJECT_VERSION=$(basename "${PWD}")                # 2 digits
+PROJECT_VERSION_MAJOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $1 }')
+PROJECT_VERSION_MINOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $2 }')
 
 
 if [[ -z "${PROJECT_REVISION}" ]]
@@ -109,7 +109,7 @@ PACKAGE_DIR=package
 BUILD_DIR=src/build/${MAKEFILE_PLATFORM}
 
 EXIT_SUCCESS=0
-EXIT_FAILURE=-1
+EXIT_FAILURE=1
 
 
 if [ -z "${BST_BUILD_JOBS}" ]
@@ -158,20 +158,20 @@ function MakefileSystem_unpackSources()
     if [[ -d ${DIR} ]]
     then
         OLDCWD=$(pwd)
-        cd ${DIR}
+        cd "${DIR}"
 
         if [[ -r ${SRC_TARBALL_NAME} ]]
         then
-            rm -rf ${SOURCES_DIR}
-            mkdir ${SOURCES_DIR}
+            rm -rf "${SOURCES_DIR}"
+            mkdir "${SOURCES_DIR}"
             echo "unpacking tarball... (this may take some time)"
-            tar xvjf ${SRC_TARBALL_NAME} -C ${SOURCES_DIR}
+            tar xvjf "${SRC_TARBALL_NAME}" -C "${SOURCES_DIR}"
         else
             echo "${SRC_TARBALL_NAME}: No such file"
-            exit ${EXIT_FAILURE}
+            exit "${EXIT_FAILURE}"
         fi
 
-        cd $OLDCWD
+        cd "${OLDCWD}"
     fi
 }
 
@@ -183,17 +183,17 @@ function MakefileSystem_unpackBinaries()
     if [[ -d ${DIR} ]]
     then
         OLDCWD=$(pwd)
-        cd ${DIR}
+        cd "${DIR}"
 
         if [[ -r ${BIN_TARBALL_NAME} ]]
         then
-            rm -rf ${PACKAGE_DIR}
-            mkdir ${PACKAGE_DIR}
+            rm -rf "${PACKAGE_DIR}"
+            mkdir "${PACKAGE_DIR}"
             echo "unpacking tarball... (this may take some time)"
-            tar xjf ${BIN_TARBALL_NAME} -C ${PACKAGE_DIR}
+            tar xjf "${BIN_TARBALL_NAME}" -C "${PACKAGE_DIR}"
         fi
 
-        cd $OLDCWD
+        cd "${OLDCWD}"
     fi
 }
 
@@ -202,7 +202,7 @@ function MakefileSystem_makeBuildDir()
 {
     OLDCWD=$(pwd)
 
-    if [[ ! -z "${BUILD_DIR}" && -d ${BUILD_DIR} ]]
+    if [[ ! -z "${BUILD_DIR}" && -d "${BUILD_DIR}" ]]
     then
         echo "removing build directory left over from a previous build"
         rm -rf "${BUILD_DIR}"
@@ -210,7 +210,7 @@ function MakefileSystem_makeBuildDir()
 
     mkdir -pv "${BUILD_DIR}"
 
-    cd $OLDCWD
+    cd "${OLDCWD}"
 }
 
 
@@ -223,7 +223,7 @@ function MakefileSystem_removeVersionSymlinkInSIT()
     then
         if [[ -L ${VERSION_SYMLINK} ]]
         then
-            rm -v ${PROJECT_ROOT}
+            rm -v "${PROJECT_ROOT}"
 
 
         # if it is not a link (most likely it is a directory from a previous
@@ -243,15 +243,15 @@ function MakefileSystem_renameVersionsInSIT()
     TWO_DIGIT_PATH=${PROJECT_ROOT}
     THREE_DIGIT_PATH=${INSTALL_ROOT}
 
-    mv -v ${TWO_DIGIT_PATH} ${THREE_DIGIT_PATH}
-    ln -sfv ${PROJECT_PATCHLEVEL_VERSION} ${PROJECT_ROOT}
+    mv -v "${TWO_DIGIT_PATH}" "${THREE_DIGIT_PATH}"
+    ln -sfv "${PROJECT_PATCHLEVEL_VERSION}" "${PROJECT_ROOT}"
 }
 
 
 function MakefileSystem_updateVersionSymlink()
 {
     MakefileSystem_removeVersionSymlinkInSIT
-    ln -sfv ${PROJECT_PATCHLEVEL_VERSION} ${PROJECT_ROOT}
+    ln -sfv "${PROJECT_PATCHLEVEL_VERSION}" "${PROJECT_ROOT}"
 }
 
 
@@ -260,37 +260,37 @@ function MakefileSystem_installShellfiles()
     echo "generating shellfiles"
     BST.py --shellfiles
 
-    mkdir -p ${INSTALL_ROOT}
+    mkdir -p "${INSTALL_ROOT}"
 
-    if [[ -d ${INSTALL_ROOT} ]]
+    if [[ -d "${INSTALL_ROOT}" ]]
     then
-        cp -v install/BashSrc ${INSTALL_ROOT}
-        cp -v install/CmdSrc.bat ${INSTALL_ROOT}
-        cp -v install/pkgInfo.py ${INSTALL_ROOT}
+        cp -v install/BashSrc "${INSTALL_ROOT}"
+        cp -v install/CmdSrc.bat "${INSTALL_ROOT}"
+        cp -v install/pkgInfo.py "${INSTALL_ROOT}"
     else
         echo "${INSTALL_ROOT}: No such directory"
-        exit ${EXIT_FAILURE}
+        exit "${EXIT_FAILURE}"
     fi
 
     if [[ -e packageVar.cmake ]]
     then
-        cp -v packageVar.cmake ${INSTALL_ROOT}/packageVar.cmake
+        cp -v packageVar.cmake "${INSTALL_ROOT}/packageVar.cmake"
 
     elif [[ -e install/packageVar.cmake ]]
     then
-        cp -v install/packageVar.cmake ${INSTALL_ROOT}/packageVar.cmake
+        cp -v install/packageVar.cmake "${INSTALL_ROOT}/packageVar.cmake"
     fi
 
     if [[ -e doc/README.txt ]]
     then
-        mkdir -p ${INSTALL_ROOT}/doc
-        cp -v doc/README.txt ${INSTALL_ROOT}/doc/README.txt
+        mkdir -p "${INSTALL_ROOT}/doc"
+        cp -v doc/README.txt "${INSTALL_ROOT}/doc/README.txt"
     fi
 
     if [[ -e doc/SVN-Log.txt ]]
     then
-        mkdir -p ${INSTALL_ROOT}/doc
-        cp -v doc/SVN-Log.txt ${INSTALL_ROOT}/doc/SVN-Log.txt
+        mkdir -p "${INSTALL_ROOT}/doc"
+        cp -v doc/SVN-Log.txt "${INSTALL_ROOT}/doc/SVN-Log.txt"
     fi
 }
 
@@ -303,13 +303,13 @@ function MakefileSystem_addGlobalInstallLogEntry()
     if [[ -z ${TOOLBOSCORE_ROOT} ]]
     then
         echo "TOOLBOSCORE_ROOT is not set, did you source the ToolBOSCore package?"
-        exit -1
+        exit 1
     fi
 
-    if [[ -z ${PROJECT_ROOT} ]]
+    if [[ -z "${PROJECT_ROOT}" ]]
     then
         echo "${FUNCNAME}: Parameter 1 (PROJECT_ROOT) is missing"
-        exit -1
+        exit 1
     fi
 
     echo -e "please provide a reason for this global installation:\n"
@@ -336,10 +336,10 @@ function MakefileSystem_addGlobalInstallLogEntry()
 
     if [[ ${DRY_RUN} == "TRUE" ]]
     then
-        ${TOOLBOSCORE_ROOT}/bin/AddGlobalInstallLogEntry.py -d "$1" \
+        "${TOOLBOSCORE_ROOT}"/bin/AddGlobalInstallLogEntry.py -d "$1" \
                                 "${MAKEFILE_GLOBALINSTALLREASON}"
     else
-        ${TOOLBOSCORE_ROOT}/bin/AddGlobalInstallLogEntry.py "$1" \
+        "${TOOLBOSCORE_ROOT}"/bin/AddGlobalInstallLogEntry.py "$1" \
                                 "${MAKEFILE_GLOBALINSTALLREASON}"
     fi
 }
@@ -347,16 +347,16 @@ function MakefileSystem_addGlobalInstallLogEntry()
 
 function MakefileSystem_generateDefaultReadme()
 {
-    if [[ ! -e doc/README.txt && ! -z ${SETUP_SCRIPT} && -r ${SETUP_SCRIPT} ]]
+    if [[ ! -e doc/README.txt && ! -z "${SETUP_SCRIPT}" && -r "${SETUP_SCRIPT}" ]]
     then
         if [[ ! -d doc ]]
         then
             mkdir doc
         fi
 
-        PKG_DESCRIPTION=$(python ${SETUP_SCRIPT} --description)
-        PKG_VERSION=$(python ${SETUP_SCRIPT} --version)
-        PKG_URL=$(python ${SETUP_SCRIPT} --url)
+        PKG_DESCRIPTION=$(python "${SETUP_SCRIPT}" --description)
+        PKG_VERSION=$(python "${SETUP_SCRIPT}" --version)
+        PKG_URL=$(python "${SETUP_SCRIPT}" --url)
 
         echo -e "\nPACKAGE INFORMATION:"             > doc/README.txt
         echo -e "====================\n"            >> doc/README.txt
@@ -373,7 +373,7 @@ function MakefileSystem_installProcedure()
     # $1 = path to installed project (incl. version)
 
     MakefileSystem_generateDefaultReadme
-    MakefileSystem_addGlobalInstallLogEntry $1
+    MakefileSystem_addGlobalInstallLogEntry "$1"
     MakefileSystem_installShellfiles
 }
 
@@ -391,7 +391,7 @@ function MakefileSystem_globalinstall()
 {
     # $1 = path to installed project (3-digit version)
 
-    MakefileSystem_addGlobalInstallLogEntry $1
+    MakefileSystem_addGlobalInstallLogEntry "$1"
 }
 
 

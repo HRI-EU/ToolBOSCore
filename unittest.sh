@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 
 CWD=$(pwd)
@@ -61,13 +61,13 @@ echo "export TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}"
 #----------------------------------------------------------------------------
 
 
-cd ${CWD}/test/BuildSystemTools && runTest ./TestBuildSystemTools.sh
-cd ${CWD}/test/MakeShellfiles   && runTest ./TestMakeShellfiles.py
-cd ${CWD}/test/Misc             && runTest ./TestMisc.sh
-cd ${CWD}/test/SIT              && runTest ./TestSIT.sh
-cd ${CWD}/test/UserSetup        && runTest ./TestUserSetup.sh
+cd "${CWD}/test/BuildSystemTools" && runTest ./TestBuildSystemTools.sh
+cd "${CWD}/test/MakeShellfiles"   && runTest ./TestMakeShellfiles.py
+cd "${CWD}/test/Misc"             && runTest ./TestMisc.sh
+cd "${CWD}/test/SIT"              && runTest ./TestSIT.sh
+cd "${CWD}/test/UserSetup"        && runTest ./TestUserSetup.sh
 
-cd ${CWD} && python -m pytest -v
+cd "${CWD}" && python -m pytest -v
 
 # we managed to get here --> success
 exit 0

@@ -16,7 +16,7 @@
 
 source BashSrc
 source useFromHere.sh
-source ${SIT}/External/anaconda3/envs/common/3.9/BashSrc
+source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
 
 set -euxo pipefail
 

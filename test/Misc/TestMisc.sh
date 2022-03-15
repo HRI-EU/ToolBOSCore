@@ -34,12 +34,12 @@
 #
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
-cd ${CWD}/HelpTextConsistency && runTest ./TestHelpTextConsistency.py
-cd ${CWD}/ExecInAllProjects   && runTest ./TestExecInAllProjects.py
+cd "${CWD}/HelpTextConsistency" && runTest ./TestHelpTextConsistency.py
+cd "${CWD}/ExecInAllProjects"   && runTest ./TestExecInAllProjects.py
 
 
 # EOF

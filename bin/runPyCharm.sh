@@ -40,7 +40,7 @@ set -euo pipefail
 DESCRIPTION="PyCharm IDE"
 TOOLBOS_CONF_KEY=package_pycharm
 
-IDE_PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
+IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
 
 if [[ "$#" != 0 ]]
 then
@@ -100,7 +100,7 @@ CMD="pycharm.sh $(pwd)"
 echo "Launching ${DESCRIPTION}..."
 # shellcheck source=/hri/sit/latest/External/PyCharmPro/2021.2/BashSrc
 source "${SIT}/${IDE_PACKAGE}/BashSrc"
-exec ${CMD}
+exec "${CMD}"
 
 
 # EOF

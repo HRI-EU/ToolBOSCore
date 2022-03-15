@@ -40,7 +40,7 @@
 #----------------------------------------------------------------------------
 
 
-SCRIPTNAME=`basename $0`
+SCRIPTNAME=$(basename "$0")
 
 function showHelp()
 {
@@ -58,7 +58,7 @@ function showHelp()
 }
 
 
-if [[ "$BASH_ARGC" != 3 ]]
+if [[ $# != 3 ]]
 then
     showHelp
     exit
@@ -75,12 +75,12 @@ PCK_FILE=$3
 #----------------------------------------------------------------------------
 
 
-RTMAPS_VERSION=$(grep -oP '(?<=bst_find_package\(External/RTMaps/).*(?=\))' ${CMAKELISTS})
+RTMAPS_VERSION=$(grep -oP '(?<=bst_find_package\(External/RTMaps/).*(?=\))' "${CMAKELISTS}")
 
 if [[ -z "${RTMAPS_VERSION}" ]]
 then
     echo "Error: Unable to retrieve RTMaps version from ${CMAKELISTS}."
-    exit -1
+    exit 1
 fi
 
 
@@ -95,13 +95,13 @@ fi
 #----------------------------------------------------------------------------
 
 
-source ${SIT}/External/RTMaps/${RTMAPS_VERSION}/BashSrc
+source "${SIT}/External/RTMaps/${RTMAPS_VERSION}/BashSrc"
 
 if [[ -z "${RTMAPS_SDKDIR}" ]]
 then
     echo "Environment variable RTMAPS_SDKDIR not defined."
     echo "Please check the RTMaps installation."
-    exit -1
+    exit 1
 fi
 
 
@@ -112,7 +112,7 @@ then
     echo "${CMD}"
 fi
 
-$CMD
+${CMD}
 
 
 # EOF

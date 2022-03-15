@@ -34,21 +34,21 @@
 #
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
-cd ${CWD}/CMakeLists            && runTest ./TestCMakeLists.py
-cd ${CWD}/DocumentationCreator  && runTest ./TestDocumentationCreator.py
-cd ${CWD}/GlobalInstallLogEntry && runTest ./TestGlobalInstallLogEntry.py
-cd ${CWD}/NativeCompilation     && runTest ./TestNativeCompilation.py
+cd "${CWD}/CMakeLists"            && runTest ./TestCMakeLists.py
+cd "${CWD}/DocumentationCreator"  && runTest ./TestDocumentationCreator.py
+cd "${CWD}/GlobalInstallLogEntry" && runTest ./TestGlobalInstallLogEntry.py
+cd "${CWD}/NativeCompilation"     && runTest ./TestNativeCompilation.py
 
 
 if [[ "${CIA}" != "TRUE" ]]
 then
     # skip complex cross-compilation setup during Nightly Build
 
-    cd ${CWD}/WineMSVC          && runTest ./TestWineMSVC.py
+    cd "${CWD}/WineMSVC"          && runTest ./TestWineMSVC.py
 fi
 
 

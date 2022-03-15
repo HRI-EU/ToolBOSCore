@@ -63,11 +63,11 @@ set -euxo pipefail
 
 # launch the application
 echo "Launching ${DESCRIPTION}..."
-PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
+PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
 # shellcheck source=/hri/sit/latest/External/totalview/2020.0/BashSrc
 source "${SIT}/${PACKAGE}/BashSrc"
 
-exec memscape -newUI $*
+exec memscape -newUI "$@"
 
 
 # EOF

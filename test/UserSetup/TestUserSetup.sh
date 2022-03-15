@@ -34,11 +34,11 @@
 #
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
-cd ${CWD}/SetupWineMSVC && ./TestSetupWineMSVC.py
+cd "${CWD}/SetupWineMSVC" && ./TestSetupWineMSVC.py
 
 
 # EOF

@@ -62,7 +62,7 @@ function print_help()
     echo "present, sets the LD_LIBRARY_PATH to the local ./lib/<platform> "
     echo "directory and executes the specified program."
     echo ""
-    echo "Usage: $PROGNAME <executable>"
+    echo "Usage: ${PROGNAME} <executable>"
     echo ""
     echo "Parameters:"
     echo "        executable      the file to be executed"
@@ -71,7 +71,7 @@ function print_help()
     echo "        -h, --help      display this help and exit"
     echo ""
     echo "Examples:"
-    echo "        $PROGNAME ./examples/${MAKEFILE_PLATFORM}/myExample"
+    echo "        ${PROGNAME} ./examples/${MAKEFILE_PLATFORM}/myExample"
     echo ""
     echo "Please report bugs on JIRA (${TOOLBOS_CONF_BUGTRACK_URL})."
 
@@ -133,7 +133,7 @@ fi
 #----------------------------------------------------------------------------
 # source the regular BashSrc from the source tree if existing
 
-if [[ $VERBOSE == "TRUE" ]]
+if [[ ${VERBOSE} == "TRUE" ]]
 then
     echo -e "\n\n\033[1;31m$ BST.py --shellfiles\033[0m"
     BST.py --shellfiles
@@ -144,7 +144,7 @@ fi
 
 cd "${CWD}" || exit
 
-if [[ $VERBOSE == "TRUE" && ! -r ./install/BashSrc ]]
+if [[ ${VERBOSE} == "TRUE" && ! -r ./install/BashSrc ]]
 then
     echo -e "\n./install/BashSrc: No such file\n"
 fi
@@ -195,7 +195,7 @@ fi
 STATUS=$?
 
 
-exit ${STATUS}
+exit "${STATUS}"
 
 
 # EOF

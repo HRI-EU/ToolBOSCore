@@ -34,7 +34,7 @@
 #
 
 
-source ${TOOLBOSCORE_ROOT}/include/MakefileSystem.bash
+source "${TOOLBOSCORE_ROOT}/include/MakefileSystem.bash"
 
 
 # this will extract the tarball src/sources.tar.bz2 into src/sources/
