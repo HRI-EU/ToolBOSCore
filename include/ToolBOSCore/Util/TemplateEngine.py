@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: utf-8 -*-
 #
-#  JetBrains IDE launcher
+#  convenience functions for using the Mako template engine
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,73 +34,49 @@
 #
 
 
-#set -euo pipefail
+import logging
+import os
+
+from mako.lookup import TemplateLookup
+
+from ToolBOSCore.Util import Any, FastScript
 
 
-DESCRIPTION="PyCharm IDE"
-TOOLBOS_CONF_KEY=package_pycharm
-
-IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
-
-if [[ "$#" != 0 ]]
-then
-    SCRIPTNAME=$(basename "$0")
-
-    echo -e "\nLaunches the ${DESCRIPTION} pre-configured for this package.\n"
-
-    echo -e "Usage: ${SCRIPTNAME} [--help]\n"
-
-    echo -e "options:"
-    echo -e "  -h|--help       show this help and exit\n"
-
-    echo -e "Examples: ${SCRIPTNAME}\n"
-
-    exit 0
-fi
+# location of Mako templates
+templateDir = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
+                            'etc/mako-templates' )
 
 
-if [[ ! -e "${SIT}/External/OracleJava/1.0/BashSrc" ]]
-then
-    echo -e "\nOracle Java is required. Please run 'UpdateProxyDir.py' to get it.\n "
-    exit 1
-fi
+def run( srcFile, dstFile, values ):
+    """
+        Runs the templating engine, applying the given values
+        onto the template file 'srcFile', writing results into 'dstFile'.
+    """
+    Any.requireIsFile( srcFile )
+    Any.requireIsText( dstFile )
+    Any.requireIsDict( values )
 
+    logging.info( 'processing %s', dstFile )
 
-# If we are within a source package, attempt to pre-configure the IDE
-# accordingly. Otherwise just start the tool.
+    # First determine the directory of the template file, and tell Mako
+    # to search there. In a second step tell Mako to search for a template
+    # file in this search path.
+    #
+    # This is the only solution to get Mako's "include" working.
 
-if [[ -e CMakeLists.txt || -e pkgInfo.py ]]
-then
+    lookup   = TemplateLookup( directories=[ os.path.dirname( srcFile ) ] )
+    template = lookup.get_template( os.path.basename( srcFile ) )
 
-    # generate the BashSrc file for the current package and source it, in order
-    # to get PYTHONPATH and dependencies right, also add local "include" and "src"
-    # directories (to be sure they are found)
+    dstContent = template.render( **values )
+    Any.requireIsText( dstContent )
 
-    BST.py --shellfiles &> /dev/null
-    source ./install/BashSrc
+    FastScript.mkdir( os.path.dirname( dstFile ) )  # ensure dst dir. exists
+    FastScript.setFileContent( dstFile, dstContent )
+    Any.requireIsFile( dstFile )
 
-    CWD=$(pwd)
-    export PYTHONPATH=${CWD}/include:${CWD}/src:${PYTHONPATH}
-
-    echo -e "\nPYTHONPATH:"
-    echo "${PYTHONPATH}" | tr ":" "\n"
-    echo -e "\n"
-
-    echo -e "\nLD_LIBRARY_PATH:"
-    echo "${LD_LIBRARY_PATH}" | tr ":" "\n"
-    echo -e "\n"
-
-fi
-
-
-CMD="pycharm.sh $(pwd)"
-
-
-# launch the application
-echo "Launching ${DESCRIPTION}..."
-# shellcheck source=/hri/sit/latest/External/PyCharmPro/2021.2/BashSrc
-source "${SIT}/${IDE_PACKAGE}/BashSrc"
-exec "${CMD}"
+    # Mako does not set the executable-flag on the generated output file.
+    if os.access( srcFile, os.X_OK ):                  # if executable
+        os.chmod( dstFile, os.stat( srcFile )[0] )     # copy mode bits
 
 
 # EOF

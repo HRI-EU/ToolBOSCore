@@ -37,9 +37,9 @@
 import logging
 import os
 
-from ToolBOSCore.Packages import PackageCreator, PackageDetector
+from ToolBOSCore.Packages import PackageDetector
 from ToolBOSCore.Storage  import SIT
-from ToolBOSCore.Util     import Any
+from ToolBOSCore.Util     import Any, TemplateEngine
 
 
 class BashSrcWriter( object ):
@@ -78,10 +78,10 @@ class BashSrcWriter( object ):
     def write( self, outputFile ):
         logging.info( 'generating %s', os.path.relpath( outputFile, os.getcwd() ) )
 
-        srcFile = os.path.join( PackageCreator.templateDir_core, 'BST', 'BashSrc.mako' )
+        srcFile = os.path.join( TemplateEngine.templateDir, 'BST', 'BashSrc.mako' )
         dstFile = outputFile
 
-        PackageCreator.runMakoEngine( srcFile, dstFile, self.values )
+        TemplateEngine.run( srcFile, dstFile, self.values )
 
 
 # EOF

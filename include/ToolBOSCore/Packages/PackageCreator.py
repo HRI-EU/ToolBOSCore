@@ -39,8 +39,6 @@ import os
 import random
 import shutil
 
-from mako.lookup import TemplateLookup
-
 from ToolBOSCore.Packages.PackageDetector   import PackageDetector
 from ToolBOSCore.Packages.ProjectProperties import requireIsCanonicalPath
 from ToolBOSCore.Settings                   import ToolBOSConf
@@ -49,13 +47,11 @@ from ToolBOSCore.Storage.BashSrc            import BashSrcWriter
 from ToolBOSCore.Storage.CmdSrc             import CmdSrcWriter
 from ToolBOSCore.Storage.PackageVar         import PackageVarCmakeWriter
 from ToolBOSCore.Storage.PkgInfoWriter      import PkgInfoWriter
-from ToolBOSCore.Util                       import Any
-from ToolBOSCore.Util                       import FastScript
+from ToolBOSCore.Util                       import Any, FastScript, TemplateEngine
 
 
 # location of core templates such as Master, C_Library etc.
-templateDir_core = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'etc/mako-templates' )
+templateDir_core = TemplateEngine.templateDir
 
 # location of higher-level templates such as BBCMs etc.
 templateDir      = os.path.join( SIT.getPath(),
@@ -162,7 +158,7 @@ class PackageCreator( object ):
             Runs the templating engine, applying values from self.values
             onto the template file 'srcFile', writing results into 'dstFile'.
         """
-        runMakoEngine( srcFile, dstFile, self.values )
+        TemplateEngine.run( srcFile, dstFile, self.values )
 
 
     def copyVerbatim( self, srcFile, dstFile ):
@@ -1134,40 +1130,6 @@ def runTemplate( templateName, packageName, packageVersion, values=None,
         except ( AssertionError, ValueError ) as details:
             logging.error( details )
             return False
-
-
-def runMakoEngine( srcFile, dstFile, values ):
-    """
-        Runs the templating engine, applying the given values
-        onto the template file 'srcFile', writing results into 'dstFile'.
-    """
-    Any.requireIsFile( srcFile )
-    Any.requireIsText( dstFile )
-    Any.requireIsDict( values )
-
-    logging.info( 'processing %s', dstFile )
-
-
-    # First determine the directory of the template file, and tell Mako
-    # to search there. In a second step tell Mako to search for a template
-    # file in this search path.
-    #
-    # This is the only solution to get Mako's "include" working.
-
-    lookup   = TemplateLookup( directories=[ os.path.dirname( srcFile ) ] )
-    template = lookup.get_template( os.path.basename( srcFile ) )
-
-    dstContent = template.render( **values )
-    Any.requireIsText( dstContent )
-
-    FastScript.mkdir( os.path.dirname( dstFile ) )  # ensure dst dir. exists
-    FastScript.setFileContent( dstFile, dstContent )
-    Any.requireIsFile( dstFile )
-
-
-    # Mako does not set the executable-flag on the generated output file.
-    if os.access( srcFile, os.X_OK ):                  # if executable
-        os.chmod( dstFile, os.stat( srcFile )[0] )     # copy mode bits
 
 
 def makeShellfiles( projectRoot ):
