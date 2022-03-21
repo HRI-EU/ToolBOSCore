@@ -44,14 +44,17 @@ from ToolBOSCore.Util     import Any, TemplateEngine
 
 class BashSrcWriter( object ):
 
-    def __init__( self, details ):
+    def __init__( self, details, overrides=None ):
         """
             This constructor uses an existing PackageDetector instance
             to avoid multiple detection of package meta-information
             (for each derived subclass BashSrcWriter etc.)
+
+            You may provide a dict with values overriding the auto-detected
+            values, mainly intended for unittesting purposes.
         """
         Any.require( isinstance( details, PackageDetector.PackageDetector ) )
-
+        Any.requireIsList( details.inheritedProjects )
         sitDependencies = '('
         first           = True
 
@@ -73,6 +76,10 @@ class BashSrcWriter( object ):
                          'userSrcAlias'   : details.userSrcAlias,
                          'userSrcEnv'     : details.userSrcEnv,
                          'sitDependencies': sitDependencies }
+
+        if overrides:
+            Any.requireIsDictNonEmpty( overrides )
+            self.values.update( overrides )
 
 
     def write( self, outputFile ):
