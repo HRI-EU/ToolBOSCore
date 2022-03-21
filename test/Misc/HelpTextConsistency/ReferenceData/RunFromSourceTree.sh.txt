@@ -10,8 +10,6 @@ Parameters:
 
 Options:
         -h, --help      display this help and exit
-        -d, --debug     execute under GNU Data Display Debugger (ddd)
-        -p <platform>   run with settings for a different platform
 
 Examples:
         RunFromSourceTree.sh ./examples/${MAKEFILE_PLATFORM}/myExample
