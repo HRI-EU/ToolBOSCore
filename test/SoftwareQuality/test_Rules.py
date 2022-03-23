@@ -139,10 +139,7 @@ def test_runGen02_file_with_wrong_encoding( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN02()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                'TestData/TestFileGen01äÄß.py' }
+    files   = { 'test/SoftwareQuality/TestData/TestFileGen02-ISO-8859-1.py' }
 
     result  = rule.run( details, files )
 
