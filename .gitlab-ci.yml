@@ -26,11 +26,11 @@ test:
     script:
         - ./ci-test.sh
 
-check:
-    stage: check
-    script:
-        - ./ci-check.sh
-    allow_failure: true
+#check:
+#    stage: check
+#    script:
+#        - ./ci-check.sh
+#    allow_failure: true
 
 
 # EOF
