@@ -115,7 +115,7 @@ def test_runGen01_filename_in_other_languages( toolBOSCoreDetector ):
     assert result[0] == 'FAILED'
 
 
-def test_runGen02_file_with_utf08_encoding( toolBOSCoreDetector ):
+def test_runGen02_file_with_utf8_encoding( toolBOSCoreDetector ):
     """
         test rule GEN02 that Source code should be in ASCII or UTF-8 files,
         by providing files with valid encoding formats
@@ -124,7 +124,8 @@ def test_runGen02_file_with_utf08_encoding( toolBOSCoreDetector ):
     details = toolBOSCoreDetector
     files   = { 'include/ToolBOSCore/Util/Any.py',
                 'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py' }
+                'include/ToolBOSCore/Util/FastScript.py',
+                'test/SoftwareQuality/TestData/TestFileGen01äÄß.py' }
 
     result  = rule.run( details, files )
 
