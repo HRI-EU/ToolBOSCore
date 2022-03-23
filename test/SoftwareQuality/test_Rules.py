@@ -585,32 +585,6 @@ def test_runC10_package_with_Klocwork_issues( toolBOSLibDetector ):
     assert result[0] == 'FAILED'
 
 
-def test_runC16_package_without_function_like_defines( toolBOSLibDetector ):
-    """
-        test rule C16 that checks for C/C++ function-like macro presence,
-        by providing a package without function-like defines
-    """
-    rule    = Rules.Rule_C16()
-    details = toolBOSLibDetector
-    files   = { 'src/FileSystem.h',
-                'src/Barrier.c',
-                'src/BBDMSerialize.c',
-                'src/AnyLog.c',
-                'src/ArrayList.h',
-                'examples/BerkeleySocketServer.c' }
-
-    # C16 rule needs the package to be build before running the checker
-    if not os.path.isdir( details.buildDirArch ):
-        from ToolBOSCore.BuildSystem import BuildSystemTools
-
-        bst = BuildSystemTools.BuildSystemTools()
-        bst.compile()
-
-    result = rule.run( details, files )
-
-    assert result[0] == 'OK'
-
-
 def test_runBASH01_script_without_quotes( toolBOSCoreDetector ):
     """
         test rule BASH01 with scripts that have variables without quotes
