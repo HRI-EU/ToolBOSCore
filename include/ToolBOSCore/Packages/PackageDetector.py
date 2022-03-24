@@ -61,6 +61,10 @@ class PackageDetector( object ) :
 
         It can be only known to the context what to do with this info,
         and which other properties to falsify to come to some conclusions.
+
+        To avoid repetitive reads of the pkgInfo.py file, you may cache
+        its values in a dict and provide it as parameter. This may improve
+        performance by avoiding redundant file I/O.
     """
 
     def __init__( self, projectRoot=None, pkgInfoContent=None ):
@@ -74,6 +78,9 @@ class PackageDetector( object ) :
             raise AssertionError( 'unknown project root location' )
 
         Any.requireIsDir( projectRoot )
+
+        if pkgInfoContent is not None:
+            Any.requireIsDict( pkgInfoContent )
 
 
         # general meta-info

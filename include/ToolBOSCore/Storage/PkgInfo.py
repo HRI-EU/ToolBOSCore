@@ -34,22 +34,11 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Includes
-#----------------------------------------------------------------------------
-
-
-import logging
 import os
 
 from ToolBOSCore.Storage import SIT
 from ToolBOSCore.Util    import Any
 from ToolBOSCore.Util    import FastScript
-
-
-#----------------------------------------------------------------------------
-# Public functions
-#----------------------------------------------------------------------------
 
 
 def getPkgInfoContent( project = None, dirName = None, filename = None ):
