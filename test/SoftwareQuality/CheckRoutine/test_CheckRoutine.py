@@ -37,7 +37,6 @@
 
 import os
 import pytest
-import warnings
 import sys
 
 from ToolBOSCore.Packages                 import PackageCreator
@@ -322,10 +321,6 @@ def test_runPy04_files_without_exit_call( toolBOSCoreDetector ):
         test rule PY04 for usage of exit() calls by providing files
         without any exit() calls
     """
-    # temporarily Silencing the deprecation warnings (under common-3.7 env)
-    # TODO: warnings should be removed in future
-    warnings.filterwarnings( action="ignore", category=DeprecationWarning )
-
     rule    = Rules.Rule_PY04()
     details = toolBOSCoreDetector
 
@@ -342,10 +337,6 @@ def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
     """
         test rule PY04 for usage of exit() calls by providing files with exit() calls
     """
-    # temporarily Silencing the deprecation warnings (under common-3.7 env)
-    # TODO: warnings should be removed in future
-    warnings.filterwarnings( action="ignore", category=DeprecationWarning )
-
     rule    = Rules.Rule_PY04()
     details = toolBOSCoreDetector
     files   = { 'include/ToolBOSCore/Util/Any.py',
