@@ -22,6 +22,7 @@ stages:
     - check
 
 test:
+    timeout: 20 minutes
     stage: test
     script:
         - ./ci-test.sh
