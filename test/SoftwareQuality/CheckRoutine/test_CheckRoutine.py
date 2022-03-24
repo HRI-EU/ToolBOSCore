@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Unittests for Rules.py module
@@ -34,15 +35,18 @@
 #
 
 
-import logging
 import os
 import pytest
 import warnings
+import sys
 
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.Util                     import FastScript
+
+
+_refDir = 'test/SoftwareQuality/CheckRoutine/ReferenceData'
 
 
 @pytest.fixture
@@ -108,7 +112,7 @@ def test_runGen01_filename_in_other_languages( toolBOSCoreDetector ):
     files   = { 'include/ToolBOSCore/Util/Any.py',
                 'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
                 'include/ToolBOSCore/Util/FastScript.py',
-                '../TestData/TestFileGen01äÄß.py' }
+                f'{_refDir}/TestFileGen01äÄß.py' }
 
     result  = rule.run( details, files )
 
@@ -125,7 +129,7 @@ def test_runGen02_file_with_utf8_encoding( toolBOSCoreDetector ):
     files   = { 'include/ToolBOSCore/Util/Any.py',
                 'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
                 'include/ToolBOSCore/Util/FastScript.py',
-                'test/SoftwareQuality/TestData/TestFileGen01äÄß.py' }
+                f'{_refDir}/TestFileGen01äÄß.py' }
 
     result  = rule.run( details, files )
 
@@ -139,7 +143,7 @@ def test_runGen02_file_with_wrong_encoding( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN02()
     details = toolBOSCoreDetector
-    files   = { 'test/SoftwareQuality/TestData/TestFileGen02-ISO-8859-1.py' }
+    files   = { f'{_refDir}/TestFileGen02-ISO-8859-1.py' }
 
     result  = rule.run( details, files )
 
@@ -592,7 +596,7 @@ def test_runBASH01_script_without_quotes( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH01()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/withoutQuotes.bash' }
+    files   = { f'{_refDir}/withoutQuotes.bash' }
 
     result  = rule.run( details, files )
 
@@ -606,7 +610,7 @@ def test_runBASH01_script_with_quotes( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH01()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/withQuotes.bash'}
+    files   = { f'{_refDir}/withQuotes.bash'}
 
     result  = rule.run( details, files )
 
@@ -621,7 +625,7 @@ def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH03()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/withBackticks.bash' }
+    files   = { f'{_refDir}/withBackticks.bash' }
 
     result  = rule.run( details, files )
 
@@ -636,7 +640,7 @@ def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH03()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/withoutBackticks.bash' }
+    files   = { f'{_refDir}/withoutBackticks.bash' }
 
     result  = rule.run( details, files )
 
@@ -650,7 +654,7 @@ def test_runBASH04_script_args_in_string( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH04()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/argsInString.bash' }
+    files   = { f'{_refDir}/argsInString.bash' }
 
     result  = rule.run( details, files )
 
@@ -664,7 +668,7 @@ def test_runBASH04_script_args_in_array( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH04()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/argsInArray.bash'}
+    files   = { f'{_refDir}/argsInArray.bash'}
 
     result  = rule.run( details, files )
 
@@ -679,7 +683,7 @@ def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH06()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/withoutBraces.bash' }
+    files   = { f'{_refDir}/withoutBraces.bash' }
 
     result  = rule.run( details, files )
 
@@ -694,7 +698,7 @@ def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH06()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/withBraces.bash' }
+    files   = { f'{_refDir}/withBraces.bash' }
 
     result  = rule.run( details, files )
 
@@ -731,6 +735,15 @@ def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == 'OK'
+
+
+if __name__ == "__main__":
+    # The SQ checks operate on the rootdir. of the package.
+    # We therefore have to navigate there.
+    cwd = os.getcwd()
+    FastScript.changeDirectory( '../../..' )
+
+    sys.exit( pytest.main( [ '-vv', cwd ] ) )
 
 
 # EOF

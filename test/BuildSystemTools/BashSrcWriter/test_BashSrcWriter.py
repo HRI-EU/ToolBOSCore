@@ -44,40 +44,38 @@ from ToolBOSCore.Storage  import BashSrc, PkgInfo
 from ToolBOSCore.Util     import Any, FastScript
 
 
-class TestClass:
+def test_bashSrcWriter():
+    pkgInfoFile    = 'Middleware-pkgInfo.py'
+    refBashSrc     = 'Middleware-BashSrc'
 
-    def test_bashSrcWriter( self ):
-        pkgInfoFile    = 'Middleware-pkgInfo.py'
-        refBashSrc     = 'Middleware-BashSrc'
+    pkgInfoContent = PkgInfo.getPkgInfoContent( filename=pkgInfoFile )
+    Any.requireIsDictNonEmpty( pkgInfoContent )
 
-        pkgInfoContent = PkgInfo.getPkgInfoContent( filename=pkgInfoFile )
-        Any.requireIsDictNonEmpty( pkgInfoContent )
+    refFileContent = FastScript.getFileContent( refBashSrc )
+    Any.requireIsTextNonEmpty( refFileContent )
 
-        refFileContent = FastScript.getFileContent( refBashSrc )
-        Any.requireIsTextNonEmpty( refFileContent )
+    outBashSrc     = tempfile.mktemp( prefix='test-' )
 
-        outBashSrc     = tempfile.mktemp( prefix='test-' )
+    details        = PackageDetector.PackageDetector( pkgInfoContent=pkgInfoContent )
+    details.retrieveMakefileInfo()
 
-        details        = PackageDetector.PackageDetector( pkgInfoContent=pkgInfoContent )
-        details.retrieveMakefileInfo()
+    dependencies   = [ 'DevelopmentTools/ToolBOSCore/4.0',
+                       'External/anaconda3/envs/common/3.9',
+                       'ExternalAdapted/nanomsg/1.1',
+                       'Libraries/ToolBOSLib/4.0',
+                       'Libraries/IniConfigFile/1.1' ]
 
-        dependencies   = [ 'DevelopmentTools/ToolBOSCore/4.0',
-                           'External/anaconda3/envs/common/3.9',
-                           'ExternalAdapted/nanomsg/1.1',
-                           'Libraries/ToolBOSLib/4.0',
-                           'Libraries/IniConfigFile/1.1' ]
+    # override auto-detected values for unittesting purposes
+    details.inheritedProjects = dependencies
+    overrides      = { 'hasLibDir': True }
 
-        # override auto-detected values for unittesting purposes
-        details.inheritedProjects = dependencies
-        overrides      = { 'hasLibDir': True }
+    writer         = BashSrc.BashSrcWriter( details, overrides )
+    writer.write( outBashSrc )
 
-        writer         = BashSrc.BashSrcWriter( details, overrides )
-        writer.write( outBashSrc )
+    outFileContent = FastScript.getFileContent( outBashSrc )
+    Any.requireIsTextNonEmpty( outFileContent )
 
-        outFileContent = FastScript.getFileContent( outBashSrc )
-        Any.requireIsTextNonEmpty( outFileContent )
-
-        assert outFileContent == refFileContent
+    assert outFileContent == refFileContent
 
 
 if __name__ == "__main__":
