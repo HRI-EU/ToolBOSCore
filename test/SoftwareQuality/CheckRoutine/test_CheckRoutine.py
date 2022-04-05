@@ -740,8 +740,10 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'compile.sh',
-                'include/UnpackSources.sh' }
+    files   = { 'test/SoftwareQuality/TestData/setTestWithout.bash',
+                'test/SoftwareQuality/TestData/setTest1Fail.bash',
+                'test/SoftwareQuality/TestData/setTest2Fail.bash',
+                'test/SoftwareQuality/TestData/setTest3Fail.bash' }
 
     result  = rule.run( details, files )
 
@@ -756,8 +758,10 @@ def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'ci-test.sh',
-                'useFromHere.sh' }
+    files   = { 'test/SoftwareQuality/TestData/setTest1.bash',
+                'test/SoftwareQuality/TestData/setTest2.bash',
+                'test/SoftwareQuality/TestData/setTest3.bash',
+                'test/SoftwareQuality/TestData/setTest4.bash' }
 
     result  = rule.run( details, files )
 

@@ -34,6 +34,7 @@
 #
 
 
+import argparse
 import ast
 import collections
 import inspect
@@ -3304,14 +3305,22 @@ placed anywhere after `set -euo pipefail`.
         for filePath in files:
             lines = FastScript.getFileContent( filePath, splitLines=True )
             foundSet = False
+            setArgs = argparse.Namespace()
+            # Initialize setArgs namespace properly.
+            _parseSet( "set", setArgs )
             for line in lines:
-                if line.find( 'set -euo pipefail' ) != -1 or \
-                   line.find( 'set -euxo pipefail' ) != -1:
-                    foundSet = True
-                    break
+                if line.find( 'set' ) != -1:
+                    _parseSet( line, setArgs )
+                    if setArgs.e and setArgs.u and setArgs.p:
+                        foundSet = True
+                        break
             if not foundSet:
                 logging.info( "BASH07: %s: no 'set -euo pipefail' or 'set -euxo pipefail' found",
                               filePath )
+                flagStatus = {True: 'present', False: 'missing'}
+                logging.info( "BASH07: %s: 'set -e' %s , 'set -u' %s , 'set -o pipefail' %s",
+                              filePath, flagStatus[setArgs.e], flagStatus[setArgs.u],
+                              flagStatus[setArgs.p] )
                 failed += 1
             else:
                 passed += 1
@@ -3398,6 +3407,29 @@ def getRuleIDs():
     Any.requireIsListNonEmpty( result )
 
     return result
+
+
+def _parseSet( line, namespace ):
+    """
+        Parses bash's set arguments in line and puts them into namespace if found.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument( '-o', nargs='+', action='append' )
+    parser.add_argument( '-e', action='store_true' )
+    parser.add_argument( '-u', action='store_true' )
+    parser.add_argument( '-x', action='store_true' )
+    parser.add_argument( '-p', action='store_true' )
+    parser.parse_known_args( line.split(), namespace=namespace )
+    if hasattr( namespace, 'o' ) and namespace.o is not None and len(namespace.o) > 0:
+        for arg in namespace.o:
+            if arg[0] == 'errexit':
+                namespace.e = True
+            if arg[0] == 'nounset':
+                namespace.u = True
+            if arg[0] == 'pipefail':
+                namespace.p = True
+            if arg[0] == 'xtrace':
+                namespace.x = True
 
 
 # EOF

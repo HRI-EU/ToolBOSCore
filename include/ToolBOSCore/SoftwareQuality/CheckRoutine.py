@@ -409,9 +409,10 @@ class CheckRoutine( object ):
             if fileExt in self.bashExts:
                 self.bashFiles.add( filePath )
             else:
-                content = FastScript.getFileContent( filePath, True )
-                if len(content) > 0 and 'bash' in content[0].lower():
-                    self.bashFiles.add( filePath )
+                if fileExt == '':
+                    content = FastScript.getFileContent( filePath, True )
+                    if len(content) > 0 and 'bash' in content[0].lower():
+                        self.bashFiles.add( filePath )
 
     def _printEnabled( self ):
         """
