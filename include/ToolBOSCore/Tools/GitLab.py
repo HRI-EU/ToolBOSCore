@@ -159,6 +159,19 @@ class GitLabServer( object ):
         return project.id
 
 
+    def getUserList( self ) -> list:
+        """
+            Returns a list with all user accounts on the server.
+
+            Each entry in the returned list contains a dictionary of
+            attributes.
+        """
+        result = self._gl.users.list( all=True, as_list=True )
+        Any.requireIsListNonEmpty( result )
+
+        return result
+
+
     def setVariable( self, projectID:int, variable:str, value:str ):
         """
             Sets the given GitLab project variable for the project
