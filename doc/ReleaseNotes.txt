@@ -1,4 +1,28 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.26
+
+
+NEW FEATURES
+============
+
+  - [TECH-1138] added GitLab.getUserList()
+
+
+CHANGES
+=======
+
+  - [TBCORE-2303] BST.py -q: source shellcheck from SIT if not found
+  - [TBCORE-2298] re-implemented BashSrc-generator using Mako-template
+
+
+INTERNAL
+========
+
+  - [TBCORE-2295] improved Bash-scripts according to HRI-EU Quality Guideline
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.25
 
 
