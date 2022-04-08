@@ -458,6 +458,7 @@ def test_runDoc03_package_without_examples( tmp_path ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC01_package_with_exit_calls( toolBOSLibDetector ):
     """
         test rule C01 for usage of exit() calls within the package by providing
@@ -476,6 +477,7 @@ def test_runC01_package_with_exit_calls( toolBOSLibDetector ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC01_package_without_exit_calls( toolBOSLibDetector ):
     """
         test rule C01 for usage of exit() calls within the package by providing
@@ -492,6 +494,7 @@ def test_runC01_package_without_exit_calls( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC05_with_multi_inclusion_safeguards( toolBOSLibDetector ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
@@ -508,6 +511,7 @@ def test_runC05_with_multi_inclusion_safeguards( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC05_missing_multi_inclusion_safeguards( toolBOSLibDetector ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
@@ -527,6 +531,7 @@ def test_runC05_missing_multi_inclusion_safeguards( toolBOSLibDetector ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC09_BST_compliant_package( toolBOSLibDetector ):
     """
         test rule C09 that package can be built using BST.py by providing
@@ -539,6 +544,7 @@ def test_runC09_BST_compliant_package( toolBOSLibDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == 'OK'
+
 
 
 @pytest.mark.skip( reason="needs discussion before implementation" )
@@ -566,6 +572,7 @@ def test_runC09_non_BST_compliant_package( tmp_path ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC10_package_with_Klocwork_issues( toolBOSLibDetector ):
     """
         test rule C10 that executes the Klocwork source code analyzer in CLI mode,
