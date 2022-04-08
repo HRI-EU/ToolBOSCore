@@ -100,7 +100,7 @@ CMD="pycharm.sh $(pwd)"
 echo "Launching ${DESCRIPTION}..."
 # shellcheck source=/hri/sit/latest/External/PyCharmPro/2021.2/BashSrc
 source "${SIT}/${IDE_PACKAGE}/BashSrc"
-exec "${CMD}"
+exec ${CMD}
 
 
 # EOF
