@@ -39,12 +39,14 @@ import io
 import logging
 import subprocess
 
-from ToolBOSCore.Settings import ProcessEnv
+from ToolBOSCore.Settings import ProcessEnv, ToolBOSConf
 from ToolBOSCore.Util     import FastScript
 
 
 def checkScript( scriptPath, codes, enable=None ):
-    ProcessEnv.requireCommand( 'shellcheck' )
+    command        = 'shellcheck'
+    auxPackage     = ToolBOSConf.getConfigOption( 'package_shellcheck' )
+    ProcessEnv.checkAvailable( command, auxPackage )
 
     stdout         = io.StringIO()
     stderr         = io.StringIO()
@@ -59,7 +61,7 @@ def checkScript( scriptPath, codes, enable=None ):
     # .shellcheckrc-files are ignored, so that people don't bypass the checks.
     # The shell-dialect is fixed as "bash".
     #
-    cmd = f'shellcheck --format=gcc --include={codes} --norc --shell=bash {scriptPath}'
+    cmd = f'{command} --format=gcc --include={codes} --norc --shell=bash {scriptPath}'
 
     if enable:
         cmd += f' --enable={enable}'
