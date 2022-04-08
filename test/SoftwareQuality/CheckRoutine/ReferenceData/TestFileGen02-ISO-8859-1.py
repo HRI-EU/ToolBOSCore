@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: iso-8859-1 -*-
 #
-#  launches the unit testing
+#  test file for GEN02 with wrong encoding
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,11 +34,5 @@
 #
 
 
-source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
-
-CWD=$(pwd)
-
-cd "${CWD}/SetupWineMSVC" && ./TestSetupWineMSVC.py
-
-
-# EOF
+#test data for Gen02: files with special characters in source files
+x = 'TestDataGen02äÄß'

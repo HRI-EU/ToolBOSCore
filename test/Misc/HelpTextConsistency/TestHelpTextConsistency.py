@@ -39,6 +39,7 @@ import glob
 import io
 import logging
 import os
+import subprocess
 import unittest
 
 from ToolBOSCore.Platforms import Platforms
@@ -81,7 +82,7 @@ class TestHelpTextConsistency( unittest.TestCase ):
         FastScript.unsetEnv( 'BST_BUILD_JOBS' )
 
 
-        for program in pyScripts + shScripts + executables:
+        for program in sorted( pyScripts + shScripts + executables ):
 
             basename = os.path.basename( program )
             Any.requireIsTextNonEmpty( basename )
@@ -95,7 +96,11 @@ class TestHelpTextConsistency( unittest.TestCase ):
             Any.requireIsTextNonEmpty( cmd )
             Any.requireIsTextNonEmpty( fileName )
 
-            FastScript.execProgram( cmd, stdout=output, stderr=output )
+            try:
+                FastScript.execProgram( cmd, stdout=output, stderr=output )
+            except subprocess.CalledProcessError:
+                # error is handled below instead
+                pass
 
             expected = FastScript.getFileContent( fileName )
             result   = normalizeOutput( output.getvalue() )

@@ -34,12 +34,12 @@
 #
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
-cd ${CWD}/ArgsManagerV2 && ./TestArgsManagerV2.py
-cd ${CWD}/ThreadPool    && ./TestThreadPool.py
+cd "${CWD}/ArgsManagerV2" && ./TestArgsManagerV2.py
+cd "${CWD}/ThreadPool"    && ./TestThreadPool.py
 
 
 # EOF

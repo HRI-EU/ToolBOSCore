@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
-#  launches the unit testing
+#  Unittests for Rules.py module
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,11 +35,51 @@
 #
 
 
-source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
+import pytest
+import sys
+import tempfile
 
-CWD=$(pwd)
+from ToolBOSCore.Packages import PackageDetector
+from ToolBOSCore.Storage  import BashSrc, PkgInfo
+from ToolBOSCore.Util     import Any, FastScript
 
-cd "${CWD}/SetupWineMSVC" && ./TestSetupWineMSVC.py
+
+def test_bashSrcWriter():
+    pkgInfoFile    = 'Middleware-pkgInfo.py'
+    refBashSrc     = 'Middleware-BashSrc'
+
+    pkgInfoContent = PkgInfo.getPkgInfoContent( filename=pkgInfoFile )
+    Any.requireIsDictNonEmpty( pkgInfoContent )
+
+    refFileContent = FastScript.getFileContent( refBashSrc )
+    Any.requireIsTextNonEmpty( refFileContent )
+
+    outBashSrc     = tempfile.mktemp( prefix='test-' )
+
+    details        = PackageDetector.PackageDetector( pkgInfoContent=pkgInfoContent )
+    details.retrieveMakefileInfo()
+
+    dependencies   = [ 'DevelopmentTools/ToolBOSCore/4.0',
+                       'External/anaconda3/envs/common/3.9',
+                       'ExternalAdapted/nanomsg/1.1',
+                       'Libraries/ToolBOSLib/4.0',
+                       'Libraries/IniConfigFile/1.1' ]
+
+    # override auto-detected values for unittesting purposes
+    details.inheritedProjects = dependencies
+    overrides      = { 'hasLibDir': True }
+
+    writer         = BashSrc.BashSrcWriter( details, overrides )
+    writer.write( outBashSrc )
+
+    outFileContent = FastScript.getFileContent( outBashSrc )
+    Any.requireIsTextNonEmpty( outFileContent )
+
+    assert outFileContent == refFileContent
+
+
+if __name__ == "__main__":
+    sys.exit( pytest.main( [ '-vv' ] ) )
 
 
 # EOF

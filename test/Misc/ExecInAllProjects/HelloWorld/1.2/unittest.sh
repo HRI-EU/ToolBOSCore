@@ -43,7 +43,7 @@
 #----------------------------------------------------------------------------
 
 
-source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
+source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 
 #----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ source ${TOOLBOSCORE_ROOT}/include/Unittest.bash
 
 
 # list here each testprogram (one "runTest"-statement per line)
-runTest ./test/${MAKEFILE_PLATFORM}/unittest
+runTest "./test/${MAKEFILE_PLATFORM}/unittest"
 
 
 # we managed to get here --> success

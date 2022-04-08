@@ -41,6 +41,8 @@ NEW_VERSION=4.0
 sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           bin/*.bat \
                                           bin/ToolBOS-Setup.py \
+                                          ci-check.sh \
+                                          ci-test.sh \
                                           etc/ToolBOS.conf \
                                           doc/documentation.h \
                                           doc/ToolBOSCore/Setup/ShellConfig.md \

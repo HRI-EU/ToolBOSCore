@@ -43,17 +43,17 @@ function SIT_getPath()
     then
 
         echo "\$SIT: variable undefined"
-        exit -1
+        exit 1
 
     elif [[ ! -d "${SIT}" ]];
     then
 
         echo "${SIT}: No such directory"
-        exit -1
+        exit 1
 
     fi
 
-    echo ${SIT}
+    echo "${SIT}"
 }
 
 
@@ -62,15 +62,15 @@ function SIT_getRootPath()
     LOOPGUARD=10;    # allow max. 10 nesting levels of proxy directories
     SITPATH=$(SIT_getPath)
 
-    while [ -e "${SITPATH}/${SIT_PROXY_LINK_NAME}" -a $LOOPGUARD -gt 0 ]
+    while [ -e "${SITPATH}/${SIT_PROXY_LINK_NAME}" -a "${LOOPGUARD}" -gt 0 ]
     do
 
         SITPATH="${SITPATH}/${SIT_PROXY_LINK_NAME}"
-        LOOPGUARD=$(( $LOOPGUARD - 1 ))
+        LOOPGUARD=$(( ${LOOPGUARD} - 1 ))
 
     done
 
-    readlink -f $SITPATH
+    readlink -f "${SITPATH}"
 }
 
 

@@ -40,7 +40,7 @@ set -euo pipefail
 DESCRIPTION="CLion IDE"
 TOOLBOS_CONF_KEY=package_clion
 
-IDE_PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
+IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
 
 if [[ "$#" != 0 ]]
 then

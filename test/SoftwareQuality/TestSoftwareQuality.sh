@@ -38,7 +38,7 @@ source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
-cd "${CWD}/SetupWineMSVC" && ./TestSetupWineMSVC.py
+cd "${CWD}/CheckRoutine" && runTest ./test_CheckRoutine.py
 
 
 # EOF

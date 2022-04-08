@@ -39,13 +39,13 @@ function check
     "$@"
     local status=$?
 
-    if [[ $status != 0 ]]
+    if [[ ${status} != 0 ]]
     then
         echo -e "\nexecution failed: $*\n"
         exit 255
     fi
 
-    return $status
+    return "${status}"
 }
 
 
@@ -63,7 +63,7 @@ function execTest()
         then
             ${CMDLINE}
         else
-            RunFromSourceTree.sh ${CMDLINE}
+            RunFromSourceTree.sh "${CMDLINE}"
          fi
 
         if [[ $? != 0 ]]
@@ -84,7 +84,7 @@ function runTest()
 {
     CMDLINE=$@
 
-    execTest $@
+    execTest "$@"
 
     if [[ $? != 0 ]]
     then
@@ -96,7 +96,7 @@ function runTests()
 {
     for FILENAME in $1
     do
-        runTest ${FILENAME}
+        runTest "${FILENAME}"
     done
 }
 
@@ -108,7 +108,7 @@ function runMatlabTest()
 
     if [[ -f "${FILENAME}" ]]
     then
-        if [[ $FILENAME == *.m ]]
+        if [[ ${FILENAME} == *.m ]]
         then
             echo -e "\nStart test: ${FILENAME}"
             matlab -nodisplay -nosplash -nodesktop -r "try,run ${FILENAME},exit(0),catch e, disp(e.identifier), disp(e.message),clear e, exit(-1),end"

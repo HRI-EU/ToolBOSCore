@@ -34,13 +34,13 @@
 #
 
 
-set -euo pipefail
+#set -euo pipefail
 
 
 DESCRIPTION="PyCharm IDE"
 TOOLBOS_CONF_KEY=package_pycharm
 
-IDE_PACKAGE=$(ToolBOS-Config.py -p ${TOOLBOS_CONF_KEY})
+IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
 
 if [[ "$#" != 0 ]]
 then

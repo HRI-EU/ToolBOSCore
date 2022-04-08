@@ -56,6 +56,24 @@ from ToolBOSCore.Util            import FastScript
 #----------------------------------------------------------------------------
 
 
+def checkAvailable( command:str, package:str ) -> None:
+    """
+        Checks if 'command' is found in $PATH.
+
+        If not, attempts to source the given SIT package to make it available.
+
+        If afterwards 'command' is still not found in $PATH, an
+        EnvironmentError is raised.
+    """
+    Any.requireIsTextNonEmpty( command )
+    Any.requireIsTextNonEmpty( package )
+
+    if not which( command ):
+        source( package )
+
+    requireCommand( command )
+
+
 def source( package ):
     """
         Python equivalent of "source BashSrc" from SIT, in order to setup
@@ -75,7 +93,7 @@ def source( package ):
     ProjectProperties.requireIsInstalled( package )
 
 
-    logging.debug( 'source %s/pkgInfo.py', package )
+    logging.debug( 'source "${SIT}/' + package + '/BashSrc"   # actually pkgInfo.py' )
     sourced = '%s %s' % ( package, sourced )
     FastScript.setEnv( 'TOOLBOSCORE_SOURCED', sourced )
 
