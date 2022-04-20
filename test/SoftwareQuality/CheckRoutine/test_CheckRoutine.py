@@ -349,6 +349,35 @@ def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
     assert result[0] == 'FAILED'
 
 
+def test_runPy05_files_without_lint_issues( toolBOSCoreDetector ):
+    """
+        test rule PY05 for files without any pylint issues
+    """
+    rule    = Rules.Rule_PY05()
+    details = toolBOSCoreDetector
+    files   = { 'test/SoftwareQuality/CheckRoutine/ReferenceData/TestPy05_Calculator.py' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
+    """
+        test rule PY05 for files with pylint issues
+    """
+    rule    = Rules.Rule_PY05()
+    details = toolBOSCoreDetector
+    files   = { 'include/ToolBOSCore/Util/Any.py',
+                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                'include/ToolBOSCore/Util/FastScript.py',
+                'bin/GitCheckout.py' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
 def test_runDoc01_package_with_documentation( toolBOSCoreDetector ):
     """
         test rule DOC01 for presence of documentation within the package by

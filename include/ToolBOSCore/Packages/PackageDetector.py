@@ -69,7 +69,7 @@ class PackageDetector( object ) :
 
     def __init__( self, projectRoot=None, pkgInfoContent=None ):
 
-        from ToolBOSCore.SoftwareQuality.Common import sqLevelDefault
+        from ToolBOSCore.SoftwareQuality.Common import sqLevelDefault, pylintConf
 
         if not projectRoot:
             projectRoot = ProjectProperties.detectTopLevelDir()
@@ -118,6 +118,7 @@ class PackageDetector( object ) :
         self.installUmask      = None
         self.installMode       = 'incremental'
         self.linkAllLibraries  = False
+        self.pylintConf        = pylintConf
         self.usePatchlevels    = False
         self.userSrcContent    = None
         self.userSrcEnv        = ()
@@ -652,6 +653,7 @@ class PackageDetector( object ) :
         self.linkAllLibraries  = getValue( 'linkAllLibraries', self.linkAllLibraries )
         self.packageName       = getValue( 'name',             self.packageName )
         self.patchlevel        = getValue( 'patchlevel',       self.patchlevel )
+        self.pylintConf        = getValue( 'pylintConf',       self.pylintConf )
         self.recommendations   = getValue( 'recommends',       self.recommendations )
         self.svnRepositoryRoot = getValue( 'repositoryRoot',   self.svnRepositoryRoot )
         self.svnRepositoryURL  = getValue( 'repositoryUrl',    self.svnRepositoryURL )

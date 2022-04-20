@@ -34,6 +34,12 @@
 #
 
 
+import os
+
+from ToolBOSCore.Settings import ToolBOSConf
+from ToolBOSCore.Util     import FastScript
+
+
 OK                = 'OK'
 FAILED            = 'FAILED'
 DISABLED          = 'DISABLED'
@@ -72,6 +78,9 @@ sectionObjectives = { 'GEN' : 'Maintainability, compatibility',
                       'SAFE': 'Safety',
                       'SPEC': 'Safety, portability',
                       'BASH': 'Maintainability, safety' }
+
+tempPylintConf    = ToolBOSConf.getConfigOption( 'pylintConf' )
+pylintConf        = FastScript.expandVars( tempPylintConf )
 
 
 # EOF
