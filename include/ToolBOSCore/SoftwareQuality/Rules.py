@@ -3297,40 +3297,46 @@ placed anywhere after `set -euo pipefail`.
             Checks that Bash-scripts have a set -euo pipefail or
             a set -euxo pipefail line.
         """
-        logging.debug( "looking for 'set -euo pipefail' or 'set -euxo pipefail'" )
-        passed = 0
-        failed = 0
+        logging.debug( 'checking strict shell settings' )
 
-        files = filter( lambda f: os.path.basename( f ) not in self.skippedFiles, files )
-        for filePath in files:
-            lines = FastScript.getFileContent( filePath, splitLines=True )
+        passed     = 0
+        failed     = 0
+        flagStatus = { True: 'found', False: 'not found' }
+
+        for filePath in sorted( files ):
+            if os.path.basename( filePath ) in self.skippedFiles:
+                continue
+
+            lines    = FastScript.getFileContent( filePath, splitLines=True )
             foundSet = False
-            setArgs = argparse.Namespace()
-            # Initialize setArgs namespace properly.
-            _parseSet( "set", setArgs )
+            setArgs  = argparse.Namespace()
+
+            # initialize setArgs namespace properly
+            _parseSet( 'set', setArgs )
+
             for line in lines:
                 if line.find( 'set' ) != -1:
                     _parseSet( line, setArgs )
+
                     if setArgs.e and setArgs.u and setArgs.p:
                         foundSet = True
                         break
-            if not foundSet:
-                logging.info( "BASH07: %s: no 'set -euo pipefail' or 'set -euxo pipefail' found",
-                              filePath )
-                flagStatus = {True: 'present', False: 'missing'}
-                logging.info( "BASH07: %s: 'set -e' %s , 'set -u' %s , 'set -o pipefail' %s",
-                              filePath, flagStatus[setArgs.e], flagStatus[setArgs.u],
-                              flagStatus[setArgs.p] )
-                failed += 1
-            else:
+
+            if foundSet:
                 passed += 1
+            else:
+                logging.info( 'BASH07: strict settings missing in %s', filePath )
+                logging.info( "        'set -o errexit' or 'set -e': %s", flagStatus[ setArgs.e ] )
+                logging.info( "        'set -o nounset' or 'set -u': %s", flagStatus[ setArgs.u ] )
+                logging.info( "        'set -o pipefail'           : %s", flagStatus[ setArgs.p ] )
+                logging.info( '' )
 
         if failed == 0:
-            result = ( OK, passed, failed,
-                       "'set -euo pipefail' found" )
+            result = ( OK, passed, failed, 
+                       'strict shell settings found' )
         else:
             result = ( FAILED, passed, failed,
-                       "no 'set -euo pipefail' found" )
+                       'strict shell settings missing' )
 
         return result
 
