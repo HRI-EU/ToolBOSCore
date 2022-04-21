@@ -743,7 +743,8 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     files   = { f'{_refDir}/setTestWithout.bash',
                 f'{_refDir}/setTest1Fail.bash',
                 f'{_refDir}/setTest2Fail.bash',
-                f'{_refDir}/setTest3Fail.bash' }
+                f'{_refDir}/setTest3Fail.bash',
+                f'{_refDir}/setTest4Fail.bash' }
 
     result  = rule.run( details, files )
 

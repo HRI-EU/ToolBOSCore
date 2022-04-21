@@ -3315,8 +3315,9 @@ placed anywhere after `set -euo pipefail`.
             _parseSet( 'set', setArgs )
 
             for line in lines:
-                if line.find( 'set' ) != -1:
-                    _parseSet( line, setArgs )
+                setPos = line.find( 'set' )
+                if setPos != -1:
+                    _parseSet( line[setPos:], setArgs )
 
                     if setArgs.e and setArgs.u and setArgs.p:
                         foundSet = True
