@@ -740,10 +740,10 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/setTestWithout.bash',
-                'test/SoftwareQuality/TestData/setTest1Fail.bash',
-                'test/SoftwareQuality/TestData/setTest2Fail.bash',
-                'test/SoftwareQuality/TestData/setTest3Fail.bash' }
+    files   = { f'{_refDir}/setTestWithout.bash',
+                f'{_refDir}/setTest1Fail.bash',
+                f'{_refDir}/setTest2Fail.bash',
+                f'{_refDir}/setTest3Fail.bash' }
 
     result  = rule.run( details, files )
 
@@ -758,10 +758,10 @@ def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'test/SoftwareQuality/TestData/setTest1.bash',
-                'test/SoftwareQuality/TestData/setTest2.bash',
-                'test/SoftwareQuality/TestData/setTest3.bash',
-                'test/SoftwareQuality/TestData/setTest4.bash' }
+    files   = { f'{_refDir}/setTest1.bash',
+                f'{_refDir}/setTest2.bash',
+                f'{_refDir}/setTest3.bash',
+                f'{_refDir}/setTest4.bash' }
 
     result  = rule.run( details, files )
 

@@ -3325,6 +3325,7 @@ placed anywhere after `set -euo pipefail`.
             if foundSet:
                 passed += 1
             else:
+                failed += 1
                 logging.info( 'BASH07: strict settings missing in %s', filePath )
                 logging.info( "        'set -o errexit' or 'set -e': %s", flagStatus[ setArgs.e ] )
                 logging.info( "        'set -o nounset' or 'set -u': %s", flagStatus[ setArgs.u ] )
