@@ -604,7 +604,7 @@ class InstallProcedure( object ):
 
     def copyMatching( self, srcDir, srcPattern, dstDir=None,
                       relativeToHGR=False ):
-        """
+        r"""
             Schedules all files in the directory 'srcDir' which match
             the regular expression 'srcPattern' for later installation.
 
@@ -666,7 +666,7 @@ class InstallProcedure( object ):
 
     def copyMatchingWorker( self, srcDir, srcPattern, dstDir,
                             relativeToHGR=False ):
-        """
+        r"""
             Schedules all files in the directory 'srcDir' which match
             the regular expression 'srcPattern' for later installation.
 
