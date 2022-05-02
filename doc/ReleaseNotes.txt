@@ -1,4 +1,36 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.27
+
+
+NEW FEATURES
+============
+
+  - [TBCORE-2300] SQ BASH07: support long versions of 'set' command options
+  - [TBCORE-2225] SQ PY05: re-implementation based upon 'pylint'
+
+
+CHANGES
+=======
+
+  - [TBCORE-2303] BST.py -q: source shellcheck from SIT if not found
+  - [TBCORE-2298] re-implemented BashSrc-generator using Mako-template
+
+
+FIXED BUGS
+==========
+
+  - [TBCORE-2200] Fixed disabled escape button bug in ErrorDialog.py
+  - [TBCORE-2314] SQ BASH07: 'set'-commands are supposed to occur at beginning of lines
+
+
+INTERNAL
+========
+
+  - [TBCORE-2315] fixed some more Python 3.9 deprecation warnings
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.26
 
 
