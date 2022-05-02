@@ -349,6 +349,35 @@ def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
     assert result[0] == 'FAILED'
 
 
+def test_runPy05_files_without_lint_issues( toolBOSCoreDetector ):
+    """
+        test rule PY05 for files without any pylint issues
+    """
+    rule    = Rules.Rule_PY05()
+    details = toolBOSCoreDetector
+    files   = { 'test/SoftwareQuality/CheckRoutine/ReferenceData/TestPy05_Calculator.py' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'OK'
+
+
+def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
+    """
+        test rule PY05 for files with pylint issues
+    """
+    rule    = Rules.Rule_PY05()
+    details = toolBOSCoreDetector
+    files   = { 'include/ToolBOSCore/Util/Any.py',
+                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                'include/ToolBOSCore/Util/FastScript.py',
+                'bin/GitCheckout.py' }
+
+    result  = rule.run( details, files )
+
+    assert result[0] == 'FAILED'
+
+
 def test_runDoc01_package_with_documentation( toolBOSCoreDetector ):
     """
         test rule DOC01 for presence of documentation within the package by
@@ -458,6 +487,7 @@ def test_runDoc03_package_without_examples( tmp_path ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC01_package_with_exit_calls( toolBOSLibDetector ):
     """
         test rule C01 for usage of exit() calls within the package by providing
@@ -476,6 +506,7 @@ def test_runC01_package_with_exit_calls( toolBOSLibDetector ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC01_package_without_exit_calls( toolBOSLibDetector ):
     """
         test rule C01 for usage of exit() calls within the package by providing
@@ -492,6 +523,7 @@ def test_runC01_package_without_exit_calls( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC05_with_multi_inclusion_safeguards( toolBOSLibDetector ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
@@ -508,6 +540,7 @@ def test_runC05_with_multi_inclusion_safeguards( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC05_missing_multi_inclusion_safeguards( toolBOSLibDetector ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
@@ -527,6 +560,7 @@ def test_runC05_missing_multi_inclusion_safeguards( toolBOSLibDetector ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC09_BST_compliant_package( toolBOSLibDetector ):
     """
         test rule C09 that package can be built using BST.py by providing
@@ -539,6 +573,7 @@ def test_runC09_BST_compliant_package( toolBOSLibDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == 'OK'
+
 
 
 @pytest.mark.skip( reason="needs discussion before implementation" )
@@ -566,6 +601,7 @@ def test_runC09_non_BST_compliant_package( tmp_path ):
     assert result[0] == 'FAILED'
 
 
+@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
 def test_runC10_package_with_Klocwork_issues( toolBOSLibDetector ):
     """
         test rule C10 that executes the Klocwork source code analyzer in CLI mode,
@@ -704,8 +740,11 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'compile.sh',
-                'include/UnpackSources.sh' }
+    files   = { f'{_refDir}/setTestWithout.bash',
+                f'{_refDir}/setTest1Fail.bash',
+                f'{_refDir}/setTest2Fail.bash',
+                f'{_refDir}/setTest3Fail.bash',
+                f'{_refDir}/setTest4Fail.bash' }
 
     result  = rule.run( details, files )
 
@@ -720,8 +759,10 @@ def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { 'ci-test.sh',
-                'useFromHere.sh' }
+    files   = { f'{_refDir}/setTest1.bash',
+                f'{_refDir}/setTest2.bash',
+                f'{_refDir}/setTest3.bash',
+                f'{_refDir}/setTest4.bash' }
 
     result  = rule.run( details, files )
 

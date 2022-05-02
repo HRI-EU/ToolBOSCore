@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Specific test for BASH04, passing arguments in an array.
+#  Specific test for BASH07 without asny set.
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -32,11 +32,4 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Context before
-# I want to see this line in this file.
-# Context after
-
-# You will see me, too.
-args=(-A1 -B1 "in this file")
-# And me.
-grep "${args[@]}" "${0}"
+echo $RANDOM | base64

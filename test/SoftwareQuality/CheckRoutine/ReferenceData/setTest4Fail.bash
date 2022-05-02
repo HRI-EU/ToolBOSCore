@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Specific test for BASH04, passing arguments in an array.
+#  Specific test for BASH07 with a specific combination of flags.
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -32,11 +32,9 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Context before
-# I want to see this line in this file.
-# Context after
+echo -e "\nPrinting random number and set some flags."
 
-# You will see me, too.
-args=(-A1 -B1 "in this file")
-# And me.
-grep "${args[@]}" "${0}"
+set -u
+set -o pipefail
+
+echo $RANDOM | base64

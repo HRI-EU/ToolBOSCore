@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: utf-8 -*-
 #
-#  Specific test for BASH04, passing arguments in an array.
+#  simple virtual calculator program to test for PY05 without any pyint issues
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -31,12 +31,34 @@
 #  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+#
 
-# Context before
-# I want to see this line in this file.
-# Context after
 
-# You will see me, too.
-args=(-A1 -B1 "in this file")
-# And me.
-grep "${args[@]}" "${0}"
+class Calculator:
+    """Simple arithmetic calculator"""
+
+    def __init__(self):
+        self.last_result = None
+
+    def add(self, op_1: float, op_2: float) -> float:
+        """Add two float values"""
+        self.last_result = op_1 + op_2
+        return self.last_result
+
+    def sub(self, op_1, op_2):
+        """Subtract two  float values"""
+        self.last_result = op_1 - op_2
+        return self.last_result
+
+    def mul(self, op_1, op_2):
+        """Multiply two  float values"""
+        self.last_result = op_1 * op_2
+        return self.last_result
+
+    def div(self, op_1, op_2):
+        """Divide two  float values"""
+        self.last_result = op_1 / op_2
+        return self.last_result
+
+
+# EOF

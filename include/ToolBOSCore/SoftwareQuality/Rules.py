@@ -34,6 +34,7 @@
 #
 
 
+import argparse
 import ast
 import collections
 import inspect
@@ -55,7 +56,7 @@ from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import Klocwork,\
-                                                         Matlab, PyCharm,\
+                                                         Matlab,\
                                                          Valgrind, Shellcheck
 from ToolBOSCore.Util                             import Any, FastScript
 
@@ -2040,16 +2041,23 @@ class Rule_PY05( AbstractRule ):
 
     brief       = '''Use a static source code analyzer.'''
 
-    description = '''The **PyCharm IDE** contains a static source code
-analyzer for Python. The analyzer can also be used separately from commandline.
+    description = '''PY05 checker uses pylint as a linter for static code
+analysis of Python files. Pylint can also be used separately from commandline.
 
 It reports problems in your Python scripts, such as wrong API usage,
-incompatibility with certain Python versions, or questionable coding practics.
+incompatibility with certain Python versions, or questionable coding practices.
 
-Please regularly inspect your scripts using PyCharm.'''
+By default the checker reports only errors in your python code.
+You can configure the checker in the following two steps:
 
-    seeAlso     = { 'PyCharm Home':
-                    'https://www.jetbrains.com/pycharm' }
+  * Add a `pyproject.toml` file and configure it as per your project requirement.
+  * Specify path to the `pyproject.toml` file in pkgInfo.py as: 
+  'pylintConf' = '/path/to/pylint/conf'
+
+Please regularly inspect your scripts using Pylint.'''
+
+    seeAlso     = { 'Pylint Home':
+                    'https://pylint.pycqa.org/en/latest/user_guide/run.html' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
@@ -2061,59 +2069,51 @@ Please regularly inspect your scripts using PyCharm.'''
         if not details.isPythonPackage():
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
-        logging.debug( 'performing source code analysis using PyCharm' )
-        passed = 0
-        failed = 0
-        error  = False
+        from ToolBOSCore.Tools import Pylint
 
+        logging.info( 'performing source code analysis using pylint' )
+        passed        = 0
+        failed        = 0
+        overallIssues = 0
 
-        # Shortcut: Ignore if 'pkgInfo.py' is the only Python file in package
-        # (e.g. for build- or SQ-settings). This file hardly will contain
-        # major flaws, but in contrast the check often fails because of
-        # missing license (see TBCORE-1199).
+        timestamp      = FastScript.now().strftime( '%d%m%Y_%H%M%S' )
+        outputFileName = 'pylint_result_' + timestamp + '.log'
+        logging.info( 'PY05: using pylint config file: %s', details.pylintConf )
 
-        isPythonFile    = lambda s: s.endswith( '.py' )
-        isPkgInfo       = lambda s: os.path.basename( s ) == 'pkgInfo.py'
-        numberOfPyFiles = list( map( isPythonFile, files ) ).count( True )
-        pkgInfoFound    = filter( isPkgInfo, files )
+        # pylint provides configuration '--output=<file>' to redirect output
+        # to file, while using this option it writes additional characters to
+        # file, making it difficult to read the results. for better readability
+        # we are using sys.stdout to redirect the output to a file
 
-        if numberOfPyFiles == 1 and pkgInfoFound:
-            msg = 'no Python files (besides pkgInfo.py)'
-            logging.debug( 'PY05: %s', msg )
-            return OK, 1, 0, msg
+        sys.stdout = open( outputFileName, 'w' )
+        for filePath in sorted( files ):
+            if filePath.endswith( '.py' ) and \
+               not ( filePath.endswith( '__init__.py' )or filePath.endswith( 'pkgInfo.py' ) ) :
 
+                print( "Analyzing file: " + filePath )
 
-        # PyCharm's code inspector works on the whole project, hence we
-        # cannot compute failed/passed files like this. We can only consider
-        # the whole test passed or not depending on if some special output
-        # files have been generated or not.
+                pylintResult   = Pylint.getPylintResult( filePath, details.pylintConf )
+                codeIssues     = Pylint.getTotalPylintIssues( pylintResult )
+                overallIssues += codeIssues
 
-        try:
-            rawData = PyCharm.codeCheck()
-            defects = PyCharm.parseCodeCheckResult( rawData )
-
-            if defects:
-                for item in defects:
-                    if not item[0].startswith( 'doc/html' ):
-                        logging.info( 'PY05: %s:%s: %s', *item )
-                        failed += 1
-        except RuntimeError as details:
-            logging.error( 'PY05: %s', details )
-            failed += 1
-            error   = True
-
+                if codeIssues > 1:
+                    logging.info( 'PY05: %s: %d issues', filePath, codeIssues )
+                    failed += 1
+                elif codeIssues == 1:
+                    logging.info( 'PY05: %s: %d issue', filePath, codeIssues )
+                    failed += 1
+                else:
+                    passed += 1
+        sys.stdout.close()
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       'no defects found' )
+                       'no issues found by pylint' )
         else:
-            if error:
-                result = ( FAILED, 0, 1,
-                           'unable to run code analysis with PyCharm' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'found %d defects' % failed )
-
+            msg = 'pylint found %s issues' % overallIssues
+            result = ( FAILED, passed, failed, msg )
+            logging.info( 'for detailed code issues refer to: %s',
+                          outputFileName )
         return result
 
 
@@ -3297,32 +3297,48 @@ placed anywhere after `set -euo pipefail`.
             Checks that Bash-scripts have a set -euo pipefail or
             a set -euxo pipefail line.
         """
-        logging.debug( "looking for 'set -euo pipefail' or 'set -euxo pipefail'" )
-        passed = 0
-        failed = 0
+        logging.debug( 'checking strict shell settings' )
 
-        files = filter( lambda f: os.path.basename( f ) not in self.skippedFiles, files )
-        for filePath in files:
-            lines = FastScript.getFileContent( filePath, splitLines=True )
+        passed     = 0
+        failed     = 0
+        flagStatus = { True: 'found', False: 'not found' }
+
+        for filePath in sorted( files ):
+            if os.path.basename( filePath ) in self.skippedFiles:
+                continue
+
+            lines    = FastScript.getFileContent( filePath, splitLines=True )
             foundSet = False
+            setArgs  = argparse.Namespace()
+
+            # initialize setArgs namespace properly
+            _parseSet( 'set', setArgs )
+
             for line in lines:
-                if line.find( 'set -euo pipefail' ) != -1 or \
-                   line.find( 'set -euxo pipefail' ) != -1:
-                    foundSet = True
-                    break
-            if not foundSet:
-                logging.info( "BASH07: %s: no 'set -euo pipefail' or 'set -euxo pipefail' found",
-                              filePath )
-                failed += 1
-            else:
+                setPos = line.find( 'set' )
+                if setPos != -1:
+                    _parseSet( line[setPos:], setArgs )
+
+                    if setArgs.e and setArgs.u and setArgs.p:
+                        foundSet = True
+                        break
+
+            if foundSet:
                 passed += 1
+            else:
+                failed += 1
+                logging.info( 'BASH07: strict settings missing in %s', filePath )
+                logging.info( "        'set -o errexit' or 'set -e': %s", flagStatus[ setArgs.e ] )
+                logging.info( "        'set -o nounset' or 'set -u': %s", flagStatus[ setArgs.u ] )
+                logging.info( "        'set -o pipefail'           : %s", flagStatus[ setArgs.p ] )
+                logging.info( '' )
 
         if failed == 0:
-            result = ( OK, passed, failed,
-                       "'set -euo pipefail' found" )
+            result = ( OK, passed, failed, 
+                       'strict shell settings found' )
         else:
             result = ( FAILED, passed, failed,
-                       "no 'set -euo pipefail' found" )
+                       'strict shell settings missing' )
 
         return result
 
@@ -3399,6 +3415,29 @@ def getRuleIDs():
     Any.requireIsListNonEmpty( result )
 
     return result
+
+
+def _parseSet( line, namespace ):
+    """
+        Parses bash's set arguments in line and puts them into namespace if found.
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument( '-o', nargs='+', action='append' )
+    parser.add_argument( '-e', action='store_true' )
+    parser.add_argument( '-u', action='store_true' )
+    parser.add_argument( '-x', action='store_true' )
+    parser.add_argument( '-p', action='store_true' )
+    parser.parse_known_args( line.split(), namespace=namespace )
+    if hasattr( namespace, 'o' ) and namespace.o is not None and len(namespace.o) > 0:
+        for arg in namespace.o:
+            if arg[0] == 'errexit':
+                namespace.e = True
+            if arg[0] == 'nounset':
+                namespace.u = True
+            if arg[0] == 'pipefail':
+                namespace.p = True
+            if arg[0] == 'xtrace':
+                namespace.x = True
 
 
 # EOF

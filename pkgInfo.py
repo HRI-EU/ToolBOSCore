@@ -78,7 +78,7 @@ sqLevel          = 'advanced'
 sqOptOutRules    = [ 'C10' ]
 
 # opt-out testcase data that would provoke a failure of SQ check onto this package
-sqOptOutDirs     = [ 'test/SoftwareQuality/TestData' ]
+sqOptOutDirs     = [ 'test/SoftwareQuality/CheckRoutine/ReferenceData' ]
 
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'C10'  : 'do not invoke Klocwork on example files' }

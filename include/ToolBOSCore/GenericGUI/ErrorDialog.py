@@ -98,6 +98,7 @@ def ErrorDialog( title, msg, printException=False, resizable=False ):
     msgBox.setWindowTitle( title )
     msgBox.setDetailedText( msg )
     msgBox.setStandardButtons( QMessageBox.Ok )
+    msgBox.setEscapeButton( QMessageBox.Ok )
 
     msgBox.exec_()
 

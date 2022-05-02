@@ -167,6 +167,11 @@ At loading time the Python code gets evaluated and the following variables are s
       <td>paths to the executables, including arguments (if any), that
           shall be analyzed by the valgrind check routine</td>
  </tr>
+<tr>
+      <td>pylintConf</td>
+      <td>string</td>
+      <td>path to the user pylint configuration file</td>
+ </tr>
  <tr>
    <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
        colspan="3">documentation</td>
