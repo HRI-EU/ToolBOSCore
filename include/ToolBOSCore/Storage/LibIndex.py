@@ -39,6 +39,7 @@ import logging
 import os
 import shutil
 
+from ToolBOSCore.Packages                   import PackageDetector
 from ToolBOSCore.Packages.ProjectProperties import getDependencies
 from ToolBOSCore.Packages.ProjectProperties import splitPath
 from ToolBOSCore.Platforms.Platforms        import getPlatformNames
@@ -344,12 +345,13 @@ def addLibraries( index, canonicalPath ):
     Any.requireMsg( os.path.exists( installRoot ),
                        "%s: No such package in SIT" % installRoot )
 
-    linkAll_fileName = installRoot + os.sep + 'LinkAllLibraries'
-    linkAll          = os.path.exists( linkAll_fileName )
+    details = PackageDetector.PackageDetector()
+    details.retrieveMakefileInfo()
 
-    if linkAll:
-        logging.debug( "%s: LinkAllLibraries found", canonicalPath )
+    linkAllLibraries = details.linkAllLibraries
 
+    if linkAllLibraries:
+        logging.debug( "found linkAllLibraries set to True in pkgInfo.py" )
 
     # standard directory layout (lib/<platform>)
 
@@ -364,7 +366,7 @@ def addLibraries( index, canonicalPath ):
 
             filePath = libDir + os.sep + fileName
 
-            if ( linkAll                       == True ) or \
+            if ( linkAllLibraries              == True ) or \
                ( match( fileName, '*.so.*.*' ) == True ) or \
                ( match( fileName, '*.syms'   ) == True ) or \
                ( match( fileName, '*.dll*'   ) == True ) or \
@@ -392,7 +394,7 @@ def addLibraries( index, canonicalPath ):
             # the filename patterns below have been taken 1:1 from original
             # PHP implementation
 
-            if ( linkAll                           == True ) or \
+            if ( linkAllLibraries                == True ) or \
                ( match( fileName, '*.so.*.*'   ) == True ) or \
                ( match( fileName, '*.dll*'     ) == True ) or \
                ( match( fileName, '*.so*'      ) == True and os.path.islink( filePath ) == False ) or \
@@ -512,12 +514,15 @@ def addMainPackage( index, canonicalPath ):
     Any.requireMsg( os.path.exists( installRoot ),
                        "%s: No such package in SIT" % installRoot )
 
-    linkAll_fileName = installRoot + os.sep + 'LinkAllLibraries'
-    linkAll          = os.path.exists( linkAll_fileName )
-    match            = fnmatch.fnmatch
+    match   = fnmatch.fnmatch
 
-    if linkAll:
-        logging.debug( "%s: LinkAllLibraries found", canonicalPath )
+    details = PackageDetector.PackageDetector()
+    details.retrieveMakefileInfo()
+
+    linkAllLibraries = details.linkAllLibraries
+
+    if linkAllLibraries:
+        logging.debug( "found linkAllLibraries set to True in pkgInfo.py" )
 
     for platform in index.platforms:
         tail     = 'lib'       + os.sep + platform
@@ -528,7 +533,7 @@ def addMainPackage( index, canonicalPath ):
 
             filePath = libDir + os.sep + fileName
 
-            if ( linkAll                           == True ) or \
+            if ( linkAllLibraries                == True ) or \
                ( match( fileName, '*.so.*.*'   ) == True ) or \
                ( match( fileName, '*.dll*' ) == True ) or \
                ( match( fileName, '*.so*'      ) == True and os.path.islink( filePath ) == False ) or \
