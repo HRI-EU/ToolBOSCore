@@ -2968,7 +2968,9 @@ Output:
                                               '2046,2048,2068,2086,2248',
                                               'quote-safe-variables')
             if results[0] == True:
-                logging.info( "BASH01: %s: unquoted strings, variables, substitutions", filePath )
+                _printErrorReport( 'BASH01',
+                                   'unquoted strings, variables, substitutions',
+                                   filePath, results[1] )
                 failed += 1
             else:
                 passed += 1
@@ -3059,7 +3061,9 @@ parenthesis.
         for filePath in files:
             results = Shellcheck.checkScript( filePath, '2006' )
             if results[0] == True:
-                logging.info( "BASH03: %s: command-substitution with backticks", filePath )
+                _printErrorReport( 'BASH03',
+                                   'command-substitution with backticks',
+                                   filePath, results[1] )
                 failed += 1
             else:
                 passed += 1
@@ -3126,7 +3130,9 @@ output:
         for filePath in files:
             results = Shellcheck.checkScript( filePath, '2089,2090' )
             if results[0] == True:
-                logging.info( "BASH04: %s: string used for passing arguments", filePath )
+                _printErrorReport( 'BASH04',
+                                   'string used for passing arguments',
+                                   filePath, results[1] )
                 failed += 1
             else:
                 passed += 1
@@ -3214,7 +3220,9 @@ errors or behaviour.
         for filePath in files:
             results = Shellcheck.checkScript( filePath, '2250', 'require-variable-braces')
             if results[0] == True:
-                logging.info( "BASH06: %s: variables referred to without braces", filePath )
+                _printErrorReport( 'BASH06',
+                                   'variables referred to without braces',
+                                   filePath, results[1] )
                 failed += 1
             else:
                 passed += 1
@@ -3327,12 +3335,16 @@ placed anywhere after `set -euo pipefail`.
                 passed += 1
             else:
                 failed += 1
-                logging.info( 'BASH07: strict settings missing in %s', filePath )
-                logging.info( "        'set -o errexit' or 'set -e': %s", flagStatus[ setArgs.e ] )
-                logging.info( "        'set -o nounset' or 'set -u': %s", flagStatus[ setArgs.u ] )
-                logging.info( "        'set -o pipefail'           : %s", flagStatus[ setArgs.p ] )
-                logging.info( '' )
-
+                results = [ 'Please add the following at the top of your script:' ]
+                if not setArgs.e:
+                    results.append( "'set -o errexit' or 'set -e'" )
+                if not setArgs.u:
+                    results.append( "'set -o nounset' or 'set -u'")
+                if not setArgs.p:
+                    results.append( "'set -o pipefail'")
+                _printErrorReport( 'BASH07',
+                                   'strict settings missing',
+                                   filePath, results )
         if failed == 0:
             result = ( OK, passed, failed, 
                        'strict shell settings found' )
@@ -3438,6 +3450,17 @@ def _parseSet( line, namespace ):
                 namespace.p = True
             if arg[0] == 'xtrace':
                 namespace.x = True
+
+
+def _printErrorReport( ruleName, description, filePath, explanation ):
+    logging.info( "%s: %s", ruleName, '-'*80 )
+    logging.info( "%s: %s: %s", ruleName, filePath, description )
+    if type(explanation) is list:
+        for line in explanation:
+            logging.info( "%s: %s", ruleName, line )
+    else:
+        logging.info( "%s: %s", ruleName, explanation )
+    logging.info( "%s: %s", ruleName, '-'*80 )
 
 
 # EOF
