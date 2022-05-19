@@ -3440,6 +3440,7 @@ def _parseSet( line, namespace ):
     parser.add_argument( '-x', action='store_true' )
     parser.add_argument( '-p', action='store_true' )
     parser.parse_known_args( line.split(), namespace=namespace )
+
     if hasattr( namespace, 'o' ) and namespace.o is not None and len(namespace.o) > 0:
         for arg in namespace.o:
             if arg[0] == 'errexit':
@@ -3453,14 +3454,16 @@ def _parseSet( line, namespace ):
 
 
 def _printErrorReport( ruleName, description, filePath, explanation ):
-    logging.info( "%s: %s", ruleName, '-'*80 )
+    logging.info( "%s: %s", ruleName, '-' * 80 )
     logging.info( "%s: %s: %s", ruleName, filePath, description )
-    if type(explanation) is list:
+
+    if type( explanation ) is list:
         for line in explanation:
             logging.info( "%s: %s", ruleName, line )
     else:
         logging.info( "%s: %s", ruleName, explanation )
-    logging.info( "%s: %s", ruleName, '-'*80 )
+
+    logging.info( "%s: %s", ruleName, '-' * 80 )
 
 
 # EOF
