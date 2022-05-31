@@ -34,7 +34,7 @@
 #
 
 
-set -euo pipefail
+#set -euo pipefail
 
 
 DESCRIPTION="CLion IDE"

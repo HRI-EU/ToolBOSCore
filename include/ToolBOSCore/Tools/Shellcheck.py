@@ -61,7 +61,7 @@ def checkScript( scriptPath, codes, enable=None ):
     # .shellcheckrc-files are ignored, so that people don't bypass the checks.
     # The shell-dialect is fixed as "bash".
     #
-    cmd = f'{command} --format=gcc --include={codes} --norc --shell=bash {scriptPath}'
+    cmd = f'{command} --include={codes} --norc --shell=bash {scriptPath}'
 
     if enable:
         cmd += f' --enable={enable}'
