@@ -1,4 +1,16 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.28
+
+
+CHANGES
+=======
+
+  - [TBCORE-2299] SQ BASH*: more verbose + descriptive output
+  - launch 2022.1 versions of PyCharm + CLion
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.27
 
 
