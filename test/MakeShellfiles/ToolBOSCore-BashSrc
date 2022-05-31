@@ -44,20 +44,26 @@
 
 # This fix creates trouble when re-sourcing ToolBOS as a dependency of other
 # packages. In this case, regardless what TOOLBOSCORE_ROOT was being set to
-# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/4.0 :-/
+# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/4.1 :-/
 #
 ## workaround for LD_LIBRARY_PATH being emptied for security reasons
 ## at "newgrp" command while all other variables survive
 #if [[ ! -z ${TOOLBOSCORE_SOURCED} &&
-#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/4.0" ]]
+#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/4.1" ]]
 #then
 #    unset TOOLBOSCORE_SOURCED
 #fi
 #
 
 
+if [[ -z ${TOOLBOSCORE_SOURCED+x} ]]
+then
+    export TOOLBOSCORE_SOURCED=""
+fi
+
+
 # avoid multiple inclusion
-if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/4.0" ]]
+if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/4.1" ]]
 then
 
     # auto-detect location of this BashSrc file
@@ -77,14 +83,20 @@ then
     # An exception of this is when sourcing the BashSrc from an SVN branch
     # named e.g. "2.0_devel". If we find an underscore (likely indicating
     # such branch), we keep the version as-is.
-    if [[ ! ${TOOLBOS_VERSION_FULL} =~ "_" && -z ${TOOLBOSCORE_AUTO_VERSION} ]]
+
+    if [[ -z ${TOOLBOSCORE_AUTO_VERSION+x} ]]
     then
-      TOOLBOS_VERSION=$(expr "$TOOLBOS_VERSION_FULL" : '\([[:digit:]]*\.[[:digit:]]*\)')
-    else
-      TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
+        export TOOLBOSCORE_AUTO_VERSION=""
     fi
 
-    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/4.0 ${TOOLBOSCORE_SOURCED}"
+    if [[ ! ${TOOLBOS_VERSION_FULL} =~ "_" && -z ${TOOLBOSCORE_AUTO_VERSION} ]]
+    then
+        TOOLBOS_VERSION=$(expr "$TOOLBOS_VERSION_FULL" : '\([[:digit:]]*\.[[:digit:]]*\)')
+    else
+        TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
+    fi
+
+    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/4.1 ${TOOLBOSCORE_SOURCED}"
 
 
     #------------------------------------------------------------------------

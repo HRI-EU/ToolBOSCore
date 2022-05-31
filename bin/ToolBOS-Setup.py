@@ -61,19 +61,19 @@ sys.path.append( os.path.join( tcRootDir, 'include' ) )
 sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 
 
-# check if ToolBOSCore/4.0/BashSrc was sourced (so PYTHONPATH was set),
+# check if ToolBOSCore/4.1/BashSrc was sourced (so PYTHONPATH was set),
 # otherwise we will not be able to import any ToolBOSCore Python package
 #
 sourced = False
 
 for directory in sys.path:
-    if directory.endswith( 'ToolBOSCore/4.0/include' ) or \
+    if directory.endswith( 'ToolBOSCore/4.1/include' ) or \
        directory.endswith( 'ToolBOSCore/include' ):
         sourced = True
 
 if not sourced:
     print( "\nPlease run the following command first:" )
-    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/BashSrc\n" )
+    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.1/BashSrc\n" )
     sys.exit( -1 )
 
 
