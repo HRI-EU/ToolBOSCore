@@ -80,6 +80,5 @@ You may configure your settings using ToolBOS-Config.py:
 | package_nanomsg 	       | canonical path of the NanoMsg library to use (e.g. "External/nanomsg/1.0")
 | package_pycharm 	       | canonical path of PyCharm SIT package (e.g. "External/PyCharmPro/4.5")
 | package_rtmaps           | canonical path of RTMaps SIT package (e.g. "External/RTMaps/4.7")
-| package_totalview 	   | canonical path of TotalView debugger package (e.g. "External/totalview/8.15")
 | serverAccounts 	       | username to use for SSH when connecting to certain hosts (a Python dictionary mapping hostname => username)
 | SVN_allowedHosts 	       | whitelist of hosts allowed to checkout from during Nightly Build, aka servers considered to contain the official versions 

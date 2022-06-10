@@ -105,26 +105,6 @@ If a memory violation occurs a segfault will be triggered. Analyze the location 
     [Source-code debugging](SourceCodeDebugging.md)
     
 
-###  MemoryScape
-     
-...is a commercial product by Rogue Wave Software, Inc. . HRI-EU got a license bundled together with the TotalView debugger.
-     
-**See also**  
-       http://www.roguewave.com/products/memoryscape.aspx 
-       http://www.roguewave.com/support/product-documentation/totalview.aspx
-       
-             
-     $ source ${SIT}/External/totalview/8.15/BashSrc
-     
-     $ memscape <executable> [-a <arguments>]
-     
-Example:
-
-    $ memscape $TOOLBOSCORE_ROOT/bin/$MAKEFILE_PLATFORM/RTBOS -a -i local -f Foo.cml
-    
-![](MemoryScape-Event.png)
-
-
 ###  MTrace
 
 mtrace is the memory debugger included in the GNU C Library.

@@ -2,7 +2,7 @@
 
 ### Tutorials:
 
-* [using TotalView](TotalView.md)
+
 * [using GDB](UsingGdb.md)
 * [using DDD](UsingDDD.md)
 
