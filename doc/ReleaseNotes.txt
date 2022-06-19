@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.29
+
+
+CHANGES
+=======
+
+  - [TECH-702] launch 2022.1 version of Klocwork
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.28
 
 
