@@ -124,7 +124,7 @@ then
         then
             export MAKEFILE_PLATFORM=$(awk -F\' '/hostPlatform/ { print $2 }' ${FILE})
         else
-            # also in etc/ToolBOS.conf!
+            # also in etc/ToolBOS.conf and useFromHere.sh!
             export MAKEFILE_PLATFORM=focal64
         fi
     fi

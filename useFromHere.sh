@@ -46,7 +46,7 @@ fi
 
 if [[ -z ${MAKEFILE_PLATFORM+x} ]]
 then
-    export MAKEFILE_PLATFORM=bionic64
+    export MAKEFILE_PLATFORM=focal64
 fi
 
 if [[ -z ${PYTHONPATH+x} ]]
