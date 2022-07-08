@@ -1456,22 +1456,25 @@ once in a while inspect your code using Klocwork.'''
             Klocwork.createLocalProject( kwDir, output, output )
             Klocwork.codeCheck( kwDir, output, output, logToConsole=True )
 
+            output = output.getvalue()
+
             if Any.getDebugLevel() > 3:
-                logging.info( 'output:\n%s', output.getvalue() )
+                logging.info( 'output:\n%s', output )
 
-            defects = Klocwork.parseCodeCheckResult( output.getvalue() )
+            if output:
+                defects = Klocwork.parseCodeCheckResult( output )
 
-            if defects:
-                for item in defects:
-                    logging.info( 'C10: %s:%s: %s [%s]', *item )
-                    failed += 1
+                if defects:
+                    for item in defects:
+                        logging.info( 'C10: %s:%s: %s [%s]', *item )
+                        failed += 1
 
         except ( AssertionError, subprocess.CalledProcessError,
-                 EnvironmentError, RuntimeError ) as details:
+                 EnvironmentError, RuntimeError ) as e:
 
             logging.info( 'output:\n%s', output.getvalue() )
 
-            logging.error( 'C10: %s', details )
+            logging.error( 'C10: %s', e )
             failed += 1
             error   = True
 
