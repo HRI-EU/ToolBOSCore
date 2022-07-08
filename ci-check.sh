@@ -14,9 +14,8 @@
 #
 
 
-source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.1/BashSrc
-source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
 source useFromHere.sh
+source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
 
 set -euxo pipefail
 
