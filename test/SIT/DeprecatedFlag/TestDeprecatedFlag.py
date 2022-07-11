@@ -40,8 +40,8 @@ import unittest
 
 from ToolBOSCore.Packages import ProjectProperties
 from ToolBOSCore.Settings import ToolBOSConf
-from ToolBOSCore.Util     import FastScript
-from ToolBOSCore.Util     import Any
+from ToolBOSCore.Storage  import SIT
+from ToolBOSCore.Util     import Any, FastScript
 
 
 class TestBootstrap( unittest.TestCase ):
@@ -53,9 +53,15 @@ class TestBootstrap( unittest.TestCase ):
 
     def test_isDeprecated( self ):
         canonicalPath = ToolBOSConf.canonicalPath
+        sitPath       = SIT.getRootPath()
 
         logging.info( 'testing canonicalPath=%s', canonicalPath )
         ProjectProperties.requireIsCanonicalPath( canonicalPath )
+
+        # cancel test if this version of ToolBOSCore is not released, yet
+        # (see TBCORE-2330)
+        if not ProjectProperties.isInstalled_sitPackage( canonicalPath, sitPath ):
+            self.skipTest( f'{canonicalPath}: No such package in SIT (unreleased version?)' )
 
         # ToolBOSCore never becomes deprecated, I hope ;-)
         self.assertFalse( ProjectProperties.isDeprecated( canonicalPath ) )

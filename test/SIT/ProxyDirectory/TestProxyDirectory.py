@@ -56,7 +56,7 @@ class TestProxyDirectory( unittest.TestCase ):
     def test_createProxyDir( self ):
         sitProxyPath  = tempfile.mkdtemp( prefix='test-' )
         sitRootPath   = SIT.getRootPath()
-        canonicalPath = ToolBOSConf.canonicalPath
+        # canonicalPath = ToolBOSConf.canonicalPath
 
         Any.requireIsDir( sitRootPath )
 
@@ -68,7 +68,10 @@ class TestProxyDirectory( unittest.TestCase ):
         Any.requireIsDir( os.path.join( sitProxyPath, 'Modules/BBCM' ) )
         Any.requireIsDir( os.path.join( sitProxyPath, 'Libraries' ) )
 
-        self.assertTrue( os.path.islink( os.path.join( sitProxyPath, canonicalPath ) ) )
+        # ignore ToolBOSCore itself which might not be released in this version, yet
+        # (see TBCORE-2330)
+        # self.assertTrue( os.path.islink( os.path.join( sitProxyPath, canonicalPath ) ) )
+
         self.assertTrue( os.path.islink( os.path.join( sitProxyPath, 'External/java/1.8' ) ) )
 
         FastScript.remove( sitProxyPath )
@@ -81,7 +84,10 @@ class TestProxyDirectory( unittest.TestCase ):
 
         Any.requireIsDir( sitRootPath )
         Any.requireIsDir( sitProxyPath )
-        ProxyDir.requireIsProxyDir( sitProxyPath )
+
+        # skip test if no Proxy-SIT was configured
+        if not ProxyDir.isProxyDir( sitProxyPath ):
+            self.skipTest( 'No Proxy-SIT configured' )
 
         # create a fake package directory within the proxy...
         packageName    = 'UnittestABCDEF123'

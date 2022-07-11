@@ -35,14 +35,14 @@
 #
 
 
+import logging
 import os
 import tempfile
 import unittest
 
-from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Storage import CopyTreeFilter
-from ToolBOSCore.Util    import FastScript
-from ToolBOSCore.Util    import Any
+from ToolBOSCore.Settings import ToolBOSConf
+from ToolBOSCore.Storage  import CopyTreeFilter, SIT
+from ToolBOSCore.Util     import Any, FastScript
 
 
 class TestBootstrap( unittest.TestCase ):
@@ -64,6 +64,13 @@ class TestBootstrap( unittest.TestCase ):
 
 
         # check if all essential packages are available
+        #
+        # ignore ToolBOSCore itself which might not be released in this version, yet
+        # (see TBCORE-2330)
+        tcorePkg = ToolBOSConf.canonicalPath
+        logging.info( f"ignoring '{tcorePkg}' (might be unreleased)" )
+        basePkgList.remove( tcorePkg )
+
         for package in basePkgList:
             Any.requireIsFile( os.path.join( outputDir, package, 'BashSrc' ) )
 
