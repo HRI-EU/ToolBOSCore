@@ -2120,6 +2120,7 @@ Please regularly inspect your scripts using Pylint.'''
                 else:
                     passed += 1
         sys.stdout.close()
+        sys.stdout = sys.__stdout__
 
         if failed == 0:
             result = ( OK, passed, failed,
