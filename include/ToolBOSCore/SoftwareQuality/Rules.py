@@ -705,7 +705,7 @@ class Rule_GEN07( AbstractRule ):
     brief       = 'Libraries and applications should contain a unittest.'
 
     description = '''Even if covering just a small part, some unittests make
-you sleep better: When executed automatically (during nightly builds) they
+you sleep better: When executed automatically (e.g. within CI/CD pipelines) they
 show:
 
   * the code is compilable (f.i. on multiple platforms)
@@ -715,7 +715,13 @@ show:
 
 Please provide a generic `unittest.sh` (Linux) and/or `unittest.bat`
 (Windows) in the top-level directory of the package. This shall invoke any
-package-specific testsuite.'''
+package-specific testsuite.
+
+You may also override the filename of such scripts using settings in the
+pkgInfo.py, e.g.:
+
+scripts          = { 'unittest': 'myScript.sh' }
+'''
 
     seeAlso     = { 'Unittest HowTo': 'ToolBOS_Util_BuildSystemTools_Unittesting' }
 
@@ -723,27 +729,33 @@ package-specific testsuite.'''
 
     def run( self, details, files ):
         """
-            Checks if the package provides a unittest.
+            Checks if the package provides unittests.
         """
         Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
                                                        'Please check pkginfo.py '
-                                                       'or CMakeLists.txt for category information.' )
+                                                       'for category information.' )
 
         if details.isComponent():
             return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
 
-        logging.debug( 'looking for unittest.{sh,bak}' )
+
+        if 'unittest' in details.scripts:
+            candidates = [ details.scripts[ 'unittest' ] ]
+        else:
+            candidates = [ 'unittest.sh', 'unittest.bat' ]
+
+        logging.info( 'GEN07: looking for %s', candidates )
         found = False
 
-        for fileName in ( 'unittest.sh', 'unittest.bat' ):
+        for fileName in candidates:
             if os.path.exists( fileName ):
                 logging.debug( '%s found', fileName )
                 found = True
 
         if found:
-            result = ( OK, 1, 0, 'unittest found' )
+            result = ( OK, 1, 0, 'unittests found' )
         else:
-            result = ( FAILED, 0, 1, 'unittest not found' )
+            result = ( FAILED, 0, 1, 'unittests not found' )
 
         return result
 
