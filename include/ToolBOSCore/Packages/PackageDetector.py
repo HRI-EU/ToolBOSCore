@@ -315,8 +315,23 @@ class PackageDetector( object ) :
 
 
     def isPythonPackage( self ):
-        return self._search( 'src', '__init__.py' ) or \
-               self._search( 'include', '__init__.py' )
+        """
+            Returns True if it finds any *.py file in package
+            excluding pkgInfo.py.
+        """
+        for filePath in FastScript.getFilesInDirRecursive( '.' ):
+            fileName = os.path.basename( filePath )
+            if fileName != 'pkgInfo.py' and fileName.endswith( '.py' ):
+                return True
+
+        return False
+
+
+    def isPythonModule( self ):
+        """
+            Returns True if it finds  __init__.py file in given package.
+        """
+        return self._search( self.topLevelDir, '__init__.py' )
 
 
     def isOldBBCM( self ):
