@@ -147,7 +147,11 @@ def copyBasePackages( srcRoot, dstRoot, packageList, verbose = True,
             src = os.path.join( srcRoot, package )
             dst = os.path.join( dstRoot, package )
 
-            _copyBasePackage( src, dst, verbose, ignore, resolveLTS )
+            try:
+                _copyBasePackage( src, dst, verbose, ignore, resolveLTS )
+            except FileNotFoundError as e:
+                logging.error( e )
+                logging.error( f'Error copying package {package}' )
 
 
 def _copyBasePackage( src, dst, verbose, ignore = None, resolveLTS = None ):
