@@ -1,4 +1,22 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.30
+
+
+CHANGES
+=======
+
+  - [TBCORE-2332] SQ GEN07: consider filename of unittest-script
+                  (from pkgInfo.py setting)
+
+
+FIXED BUGS
+==========
+
+  - SQ C10: clean exit in case of Non-C/C++ package
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.29
 
 
