@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOSCORE 4.0.31
+
+
+CHANGES
+=======
+
+  - [TBCORE-2335] SQ checks ignore the 'install'-directory by default
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOSCORE 4.0.30
 
 
