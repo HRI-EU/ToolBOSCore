@@ -68,15 +68,12 @@ class CheckRoutine( object ):
 
         self.includeDirs      = set()
         self.includeFiles     = set()
-
         self.excludeDirs      = { '3rdParty', 'build', 'cmake-build-debug',
-                                  'external', 'klocwork', 'precompiled',
-                                  'sources', '.git', '.svn' }
+                                  'external', 'install', 'klocwork',
+                                  'precompiled', 'sources', '.git', '.svn' }
         self.excludeFiles     = set()
-
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
                                   '.java', '.m', '.bash', '.sh' }
-
         self.bashExts         = { '.bash', '.sh' }
 
         self.sqLevelToRun     = None   # level to use for this SQ check run
