@@ -315,8 +315,28 @@ class PackageDetector( object ) :
 
 
     def isPythonPackage( self ):
-        return self._search( 'src', '__init__.py' ) or \
-               self._search( 'include', '__init__.py' )
+        """
+            Returns True if it finds any *.py file anywhere within the
+            package, excluding pkgInfo.py.
+
+            The exception of pkgInfo.py is made in order that a package
+            containing C/C++ sources accompanied with a pkgInfo.py settings
+            file isn't considered a Python module.
+        """
+        for filePath in FastScript.getFilesInDirRecursive( '.' ):
+            fileName = os.path.basename( filePath )
+            if fileName != 'pkgInfo.py' and fileName.endswith( '.py' ):
+                return True
+
+        return False
+
+
+    def isPythonModule( self ):
+        """
+            Returns True if it finds an __init__.py file anywhere within the
+            package.
+        """
+        return self._search( self.topLevelDir, '__init__.py' )
 
 
     def isOldBBCM( self ):
