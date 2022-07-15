@@ -316,8 +316,12 @@ class PackageDetector( object ) :
 
     def isPythonPackage( self ):
         """
-            Returns True if it finds any *.py file in package
-            excluding pkgInfo.py.
+            Returns True if it finds any *.py file anywhere within the
+            package, excluding pkgInfo.py.
+
+            The exception of pkgInfo.py is made in order that a package
+            containing C/C++ sources accompanied with a pkgInfo.py settings
+            file isn't considered a Python module.
         """
         for filePath in FastScript.getFilesInDirRecursive( '.' ):
             fileName = os.path.basename( filePath )
@@ -329,7 +333,8 @@ class PackageDetector( object ) :
 
     def isPythonModule( self ):
         """
-            Returns True if it finds  __init__.py file in given package.
+            Returns True if it finds an __init__.py file anywhere within the
+            package.
         """
         return self._search( self.topLevelDir, '__init__.py' )
 
