@@ -66,20 +66,21 @@ def toolBOSCoreDetector():
 
 
 @pytest.fixture
-def toolBOSLibDetector( tmp_path ):
+def testPackageForC():
     """
-        create an instance of packageDetector for ToolBOSLib package,
+        create an instance of packageDetector for test package for C,
         this package instance will be used for testing of C/C++ specific rules
     """
-    FastScript.changeDirectory( tmp_path )
 
-    FastScript.execProgram( 'git clone https://github.com/HRI-EU/ToolBOSLib.git' )
-    toolBOSLibRoot = os.path.join( tmp_path, 'ToolBOSLib' )
+    toolBOSCoreRoot = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
 
-    # always switch to ToolBOSLib root before running tests
-    FastScript.changeDirectory( 'ToolBOSLib' )
+    testPackageRoot = os.path.join( toolBOSCoreRoot, 'test/SoftwareQuality/'
+                        'CheckRoutine/ReferenceData/TestPackageForC' )
 
-    details = PackageDetector( toolBOSLibRoot )
+    # always switch to test package root before running tests
+    FastScript.changeDirectory( testPackageRoot )
+
+    details = PackageDetector( testPackageRoot )
     details.retrieveMakefileInfo()
 
     return details
@@ -487,87 +488,71 @@ def test_runDoc03_package_without_examples( tmp_path ):
     assert result[0] == 'FAILED'
 
 
-@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
-def test_runC01_package_with_exit_calls( toolBOSLibDetector ):
+def test_runC01_package_with_exit_calls( testPackageForC ):
     """
         test rule C01 for usage of exit() calls within the package by providing
         files with exit() calls
     """
     rule    = Rules.Rule_C01()
-    details = toolBOSLibDetector
-    files   = { 'src/AnyExit.c',
-                'src/Threads.h',
-                'src/BerkeleySocket.h',
-                'src/Traps.c',
-                'examples/BerkeleySocketServer.c' }
+    details = testPackageForC
+    files   = { 'src/AnyExit.c' }
 
     result  = rule.run( details, files )
 
     assert result[0] == 'FAILED'
 
 
-@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
-def test_runC01_package_without_exit_calls( toolBOSLibDetector ):
+def test_runC01_package_without_exit_calls( testPackageForC ):
     """
         test rule C01 for usage of exit() calls within the package by providing
         files without any exit() calls
     """
     rule    = Rules.Rule_C01()
-    details = toolBOSLibDetector
-    files   = { 'src/AnyLog.c',
-                'src/ArrayList.h',
-                'examples/BerkeleySocketServer.c' }
+    details = testPackageForC
+    files   = { 'src/TestPackageForC.c',
+                'src/TestPackageForC.h' }
 
     result  = rule.run( details, files )
 
     assert result[0] == 'OK'
 
 
-@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
-def test_runC05_with_multi_inclusion_safeguards( toolBOSLibDetector ):
+def test_runC05_with_multi_inclusion_safeguards( testPackageForC ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
         header files with inclusion guards
     """
     rule    = Rules.Rule_C05()
-    details = toolBOSLibDetector
-    files   = { 'src/ArrayList.h',
-                'src/Atomic.h',
-                'src/Barrier.h' }
+    details = testPackageForC
+    files   = { 'src/TestPackageForC.h' }
 
     result  = rule.run( details, files )
 
     assert result[0] == 'OK'
 
 
-@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
-def test_runC05_missing_multi_inclusion_safeguards( toolBOSLibDetector ):
+def test_runC05_missing_multi_inclusion_safeguards( testPackageForC ):
     """
         test rule C05 that C/C++ header files contain inclusion guards by providing
         header files without inclusion guards
     """
     rule    = Rules.Rule_C05()
-    details = toolBOSLibDetector
-    files   = { 'src/AnyLog.c',
-                'src/ArrayList.h',
-                'src/IOChannelGenericMem.c',
-                'src/BaseTypes.h',
-                'src/MemorySerializer.h'
-                'examples/BerkeleySocketServer.c'}
+    details = testPackageForC
+    files   = { 'src/ArrayList.h',
+                'src/BaseTypes.h' }
 
     result  = rule.run( details, files )
 
     assert result[0] == 'FAILED'
 
 
-@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
-def test_runC09_BST_compliant_package( toolBOSLibDetector ):
+def test_runC09_BST_compliant_package( testPackageForC ):
     """
         test rule C09 that package can be built using BST.py by providing
         a BST-compliant package
     """
     rule    = Rules.Rule_C09()
-    details = toolBOSLibDetector
+    details = testPackageForC
     files   = {}
 
     result  = rule.run( details, files )
@@ -575,8 +560,6 @@ def test_runC09_BST_compliant_package( toolBOSLibDetector ):
     assert result[0] == 'OK'
 
 
-
-@pytest.mark.skip( reason="needs discussion before implementation" )
 def test_runC09_non_BST_compliant_package( tmp_path ):
     """
         test rule C09 that package can be built using BST.py by providing
@@ -585,7 +568,8 @@ def test_runC09_non_BST_compliant_package( tmp_path ):
     rule  = Rules.Rule_C09()
     files = {}
 
-    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation,
+    # using 'tmp_path' fixture to create a temporary directory
+    # unique to this test invocation
     FastScript.changeDirectory( tmp_path )
 
     # create a new C library
@@ -593,7 +577,11 @@ def test_runC09_non_BST_compliant_package( tmp_path ):
     creator.run()
 
     MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-    details       = PackageDetector( MyPackageRoot )
+
+    FastScript.changeDirectory( MyPackageRoot )
+    FastScript.remove( 'pkgInfo.py' )    # to get non BST-compliant package
+
+    details = PackageDetector( MyPackageRoot )
     details.retrieveMakefileInfo()
 
     result = rule.run( details, files )
@@ -601,14 +589,13 @@ def test_runC09_non_BST_compliant_package( tmp_path ):
     assert result[0] == 'FAILED'
 
 
-@pytest.mark.skip( reason="needs to resolve TBCORE-2307" )
-def test_runC10_package_with_Klocwork_issues( toolBOSLibDetector ):
+def test_runC10_package_with_Klocwork_issues( testPackageForC ):
     """
         test rule C10 that executes the Klocwork source code analyzer in CLI mode,
         by providing a package with code issues
     """
     rule    = Rules.Rule_C10()
-    details = toolBOSLibDetector
+    details = testPackageForC
     files   = {}
 
     result  = rule.run( details, files )
