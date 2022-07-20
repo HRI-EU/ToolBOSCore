@@ -314,16 +314,18 @@ class PackageDetector( object ) :
         return self._hasSourceFiles( '.m' )
 
 
-    def isPythonPackage( self ):
+    def isPythonPackage( self, files=None ):
         """
-            Returns True if it finds any *.py file anywhere within the
-            package, excluding pkgInfo.py.
+            Returns True if it finds any *.py file in the optionally provided
+            filelist or anywhere within the package, excluding pkgInfo.py.
 
             The exception of pkgInfo.py is made in order that a package
             containing C/C++ sources accompanied with a pkgInfo.py settings
             file isn't considered a Python module.
         """
-        for filePath in FastScript.getFilesInDirRecursive( '.' ):
+        files = files if files else FastScript.getFilesInDirRecursive( '.' )
+
+        for filePath in files:
             fileName = os.path.basename( filePath )
             if fileName != 'pkgInfo.py' and fileName.endswith( '.py' ):
                 return True
