@@ -59,7 +59,7 @@ def getPylintResult( file: str, pylintConf: str ) -> Type[ linter ]:
     Any.requireIsTextNonEmpty( file )
     Any.requireIsTextNonEmpty( pylintConf )
 
-    pylintResult = linter( args=[ file, '--rcfile=' + pylintConf ], do_exit=False )
+    pylintResult = linter( args=[ file, '--rcfile=' + pylintConf ], exit=False )
 
     return pylintResult
 
