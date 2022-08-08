@@ -323,7 +323,10 @@ class PackageDetector( object ) :
             containing C/C++ sources accompanied with a pkgInfo.py settings
             file isn't considered a Python module.
         """
-        files = files if files else FastScript.getFilesInDirRecursive( '.' )
+        if files is None:
+            files = FastScript.getFilesInDirRecursive( '.' )
+
+        Any.requireIsIterable( files )
 
         for filePath in files:
             fileName = os.path.basename( filePath )
