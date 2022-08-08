@@ -52,8 +52,6 @@ def runScan( token: str ) -> Union[ None, bool ]:
         Args:
             token : user token provided via commandline
     """
-    logging.info( 'running SonarQube scanner...' )
-
     token = token if token else FastScript.getEnv( 'SONAR_TOKEN' )
 
     if not token:
@@ -68,6 +66,7 @@ def runScan( token: str ) -> Union[ None, bool ]:
     cmd = 'sonar-scanner -Dsonar.host.url=%s -Dsonar.login=%s' % ( sonarQubeServer, token )
 
     try:
+        logging.info( 'running SonarQube scan' )
         FastScript.execProgram( cmd )
     except subprocess.CalledProcessError as e:
         logging.debug( e )
@@ -94,6 +93,7 @@ def runBuildWrapper( buildCommand: str ) -> None:
     cmd = 'build-wrapper-linux-x86-64 --out-dir bw-output' + ' ' + buildCommand
 
     try:
+        logging.info( 'running SonarQube build wrapper' )
         FastScript.execProgram( cmd )
     except subprocess.CalledProcessError as e:
         logging.debug( e )

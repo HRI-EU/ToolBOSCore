@@ -1,15 +1,16 @@
 usage: runSonarQube.py [-h] [-t TOKEN] [-b BUILD] [-v] [-V]
 
-Launches the SonarQube scan to analyze the current package. This
-script can be used locally or in CI pipeline. Pass the parameter
-`token` only when using locally. When using this in the CI pipeline
-`token` is already set by Gitlab admins. Pass the parameter `build`
-for projects that needs to be compiled beforehand.
+Launches the SonarQube scan to analyze the current package. The
+SonarQube hostname is configured via ToolBOS.conf file, the
+authentication token can be passed via option or env.var.
+'SONAR_TOKEN'. If used in CI/CD pipelines, 'SONAR_TOKEN' might be
+globally predefined by administrators.
 
 optional arguments:
   -h, --help            show this help message and exit
   -t TOKEN, --token TOKEN
-                        user token generated via SonarQube GUI
+                        user auth token (alternatively via env.var.
+                        SONAR_TOKEN)
   -b BUILD, --build BUILD
                         command to build this package
   -v, --verbose         show debug messages

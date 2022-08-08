@@ -39,7 +39,9 @@
 # Includes
 #----------------------------------------------------------------------------
 
+
 import logging
+import sys
 
 from ToolBOSCore.Tools import SonarQube
 from ToolBOSCore.Util  import ArgsManagerV2
@@ -51,16 +53,15 @@ from ToolBOSCore.Util  import ArgsManagerV2
 
 
 desc   = "Launches the SonarQube scan to analyze the current package. " \
-         "This script can be used locally or in CI pipeline. " \
-         "Pass the parameter `token` only when using locally. " \
-         "When using this in the CI pipeline `token` is " \
-         "already set by Gitlab admins. Pass the parameter " \
-         "`build` for projects that needs to be compiled beforehand."
+         "The SonarQube hostname is configured via ToolBOS.conf file, " \
+         "the authentication token can be passed via option or env.var. " \
+         "'SONAR_TOKEN'. If used in CI/CD pipelines, 'SONAR_TOKEN' might " \
+         "be globally predefined by administrators."
 
 argman = ArgsManagerV2.ArgsManager( desc )
 
 argman.add_argument( '-t','--token', type=str,
-                     help='user token generated via SonarQube GUI' )
+                     help='user auth token (alternatively via env.var. SONAR_TOKEN)' )
 
 argman.add_argument( '-b','--build', type=str,
                      help='command to build this package' )
@@ -81,9 +82,11 @@ try:
         SonarQube.runBuildWrapper( buildCommand )
 
     SonarQube.runScan( token )
+    sys.exit( 0 )
 
 except AssertionError as e:
-    logging.error( "an error occurred in the system" )
+    logging.error( 'Failed to run SonarQube analysis' )
+    sys.exit( -1 )
 
 
 # EOF
