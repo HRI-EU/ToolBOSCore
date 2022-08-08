@@ -1842,7 +1842,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
         """
             Checks for access to private class members from outside.
         """
-        if not details.isPythonPackage():
+        if not details.isPythonPackage( files ):
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         logging.debug( "checking for access to private members from outside" )
@@ -1990,7 +1990,7 @@ potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
-        if not details.isPythonPackage():
+        if not details.isPythonPackage( files ):
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
@@ -2069,7 +2069,7 @@ Please regularly inspect your scripts using Pylint.'''
             Execute the PyCharm source code analyzer in batch-mode for each
             *.py file.
         """
-        if not details.isPythonPackage():
+        if not details.isPythonPackage( files ):
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         from ToolBOSCore.Tools import Pylint
