@@ -41,7 +41,12 @@ At loading time the Python code gets evaluated and the following variables are s
  <tr>
       <td>scripts</td>
       <td>dict { string: string }</td>
-      <td>customize scripts invoked by BST.py</td>
+      <td>customize scripts invoked by BST.py, e.g.:
+<pre>
+scripts = { 'compile' : 'compile-all.sh',
+            'unittest': 'scripts/myTest.sh' }
+</pre>
+</td>
  </tr>
  <tr>
    <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
