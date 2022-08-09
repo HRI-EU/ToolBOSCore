@@ -2,19 +2,23 @@
 
 A pkgInfo.py file might be present in a package, both in VCS and/or in the SIT.
 
-* If such file exists within a source package (f.i. in VCS) it is used to configure the behavior of BST.py.
-  Thus it typically is handcrafted.
+* If such file exists within a source package (f.i. in VCS) it is used to
+  configure the behavior of BST.py. Thus, it typically is handcrafted.
 
-* Each package installed in the SIT should have a pkgInfo.py file containing meta-information, such as location of VCS repository or current maintainer. These information are used e.g. by the CIA (aka Nightly Build) system. Such files are typically auto-generated at install time.
+* Each package installed in the SIT should have a pkgInfo.py file containing
+  meta-information, such as location of VCS repository or current maintainer.
+  These information are used e.g. by the CIA (aka Nightly Build) system.
+  Such files are typically auto-generated at install time.
 
-> **Note**
+> **Note:**
 > A pkgInfo.py file may contain arbitrary Python code.
 > If necessary you could even import packages to calculate some values.
 
 ###  Recognized keywords
 
-The file is organized as key-value-pair assignments. However, you may use any code to do such assignments.
-At loading time the Python code gets evaluated and the following variables are searched:
+The file is organized as key-value-pair assignments. However, you may use any
+code to do such assignments. At loading time the Python code gets evaluated
+and the following variables are searched:
 
 
 <table>
@@ -368,33 +372,45 @@ installUmask = "0022"      # for permissions rwxr-xr-x
 </table>
 
 
-#### Example
+## Example
 
-    # -*- coding: utf-8 -*-
-    #
-    #  Custom package settings
-    #
-    #  Copyright (C)
-    #  Honda Research Institute Europe GmbH
-    #  Carl-Legien-Str. 30
-    #  63073 Offenbach/Main
-    #  Germany
-    #
-    #  UNPUBLISHED PROPRIETARY MATERIAL.
-    #  ALL RIGHTS RESERVED.
-    #
-    #
-    # explicitly state dependencies (otherwise extracted from CMakeLists.txt)
-    depends       = [ 'sit://DevelopmentTools/ToolBOSCore/3.2',
-                      'deb://libjpeg62' ]
-    buildDepends  = [ 'sit://External/pthreads/1.0',
-                      'deb://libjpeg-dev' ]
-    # put environment variables + additional code into BashSrc/...
-    envVars       = [ ( 'PATH', '${INSTALL_ROOT}/bin/${MAKEFILE_PLATFORM}:${PATH}' ),
-                      ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]
-    bashCode      = [ 'echo "Hello, World!"' ]
-    # well... it's possible ;-)
-    import numpy
-    patchlevel    = int( numpy.pi )
-    # EOF
-    
+```
+# -*- coding: utf-8 -*-
+#
+#  Custom package settings
+#
+#  Copyright (C)
+#  Honda Research Institute Europe GmbH
+#  Carl-Legien-Str. 30
+#  63073 Offenbach/Main
+#  Germany
+#
+#  UNPUBLISHED PROPRIETARY MATERIAL.
+#  ALL RIGHTS RESERVED.
+#
+#
+
+
+name             = 'Foo'
+
+version          = '1.0'
+
+category         = 'Applications'
+
+sqLevel          = 'advanced'
+
+linkAllLibraries = True
+
+envVars          = [ ( 'PATH', '${INSTALL_ROOT}/bin/${MAKEFILE_PLATFORM}:${PATH}' ),
+                     ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]
+
+bashCode         = [ 'echo "Hello, World!"' ]
+
+usePatchlevels   = True
+
+import numpy
+patchlevel       = int( numpy.pi )               # just for demonstration purposes ;-)
+
+
+# EOF
+```
