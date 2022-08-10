@@ -261,6 +261,8 @@ class InstallProcedure( object ):
         self._collectDefault()
         self._collectCustom()
 
+        self._exclude()
+
 
     def postCollectContent( self ):
         """
@@ -936,6 +938,34 @@ class InstallProcedure( object ):
             self.details.patchlevel = 0
 
         Any.requireIsInt( self.details.patchlevel )
+
+
+    def _exclude( self ) -> None:
+        """
+            Do not install files/directories appearing in the pkgInfo.py
+            'installExclude' field, f.i. exclude them from getting installed.
+        """
+        excluded = self.details.installExclude
+
+        if not excluded:
+            return
+
+        logging.info( 'skipping excluded files:' )
+
+        toSkip = set()
+
+        for pair in self.index:
+            Any.requireIsTuple( pair )
+
+            src = pair[0]
+
+            for candidate in excluded:
+                if src.startswith( candidate ):
+                    logging.info( 'skipping %s', src )
+                    toSkip.add( pair )
+
+        for pair in toSkip:
+            self.index.remove( pair )
 
 
     def _executeHook( self, name ):

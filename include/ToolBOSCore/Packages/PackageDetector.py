@@ -111,6 +111,7 @@ class PackageDetector( object ) :
         self.copyright         = None
         self.docTool           = None
         self.install           = []
+        self.installExclude    = []
         self.installHooks      = {}
         self.installMatching   = []
         self.installSymlinks   = []
@@ -670,6 +671,7 @@ class PackageDetector( object ) :
                       'Install_onExitStage5' ):
             self.installHooks[ name ] = getValue( name )
 
+        self.installExclude    = getValue( 'installExclude',   self.installExclude )
         self.installGroup      = getValue( 'installGroup',     self.installGroup )
         self.installMatching   = getValue( 'installMatching',  self.installMatching )
         self.installMode       = getValue( 'installMode',      self.installMode  )
