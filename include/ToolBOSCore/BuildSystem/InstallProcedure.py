@@ -248,101 +248,18 @@ class InstallProcedure( object ):
 
             If there is a 'pkgInfo.py' within the current package, it scans
             it for a list named 'install' which is supposed to contain
-            tuples of ( srcPath, regexp, dstPath ).
+            tuples of ( srcPath, regexp, dstPath ). There are additional
+            fields (see the documentation) to customize what gets
+            installed and where.
         """
         self._extractVM()
 
-        # essential ToolBOS files
-        self.copyMandatory( 'install/BashSrc',          'BashSrc'    )
-        self.copyMandatory( 'install/CmdSrc.bat',       'CmdSrc.bat' )
-        self.copyMandatory( 'install/packageVar.cmake', 'packageVar.cmake' )
-        self.copyMandatory( 'install/pkgInfo.py',       'pkgInfo.py' )
+        self._collectEssentials()
 
         self._registerComponent_ToolBOS()
 
-        # scripts and executables
-        self.copyMatching( 'bin', r'.*\.(m|php|py|sh)$', 'bin' )
-        for platform in self.platformList:
-            self.copyMatching( os.path.join( 'bin', platform ), '.*' )
-
-        self.copyOptional( 'data' )
-        self.copyOptional( 'doc/doxygen.tag' )
-        self.copyOptional( 'doc/html' )
-        self.copyMatching( 'doc', r'.*\.(jpg|log|pdf|png|txt)$' )
-        self.copyOptional( 'etc' )
-        self.copyOptional( 'include' )
-        self.copyMatching( 'install', r'.*\.jar$', 'lib' )
-
-        # libraries and JAR files
-        self.copyMatching( 'lib', r'.*\.jar$', 'lib' )
-        for platform in self.platformList:
-            self.copyMatching( os.path.join( 'lib', platform ),
-                               '.*(a|def|dll|exp|lib|manifest|mex|mexa64|pck|so)' )
-
-        # linkAllLibraries flag
-        if self.details.linkAllLibraries:
-            dummyFile = os.path.join( 'install/LinkAllLibraries' )
-            FastScript.setFileContent( dummyFile, '' )
-            self.copyMandatory( dummyFile, 'LinkAllLibraries' )
-
-        self.copyOptional( 'pymodules' )
-        self.copyOptional( 'sbin' )
-        self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
-        self.copyOptional( 'web' )
-
-
-        # "install" entries from pkgInfo.py
-        for item in self.details.install:
-            # whitelist may contain two kind of entries:
-            # single string: srcDir
-            # tuple:         ( srcDir, dstDir )
-
-            if Any.isText( item ):
-                workItem = ( item, item )  # dstDir=srcDir
-            elif Any.isTuple(item) and len(item) == 2:
-                workItem = item
-            else:
-                raise ValueError( 'unexpected object in section "install"' )
-
-            logging.debug( '' )
-            logging.debug( "custom install task: srcDir='%s' dstDir='%s'", *workItem )
-            self.copy( *workItem )  # the asterisk explodes the tuple into 2 vars
-            logging.debug( '' )
-
-
-        # "installMatching" entries from pkgInfo.py
-        for item in self.details.installMatching:
-            # whitelist may contain two kind of tuples:
-            # 2-element: ( srcDir, regexp )
-            # 3-element: ( srcDir, regexp, dstDir )
-
-            if len(item) == 2:
-                workItem = ( item[0], item[1], item[0] )  # dstDir=srcDir
-            elif len(item) == 3:
-                workItem = item
-            else:
-                raise ValueError( 'unexpected tuple length=%d' % len(item) )
-
-            logging.debug( '' )
-            logging.debug( "custom install task: srcDir='%s' pattern='%s' dstDir='%s'", *workItem )
-            self.copyMatching( *workItem )  # the asterisk explodes the tuple into 3 vars
-            logging.debug( '' )
-
-
-        # "installSymlinks" entries from pkgInfo.py
-        for item in self.details.installSymlinks:
-            # whitelist is list of tuples with 2 elements:
-            # 2-element: ( target, link )
-
-            if len(item) == 2:
-                workItem = item
-            else:
-                raise ValueError( 'unexpected tuple length=%d' % len(item) )
-
-            logging.debug( '' )
-            logging.debug( "custom symlink task: target='%s' link='%s'", *workItem )
-            self.link( *workItem )  # the asterisk explodes the tuple into 3 vars
-            logging.debug( '' )
+        self._collectDefault()
+        self._collectCustom()
 
 
     def postCollectContent( self ):
@@ -845,6 +762,107 @@ class InstallProcedure( object ):
     #------------------------------------------------------------------------
     # private helper functions
     #------------------------------------------------------------------------
+
+
+    def _collectEssentials( self ):
+        """
+            Collect basic files used by the ToolBOS SDK itself.
+        """
+        self.copyMandatory( 'install/BashSrc',          'BashSrc'    )
+        self.copyMandatory( 'install/CmdSrc.bat',       'CmdSrc.bat' )
+        self.copyMandatory( 'install/packageVar.cmake', 'packageVar.cmake' )
+        self.copyMandatory( 'install/pkgInfo.py',       'pkgInfo.py' )
+
+
+    def _collectDefault( self ):
+        """
+            Collect scripts, executables, libraries, documentation,...
+
+        """
+        self.copyMatching( 'bin', r'.*\.(m|php|py|sh)$', 'bin' )
+        for platform in self.platformList:
+            self.copyMatching( os.path.join( 'bin', platform ), '.*' )
+
+        self.copyOptional( 'data' )
+        self.copyOptional( 'doc/doxygen.tag' )
+        self.copyOptional( 'doc/html' )
+        self.copyMatching( 'doc', r'.*\.(jpg|log|pdf|png|txt)$' )
+        self.copyOptional( 'etc' )
+        self.copyOptional( 'include' )
+        self.copyMatching( 'install', r'.*\.jar$', 'lib' )
+
+        self.copyMatching( 'lib', r'.*\.jar$', 'lib' )
+        for platform in self.platformList:
+            self.copyMatching( os.path.join( 'lib', platform ),
+                               '.*(a|def|dll|exp|lib|manifest|mex|mexa64|pck|so)' )
+
+        if self.details.linkAllLibraries:
+            dummyFile = os.path.join( 'install/LinkAllLibraries' )
+            FastScript.setFileContent( dummyFile, '' )
+            self.copyMandatory( dummyFile, 'LinkAllLibraries' )
+
+        self.copyOptional( 'pymodules' )
+        self.copyOptional( 'sbin' )
+        self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
+        self.copyOptional( 'web' )
+
+
+    def _collectCustom( self ):
+        """
+            Collect user-defined files and directories
+        """
+        # "install" entries from pkgInfo.py
+        for item in self.details.install:
+            # whitelist may contain two kind of entries:
+            # single string: srcDir
+            # tuple:         ( srcDir, dstDir )
+
+            if Any.isText( item ):
+                workItem = ( item, item )  # dstDir=srcDir
+            elif Any.isTuple(item) and len(item) == 2:
+                workItem = item
+            else:
+                raise ValueError( 'unexpected object in section "install"' )
+
+            logging.debug( '' )
+            logging.debug( "custom install task: srcDir='%s' dstDir='%s'", *workItem )
+            self.copy( *workItem )  # the asterisk explodes the tuple into 2 vars
+            logging.debug( '' )
+
+
+        # "installMatching" entries from pkgInfo.py
+        for item in self.details.installMatching:
+            # whitelist may contain two kind of tuples:
+            # 2-element: ( srcDir, regexp )
+            # 3-element: ( srcDir, regexp, dstDir )
+
+            if len(item) == 2:
+                workItem = ( item[0], item[1], item[0] )  # dstDir=srcDir
+            elif len(item) == 3:
+                workItem = item
+            else:
+                raise ValueError( 'unexpected tuple length=%d' % len(item) )
+
+            logging.debug( '' )
+            logging.debug( "custom install task: srcDir='%s' pattern='%s' dstDir='%s'", *workItem )
+            self.copyMatching( *workItem )  # the asterisk explodes the tuple into 3 vars
+            logging.debug( '' )
+
+
+        # "installSymlinks" entries from pkgInfo.py
+        for item in self.details.installSymlinks:
+            # whitelist is list of tuples with 2 elements:
+            # 2-element: ( target, link )
+
+            if len(item) == 2:
+                workItem = item
+            else:
+                raise ValueError( 'unexpected tuple length=%d' % len(item) )
+
+            logging.debug( '' )
+            logging.debug( "custom symlink task: target='%s' link='%s'", *workItem )
+            self.link( *workItem )  # the asterisk explodes the tuple into 3 vars
+            logging.debug( '' )
 
 
     def _computePatchlevel( self ):
