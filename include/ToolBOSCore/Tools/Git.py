@@ -492,10 +492,10 @@ class WorkingTree( AbstractVCS.AbstractWorkingTree ):
         FastScript.execProgram( cmd, stdout=output, stderr=output )
 
 
-def git2https( gitURL ):
+def git2https( gitURL:str ) -> str:
     """
-        Translates an URL in form "git@<host>:<group>/<project>.git" into
-        the form "https://<host>/<group>/<project>".
+        Translates an URL in form "[git+ssh://]git@<host>:<group>/<project>.git"
+        into the form "https://<host>/<group>/<project>".
 
         If the URL already starts with 'https://' then the same string
         is used.
@@ -505,18 +505,23 @@ def git2https( gitURL ):
     """
     Any.requireIsTextNonEmpty( gitURL )
 
-
     if gitURL.startswith( 'https://' ):
         httpsURL = gitURL
 
     else:
-        Any.requireIsMatching( gitURL, '^git@.+' )
+        # leading 'git+ssh://' can be omitted
+        if gitURL.startswith( 'git+ssh://' ):
+            tmp1 = gitURL.replace( 'git+ssh://', '' )
+        else:
+            tmp1 = gitURL
+
+        Any.requireIsMatching( tmp1, '^git@.+' )
 
         # replace the ':' by '/'
-        tmp = gitURL.replace( ':', '/' )
+        tmp2 = tmp1.replace( ':', '/' )
 
         # replace 'git@' by 'https//'
-        httpsURL = tmp.replace( 'git@', 'https://' )
+        httpsURL = tmp2.replace( 'git@', 'https://' )
 
 
     # ensure HTTPS URL ends with '.git'
