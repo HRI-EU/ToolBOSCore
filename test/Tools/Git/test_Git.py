@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
-#  launches the unittest suite
+#  Unittests for Git.py module
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,44 +35,26 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Setup
-#----------------------------------------------------------------------------
+import pytest
+import sys
+
+from ToolBOSCore.Tools import Git
 
 
-source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
+def test_git2https():
+    testIn1 = 'git+ssh://git@dmz-gitlab.honda-ri.de/EnvironmentRepresentation/RLDM.git'
+    testIn2 =           'git@dmz-gitlab.honda-ri.de/EnvironmentRepresentation/RLDM.git'
+    testIn3 =           'git@dmz-gitlab.honda-ri.de/EnvironmentRepresentation/RLDM'
+
+    expected = 'https://dmz-gitlab.honda-ri.de/EnvironmentRepresentation/RLDM.git'
+
+    assert Git.git2https( testIn1 ) == expected
+    assert Git.git2https( testIn2 ) == expected
+    assert Git.git2https( testIn3 ) == expected
 
 
-CWD=$(pwd)
-
-
-# Within CIA the TOOLBOSCORE_ROOT points to a different location
-# (not to the one we have built in this working copy).
-# In order to make the unittest operating on this working directory,
-# we change the TOOLBOSCORE_ROOT etc. here:
-#
-export TOOLBOSCORE_ROOT=$(pwd)
-export PYTHONPATH=${CWD}/bin:${CWD}/include:${PYTHONPATH}
-export LD_LIBRARY_PATH=${CWD}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
-echo "export TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}"
-
-
-#----------------------------------------------------------------------------
-# Unittests
-#----------------------------------------------------------------------------
-
-
-cd "${CWD}/test/BuildSystemTools" && runTest ./TestBuildSystemTools.sh
-cd "${CWD}/test/MakeShellfiles"   && runTest ./TestMakeShellfiles.py
-cd "${CWD}/test/Misc"             && runTest ./TestMisc.sh
-cd "${CWD}/test/SoftwareQuality"  && runTest ./TestSoftwareQuality.sh
-cd "${CWD}/test/SIT"              && runTest ./TestSIT.sh
-cd "${CWD}/test/Toos"             && runTest ./TestTools.sh
-cd "${CWD}/test/UserSetup"        && runTest ./TestUserSetup.sh
-
-
-# we managed to get here --> success
-exit 0
+if __name__ == "__main__":
+    sys.exit( pytest.main( [ '-vv' ] ) )
 
 
 # EOF
