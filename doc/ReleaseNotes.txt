@@ -1,30 +1,43 @@
 
-                     RELEASE NOTES FOR <PACKAGE> <VERSION>
-                     (to be populated in release branches)
+                     RELEASE NOTES FOR TOOLBOS CORE 4.1.0
 
 
 NEW FEATURES
-=============
+============
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [#20] Install Procedure: added 'installExclude' option to not install certain files
+  - [TBCORE-2320] added bin/runSonarQube.py
+
+
+IMPROVEMENTS
+============
+
+  - [TBCORE-2276] extended pkgInfo.py keywords documentation
 
 
 CHANGES
 =======
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [TBCORE-2330] SIT.bootstrap(): warns but continues if package can not be copied
+  - [TBCORE-2297] dropped TotalView and MemoryScape integration (license discontinued)
+  - [TBCORE-2217] dropped JupyterWidget.py (moved to ToolBOS Middleware package)
+  - [TBCORE-2051] dropped ToolBOSSettings.py (replaced by ToolBOSConf.py)
+  - [TBCORE-1725] LinkAllLibraries-flag (used by RTBOS/DTBOS) migrated from
+                  ASCII file to pkgInfo.py setting
 
 
-FIXED BUGS
-==========
+INTERNAL
+========
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [TBCORE-2307] more reliable CI pipelines and unittests
+
+
+-----------------------------------------------------------------------------
+
+
+ToolBOS Core 4.1.0 is based upon ToolBOS Core 4.0.32.
+You may continue reading the Release Notes there.
 
 
 # EOF
+
