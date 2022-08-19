@@ -75,25 +75,14 @@ then
     SCRIPT_PATH=$(dirname $(readlink -f ${BASH_SOURCE:-$0}))
 
     # the full version string incl. patchlevel (if any), e.g. "2.0.1234"
-    TOOLBOS_VERSION_FULL=$(basename ${SCRIPT_PATH})
+    TOOLBOS_VERSION=$(basename ${SCRIPT_PATH})
 
     # cut off the patchlevel revision (if any), e.g. "2.0.1234" --> "2.0"
     # because we don't want TOOLBOSCORE_ROOT to point to a particular patchlevel
-    #
-    # An exception of this is when sourcing the BashSrc from an SVN branch
-    # named e.g. "2.0_devel". If we find an underscore (likely indicating
-    # such branch), we keep the version as-is.
 
     if [[ -z ${TOOLBOSCORE_AUTO_VERSION+x} ]]
     then
         export TOOLBOSCORE_AUTO_VERSION=""
-    fi
-
-    if [[ ! ${TOOLBOS_VERSION_FULL} =~ "_" && -z ${TOOLBOSCORE_AUTO_VERSION} ]]
-    then
-        TOOLBOS_VERSION=$(expr "$TOOLBOS_VERSION_FULL" : '\([[:digit:]]*\.[[:digit:]]*\)')
-    else
-        TOOLBOS_VERSION=${TOOLBOS_VERSION_FULL}
     fi
 
     export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/4.1 ${TOOLBOSCORE_SOURCED}"
@@ -247,7 +236,6 @@ then
     unset SIT_PROXY
     unset SIT_VERSION
     unset TOOLBOS_VERSION
-    unset TOOLBOS_VERSION_FULL
     unset TOOLBOSCORE_ROOT_FULL
 
 fi
