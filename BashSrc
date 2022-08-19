@@ -63,7 +63,7 @@ fi
 
 
 # avoid multiple inclusion
-if [[ ! ${TOOLBOSCORE_SOURCED} =~ "DevelopmentTools/ToolBOSCore/4.1" ]]
+if [[ ! "${TOOLBOSCORE_SOURCED}" =~ DevelopmentTools/ToolBOSCore/4.1 ]]
 then
 
     # auto-detect location of this BashSrc file
@@ -94,7 +94,8 @@ then
 
 
     TOOLBOSCORE_ROOT_FULL=$(builtin cd ${SCRIPT_PATH}; pwd)
-    export TOOLBOSCORE_ROOT=$(dirname ${TOOLBOSCORE_ROOT_FULL})/${TOOLBOS_VERSION}
+    TOOLBOSCORE_ROOT=$(dirname ${TOOLBOSCORE_ROOT_FULL})/${TOOLBOS_VERSION}
+    export TOOLBOSCORE_ROOT
 
 
     #------------------------------------------------------------------------
@@ -107,34 +108,39 @@ then
 
     # if not predefined (forced) by user, attempt to read from /etc/ToolBOS.conf
 
-    if [[ -z "${MAKEFILE_PLATFORM}" ]]
+    if [[ -z "${MAKEFILE_PLATFORM+x}" ]]
     then
         if [[ -e ${FILE} ]]
         then
-            export MAKEFILE_PLATFORM=$(awk -F\' '/hostPlatform/ { print $2 }' ${FILE})
+            MAKEFILE_PLATFORM=$(awk -F\' '/hostPlatform/ { print $2 }' ${FILE})
+            export MAKEFILE_PLATFORM
         else
             # also in etc/ToolBOS.conf and useFromHere.sh!
             export MAKEFILE_PLATFORM=focal64
         fi
     fi
 
-    if [[ -z "${MAKEFILE_OS}" ]]
+    if [[ -z "${MAKEFILE_OS+x}" ]]
     then
         if [[ -e ${FILE} ]]
         then
-            export MAKEFILE_OS=$(awk -F\' '/hostOS/ { print $2 }' ${FILE})
+            MAKEFILE_OS=$(awk -F\' '/hostOS/ { print $2 }' ${FILE})
+            export MAKEFILE_OS
         else
-            export MAKEFILE_OS=$(uname | tr "[:upper:]" "[:lower:]")
+            MAKEFILE_OS=$(uname | tr "[:upper:]" "[:lower:]")
+            export MAKEFILE_OS
         fi
     fi
 
-    if [[ -z "${MAKEFILE_CPU}" ]]
+    if [[ -z "${MAKEFILE_CPU+x}" ]]
     then
         if [[ -e ${FILE} ]]
         then
-            export MAKEFILE_CPU=$(awk -F\' '/hostArch/ { print $2 }' ${FILE})
+            MAKEFILE_CPU=$(awk -F\' '/hostArch/ { print $2 }' ${FILE})
+            export MAKEFILE_CPU
         else
-            export MAKEFILE_CPU=$(arch)
+            MAKEFILE_CPU=$(arch)
+            export MAKEFILE_CPU
 
             if [[ "${MAKEFILE_CPU}" == "x86_64" ]]
             then
@@ -143,17 +149,18 @@ then
         fi
     fi
 
-    if [[ -z "${MAKEFILE_CC}" ]]
+    if [[ -z "${MAKEFILE_CC+x}" ]]
     then
         if [[ -e ${FILE} ]]
         then
-            export MAKEFILE_CC=$(awk -F\' '/hostCompiler/ { print $2 }' ${FILE})
+            MAKEFILE_CC=$(awk -F\' '/hostCompiler/ { print $2 }' ${FILE})
+            export MAKEFILE_CC
         else
             export MAKEFILE_CC=gcc
         fi
     fi
 
-    if [[ -z "${BST_BUILD_JOBS}" ]]
+    if [[ -z "${BST_BUILD_JOBS+x}" ]]
     then
         export BST_BUILD_JOBS=1
     fi
@@ -163,6 +170,11 @@ then
     # Paths settings
     #------------------------------------------------------------------------
 
+
+    if [[ -z ${PYTHONPATH+x} ]]
+    then
+        export PYTHONPATH=""
+    fi
 
     # set environment variables used by O.S. and/or 3rd party software
     export PATH=${TOOLBOSCORE_ROOT}/bin:${PATH}
@@ -186,14 +198,14 @@ then
 
 
     # SIT identifier ("build name")
-    if [[ -z "$SIT_VERSION" ]]
+    if [[ -z "${SIT_VERSION+x}" ]]
     then
         export SIT_VERSION=latest
     fi
 
 
     # SIT location (optional)
-    if [[ -z "${SIT}" ]]
+    if [[ -z "${SIT+x}" ]]
     then
         # Fallback to default location if user did specify one,
         # however leave $SIT unset if default path does not exist.
@@ -215,7 +227,7 @@ then
     # to entirely disable an existing proxy prefefine SIT_PROXY=NONE
     # ("NONE" [most proably] isn't a directory hence will be ignored)
 
-    if [[ -z "${SIT_PROXY}" ]]
+    if [[ -z "${SIT_PROXY+x}" ]]
     then
         SIT_PROXY="${HOME}/.HRI/sit/${SIT_VERSION}"
     fi
