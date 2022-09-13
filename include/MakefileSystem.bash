@@ -64,6 +64,10 @@ fi
 #
 # Do not alter $SIT otherwise.
 
+if [[ -z ${BST_INSTALL_PREFIX+x} ]]
+then
+    export BST_INSTALL_PREFIX=""
+fi
 
 if [[ -z "${BST_INSTALL_PREFIX}" ]]
 then
@@ -80,15 +84,9 @@ PROJECT_VERSION=$(basename "${PWD}")                # 2 digits
 PROJECT_VERSION_MAJOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $1 }')
 PROJECT_VERSION_MINOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $2 }')
 
-
-if [[ -z "${PROJECT_REVISION}" ]]
+if [[ -z ${PROJECT_CATEGORY+x} ]]
 then
-  PROJECT_REVISION=$(svn info | awk -F': ' '/Revision/ { print $2 }')
-fi
-
-if [[ -z "${PROJECT_PATCHLEVEL_VERSION}" ]]
-then
-  PROJECT_PATCHLEVEL_VERSION=${PROJECT_VERSION}.${PROJECT_REVISION}  # 3 digits
+    PROJECT_CATEGORY=""
 fi
 
 if [[ -z "${PROJECT_CATEGORY}" && -r "CMakeLists.txt" ]]
@@ -100,8 +98,7 @@ fi
 
 CANONICAL_PATH=${PROJECT_CATEGORY}/${PROJECT_NAME}/${PROJECT_VERSION}
 PROJECT_ROOT=${SIT}/${CANONICAL_PATH}
-PROJECT_ROOT_FULL=${PROJECT_ROOT}.${PROJECT_REVISION}
-INSTALL_ROOT=${PROJECT_ROOT_FULL}
+INSTALL_ROOT=${PROJECT_ROOT}
 SRC_TARBALL_NAME=sources.tar.bz2
 BIN_TARBALL_NAME=package.tar.bz2
 SOURCES_DIR=sources

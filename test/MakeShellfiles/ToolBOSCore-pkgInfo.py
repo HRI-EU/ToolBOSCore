@@ -28,9 +28,9 @@ patchlevel       = 0
 
 maintainer       = ( 'mstein', 'Marijke Stein' )
 
-gitBranch        = 'develop-4.1'
+gitBranch        = 'develop'
 
-gitCommitID      = '2b0d260ea459a4495a404577eed6a44a09e9113a'
+gitCommitID      = '420a264e48c6ccb41b5ba67f0c5f4ca52df6e8b0'
 
 gitOrigin        = 'git@dmz-gitlab.honda-ri.de:TECH_Team/ToolBOSCore.git'
 

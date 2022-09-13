@@ -54,6 +54,11 @@ function execTest()
     FILENAME=$1
     CMDLINE=$@
 
+    if [[ -z ${USE_RUNFROMSOURCETREE+x} ]]
+    then
+        export USE_RUNFROMSOURCETREE="FALSE"
+    fi
+
     if [[ -f "${FILENAME}" ]]
     then
         echo -e "Start test: ${FILENAME}"
