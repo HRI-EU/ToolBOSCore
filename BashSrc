@@ -62,6 +62,12 @@ then
 fi
 
 
+if [[ -z ${VERBOSE+x} ]]
+then
+    export VERBOSE="FALSE"
+fi
+
+
 # avoid multiple inclusion
 if [[ ! "${TOOLBOSCORE_SOURCED}" =~ DevelopmentTools/ToolBOSCore/4.1 ]]
 then

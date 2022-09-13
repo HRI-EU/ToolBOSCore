@@ -69,6 +69,11 @@ then
     export TOOLBOSCORE_ROOT=""
 fi
 
+if [[ -z ${VERBOSE+x} ]]
+then
+    export VERBOSE="FALSE"
+fi
+
 
 SCRIPT_PATH=$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")
 OLD_TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}

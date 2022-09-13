@@ -64,6 +64,10 @@ fi
 #
 # Do not alter $SIT otherwise.
 
+if [[ -z ${BST_INSTALL_PREFIX+x} ]]
+then
+    export BST_INSTALL_PREFIX=""
+fi
 
 if [[ -z "${BST_INSTALL_PREFIX}" ]]
 then
