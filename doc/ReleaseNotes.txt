@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.1.1
+
+
+IMPROVEMENTS
+============
+
+  - [#13] improved compatibility with strict shell settings ("set -euxo pipefail")
+
+
+CHANGES
+=======
+
+  - dropped support of reading patchlevel from SVN branch name, use pkgInfo.py instead
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.1.0
 
 
