@@ -1,4 +1,16 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.1.2
+
+
+CHANGES
+=======
+
+  - use PackageCreator 1.2 (templates updated to ToolBOSCore 4.1 API)
+
+
+-----------------------------------------------------------------------------
+
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.1.1
 
 
