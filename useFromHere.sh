@@ -54,11 +54,6 @@ then
     export PYTHONPATH=""
 fi
 
-if [[ -z ${PYTHONPATH+x} ]]
-then
-    export PYTHONPATH=""
-fi
-
 if [[ -z ${SIT+x} ]]
 then
     export SIT="/hri/sit/latest"

@@ -34,31 +34,12 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Setup
-#----------------------------------------------------------------------------
+set -euxo pipefail
 
-
+source useFromHere.sh
 source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
-
 CWD=$(pwd)
-
-
-# Within CIA the TOOLBOSCORE_ROOT points to a different location
-# (not to the one we have built in this working copy).
-# In order to make the unittest operating on this working directory,
-# we change the TOOLBOSCORE_ROOT etc. here:
-#
-export TOOLBOSCORE_ROOT=$(pwd)
-export PYTHONPATH=${CWD}/bin:${CWD}/include:${PYTHONPATH}
-export LD_LIBRARY_PATH=${CWD}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
-echo "export TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}"
-
-
-#----------------------------------------------------------------------------
-# Unittests
-#----------------------------------------------------------------------------
 
 
 cd "${CWD}/test/BuildSystemTools" && runTest ./TestBuildSystemTools.sh
@@ -66,7 +47,7 @@ cd "${CWD}/test/MakeShellfiles"   && runTest ./TestMakeShellfiles.py
 cd "${CWD}/test/Misc"             && runTest ./TestMisc.sh
 cd "${CWD}/test/SoftwareQuality"  && runTest ./TestSoftwareQuality.sh
 cd "${CWD}/test/SIT"              && runTest ./TestSIT.sh
-cd "${CWD}/test/Toos"             && runTest ./TestTools.sh
+cd "${CWD}/test/Tools"            && runTest ./TestTools.sh
 cd "${CWD}/test/UserSetup"        && runTest ./TestUserSetup.sh
 
 
