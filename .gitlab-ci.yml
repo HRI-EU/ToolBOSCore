@@ -34,4 +34,10 @@ test:
 #    allow_failure: true
 
 
+sonarqube:
+  stage: check
+  script:
+    - ./ci-sonarqube.sh
+  needs: []
+
 # EOF
