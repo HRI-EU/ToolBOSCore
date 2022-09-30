@@ -592,10 +592,8 @@ class CheckRoutine( object ):
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
         Any.requireIsTextNonEmpty( self.details.sqLevel )
 
-        logging.info( '' )
-        logging.info( 'results for %s (level=%s):',
-                      self.details.canonicalPath, self.sqLevelToRun )
-        logging.info( '' )
+        print( '\n\nResults for %s (level=%s):\n' %
+               ( self.details.canonicalPath, self.sqLevelToRun ) )
 
 
     def _showSummaryTable( self ):
@@ -613,10 +611,10 @@ class CheckRoutine( object ):
 
             successRate = self._computeSuccessRate( ruleID )
 
-            logging.info( '%8s | %14s | %4s | %s', ruleID.ljust(6),
-                          status.ljust(14), successRate, shortText )
+            print( '%6s | %14s | %4s | %s' % \
+                   ( ruleID.ljust(6), status.ljust(14), successRate, shortText ) )
 
-        logging.info( '' )
+        print( '' )
 
 
     def _showSummaryComments( self ):
