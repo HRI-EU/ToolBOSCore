@@ -600,6 +600,13 @@ class CheckRoutine( object ):
         Any.requireIsDictNonEmpty( self.results )
         Any.requireIsListNonEmpty( self.rulesOrdered )
 
+        # unfortunately the 'terminaltables' modules isn't available everywhere
+        print( '%6s | %30s | %4s | %7s | %s' % \
+               ('ID'.ljust( 6 ), 'objective'.ljust( 30 ),
+                'val.', 'status'.ljust( 7 ), 'comment' ) )
+        print( '%6s | %30s | %4s | %7s | %s' % \
+               ('', '', '', '', '') )
+
         for ruleID in self.rulesOrdered:
             if ruleID not in self.rulesImplemented:
                 continue
