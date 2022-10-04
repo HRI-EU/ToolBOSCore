@@ -609,10 +609,12 @@ class CheckRoutine( object ):
 
             ( status, passed, failed, shortText ) = self.results[ ruleID ]
 
+            ruleName    = self.rules[ ruleID ].name
             successRate = self._computeSuccessRate( ruleID )
 
-            print( '%6s | %14s | %4s | %s' % \
-                   ( ruleID.ljust(6), status.ljust(14), successRate, shortText ) )
+            print( '%6s | %30s | %4s | %14s | %s' % \
+                   ( ruleID.ljust(6), ruleName.ljust(30),
+                     successRate, status.ljust(14), shortText ) )
 
         print( '' )
 
