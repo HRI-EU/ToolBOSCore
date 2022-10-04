@@ -2926,7 +2926,7 @@ applications.'''
 
 class Rule_BASH01( AbstractRule ):
 
-    name        = 'quote strings, variables, and command-substitutions'
+    name        = 'secure quoting'
 
     brief       = '''Strings, variables, and command-substitutions should
 always be quoted, unless word-splitting is explicitly desired.'''
@@ -3003,7 +3003,7 @@ Output:
 
 class Rule_BASH02( AbstractRule ):
 
-    name        = 'always use [[ for tests in bash'
+    name        = "secure Bash-Builtin's"
 
     brief       = '''Always use the safe built-in [[ for tests in bash-scripts.'''
 
@@ -3033,7 +3033,7 @@ This construct is also faster, because it is a bash-builtin, whereas the single
 
 class Rule_BASH03( AbstractRule ):
 
-    name        = 'use $() instead of back-ticks'
+    name        = 'subshell invocation'
 
     brief       = '''Use $() instead of back-ticks for command-substitution.'''
 
@@ -3096,7 +3096,7 @@ parenthesis.
 
 class Rule_BASH04( AbstractRule ):
 
-    name        = 'use an array when passing args'
+    name        = 'arrays in Bash'
 
     brief       = '''Use an array instead of one string when passing arguments.'''
 
