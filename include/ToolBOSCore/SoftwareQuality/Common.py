@@ -34,16 +34,14 @@
 #
 
 
-import os
-
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import FastScript
 
 
 OK                = 'OK'
-FAILED            = 'FAILED'
-DISABLED          = 'DISABLED'
-NOT_APPLICABLE    = 'not applicable'
+FAILED            = 'failed'
+DISABLED          = 'disabled'
+NOT_APPLICABLE    = 'skipped'
 NOT_EXECUTED      = 'not executed'
 NOT_IMPLEMENTED   = 'not implemented'
 NOT_REQUIRED      = 'not required'
