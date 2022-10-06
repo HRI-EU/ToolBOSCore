@@ -2983,7 +2983,7 @@ Output:
             results = Shellcheck.checkScript( filePath,
                                               '2046,2048,2068,2086,2248',
                                               'quote-safe-variables')
-            if results[0] == True:
+            if results[0]:
                 _printErrorReport( 'BASH01',
                                    'unquoted strings, variables, substitutions',
                                    filePath, results[1] )
@@ -3076,7 +3076,7 @@ parenthesis.
 
         for filePath in files:
             results = Shellcheck.checkScript( filePath, '2006' )
-            if results[0] == True:
+            if results[0]:
                 _printErrorReport( 'BASH03',
                                    'command-substitution with backticks',
                                    filePath, results[1] )
@@ -3145,7 +3145,7 @@ output:
 
         for filePath in files:
             results = Shellcheck.checkScript( filePath, '2089,2090' )
-            if results[0] == True:
+            if results[0]:
                 _printErrorReport( 'BASH04',
                                    'string used for passing arguments',
                                    filePath, results[1] )
@@ -3235,7 +3235,7 @@ errors or behaviour.
 
         for filePath in files:
             results = Shellcheck.checkScript( filePath, '2250', 'require-variable-braces')
-            if results[0] == True:
+            if results[0]:
                 _printErrorReport( 'BASH06',
                                    'variables referred to without braces',
                                    filePath, results[1] )
@@ -3325,7 +3325,6 @@ placed anywhere after `set -euo pipefail`.
 
         passed     = 0
         failed     = 0
-        flagStatus = { True: 'found', False: 'not found' }
 
         for filePath in sorted( files ):
             if os.path.basename( filePath ) in self.skippedFiles:

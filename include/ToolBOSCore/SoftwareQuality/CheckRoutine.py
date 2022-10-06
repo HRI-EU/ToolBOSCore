@@ -596,7 +596,7 @@ class CheckRoutine( object ):
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
         Any.requireIsTextNonEmpty( self.details.sqLevel )
 
-        print( '\n\nResults for %s (level=%s):\n' %
+        print( '\n\nResults for %s (SQ level: %s):\n' %
                ( self.details.canonicalPath, self.sqLevelToRun ) )
 
 
@@ -613,16 +613,18 @@ class CheckRoutine( object ):
             if ruleID not in self.rulesToRun:
                 continue
 
-            results       = self.results[ ruleID ]
+            result        = self.results[ ruleID ]
+            resultState   = result[0]
+            resultText    = result[3]
             ruleName      = self.rules[ ruleID ].name
             successRate   = self._computeSuccessRate( ruleID )
             displayedRate = f'{successRate:3d}%' if successRate is not None else ''
-            rowData       = [ ruleID, ruleName, displayedRate, results[0], results[3] ]
+            rowData       = [ ruleID, ruleName, displayedRate, resultState, resultText ]
 
             tableData.append( rowData )
 
         table = terminaltables.DoubleTable( tableData ).table
-        print( table )
+        print( table, '\n' )
 
 
     def _showSummaryComments( self ):

@@ -41,7 +41,7 @@ from ToolBOSCore.Util     import FastScript
 OK                = 'OK'
 FAILED            = 'failed'
 DISABLED          = 'disabled'
-NOT_APPLICABLE    = 'skipped'
+NOT_APPLICABLE    = 'not applicable'
 NOT_EXECUTED      = 'not executed'
 NOT_IMPLEMENTED   = 'not implemented'
 NOT_REQUIRED      = 'not required'
