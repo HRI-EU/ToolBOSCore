@@ -37,12 +37,18 @@
 import copy
 import logging
 import os
+import typing
 
 from ToolBOSCore.BuildSystem              import BuildSystemTools
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.SoftwareQuality.Common   import *
 from ToolBOSCore.Util                     import Any, FastScript
+
+
+FastScript.tryImport( 'terminaltables' )
+
+import terminaltables
 
 
 class CheckRoutine( object ):
@@ -295,7 +301,7 @@ class CheckRoutine( object ):
         self._summaryEnabled = state
 
 
-    def _computeSuccessRate( self, ruleID ):
+    def _computeSuccessRate( self, ruleID ) -> typing.Optional[int]:
         """
             Computes the success rate (in percent) for a given rule,
             based on the values returned by the corresponding checker.
@@ -308,22 +314,20 @@ class CheckRoutine( object ):
         # like 0% or 100% (does not make sense)
 
         if status in ( OK, FAILED ):
-
             total = passed + failed
 
             try:
-                percent = float(passed) / float(total) * 100
+                result = int( float(passed) / float(total) * 100 )
             except ZeroDivisionError:
                 # Devision by zero can only happen in case the total number
                 # is zero, f.i. the check did not apply to any file.
                 # Set percentage to 100% in this case == success.
-                percent = 100
-
-            return '%3d%%' % percent
-
+                result = 100
         else:
+            result = None
 
-            return ''
+        # returns Integer or None
+        return result
 
 
     def _populateFiles( self ):
@@ -600,12 +604,7 @@ class CheckRoutine( object ):
         Any.requireIsDictNonEmpty( self.results )
         Any.requireIsListNonEmpty( self.rulesOrdered )
 
-        # unfortunately the 'terminaltables' modules isn't available everywhere
-        print( '%6s | %30s | %4s | %7s | %s' % \
-               ('ID'.ljust( 6 ), 'objective'.ljust( 30 ),
-                'val.', 'status'.ljust( 7 ), 'comment' ) )
-        print( '%6s | %30s | %4s | %7s | %s' % \
-               ('', '', '', '', '') )
+        tableData = [ [ 'ID', 'objective', 'val.', 'status', 'comment' ] ]
 
         for ruleID in self.rulesOrdered:
             if ruleID not in self.rulesImplemented:
@@ -614,16 +613,16 @@ class CheckRoutine( object ):
             if ruleID not in self.rulesToRun:
                 continue
 
-            ( status, passed, failed, shortText ) = self.results[ ruleID ]
+            results       = self.results[ ruleID ]
+            ruleName      = self.rules[ ruleID ].name
+            successRate   = self._computeSuccessRate( ruleID )
+            displayedRate = f'{successRate:3d}%' if successRate is not None else ''
+            rowData       = [ ruleID, ruleName, displayedRate, results[0], results[3] ]
 
-            ruleName    = self.rules[ ruleID ].name
-            successRate = self._computeSuccessRate( ruleID )
+            tableData.append( rowData )
 
-            print( '%6s | %30s | %4s | %7s | %s' % \
-                   ( ruleID.ljust(6), ruleName.ljust(30),
-                     successRate, status.ljust(7), shortText ) )
-
-        print( '' )
+        table = terminaltables.DoubleTable( tableData ).table
+        print( table )
 
 
     def _showSummaryComments( self ):
