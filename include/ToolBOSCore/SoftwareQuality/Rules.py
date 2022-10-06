@@ -110,7 +110,7 @@ class RemovedRule( AbstractRule ):
 
 class Rule_GEN01( AbstractRule ):
 
-    name        = 'English only'
+    name        = 'readability: English only'
 
     brief       = '''All comments, documentation, identifier names (types,
 variables, functions, classes) and filenames must be English.'''
@@ -169,7 +169,7 @@ Japanese output on screen.'''
 
 class Rule_GEN02( AbstractRule ):
 
-    name        = 'filenames and encoding'
+    name        = 'portability: file encoding'
 
     brief       = '''Source code should be in ASCII or UTF-8 files.
 Filenames should only contain alphanumeric characters.'''
@@ -244,7 +244,7 @@ dialog.'''
 
 class Rule_GEN03( AbstractRule ):
 
-    name        = 'max. linewidth'
+    name        = 'readability: max. linelength'
 
     brief       = '''Stick to 80 characters per line. Exceptions are fine
 when increasing readability.'''
@@ -319,7 +319,7 @@ characters per line.'''
 
 class Rule_GEN04( AbstractRule ):
 
-    name        = 'copyright header'
+    name        = 'compliance: copyright header'
 
     brief       = '''All source code files and related artefacts, such as
 configfiles or documentation, must start with a copyright header.'''
@@ -605,7 +605,7 @@ copyright       =
 
 class Rule_GEN05( AbstractRule ):
 
-    name        = 'no Hungarian notation'
+    name        = 'portability: no Hungarian notation'
 
     brief       = '''No type abbreviations must be added to identifiers
 ("Hungarian notation"), because types may change without updating the
@@ -630,7 +630,7 @@ hard-to-track bugs.'''
 
 class Rule_GEN06( AbstractRule ):
 
-    name        = 'no tabs in code'
+    name        = 'portability: no tabs in code'
 
     brief       = 'Do not use tabs in code.'
 
@@ -700,7 +700,7 @@ tabs.'''
 
 class Rule_GEN07( AbstractRule ):
 
-    name        = 'existence of unittests'
+    name        = 'reliability: tests present'
 
     brief       = 'Libraries and applications should contain a unittest.'
 
@@ -762,7 +762,7 @@ scripts          = { 'unittest': 'myScript.sh' }
 
 class Rule_GEN08( AbstractRule ):
 
-    name        = '3rd-party material'
+    name        = 'compliance: 3rd-party material'
 
     brief       = '''Any 3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
@@ -807,7 +807,7 @@ interface with it.'''
 
 class Rule_GEN09( AbstractRule ):
 
-    name        = '3rd-party license compliance'
+    name        = 'compliance: 3rd-party licenses'
 
     brief       = '''If any 3rd party software is involved in the project,
 its usage or interfacing must be compliant with its license terms.'''
@@ -828,7 +828,7 @@ it with reasonable effort to an alternative software.'''
 
 class Rule_GEN10( AbstractRule ):
 
-    name        = 'VCS usage'
+    name        = 'maintainability: VCS usage'
 
     brief       = '''Put package under version control system (Git/SVN).'''
 
@@ -849,7 +849,7 @@ Note: HRI-EU recommends to use Git.'''
 
     def run( self, details, files ):
         """
-            Checks if the package is managed via SVN.
+            Checks if the package is managed via VCS.
         """
         logging.debug( 'looking for VCS repository information' )
 
@@ -870,7 +870,7 @@ Note: HRI-EU recommends to use Git.'''
 
 class Rule_GEN11( AbstractRule ):
 
-    name        = 'issue tracking'
+    name        = 'maintainability: issue tracking'
 
     brief       = '''Consider managing bugs and feature requests via JIRA
 issue tracker.'''
@@ -897,7 +897,7 @@ administration in this case.''' % { 'url': url }
 
 class Rule_GEN12( AbstractRule ):
 
-    name        = 'deterministic mode'
+    name        = 'reliability: deterministic mode'
 
     brief       = '''Applications and library functions should have a
 deterministic mode, i.e. the possiblity to start with a defined random
@@ -917,7 +917,7 @@ predefine the seed or to assign some fixed value that should be taken instead.
 
 class Rule_GEN13( AbstractRule ):
 
-    name        = 'usage of return-values'
+    name        = 'reliability, safety: usage of return-values'
 
     brief       = '''Always check return-values of function'''
 
@@ -931,7 +931,7 @@ and/or comment that it has been ignored on purpose.'''
 
 class Rule_GEN14( AbstractRule ):
 
-    name        = 'cyclomatic complexity'
+    name        = 'safety, maintainability: cyclomatic complexity'
 
     brief       = '''Strive for simple control-flows and keep functions
 short'''
@@ -950,7 +950,7 @@ perform one job only.'''
 
 class Rule_C01( AbstractRule ):
 
-    name        = 'exit() calls'
+    name        = 'interoperability: exit() calls'
 
     brief       = '''Prefer returning status codes (or throwing exceptions
 in C++) over `exit()` within the code.'''
@@ -1051,7 +1051,7 @@ causing data loss or inconsistent states.'''
 
 class Rule_C02( AbstractRule ):
 
-    name        = 'C++ linkage'
+    name        = 'interoperability: C++ linkage'
 
     brief       = 'C header files should ensure C++ linkage compatibility.'
 
@@ -1145,7 +1145,7 @@ Without these macros the code will not link in C++ context.'''
 
 class Rule_C03( AbstractRule ):
 
-    name        = 'macro names'
+    name        = 'interoperability: macro names'
 
     brief       = '''Macro names must be uppercase and prefixed by the package
 name. The expression must be put in parentheses.'''
@@ -1174,7 +1174,7 @@ b, instead of being 33 like it should, would actually be replaced with
 
 class Rule_C04( AbstractRule ):
 
-    name        = 'void argument list'
+    name        = 'security: void argument list'
 
     brief       = '''A function without parameters must be declared with a
 `void` argument list.'''
@@ -1204,7 +1204,7 @@ updated and still passes parameters.'''
 
 class Rule_C05( AbstractRule ):
 
-    name        = 'inclusion guards'
+    name        = 'interoperability: inclusion guards'
 
     brief       = '''Header files must be protected against multiple inclusion
 using inclusion guards.'''
@@ -1299,7 +1299,7 @@ class Rule_C06( RemovedRule ):
 
 class Rule_C07( AbstractRule ):
 
-    name        = 'logging'
+    name        = 'consistency: logging'
 
     brief       = '''Logging should be done using `ANY_LOG()` macros.'''
 
@@ -1334,7 +1334,7 @@ reasons. And consistency is a soft skill for good quality software.'''
 
 class Rule_C08( AbstractRule ):
 
-    name        = 'portable datatypes'
+    name        = 'portability: datatypes'
 
     brief       = '''Use datatypes and functions which support both 32 and
 64 bit environments.'''
@@ -1373,7 +1373,7 @@ types, f.i. `BaseI16` or `BaseI64`, defined in `Base.h.`'''
 
 class Rule_C09( AbstractRule ):
 
-    name        = 'BST.py compatibility'
+    name        = 'scalability: BST.py compatibility'
 
     brief       = '''Package can be built using `BST.py.`'''
 
@@ -1425,7 +1425,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
 
 class Rule_C10( AbstractRule ):
 
-    name        = 'static source code analysis'
+    name        = 'security, reliability: static analysis'
 
     brief       = '''Use a static source code analyzer (f.i. Klocwork
 Insight).'''
@@ -1509,7 +1509,7 @@ once in a while inspect your code using Klocwork.'''
 
 class Rule_C11( AbstractRule ):
 
-    name        = 'setjmp() and longjmp()'
+    name        = 'security, maintainability: setjmp() and longjmp()'
 
     brief       = '''`setjmp()` and `longjmp()` are forbidden'''
 
@@ -1521,7 +1521,7 @@ execution paths through the code overly complicated. Do not use them.'''
 
 class Rule_C12( AbstractRule ):
 
-    name        = 'malloc() / free()'
+    name        = 'security: memory allocation'
 
     brief       = '''Heap-memory explicitly allocated with `malloc()` or
 `new` (or wrappers thereof), must be explicitly released using `free()` or
@@ -1729,7 +1729,7 @@ Specify an empty list if really nothing has to be executed.'''
 
 class Rule_C13( AbstractRule ):
 
-    name        = 'clean compilation'
+    name        = 'security, maintainability: clean compilation'
 
     brief       = '''Code should compile without warnings, even at strict
 compiler settings.'''
@@ -1757,7 +1757,7 @@ ISO C compliant, or explicitly silence the compiler warning in question.'''
 
 class Rule_C14( AbstractRule ):
 
-    name        = 'global variables'
+    name        = 'security, maintainability: global variables'
 
     brief       = '''Minimize the use of global variables.'''
 
@@ -1782,7 +1782,7 @@ class Rule_C15( RemovedRule ):
 
 class Rule_C16( AbstractRule ):
 
-    name        = 'function-like macros'
+    name        = 'maintainability: function-like macros'
 
     brief       = '''Use the preprocessor only for inclusion of header-files
 and simple macros.'''
@@ -1812,7 +1812,7 @@ class Rule_PY01( RemovedRule ):
 
 class Rule_PY02( AbstractRule ):
 
-    name        = 'private members'
+    name        = 'maintainability: private members'
 
     brief       = '''Private class members and methods (name starting with
 underscore) must not be accessed from the outside.'''
@@ -1888,7 +1888,7 @@ called from the outside. Doing it must be considered as wrong usage.'''
 
 class Rule_PY03( AbstractRule ):
 
-    name        = 'logging'
+    name        = 'consistency: logging'
 
     brief       = '''Logging should be done using Python's native `logging`
 module, evtl. supported by helpers from `Any.py.`'''
@@ -1937,7 +1937,7 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
 
 class Rule_PY04( AbstractRule ):
 
-    name        = 'exception handling'
+    name        = 'interoperability: exception handling'
 
     brief       = '''Prefer throwing exceptions over `exit()` within the
 code.'''
@@ -2052,7 +2052,7 @@ potentially causing data loss or inconsistent states.'''
 
 class Rule_PY05( AbstractRule ):
 
-    name        = 'static source code analysis'
+    name        = 'security, reliability: static analysis'
 
     brief       = '''Use a static source code analyzer.'''
 
@@ -2135,9 +2135,9 @@ Please regularly inspect your scripts using Pylint.'''
 
 class Rule_PY06( AbstractRule ):
 
-    name        = 'Python version compatibility'
+    name        = 'interoperability: Python version compatibility'
 
-    brief       = '''Mind compatibility with Python versions 2.7 to 3.x'''
+    brief       = '''Mind compatibility with Python versions 3.x'''
 
     description = '''Python comes in various language versions, featuring
 different included packages or language constructs. However the install base
@@ -2162,7 +2162,7 @@ class Rule_MAT01( RemovedRule ):
 
 class Rule_MAT02( AbstractRule ):
 
-    name        = 'static source code analysis'
+    name        = 'security, reliability: static analysis'
 
     brief       = '''Follow the suggestions of the Matlab code-checker. Write
 a comment in case you have to diverge from the suggestion.'''
@@ -2229,7 +2229,7 @@ specific case to follow the Matlab code-checker.'''
 
 class Rule_MAT03( AbstractRule ):
 
-    name        = 'unintentional shadowing'
+    name        = 'security, maintainability: unintentional shadowing'
 
     brief       = '''Avoid unintentional shadowing, i.e. function names should
 be unique.'''
@@ -2242,7 +2242,7 @@ behavior. Check with `which -all` or `exist`.'''
 
 class Rule_MAT04( AbstractRule ):
 
-    name        = 'loop-variable initialization'
+    name        = 'security, maintainability: loop-variable initialization'
 
     brief       = '''Loop variables should be initialized immediately before
 the loop.'''
@@ -2264,7 +2264,7 @@ loop does not execute for all possible indices.'''
 
 class Rule_MAT05( AbstractRule ):
 
-    name        = 'function-header comments'
+    name        = 'understandability: function-header comments'
 
     brief       = '''Function header comments should support the use of
 `help` and `lookfor`.
@@ -2279,7 +2279,7 @@ path.'''
 
 class Rule_DOC01( AbstractRule ):
 
-    name        = 'documentation mainpage'
+    name        = 'understandability: documentation present'
 
     brief       = '''The main functionality (why this package exists) should
 be briefly documented.'''
@@ -2424,7 +2424,7 @@ Hence a doxygen mainpage is not needed in such case.
 
 class Rule_DOC02( AbstractRule ):
 
-    name        = 'public API documentation'
+    name        = 'understandability: public API documentation'
 
     brief       = '''All public entities must be documented.'''
 
@@ -2443,7 +2443,7 @@ duplication (for consistency reasons).'''
 
 class Rule_DOC03( AbstractRule ):
 
-    name        = 'example programs'
+    name        = 'understandability: examples present'
 
     brief       = '''Provide simple example programs to demonstrate basic
 usage.'''
@@ -2501,7 +2501,7 @@ class Rule_DOC04( RemovedRule ):
 
 class Rule_SAFE01( AbstractRule ):
 
-    name        = 'C90 and C99 only'
+    name        = 'security, portability: C90 and C99 only'
 
     brief       = '''Only C90 and C99 are allowed.'''
 
@@ -2513,7 +2513,7 @@ language extensions.'''
 
 class Rule_SAFE02( AbstractRule ):
 
-    name        = 'plausabiity checks'
+    name        = 'security: plausabiity checks'
 
     brief       = '''Functions must check their arguments for validity
 (valid pointers, numbers in range, existence of files).'''
@@ -2542,7 +2542,7 @@ causes for later errors.'''
 
 class Rule_SAFE03( AbstractRule ):
 
-    name        = 'no dynamic memory allocation during runtime'
+    name        = 'security: no dynamic memory allocation during runtime'
 
     brief       = '''Memory must not be allocated after init phase (startup)
 of the application.'''
@@ -2559,7 +2559,7 @@ termination.'''
 
 class Rule_SAFE04( AbstractRule ):
 
-    name        = 'no goto'
+    name        = 'security, maintainability: no goto'
 
     brief       = '''The `goto`-statement should not be used.'''
 
@@ -2609,7 +2609,7 @@ label declared later in the same function.'''
 
 class Rule_SAFE05( AbstractRule ):
 
-    name        = 'no multi-byte characters'
+    name        = 'security, portability: no multi-byte characters'
 
     brief       = '''Multi-byte characters (f.i. Unicode) shall not be
 used.'''
@@ -2668,7 +2668,7 @@ literals their use in safety-critical application is highly discouraged.'''
 
 class Rule_SAFE06( AbstractRule ):
 
-    name        = 'no recursion'
+    name        = 'security: no recursion'
 
     brief       = '''Recursion (directly or indirectly) must not be used.'''
 
@@ -2684,7 +2684,7 @@ MISRA-2012 rule 17.2 requires the absence of recursion.'''
 
 class Rule_SAFE07( AbstractRule ):
 
-    name        = 'safe string-processing only'
+    name        = 'security: safe string-processing only'
 
     brief       = '''Use safe string-processing functions only.'''
 
@@ -2716,7 +2716,7 @@ terminating `\\0` must not be used.'''
 
 class Rule_SAFE08( AbstractRule ):
 
-    name        = 'no inline in public API'
+    name        = 'security, reliability: no inline in public API'
 
     brief       = '''Header files should not expose inline functions as
 public interface. The result after changing the implementation is undefined.'''
@@ -2769,7 +2769,7 @@ of code variants.'''
 
 class Rule_SPEC01( AbstractRule ):
 
-    name        = 'static source code analysis'
+    name        = 'security, reliability: static analysis'
 
     brief       = '''Safety-critical car applications are requested to use
 "state-of-the-art" tools (e.g. Klocwork) for checking code quality.'''
@@ -2791,7 +2791,7 @@ class Rule_SPEC01( AbstractRule ):
 
 class Rule_SPEC02( AbstractRule ):
 
-    name        = 'MSVC-compliant variable declaration'
+    name        = 'portability: MSVC-compliant variable declaration'
 
     brief       = '''MSVC requires variables to be declared at the top of a
 function.'''
@@ -2837,7 +2837,7 @@ without any sideeffects.'''
 
 class Rule_SPEC03( AbstractRule ):
 
-    name        = 'POSIX functions'
+    name        = 'portability: POSIX functions'
 
     brief       = '''Portable POSIX-like functions should be used, rather
 than platform-specific functions.'''
@@ -2862,7 +2862,7 @@ such purpose. They map to the underlying O.S.-specific functions with no cost
 
 class Rule_SPEC04( AbstractRule ):
 
-    name        = 'thread-safeness'
+    name        = 'reliability: thread-safeness'
 
     brief       = '''It is typically not foreseeable if code in the future
 might be re-used in a multi-threaded environment. Therefore all code should be
@@ -2898,7 +2898,7 @@ Do not rely on such implementation-specific side effects!'''
 
 class Rule_SPEC05( AbstractRule ):
 
-    name        = 're-entrancy'
+    name        = 'reliability: re-entrancy'
 
     brief       = '''Functions should be re-entrant.'''
 
@@ -2926,7 +2926,7 @@ applications.'''
 
 class Rule_BASH01( AbstractRule ):
 
-    name        = 'secure quoting'
+    name        = 'security: correct quoting'
 
     brief       = '''Strings, variables, and command-substitutions should
 always be quoted, unless word-splitting is explicitly desired.'''
@@ -2993,17 +2993,17 @@ Output:
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       "all strings, variables, and substitutions have been quoted" )
+                       'secure quoting applied everywhere' )
         else:
             result = ( FAILED, passed, failed,
-                       "unquoted strings, variables, or substitutions" )
+                       'found occurrences of unsecure quoting' )
 
         return result
 
 
 class Rule_BASH02( AbstractRule ):
 
-    name        = "secure Bash-Builtin's"
+    name        = "security: Bash-Builtin's"
 
     brief       = '''Always use the safe built-in [[ for tests in bash-scripts.'''
 
@@ -3033,7 +3033,7 @@ This construct is also faster, because it is a bash-builtin, whereas the single
 
 class Rule_BASH03( AbstractRule ):
 
-    name        = 'subshell invocation'
+    name        = 'maintainability: subshell invocation'
 
     brief       = '''Use $() instead of back-ticks for command-substitution.'''
 
@@ -3086,17 +3086,17 @@ parenthesis.
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       "exclusively used $() for command-substitution" )
+                       'correct subshell invocations found' )
         else:
             result = ( FAILED, passed, failed,
-                       "some command-substitutions have been done using backticks" )
+                       'found subshell invocations using backticks' )
 
         return result
 
 
 class Rule_BASH04( AbstractRule ):
 
-    name        = 'arrays in Bash'
+    name        = 'security, reliability: array usage'
 
     brief       = '''Use an array instead of one string when passing arguments.'''
 
@@ -3155,17 +3155,17 @@ output:
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       "exclusively used arrays for passing arguments" )
+                       'correct usage of Bash arrays' )
         else:
             result = ( FAILED, passed, failed,
-                       "some arguments have been passed using strings" )
+                       'found strings that should be arrays' )
 
         return result
 
 
 class Rule_BASH05( AbstractRule ):
 
-    name        = 'use long form of parameter'
+    name        = 'maintainability: use long form of parameter'
 
     brief       = '''Use the long form of parameters if available to keep scripts readable.'''
 
@@ -3192,7 +3192,7 @@ readable and a little more self-explanatory.
 
 class Rule_BASH06( AbstractRule ):
 
-    name        = 'use braces'
+    name        = 'security: referencing of variables'
 
     brief       = '''Use braces when referring to variables.'''
 
@@ -3245,17 +3245,17 @@ errors or behaviour.
 
         if failed == 0:
             result = ( OK, passed, failed,
-                       "all variables referred to with braces" )
+                       'correct referencing of variables' )
         else:
             result = ( FAILED, passed, failed,
-                       "some variables referred to without braces" )
+                       'found insecure referencing of variables' )
 
         return result
 
 
 class Rule_BASH07( AbstractRule ):
 
-    name        = 'use "set -euo pipefail"'
+    name        = 'reliability: strict shell settings'
 
     brief       = '''Use `set -euo pipefail` to abort script on errors and unbound variables.'''
 
