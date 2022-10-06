@@ -43,7 +43,7 @@ from ToolBOSCore.BuildSystem              import BuildSystemTools
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.SoftwareQuality.Common   import *
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Util                     import Any, ColoredOutput, FastScript
 
 
 FastScript.tryImport( 'terminaltables' )
@@ -613,14 +613,16 @@ class CheckRoutine( object ):
             if ruleID not in self.rulesToRun:
                 continue
 
-            result        = self.results[ ruleID ]
-            resultState   = result[0]
-            resultText    = result[3]
-            ruleName      = self.rules[ ruleID ].name
-            successRate   = self._computeSuccessRate( ruleID )
-            displayedRate = f'{successRate:3d}%' if successRate is not None else ''
-            rowData       = [ ruleID, ruleName, displayedRate, resultState, resultText ]
+            result         = self.results[ ruleID ]
+            state          = result[0]
+            comment        = result[3]
+            ruleName       = self.rules[ ruleID ].name
+            successRate    = self._computeSuccessRate( ruleID )
 
+            displayedRate  = f'{successRate:3d}%' if successRate is not None else ''
+            displayedState = ColoredOutput.error( state ) if state is FAILED else state
+
+            rowData        = [ ruleID, ruleName, displayedRate, displayedState, comment ]
             tableData.append( rowData )
 
         table = terminaltables.DoubleTable( tableData ).table
