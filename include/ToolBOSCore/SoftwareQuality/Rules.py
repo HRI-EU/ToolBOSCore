@@ -2070,14 +2070,14 @@ class Rule_PY06( AbstractRule ):
 
     name        = 'interoperability: Python version compatibility'
 
-    brief       = '''Mind compatibility with Python versions 3.x'''
+    brief       = '''Mind compatibility with different Python versions'''
 
     description = '''Python comes in various language versions, featuring
 different included packages or language constructs. However the install base
 is quite heterogeneous.
 
 Hence developers should pro-actively care that scripts are compatible with a
-range of Python versions. At least compatibility with 2.7 and latest 3.x is
+range of Python versions. At least compatibility with 3.7 and higher is
 desired.
 
 The **PyCharm IDE** can be configured to annotate code incompatible with
