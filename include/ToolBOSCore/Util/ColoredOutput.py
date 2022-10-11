@@ -47,6 +47,10 @@ if sys.stdout.isatty():
     import termcolor
 
 
+    def emphasized( s:str ) -> str:
+        return termcolor.colored( s, attrs=['bold'] )
+
+
     def error( s:str ) -> str:
         return termcolor.colored( s, 'red', attrs=['bold'] )
 
@@ -59,7 +63,8 @@ else:
 
     dummy = lambda s: s
 
-    error = dummy
+    emphasized = dummy
+    error      = dummy
 
 
 # EOF

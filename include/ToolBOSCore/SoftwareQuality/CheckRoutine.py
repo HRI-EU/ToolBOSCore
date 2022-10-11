@@ -613,14 +613,19 @@ class CheckRoutine( object ):
             if ruleID not in self.rulesToRun:
                 continue
 
-            result         = self.results[ ruleID ]
-            state          = result[0]
-            comment        = result[3]
-            ruleName       = self.rules[ ruleID ].name
-            successRate    = self._computeSuccessRate( ruleID )
+            result        = self.results[ ruleID ]
+            state         = result[0]
+            comment       = result[3]
+            ruleName      = self.rules[ ruleID ].name
+            successRate   = self._computeSuccessRate( ruleID )
+            displayedRate = f'{successRate:3d}%' if successRate is not None else ''
 
-            displayedRate  = f'{successRate:3d}%' if successRate is not None else ''
-            displayedState = ColoredOutput.error( state ) if state is FAILED else state
+            if state is FAILED:
+                displayedState = ColoredOutput.error( state )
+            elif state is DISABLED:
+                displayedState = ColoredOutput.emphasized( state )
+            else:
+                displayedState = state
 
             rowData        = [ ruleID, ruleName, displayedRate, displayedState, comment ]
             tableData.append( rowData )
