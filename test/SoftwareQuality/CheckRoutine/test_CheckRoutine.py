@@ -41,7 +41,7 @@ import sys
 
 from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.SoftwareQuality          import Rules
+from ToolBOSCore.SoftwareQuality          import Common, Rules
 from ToolBOSCore.Util                     import FastScript
 
 
@@ -99,7 +99,7 @@ def test_runGen01_filename_in_english( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runGen01_filename_in_other_languages( toolBOSCoreDetector ):
@@ -116,7 +116,7 @@ def test_runGen01_filename_in_other_languages( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runGen02_file_with_utf8_encoding( toolBOSCoreDetector ):
@@ -133,7 +133,7 @@ def test_runGen02_file_with_utf8_encoding( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runGen02_file_with_wrong_encoding( toolBOSCoreDetector ):
@@ -147,7 +147,7 @@ def test_runGen02_file_with_wrong_encoding( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runGen03_files_with_width_limit_of_80( toolBOSCoreDetector ):
@@ -163,7 +163,7 @@ def test_runGen03_files_with_width_limit_of_80( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runGen03_files_exceeding_width_limit_of_80( toolBOSCoreDetector ):
@@ -180,7 +180,7 @@ def test_runGen03_files_exceeding_width_limit_of_80( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runGen06_files_without_tabs( toolBOSCoreDetector ):
@@ -196,7 +196,7 @@ def test_runGen06_files_without_tabs( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runGen07_package_with_unittest( toolBOSCoreDetector ):
@@ -210,7 +210,7 @@ def test_runGen07_package_with_unittest( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runGen07_package_without_unittest(  tmp_path ):
@@ -240,7 +240,7 @@ def test_runGen07_package_without_unittest(  tmp_path ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runGen10_package_managed_via_vcs( toolBOSCoreDetector ):
@@ -255,7 +255,7 @@ def test_runGen10_package_managed_via_vcs( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runGen10_package_not_managed_via_vcs( tmp_path ):
@@ -280,7 +280,7 @@ def test_runGen10_package_not_managed_via_vcs( tmp_path ):
 
     result = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runPy02_files_without_private_members_access( toolBOSCoreDetector ):
@@ -297,7 +297,7 @@ def test_runPy02_files_without_private_members_access( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runPy02_files_with_private_members_access( toolBOSCoreDetector ):
@@ -314,7 +314,7 @@ def test_runPy02_files_with_private_members_access( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runPy04_files_without_exit_call( toolBOSCoreDetector ):
@@ -331,7 +331,7 @@ def test_runPy04_files_without_exit_call( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
@@ -347,7 +347,7 @@ def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runPy05_files_without_lint_issues( toolBOSCoreDetector ):
@@ -360,7 +360,7 @@ def test_runPy05_files_without_lint_issues( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
@@ -376,7 +376,7 @@ def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runDoc01_package_with_documentation( toolBOSCoreDetector ):
@@ -390,7 +390,7 @@ def test_runDoc01_package_with_documentation( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runDoc01_package_without_documentation( tmp_path ):
@@ -415,7 +415,7 @@ def test_runDoc01_package_without_documentation( tmp_path ):
 
     result = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runDoc01_package_with_empty_README( tmp_path ):
@@ -447,7 +447,7 @@ def test_runDoc01_package_with_empty_README( tmp_path ):
 
     result = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runDoc03_package_with_examples( toolBOSCoreDetector ):
@@ -461,7 +461,7 @@ def test_runDoc03_package_with_examples( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runDoc03_package_without_examples( tmp_path ):
@@ -485,7 +485,7 @@ def test_runDoc03_package_without_examples( tmp_path ):
 
     result = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runC01_package_with_exit_calls( testPackageForC ):
@@ -499,7 +499,7 @@ def test_runC01_package_with_exit_calls( testPackageForC ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runC01_package_without_exit_calls( testPackageForC ):
@@ -514,7 +514,7 @@ def test_runC01_package_without_exit_calls( testPackageForC ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runC05_with_multi_inclusion_safeguards( testPackageForC ):
@@ -528,7 +528,7 @@ def test_runC05_with_multi_inclusion_safeguards( testPackageForC ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runC05_missing_multi_inclusion_safeguards( testPackageForC ):
@@ -543,7 +543,7 @@ def test_runC05_missing_multi_inclusion_safeguards( testPackageForC ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runC09_BST_compliant_package( testPackageForC ):
@@ -557,7 +557,7 @@ def test_runC09_BST_compliant_package( testPackageForC ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runC09_non_BST_compliant_package( tmp_path ):
@@ -586,7 +586,7 @@ def test_runC09_non_BST_compliant_package( tmp_path ):
 
     result = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runC10_package_with_Klocwork_issues( testPackageForC ):
@@ -600,7 +600,7 @@ def test_runC10_package_with_Klocwork_issues( testPackageForC ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runBASH01_script_without_quotes( toolBOSCoreDetector ):
@@ -614,7 +614,7 @@ def test_runBASH01_script_without_quotes( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runBASH01_script_with_quotes( toolBOSCoreDetector ):
@@ -628,7 +628,7 @@ def test_runBASH01_script_with_quotes( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
@@ -643,7 +643,7 @@ def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
@@ -658,7 +658,7 @@ def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runBASH04_script_args_in_string( toolBOSCoreDetector ):
@@ -672,7 +672,7 @@ def test_runBASH04_script_args_in_string( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runBASH04_script_args_in_array( toolBOSCoreDetector ):
@@ -686,7 +686,7 @@ def test_runBASH04_script_args_in_array( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
@@ -701,7 +701,7 @@ def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
@@ -716,7 +716,7 @@ def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 def test_runBASH07_script_without_set( toolBOSCoreDetector ):
@@ -735,7 +735,7 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'FAILED'
+    assert result[0] == Common.FAILED
 
 
 def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
@@ -753,7 +753,7 @@ def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
 
     result  = rule.run( details, files )
 
-    assert result[0] == 'OK'
+    assert result[0] == Common.OK
 
 
 if __name__ == "__main__":

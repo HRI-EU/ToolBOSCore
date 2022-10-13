@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  experimental implementation of the Any library
+#  Asserts and very comon basics functions such as logging
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,15 +34,9 @@
 #
 
 
-#----------------------------------------------------------------------------
-# Includes
-#----------------------------------------------------------------------------
-
-
 import logging
 import io
 import os
-import sys
 
 from atexit import register
 from glob   import glob
