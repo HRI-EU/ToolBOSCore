@@ -1,15 +1,49 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.1.3
+
+
+NEW FEATURES
+============
+
+  - [#33] added ToolBOSCore.Util.ColoredOutput
+
+
+IMPROVEMENTS
+============
+
+  - [#33] BST.py -q: improved summary table (color highlighting, wording,
+                     discriminate disabled from not-applicable checks, ...)
+
+
+CHANGES
+=======
+
+  - updated to PyCharm + CLion version 2022.2
+  - SQ PY06: updated recommended Python interpreter versions in docs
+
+
+FIXED BUGS
+==========
+
+  - [#41] changed default of VERBOSE to empty-string, to avoid wrong interpretation
+          of "FALSE"
+  - [#39] ZenBuildMode Dependency-Dialog: fixed crash when package depends on
+          Debian-package(s)
+  - SQ PY05: avoid crash if installed Pylint version is too old (2.9+ is required)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.1.2
 
 
 CHANGES
 =======
 
-  - use PackageCreator 1.2 (templates updated to ToolBOSCore 4.1 API)
+  - use PackageCreator 1.3 (templates updated to ToolBOSCore 4.1 API)
 
 
 -----------------------------------------------------------------------------
-
 
                      RELEASE NOTES FOR TOOLBOS CORE 4.1.1
 
