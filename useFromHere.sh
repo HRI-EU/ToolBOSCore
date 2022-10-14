@@ -66,7 +66,7 @@ fi
 
 if [[ -z ${VERBOSE+x} ]]
 then
-    export VERBOSE="FALSE"
+    export VERBOSE=""
 fi
 
 
