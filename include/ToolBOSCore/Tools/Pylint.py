@@ -59,7 +59,14 @@ def getPylintResult( file: str, pylintConf: str ) -> Type[ linter ]:
     Any.requireIsTextNonEmpty( file )
     Any.requireIsTextNonEmpty( pylintConf )
 
-    pylintResult = linter( args=[ file, '--rcfile=' + pylintConf ], exit=False )
+    # Somewhen between pylint 2.4 and 2.9 an 'exit'-argument was added.
+    #
+    # Adding this try-block for Python 2.7 (pylint 2.4.4).
+    # Without exit=False pylint terminates the Python process!
+    try:
+        pylintResult = linter( args=[ file, '--rcfile=' + pylintConf ], exit=False )
+    except TypeError:
+        raise EnvironmentError( 'pylint 2.9 or higher is required' )
 
     return pylintResult
 

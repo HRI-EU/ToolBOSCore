@@ -306,9 +306,11 @@ class DependenciesDialog( QWidget, object ):
         inProxy  = self._model.isInstalled_proxySIT
         inGlobal = self._model.isInstalled_globalSIT
 
-        ProjectProperties.requireIsCanonicalPath( SIT.strip( package.url ) )
+        ProjectProperties.requireIsURL( package.url )
 
         if package.url.startswith( 'sit://' ):
+            ProjectProperties.requireIsCanonicalPath( SIT.strip( package.url ) )
+
             if self._hasProxy:
                 self._setCellColorCode( cell, 1, inProxy(  package.url ) )
             else:

@@ -37,12 +37,18 @@
 import copy
 import logging
 import os
+import typing
 
 from ToolBOSCore.BuildSystem              import BuildSystemTools
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.SoftwareQuality.Common   import *
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Util                     import Any, ColoredOutput, FastScript
+
+
+FastScript.tryImport( 'terminaltables' )
+
+import terminaltables
 
 
 class CheckRoutine( object ):
@@ -295,7 +301,7 @@ class CheckRoutine( object ):
         self._summaryEnabled = state
 
 
-    def _computeSuccessRate( self, ruleID ):
+    def _computeSuccessRate( self, ruleID ) -> typing.Optional[int]:
         """
             Computes the success rate (in percent) for a given rule,
             based on the values returned by the corresponding checker.
@@ -308,22 +314,20 @@ class CheckRoutine( object ):
         # like 0% or 100% (does not make sense)
 
         if status in ( OK, FAILED ):
-
             total = passed + failed
 
             try:
-                percent = float(passed) / float(total) * 100
+                result = int( float(passed) / float(total) * 100 )
             except ZeroDivisionError:
                 # Devision by zero can only happen in case the total number
                 # is zero, f.i. the check did not apply to any file.
                 # Set percentage to 100% in this case == success.
-                percent = 100
-
-            return '%3d%%' % percent
-
+                result = 100
         else:
+            result = None
 
-            return ''
+        # returns Integer or None
+        return result
 
 
     def _populateFiles( self ):
@@ -592,15 +596,15 @@ class CheckRoutine( object ):
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
         Any.requireIsTextNonEmpty( self.details.sqLevel )
 
-        logging.info( '' )
-        logging.info( 'results for %s (level=%s):',
-                      self.details.canonicalPath, self.sqLevelToRun )
-        logging.info( '' )
+        print( '\n\nResults for %s (SQ level: %s):\n' %
+               ( self.details.canonicalPath, self.sqLevelToRun ) )
 
 
     def _showSummaryTable( self ):
         Any.requireIsDictNonEmpty( self.results )
         Any.requireIsListNonEmpty( self.rulesOrdered )
+
+        tableData = [ [ 'ID', 'objective', 'val.', 'status', 'comment' ] ]
 
         for ruleID in self.rulesOrdered:
             if ruleID not in self.rulesImplemented:
@@ -609,14 +613,25 @@ class CheckRoutine( object ):
             if ruleID not in self.rulesToRun:
                 continue
 
-            ( status, passed, failed, shortText ) = self.results[ ruleID ]
+            result        = self.results[ ruleID ]
+            state         = result[0]
+            comment       = result[3]
+            ruleName      = self.rules[ ruleID ].name
+            successRate   = self._computeSuccessRate( ruleID )
+            displayedRate = f'{successRate:3d}%' if successRate is not None else ''
 
-            successRate = self._computeSuccessRate( ruleID )
+            if state is FAILED:
+                displayedState = ColoredOutput.error( state )
+            elif state is DISABLED:
+                displayedState = ColoredOutput.emphasized( state )
+            else:
+                displayedState = state
 
-            logging.info( '%8s | %14s | %4s | %s', ruleID.ljust(6),
-                          status.ljust(14), successRate, shortText )
+            rowData        = [ ruleID, ruleName, displayedRate, displayedState, comment ]
+            tableData.append( rowData )
 
-        logging.info( '' )
+        table = terminaltables.DoubleTable( tableData ).table
+        print( table, '\n' )
 
 
     def _showSummaryComments( self ):

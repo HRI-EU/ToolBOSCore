@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: utf-8 -*-
 #
-#  Switch to a different ToolBOS SDK installation
+#  Colored console outputs - but not in case of redirection to file
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -32,60 +32,38 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-#  Note:  This file needs to be sourced, not executed! For example:
-#         $ source ./switchSDK.rc
-#
 
 
-# define env.variable if not set, yet
-
-if [[ -z ${LD_LIBRARY_PATH+x} ]]
-then
-    export LD_LIBRARY_PATH=""
-fi
-
-if [[ -z ${MAKEFILE_PLATFORM+x} ]]
-then
-    export MAKEFILE_PLATFORM=focal64
-fi
-
-if [[ -z ${PYTHONPATH+x} ]]
-then
-    export PYTHONPATH=""
-fi
-
-if [[ -z ${SIT+x} ]]
-then
-    export SIT="/hri/sit/latest"
-fi
-
-if [[ -z ${TOOLBOSCORE_ROOT+x} ]]
-then
-    export TOOLBOSCORE_ROOT=""
-fi
-
-if [[ -z ${VERBOSE+x} ]]
-then
-    export VERBOSE=""
-fi
+import sys
 
 
-SCRIPT_PATH=$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")
-OLD_TOOLBOSCORE_ROOT=${TOOLBOSCORE_ROOT}
-NEW_TOOLBOSCORE_ROOT=$(builtin cd "${SCRIPT_PATH}" ; pwd)
-echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
+if sys.stdout.isatty():
+    # In case stdout is an interactive console, enable colored output.
 
-export TOOLBOSCORE_ROOT=${NEW_TOOLBOSCORE_ROOT}
-export TOOLBOSCORE_SOURCED=DevelopmentTools/ToolBOSCore/4.1
-export PATH=${TOOLBOSCORE_ROOT}/bin:${TOOLBOSCORE_ROOT}/bin/${MAKEFILE_PLATFORM}:${PATH}
-export LD_LIBRARY_PATH=${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
-export PYTHONPATH=${TOOLBOSCORE_ROOT}/include:${TOOLBOSCORE_ROOT}/external:${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${PYTHONPATH}
+    from ToolBOSCore.Util import FastScript
+
+    FastScript.tryImport( 'termcolor' )
+    import termcolor
 
 
-function bst {
-   BST.py "$@"
-}
-export -f bst
+    def emphasized( s:str ) -> str:
+        return termcolor.colored( s, attrs=['bold'] )
+
+
+    def error( s:str ) -> str:
+        return termcolor.colored( s, 'red', attrs=['bold'] )
+
+
+else:
+
+    # In case stdout is being redirected to a file, just return the
+    # provided string. Otherwise we would find shell escape sequences
+    # in the output.
+
+    dummy = lambda s: s
+
+    emphasized = dummy
+    error      = dummy
 
 
 # EOF
