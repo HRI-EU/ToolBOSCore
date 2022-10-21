@@ -38,7 +38,6 @@ import sys
 
 
 if sys.stdout.isatty():
-    print( 'is a tty' )
     # In case stdout is an interactive console, enable colored output.
 
     from ToolBOSCore.Util import FastScript
