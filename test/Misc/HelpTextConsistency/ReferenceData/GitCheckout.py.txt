@@ -21,4 +21,4 @@ examples:
   GitCheckout.py -v -u monthy Libraries/MasterClock/1.6
   GitCheckout.py ${SIT}/Libraries/MasterClock/1.6
 
-Please report bugs on JIRA (https://jira.honda-ri.de:8443).
+Please report bugs on GitLab (https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues).

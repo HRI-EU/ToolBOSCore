@@ -147,9 +147,9 @@ class ArgsManager( argparse.ArgumentParser ):
 
     def _setBugtrackerURL( self ):
         try:
+            bugtrackName      = getConfigOption( 'bugtrackName' )
             bugtrackURL       = getConfigOption( 'bugtrackURL' )
-            self._supportInfo = '\nPlease report bugs on JIRA (%s).' % \
-                                bugtrackURL
+            self._supportInfo = f'\nPlease report bugs on {bugtrackName} ({bugtrackURL}).'
 
         except AttributeError:
             # This happens within ToolBOS-Setup.py: In a brand-new user
