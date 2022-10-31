@@ -11,4 +11,4 @@ optional arguments:
 examples:
   %prog
 
-Please report bugs on JIRA (https://jira.honda-ri.de:8443).
+Please report bugs on GitLab (https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues).
