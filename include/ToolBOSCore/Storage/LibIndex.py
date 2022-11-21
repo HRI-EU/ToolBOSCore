@@ -345,7 +345,10 @@ def addLibraries( index, canonicalPath ):
     Any.requireMsg( os.path.exists( installRoot ),
                        "%s: No such package in SIT" % installRoot )
 
-    details = PackageDetector.PackageDetector()
+    try:
+        details = PackageDetector.PackageDetector( installRoot )
+    except AssertionError as e:
+        raise EnvironmentError( f'Unable to create LibIndex for {installRoot}: {e}' ) from e
     details.retrieveMakefileInfo()
 
     linkAllLibraries = details.linkAllLibraries

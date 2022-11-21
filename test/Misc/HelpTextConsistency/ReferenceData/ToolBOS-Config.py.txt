@@ -24,4 +24,4 @@ examples:
   ToolBOS-Config.py -s "myList = [1,2,3,4]"
   ToolBOS-Config.py -z                   # opens GUI
 
-Please report bugs on JIRA (https://jira.honda-ri.de:8443).
+Please report bugs on GitLab (https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues).

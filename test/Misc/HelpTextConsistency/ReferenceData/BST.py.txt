@@ -61,4 +61,4 @@ examples:
   BST.py --deprecate                 # deprecate this package
   BST.py --deprecate Foo/Bar/1.0     # deprecate specified package
 
-Please report bugs on JIRA (https://jira.honda-ri.de:8443).
+Please report bugs on GitLab (https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues).
