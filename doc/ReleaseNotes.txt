@@ -1,4 +1,21 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.1.4
+
+
+CHANGES
+=======
+
+  - [#42] updated bugtracker URL (JIRA --> GitLab)
+
+
+FIXED BUGS
+==========
+
+  - [Middleware/#26] fixed LibIndex regression (parameter was missing)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.1.3
 
 
