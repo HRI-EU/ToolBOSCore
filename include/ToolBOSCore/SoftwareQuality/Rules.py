@@ -61,18 +61,20 @@ from ToolBOSCore.Tools                            import Klocwork,\
 from ToolBOSCore.Util                             import Any, FastScript
 
 
-ALL_FILE_EXTENSIONS     = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
-                            '.java', '.m', '.py', '.bash', '.sh' )
+ALL_FILE_EXTENSIONS         = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
+                                '.java', '.m', '.py', '.bash', '.sh', '.ipynb' )
 
-C_FILE_EXTENSIONS       = ( '.c', '.h', '.inc' )
+C_FILE_EXTENSIONS           = ( '.c', '.h', '.inc' )
 
-C_CPP_FILE_EXTENSIONS   = ( '.c', '.cpp', '.h', '.hpp', '.inc' )
+C_CPP_FILE_EXTENSIONS       = ( '.c', '.cpp', '.h', '.hpp', '.inc' )
 
-C_HEADER_EXTENSIONS     = ( '.h', )
+C_HEADER_EXTENSIONS         = ( '.h', )
 
-C_CPP_HEADER_EXTENSIONS = ('.h', '.hpp', 'hh', 'hxx')
+C_CPP_HEADER_EXTENSIONS     = ('.h', '.hpp', 'hh', 'hxx')
 
-BASH_FILE_EXTENSIONS    = ('.bash', '.sh')
+BASH_FILE_EXTENSIONS        = ('.bash', '.sh')
+
+FILE_EXTENSIONS_TO_EXCLUDE  = { 'GEN03': [ 'ipynb' ] }
 
 class AbstractRule( object ):
 
@@ -276,6 +278,11 @@ characters per line.'''
         threshold = 5
 
         for filePath in sorted( files ):
+
+            fileExtension = filePath.split( "." )[ -1 ]
+            if fileExtension in FILE_EXTENSIONS_TO_EXCLUDE[ 'GEN03' ]:
+                continue
+
             longLines = 0
             maxLen    = 0
             try:
