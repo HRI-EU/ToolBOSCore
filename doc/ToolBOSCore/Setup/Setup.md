@@ -1,6 +1,6 @@
 ##  Setup
 
-- @subpage InstallingToolBOS
-- @subpage ShellConfiguration
-- @subpage SourcingPackages
-- @subpage SupportedPlatforms
+- [Installing ToolBOS](InstallingToolBOS.md)
+- [Shell Configuration](ShellConfig.md)
+- [Sourcing Packages](SourcingAdditionalPackages.md)
+- [Supported Platforms](SupportedPlatforms.md)
