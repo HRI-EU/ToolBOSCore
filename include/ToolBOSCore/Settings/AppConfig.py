@@ -330,4 +330,17 @@ class AppConfig( object ):
         Any.requireIsDictNonEmpty( self._allSettings )
 
 
+class AppConfigFactory( AppConfig ):
+
+    def __init__( self, appName:str ):
+        Any.requireIsTextNonEmpty( appName )
+
+        envName    = appName.upper() + '_ROOT'
+        pkgRoot    = FastScript.getEnv( envName )
+        defaultDir = os.path.join( pkgRoot, 'etc' )
+        userDir    = os.path.join( os.path.expanduser( '~' ), '.HRI', appName )
+
+        super( AppConfigFactory, self ).__init__( appName, defaultDir, userDir )
+
+
 # EOF

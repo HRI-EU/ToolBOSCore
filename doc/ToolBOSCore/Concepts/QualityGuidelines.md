@@ -3,11 +3,11 @@
 * List of coding conventions, with explanation and weblinks
 * Guideline for project board to define quality requirements
 * Automated check functions for measurement and validation
-* checks are divided into several categories like C/C++ specific, Python 
+* Checks are divided into several categories like C/C++ specific, Python
   specific, General rules with   
   focus on maintainability, compatibility, Documentation rules for better
   user experience etc.
-* available as commandline and desktop utility
+* Available as commandline and desktop utility
 
 
 ### Prerequisite:

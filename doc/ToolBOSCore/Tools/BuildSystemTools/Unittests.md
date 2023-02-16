@@ -20,7 +20,7 @@ BST.py considers the unittests to have passed as long as the unittest.{sh|bat} s
 ToolBOS SDK comes with built-in support for **CuTest**, a very easy to use unittesting "framework" which is actually just a set of C macros. It is supported on both Linux and Windows.
   
 **See also**
-      - @subpage unittest
+      - [unittest](../../../../examples/unittest.c)
   
 In good cases it might look like this:
 
