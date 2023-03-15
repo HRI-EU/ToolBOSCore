@@ -32,9 +32,9 @@ This page explains various terminologies used throughout the ToolBOSCore toolcha
     within the *Software Installation Tree (SIT)*.
 
   - For example, the ToolBOSCore package can be found at
-    `/hri/sit/latest/DevelopmentTools/ToolBOSCore/4.1`.
+    `/hri/sit/latest/DevelopmentTools/ToolBOSCore/4.2`.
   - The first part `/hri/sit/latest` (= SIT path) is common for all packages.
-    Hence, it is sufficient to shortly say `DevelopmentTools/ToolBOSCore/4.1`
+    Hence, it is sufficient to shortly say `DevelopmentTools/ToolBOSCore/4.2`
     to clearly reference a certain package.
     This is the *canonical path* of the package.
 
@@ -44,7 +44,7 @@ This page explains various terminologies used throughout the ToolBOSCore toolcha
   - Extended version, also O.S. distribution packages and/or specific SITs
     can be referenced, e.g.:
 
-    * `sit://DevelomentTools/ToolBOSCore/4.1`
+    * `sit://DevelomentTools/ToolBOSCore/4.2`
     * `deb://binutils`
     * `rpm://gcc'
 
@@ -84,5 +84,5 @@ This page explains various terminologies used throughout the ToolBOSCore toolcha
 
   - absolute path to a package within a specific SIT, e.g.:
 
-    * `/hri/sit/latest/DevelopmentTools/ToolBOSCore/4.1`
+    * `/hri/sit/latest/DevelopmentTools/ToolBOSCore/4.2`
 

@@ -45,8 +45,8 @@ from ToolBOSCore.Settings import AppConfig
 _cache = None
 
 packageName    = 'ToolBOSCore'
-packageVersion = '4.1'
-canonicalPath  = 'DevelopmentTools/ToolBOSCore/4.1'
+packageVersion = '4.2'
+canonicalPath  = 'DevelopmentTools/ToolBOSCore/4.2'
 
 settingsFile   = 'ToolBOS.conf'
 
