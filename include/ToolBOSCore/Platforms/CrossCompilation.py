@@ -288,6 +288,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
                                                                                                                                                                                                        wkitVersion ) )
         FastScript.setEnv( 'CL_CMD', r'{0}\bin\Host{1}\{1}\cl.exe'.format( msvcToolsBasePath, cpu ) )
         FastScript.setEnv( 'LINK_CMD', r'{0}\bin\Host{1}\{1}\link.exe'.format( msvcToolsBasePath, cpu ) )
+        FastScript.setEnv( 'LIB_CMD', r'{0}\bin\Host{1}\{1}\lib.exe'.format(msvcToolsBasePath, cpu) )
         FastScript.setEnv( 'RC_CMD', r'{0}\bin\{1}\rc.Exe'.format( wkitBasePath, cpu ) )
         FastScript.setEnv( 'MT_CMD', r'{0}\bin\{1}\mt.Exe'.format( wkitBasePath, cpu ) )
         FastScript.setEnv( 'DUMPBIN_CMD', r'{0}\bin\Host{1}\{1}\dumpbin.exe'.format( msvcToolsBasePath, cpu ) )
@@ -342,6 +343,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
                            pdkBasePath + '''Bin''' )
         FastScript.setEnv( 'CL_CMD', compilerBasePath + '''bin''' + compilerCrossPath + '''\\cl.exe''' )
         FastScript.setEnv( 'LINK_CMD', compilerBasePath + '''bin''' + compilerCrossPath + '''\\link.exe''' )
+        FastScript.setEnv( 'LIB_CMD', compilerBasePath + '''bin''' + compilerCrossPath + '''\\lib.exe''')
         FastScript.setEnv( 'RC_CMD', pdkBasePath + '''Bin\\RC.Exe''' )
         FastScript.setEnv( 'MT_CMD', pdkBasePath + '''Bin\\mt.exe''' )
         FastScript.setEnv( 'DUMPBIN_CMD', compilerBasePath + '''Bin\\dumpbin.exe''' )
@@ -377,15 +379,15 @@ def _switchEnv_linuxToWindows( targetPlatform ):
     # setup arguments which will be passed to CMake
 
     fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                             'include/CMake/Windows-WineMSVC.cmake' )
+                             'include/CMake/Platform/Linux-MSVC.cmake' )
     Any.requireIsFileNonEmpty( fileName )
 
     oldOptions = FastScript.getEnv( 'BST_CMAKE_OPTIONS' )
 
     if oldOptions:
-        newOptions = '-DCMAKE_TOOLCHAIN_FILE=%s %s' % ( fileName, oldOptions )
+        newOptions = '-Wno-dev -DCMAKE_TOOLCHAIN_FILE=%s %s' % ( fileName, oldOptions )
     else:
-        newOptions = '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName
+        newOptions = '-Wno-dev -DCMAKE_TOOLCHAIN_FILE=%s' % fileName
     FastScript.setEnv( 'BST_CMAKE_OPTIONS', newOptions )
 
     FastScript.unsetEnv( 'GLIBC_ALIAS' )
