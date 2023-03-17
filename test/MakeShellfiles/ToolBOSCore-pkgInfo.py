@@ -18,7 +18,7 @@ name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
-version          = '4.1'
+version          = '4.2'
 
 section          = 'DevelopmentTools'
 
@@ -26,11 +26,11 @@ category         = 'DevelopmentTools'
 
 patchlevel       = 0
 
-maintainer       = ( 'mstein', 'Marijke Stein' )
+maintainer       = ( 'mstein', 'mstein' )
 
 gitBranch        = 'develop'
 
-gitCommitID      = '420a264e48c6ccb41b5ba67f0c5f4ca52df6e8b0'
+gitCommitID      = 'c9372675ebbd36580b0d5cdd8b1189a347ca7247'
 
 gitOrigin        = 'git@dmz-gitlab.honda-ri.de:TECH_Team/ToolBOSCore.git'
 
