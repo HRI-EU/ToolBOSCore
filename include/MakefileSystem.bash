@@ -79,8 +79,16 @@ else
 fi
 
 
-PROJECT_NAME=$(basename "$(dirname "${PWD}")")
-PROJECT_VERSION=$(basename "${PWD}")                # 2 digits
+if [[ -z "${PROJECT_NAME}" ]]
+then
+    PROJECT_NAME=$(basename "$(dirname "${PWD}")")
+fi
+
+if [[ -z "${PROJECT_VERSION}" ]]
+then
+    PROJECT_VERSION=$(basename "${PWD}")                # 2 digits
+fi
+
 PROJECT_VERSION_MAJOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $1 }')
 PROJECT_VERSION_MINOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $2 }')
 
