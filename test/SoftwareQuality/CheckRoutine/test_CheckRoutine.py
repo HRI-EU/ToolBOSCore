@@ -93,9 +93,9 @@ def test_runGen01_filename_in_english( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN01()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py' }
+    files   = { 'all': [ 'include/ToolBOSCore/Util/Any.py',
+                         'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                         'include/ToolBOSCore/Util/FastScript.py' ] }
 
     result  = rule.run( details, files )
 
@@ -109,10 +109,10 @@ def test_runGen01_filename_in_other_languages( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN01()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                f'{_refDir}/TestFileGen01äÄß.py' }
+    files   = { 'all': [ 'include/ToolBOSCore/Util/Any.py',
+                         'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                         'include/ToolBOSCore/Util/FastScript.py',
+                         f'{_refDir}/TestFileGen01äÄß.py' ] }
 
     result  = rule.run( details, files )
 
@@ -126,10 +126,10 @@ def test_runGen02_file_with_utf8_encoding( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN02()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                f'{_refDir}/TestFileGen01äÄß.py' }
+    files   = { 'all': [ 'include/ToolBOSCore/Util/Any.py',
+                         'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                         'include/ToolBOSCore/Util/FastScript.py',
+                         f'{_refDir}/TestFileGen01äÄß.py' ] }
 
     result  = rule.run( details, files )
 
@@ -143,7 +143,7 @@ def test_runGen02_file_with_wrong_encoding( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN02()
     details = toolBOSCoreDetector
-    files   = { f'{_refDir}/TestFileGen02-ISO-8859-1.py' }
+    files   = { 'all': [ f'{_refDir}/TestFileGen02-ISO-8859-1.py' ] }
 
     result  = rule.run( details, files )
 
@@ -157,9 +157,9 @@ def test_runGen03_files_with_width_limit_of_80( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN03()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py' }
+    files   = { 'all': [ 'include/ToolBOSCore/Util/Any.py',
+                              'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                              'include/ToolBOSCore/Util/FastScript.py' ] }
 
     result  = rule.run( details, files )
 
@@ -173,10 +173,10 @@ def test_runGen03_files_exceeding_width_limit_of_80( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN03()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                'include/ToolBOSCore/Platforms/CrossCompilation.py' }
+    files   = { 'all': [ 'include/ToolBOSCore/Util/Any.py',
+                         'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                         'include/ToolBOSCore/Util/FastScript.py',
+                         'include/ToolBOSCore/Platforms/CrossCompilation.py' ] }
 
     result  = rule.run( details, files )
 
@@ -190,9 +190,9 @@ def test_runGen06_files_without_tabs( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_GEN06()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py' }
+    files   = { 'all': [ 'include/ToolBOSCore/Util/Any.py',
+                         'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                         'include/ToolBOSCore/Util/FastScript.py' ] }
 
     result  = rule.run( details, files )
 
@@ -291,9 +291,9 @@ def test_runPy02_files_without_private_members_access( toolBOSCoreDetector ):
     rule    = Rules.Rule_PY02()
     details = toolBOSCoreDetector
 
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py' }
+    files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
+                            'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                            'include/ToolBOSCore/Util/FastScript.py' ] }
 
     result  = rule.run( details, files )
 
@@ -307,10 +307,10 @@ def test_runPy02_files_with_private_members_access( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_PY02()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                'include/ToolBOSCore/Packages/BSTPackage.py' }
+    files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
+                            'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                            'include/ToolBOSCore/Util/FastScript.py',
+                            'include/ToolBOSCore/Packages/BSTPackage.py' ] }
 
     result  = rule.run( details, files )
 
@@ -325,9 +325,9 @@ def test_runPy04_files_without_exit_call( toolBOSCoreDetector ):
     rule    = Rules.Rule_PY04()
     details = toolBOSCoreDetector
 
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py' }
+    files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
+                            'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                            'include/ToolBOSCore/Util/FastScript.py' ] }
 
     result  = rule.run( details, files )
 
@@ -340,10 +340,10 @@ def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_PY04()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                'bin/GitCheckout.py' }
+    files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
+                            'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                            'include/ToolBOSCore/Util/FastScript.py',
+                            'bin/GitCheckout.py' ] }
 
     result  = rule.run( details, files )
 
@@ -356,7 +356,7 @@ def test_runPy05_files_without_lint_issues( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_PY05()
     details = toolBOSCoreDetector
-    files   = { 'test/SoftwareQuality/CheckRoutine/ReferenceData/TestPy05_Calculator.py' }
+    files   = { 'python': [ 'test/SoftwareQuality/CheckRoutine/ReferenceData/TestPy05_Calculator.py' ] }
 
     result  = rule.run( details, files )
 
@@ -369,10 +369,10 @@ def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
     """
     rule    = Rules.Rule_PY05()
     details = toolBOSCoreDetector
-    files   = { 'include/ToolBOSCore/Util/Any.py',
-                'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                'include/ToolBOSCore/Util/FastScript.py',
-                'bin/GitCheckout.py' }
+    files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
+                            'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
+                            'include/ToolBOSCore/Util/FastScript.py',
+                            'bin/GitCheckout.py' ] }
 
     result  = rule.run( details, files )
 
@@ -495,7 +495,9 @@ def test_runC01_package_with_exit_calls( testPackageForC ):
     """
     rule    = Rules.Rule_C01()
     details = testPackageForC
-    files   = { 'src/AnyExit.c' }
+    files   = { 'cpp'      : [],
+                'c'        : [ 'src/AnyExit.c' ],
+                'cppHeaders': [] }
 
     result  = rule.run( details, files )
 
@@ -509,8 +511,9 @@ def test_runC01_package_without_exit_calls( testPackageForC ):
     """
     rule    = Rules.Rule_C01()
     details = testPackageForC
-    files   = { 'src/TestPackageForC.c',
-                'src/TestPackageForC.h' }
+    files   = { 'cpp'        : [],
+                'c'          : [ 'src/TestPackageForC.c' ] ,
+                'cppHeaders' : [ 'src/TestPackageForC.h' ] }
 
     result  = rule.run( details, files )
 
@@ -524,7 +527,7 @@ def test_runC05_with_multi_inclusion_safeguards( testPackageForC ):
     """
     rule    = Rules.Rule_C05()
     details = testPackageForC
-    files   = { 'src/TestPackageForC.h' }
+    files   = { 'cppHeaders' : [ 'src/TestPackageForC.h' ] }
 
     result  = rule.run( details, files )
 
@@ -538,8 +541,7 @@ def test_runC05_missing_multi_inclusion_safeguards( testPackageForC ):
     """
     rule    = Rules.Rule_C05()
     details = testPackageForC
-    files   = { 'src/ArrayList.h',
-                'src/BaseTypes.h' }
+    files   = { 'cppHeaders' : [ 'src/ArrayList.h', 'src/BaseTypes.h' ] }
 
     result  = rule.run( details, files )
 
@@ -610,7 +612,7 @@ def test_runBASH01_script_without_quotes( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH01()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/withoutQuotes.bash' }
+    files   = { 'bash' : [ f'{_refDir}/withoutQuotes.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -624,7 +626,7 @@ def test_runBASH01_script_with_quotes( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH01()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/withQuotes.bash'}
+    files   = { 'bash' : [ f'{_refDir}/withQuotes.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -639,7 +641,7 @@ def test_runBASH03_script_with_backticks( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH03()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/withBackticks.bash' }
+    files   = { 'bash' : [ f'{_refDir}/withBackticks.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -654,7 +656,7 @@ def test_runBASH03_script_without_backticks( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH03()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/withoutBackticks.bash' }
+    files   = { 'bash' : [ f'{_refDir}/withoutBackticks.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -668,7 +670,7 @@ def test_runBASH04_script_args_in_string( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH04()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/argsInString.bash' }
+    files   = { 'bash' : [ f'{_refDir}/argsInString.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -682,7 +684,7 @@ def test_runBASH04_script_args_in_array( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH04()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/argsInArray.bash'}
+    files   = { 'bash' : [ f'{_refDir}/argsInArray.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -697,7 +699,7 @@ def test_runBASH06_script_without_braces( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH06()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/withoutBraces.bash' }
+    files   = { 'bash' : [ f'{_refDir}/withoutBraces.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -712,7 +714,7 @@ def test_runBASH06_script_with_braces( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH06()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/withBraces.bash' }
+    files   = { 'bash' : [ f'{_refDir}/withBraces.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -727,11 +729,11 @@ def test_runBASH07_script_without_set( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/setTestWithout.bash',
-                f'{_refDir}/setTest1Fail.bash',
-                f'{_refDir}/setTest2Fail.bash',
-                f'{_refDir}/setTest3Fail.bash',
-                f'{_refDir}/setTest4Fail.bash' }
+    files   = { 'bash' : [ f'{_refDir}/setTestWithout.bash',
+                           f'{_refDir}/setTest1Fail.bash',
+                           f'{_refDir}/setTest2Fail.bash',
+                           f'{_refDir}/setTest3Fail.bash',
+                           f'{_refDir}/setTest4Fail.bash' ] }
 
     result  = rule.run( details, files )
 
@@ -746,10 +748,10 @@ def test_runBASH07_script_with_set_or_ignored( toolBOSCoreDetector ):
     rule    = Rules.Rule_BASH07()
     details = toolBOSCoreDetector
 
-    files   = { f'{_refDir}/setTest1.bash',
-                f'{_refDir}/setTest2.bash',
-                f'{_refDir}/setTest3.bash',
-                f'{_refDir}/setTest4.bash' }
+    files   = { 'bash' : [ f'{_refDir}/setTest1.bash',
+                           f'{_refDir}/setTest2.bash',
+                           f'{_refDir}/setTest3.bash',
+                           f'{_refDir}/setTest4.bash' ] }
 
     result  = rule.run( details, files )
 

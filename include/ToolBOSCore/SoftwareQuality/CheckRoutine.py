@@ -37,7 +37,8 @@
 import copy
 import logging
 import os
-import typing
+
+from typing import Dict, List, Optional, Set
 
 from ToolBOSCore.BuildSystem              import BuildSystemTools
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
@@ -87,8 +88,8 @@ class CheckRoutine( object ):
         self.useOptFlags      = True   # disabled when invoking setRules()
 
         self.files            = set()  # final list of files to check
-        self.bashFiles        = set()  # list of Bash-files to check
-
+        self.filesByType      = {}     # dict with key: file type &
+                                       # value: list of files of that type
         self.rules            = {}     # { ID: obj } of all rules (None if n/a)
         self.ruleIDs          = set()  # IDs of all SQ rules, not ordered
         self.rulesOrdered     = []     # IDs of all SQ rules, sorted
@@ -287,9 +288,7 @@ class CheckRoutine( object ):
         self._setupOptOutDirs()
         self._setupOptOutFiles()
         self._setupOptInFiles()
-        self._setupBashFiles()
-
-        logging.debug( "bashFiles = %s", str(self.bashFiles) )
+        self.setupFilesByType()
 
 
     def showSummary( self, state ):
@@ -301,7 +300,7 @@ class CheckRoutine( object ):
         self._summaryEnabled = state
 
 
-    def _computeSuccessRate( self, ruleID ) -> typing.Optional[int]:
+    def _computeSuccessRate( self, ruleID ) -> Optional[int]:
         """
             Computes the success rate (in percent) for a given rule,
             based on the values returned by the corresponding checker.
@@ -404,16 +403,63 @@ class CheckRoutine( object ):
             self.rulesToRun = forceRules
 
 
-    def _populateBashFiles(self):
+    def setupFilesByType( self ) -> None:
+        """
+            populates a dictionary `self.filesByType` with key as file type and
+            value as list of files of that type.
+            self.filesByType: Dict[ str, List[ str ] ]
+        """
+
+        self.filesByType = {}
+
+        self.filesByType[ 'all' ]        = sorted( self.files )
+        self.filesByType[ 'bash' ]       = self._populateBashFiles()
+        self.filesByType[ 'python' ]     = self._getFileListByExt( self.files, { '.py' } )
+        self.filesByType[ 'cpp' ]        = self._getFileListByExt( self.files, { '.cpp' } )
+        self.filesByType[ 'cppHeaders' ] = self._getFileListByExt( self.files, { '.h', '.hh',
+                                                                                 '.hpp', '.hxx', '.inc' } )
+        self.filesByType[ 'c' ]          = self._getFileListByExt( self.files, { '.c' } )
+        self.filesByType[ 'cHeaders' ]   = self._getFileListByExt( self.files, { '.h', '.inc' } )
+
+
+    def _getFileListByExt( self, files: Set[ str ], extensions: Set[ str ] ) -> List[  str ]:
+        """
+            Returns a fileList by iterating over the 'files' set
+            and filtering for the given set of extensions.
+        """
+        Any.requireIsSet( files )
+        Any.requireIsSet( extensions )
+
+        fileList = []
+
         for filePath in self.files:
-            fileExt = os.path.splitext( filePath )[-1]
+            fileExt = os.path.splitext( filePath )[ -1 ]
+
+            if fileExt in extensions:
+                fileList.append( filePath )
+
+        return sorted( fileList )
+
+
+    def _populateBashFiles( self ):
+        """
+            returns list of bash files by iterating over the 'self.files' list
+        """
+        bashFiles = []
+
+        for filePath in self.files:
+            fileExt = os.path.splitext( filePath )[ -1 ]
+
             if fileExt in self.bashExts:
-                self.bashFiles.add( filePath )
+                bashFiles.append( filePath )
             else:
                 if fileExt == '':
                     content = FastScript.getFileContent( filePath, True )
                     if len(content) > 0 and 'bash' in content[0].lower():
-                        self.bashFiles.add( filePath )
+                        bashFiles.append( filePath )
+
+        return bashFiles
+
 
     def _printEnabled( self ):
         """
@@ -478,10 +524,7 @@ class CheckRoutine( object ):
         rule = self.rules[ ruleID ]
 
         if ruleID in self.rulesImplemented:
-            if ruleID.startswith('BASH'):
-                files = self.bashFiles
-            else:
-                files = self.files
+            files = self.filesByType
             result = rule.run( self.details, files )
         else:
             result = ( NOT_IMPLEMENTED, None, None, None )
@@ -575,12 +618,6 @@ class CheckRoutine( object ):
         for filename in self.details.sqOptOutFiles:
             logging.debug( '%6s: explicitly excluded via pkgInfo.py', filename )
             self.excludeFile( filename )
-
-
-    def _setupBashFiles( self ):
-        if self.hasRule( 'BASH' ):
-            logging.debug( 'populating bashFiles' )
-            self._populateBashFiles()
 
 
     def _showSummary( self ):

@@ -61,19 +61,6 @@ from ToolBOSCore.Tools                            import Klocwork,\
 from ToolBOSCore.Util                             import Any, FastScript
 
 
-ALL_FILE_EXTENSIONS         = ( '.bat', '.c', '.cpp', '.h', '.hpp', '.inc',
-                                '.java', '.m', '.py', '.bash', '.sh', '.ipynb' )
-
-C_FILE_EXTENSIONS           = ( '.c', '.h', '.inc' )
-
-C_CPP_FILE_EXTENSIONS       = ( '.c', '.cpp', '.h', '.hpp', '.inc' )
-
-C_HEADER_EXTENSIONS         = ( '.h', )
-
-C_CPP_HEADER_EXTENSIONS     = ('.h', '.hpp', 'hh', 'hxx')
-
-BASH_FILE_EXTENSIONS        = ('.bash', '.sh')
-
 FILE_EXTENSIONS_TO_EXCLUDE  = { 'GEN03': [ 'ipynb' ] }
 
 class AbstractRule( object ):
@@ -140,23 +127,22 @@ Japanese output on screen.'''
         passed = 0
         failed = 0
 
-        whitelist = ALL_FILE_EXTENSIONS
+        fileList = files[ 'all' ]
 
-        for filePath in files:
-            if os.path.splitext( filePath )[-1] in whitelist:
+        for filePath in fileList:
 
-                logging.debug( 'checking %s', filePath )
+            logging.debug( 'checking %s', filePath )
 
-                try:
-                    filePath.encode( 'ascii' )
-                    passed += 1
-                except UnicodeEncodeError as e:
-                    # PyCharm linter fails to recognize the start property
-                    # so we silence the warning.
-                    # noinspection PyUnresolvedReferences
-                    logging.info( 'GEN01: %s - Non-ASCII character in filename',
-                                  filePath )
-                    failed += 1
+            try:
+                filePath.encode( 'ascii' )
+                passed += 1
+            except UnicodeEncodeError as e:
+                # PyCharm linter fails to recognize the start property
+                # so we silence the warning.
+                # noinspection PyUnresolvedReferences
+                logging.info( 'GEN01: %s - Non-ASCII character in filename',
+                              filePath )
+                failed += 1
 
 
         if failed == 0:
@@ -203,7 +189,9 @@ dialog.'''
         failed  = 0
         ProcessEnv.requireCommand( self.utility )
 
-        for filePath in sorted( files ):
+        fileList = files[ 'all' ]
+
+        for filePath in fileList:
 
             if self._checkFile( filePath ) is True:
                 passed += 1
@@ -277,7 +265,9 @@ characters per line.'''
         maxWidth  = limit + grace        # we only search for really long lines
         threshold = 5
 
-        for filePath in sorted( files ):
+        fileList = files[ 'all' ]
+
+        for filePath in fileList:
 
             fileExtension = filePath.split( "." )[ -1 ]
             if fileExtension in FILE_EXTENSIONS_TO_EXCLUDE[ 'GEN03' ]:
@@ -311,7 +301,7 @@ characters per line.'''
                               filePath, longLines, maxWidth )
                 failed += 1
 
-        passed = len(files) - failed
+        passed = len(fileList) - failed
 
         if failed == 0:
             result = ( OK, passed, failed,
@@ -471,34 +461,27 @@ copyright       =
         logging.debug( 'checking files for copyright header' )
 
         failed    = 0
-        whitelist = ALL_FILE_EXTENSIONS
-
 
         if details.copyright:
             logging.info( 'found specific copyright information in pkgInfo.py' )
         else:
             logging.debug( 'searching for default copyright header' )
 
+        fileList = files[ 'all' ]
 
-        for filePath in sorted( files ):
-            fileExt = os.path.splitext( filePath )[-1]
+        for filePath in fileList:
+            content        = FastScript.getFileContent( filePath )
+            copyrightLines = self._getCopyrightLines( filePath, details.copyright )
 
-            if fileExt in whitelist:
-                content        = FastScript.getFileContent( filePath )
-                copyrightLines = self._getCopyrightLines( filePath, details.copyright )
+            for line in copyrightLines:
+                if content.find( line ) == -1:
+                    logging.debug( "%s: '%s' not found", filePath, line )
+                    logging.info( 'GEN04: copyright header missing in %s',
+                                  filePath )
+                    failed += 1
+                    break
 
-
-                for line in copyrightLines:
-                    if content.find( line ) == -1:
-                        logging.debug( "%s: '%s' not found", filePath, line )
-                        logging.info( 'GEN04: copyright header missing in %s',
-                                      filePath )
-                        failed += 1
-                        break
-            # else:
-            #     logging.debug( 'not checking %s', filePath )
-
-        passed = len(files) - failed
+        passed = len( files[ 'all' ] ) - failed
 
         if failed == 0:
             result = ( OK, passed, failed,
@@ -661,7 +644,9 @@ tabs.'''
         passed = 0
         failed = 0
 
-        for fileName in files:
+        fileList = files[ 'all' ]
+
+        for fileName in fileList:
             try:
                 content = FastScript.getFileContent( fileName )
             except ( IOError, OSError, UnicodeDecodeError ) as e:
@@ -1015,35 +1000,33 @@ causing data loss or inconsistent states.'''
         regexpExit2 = re.compile( r'\s_exit\s*\(' )
         regexpAbort = re.compile( r'\sabort\s*\(' )
 
-        for filePath in files:
-            if filePath.find( '/bin/' ) != -1 or \
-               filePath.find( '/examples/' ) != -1 or \
-                filePath.find( '/test/' ) != -1:
+        fileList = files[ 'cpp' ] + files[ 'c' ] + files[ 'cppHeaders' ]
 
-                logging.debug( '%s: found exit() within main program: OK', filePath  )
+        for filePath in fileList:
+            if '/bin/' in filePath or '/examples/' in filePath or '/test/' in filePath:
+                logging.debug( '%s: skipping file with excluded directory '
+                               '[ "bin", "examples", "test" ]', filePath )
+
                 continue
 
-            _, ext = os.path.splitext( filePath )
-            if ext in C_CPP_FILE_EXTENSIONS:
+            try:
+                content = FastScript.getFileContent( filePath )
+            except ( IOError, OSError, UnicodeDecodeError ) as e:
+                logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                failed += 1
+                continue
 
-                try:
-                    content = FastScript.getFileContent( filePath )
-                except ( IOError, OSError, UnicodeDecodeError ) as e:
-                    logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
-                    failed += 1
-                    continue
-
-                if regexpExit1.search( content ):
-                    logging.info( 'C01: exit() found in %s:1', filePath )
-                    failed += 1
-                elif regexpExit2.search( content ):
-                    logging.info( 'C01: _exit() found in %s:1', filePath )
-                    failed += 1
-                elif regexpAbort.search( content ):
-                    logging.info( 'C01: abort() found in %s:1', filePath )
-                    failed += 1
-                else:
-                    passed += 1
+            if regexpExit1.search( content ):
+                logging.info( 'C01: exit() found in %s:1', filePath )
+                failed += 1
+            elif regexpExit2.search( content ):
+                logging.info( 'C01: _exit() found in %s:1', filePath )
+                failed += 1
+            elif regexpAbort.search( content ):
+                logging.info( 'C01: abort() found in %s:1', filePath )
+                failed += 1
+            else:
+                passed += 1
 
 
         if failed == 0:
@@ -1183,44 +1166,44 @@ and other compile errors.'''
 
         blacklist = frozenset( [ 'documentation.h' ] )
 
-        for filePath in files:
-            _, ext = os.path.splitext( filePath )
+        fileList = files[ 'cppHeaders' ]
 
-            if ext in C_CPP_HEADER_EXTENSIONS:
-                fileName    = os.path.basename( filePath )
-                module      = os.path.splitext( fileName )[0]
-                moduleUpper = module.upper()
-                content     = FastScript.getFileContent( filePath )
+        for filePath in fileList:
 
-                if fileName in blacklist:
-                    # ignore / do not check whitelisted files
-                    continue
+            fileName    = os.path.basename( filePath )
+            module      = os.path.splitext( fileName )[0]
+            moduleUpper = module.upper()
+            content     = FastScript.getFileContent( filePath )
 
-                # Note that we are searching with regexp for a more relaxed
-                # string with possible pre-/postfix namespace name, but we
-                # print a stricter safeguard name in case it was not found,
-                # see JIRA tickets TBCORE-918 and TBCORE-2060
-                #
-                # allowed:      PACKAGENAME_H
-                #           FOO_PACKAGENAME_H
-                #           FOO_PACKAGENAME_H_BAR
-                #               PACKAGENAME_H_BAR
-                #           FOO_PACKAGENAME_BAZ_H_BAR
-                #               PACKAGENAME_BAZ_H
+            if fileName in blacklist:
+                # ignore / do not check whitelisted files
+                continue
 
-                safeguard   = '#ifndef %s_H' % moduleUpper
-                regexp      = re.compile( r'#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
+            # Note that we are searching with regexp for a more relaxed
+            # string with possible pre-/postfix namespace name, but we
+            # print a stricter safeguard name in case it was not found,
+            # see JIRA tickets TBCORE-918 and TBCORE-2060
+            #
+            # allowed:      PACKAGENAME_H
+            #           FOO_PACKAGENAME_H
+            #           FOO_PACKAGENAME_H_BAR
+            #               PACKAGENAME_H_BAR
+            #           FOO_PACKAGENAME_BAZ_H_BAR
+            #               PACKAGENAME_BAZ_H
 
-                tmp = regexp.search( content )
+            safeguard   = '#ifndef %s_H' % moduleUpper
+            regexp      = re.compile( r'#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
 
-                if tmp:
-                    logging.debug( "C05: %s: safeguard %s found",
-                                   filePath, tmp.group(1) )
-                    self.passed += 1
-                else:
-                    logging.info( "C05: %s: safeguard %s not found",
-                                  filePath, safeguard )
-                    self.failed += 1
+            tmp = regexp.search( content )
+
+            if tmp:
+                logging.debug( "C05: %s: safeguard %s found",
+                               filePath, tmp.group(1) )
+                self.passed += 1
+            else:
+                logging.info( "C05: %s: safeguard %s not found",
+                              filePath, safeguard )
+                self.failed += 1
 
 
         if self.failed == 0:
@@ -1499,7 +1482,7 @@ Specify an empty list if really nothing has to be executed.'''
         """
         ruleId = self.getRuleID()
 
-        if not details.hasMainProgram( files ):
+        if not details.hasMainProgram( files[ 'all' ] ):
             return NOT_APPLICABLE, 0, 0, 'no C/C++ main programs found'
 
         # get SQ-settings from pkgInfo.py
@@ -1794,15 +1777,15 @@ called from the outside. Doing it must be considered as wrong usage.'''
         """
             Checks for access to private class members from outside.
         """
-        if not details.isPythonPackage( files ):
+        if files[ 'python' ] == [ './pkgInfo.py' ]:
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         logging.debug( "checking for access to private members from outside" )
         found  = 0
         regexp = re.compile( r'(\w+)\._(\w+)' )
 
-        for filePath in files:
-            if filePath.endswith( '.py' ) and os.path.exists( filePath ):
+        for filePath in files[ 'python' ]:
+            if os.path.exists( filePath ):
                 content = FastScript.getFileContent( filePath, splitLines=True )
 
                 for line in content:
@@ -1942,7 +1925,7 @@ potentially causing data loss or inconsistent states.'''
         """
             Checks for call to sys.exit() in files other than bin/*.py
         """
-        if not details.isPythonPackage( files ):
+        if files[ 'python' ] == [ './pkgInfo.py' ]:
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
@@ -1952,8 +1935,8 @@ potentially causing data loss or inconsistent states.'''
 
         binDir = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
 
-        for filePath in files:
-            if filePath.endswith( '.py' ) and not filePath.startswith( binDir ):
+        for filePath in files[ 'python' ]:
+            if not filePath.startswith( binDir ):
 
                 code = FastScript.getFileContent( filePath )
 
@@ -2021,7 +2004,7 @@ Please regularly inspect your scripts using Pylint.'''
             Execute the PyCharm source code analyzer in batch-mode for each
             *.py file.
         """
-        if not details.isPythonPackage( files ):
+        if files[ 'python' ] == [ './pkgInfo.py' ]:
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         from ToolBOSCore.Tools import Pylint
@@ -2041,9 +2024,9 @@ Please regularly inspect your scripts using Pylint.'''
         # we are using sys.stdout to redirect the output to a file
 
         sys.stdout = open( outputFileName, 'w' )
-        for filePath in sorted( files ):
-            if filePath.endswith( '.py' ) and \
-               not ( filePath.endswith( '__init__.py' )or filePath.endswith( 'pkgInfo.py' ) ) :
+        for filePath in files[ 'python' ]:
+            if not ( filePath.endswith( '__init__.py' ) or
+                     filePath.endswith( 'pkgInfo.py' ) ) :
 
                 print( "Analyzing file: " + filePath )
 
@@ -2126,7 +2109,7 @@ specific case to follow the Matlab code-checker.'''
         cwd    = os.getcwd()
         error  = False
 
-        for filePath in files:
+        for filePath in files[ 'all' ]:
             if filePath.endswith( '.m' ):
                 logging.debug( 'checking %s...', filePath )
                 defects = None
@@ -2522,20 +2505,20 @@ label declared later in the same function.'''
         logging.debug( 'looking for "goto"-statement' )
         found  = 0
 
-        for filePath in files:
-            _, ext = os.path.splitext( filePath )
-            if ext in C_CPP_FILE_EXTENSIONS:
+        fileList = files[ 'c' ] + files[ 'cpp' ]
 
-                try:
-                    content = FastScript.getFileContent( filePath )
-                except ( IOError, OSError, UnicodeDecodeError ) as e:
-                    logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
-                    found += 1
-                    continue
+        for filePath in fileList:
 
-                if content.find( ' goto ' ) > 0:
-                    logging.info( 'SAFE04: goto-statement found: %s', filePath )
-                    found += 1
+            try:
+                content = FastScript.getFileContent( filePath )
+            except ( IOError, OSError, UnicodeDecodeError ) as e:
+                logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                found += 1
+                continue
+
+            if content.find( ' goto ' ) > 0:
+                logging.info( 'SAFE04: goto-statement found: %s', filePath )
+                found += 1
 
         if found == 0:
             result = ( OK, 1, 0,
@@ -2684,18 +2667,18 @@ of code variants.'''
         passed = 0
         failed = 0
 
-        for filePath in files:
-            _, ext = os.path.splitext( filePath )
+        fileList = files[ 'cppHeaders' ]
 
-            if ext in C_CPP_HEADER_EXTENSIONS:
-                content = FastScript.getFileContent( filePath )
+        for filePath in fileList:
 
-                if content.find( 'inline' ) != -1:
-                    logging.info( "SAFE08: %s: public API should not be declared 'inline'",
-                                  filePath )
-                    failed += 1
-                else:
-                    passed += 1
+            content = FastScript.getFileContent( filePath )
+
+            if content.find( 'inline' ) != -1:
+                logging.info( "SAFE08: %s: public API should not be declared 'inline'",
+                              filePath )
+                failed += 1
+            else:
+                passed += 1
 
         if failed == 0:
             result = ( OK, passed, failed,
@@ -2919,7 +2902,9 @@ Output:
         passed = 0
         failed = 0
 
-        for filePath in files:
+        fileList = files[ 'bash' ]
+
+        for filePath in fileList:
             results = Shellcheck.checkScript( filePath,
                                               '2046,2048,2068,2086,2248',
                                               'quote-safe-variables')
@@ -3014,7 +2999,9 @@ parenthesis.
         passed = 0
         failed = 0
 
-        for filePath in files:
+        fileList = files[ 'bash' ]
+
+        for filePath in fileList:
             results = Shellcheck.checkScript( filePath, '2006' )
             if results[0]:
                 _printErrorReport( 'BASH03',
@@ -3083,7 +3070,8 @@ output:
         passed = 0
         failed = 0
 
-        for filePath in files:
+        fileList = files[ 'bash' ]
+        for filePath in fileList:
             results = Shellcheck.checkScript( filePath, '2089,2090' )
             if results[0]:
                 _printErrorReport( 'BASH04',
@@ -3173,7 +3161,9 @@ errors or behaviour.
         passed = 0
         failed = 0
 
-        for filePath in files:
+        fileList = files[ 'bash' ]
+
+        for filePath in fileList:
             results = Shellcheck.checkScript( filePath, '2250', 'require-variable-braces')
             if results[0]:
                 _printErrorReport( 'BASH06',
@@ -3266,7 +3256,9 @@ placed anywhere after `set -euo pipefail`.
         passed     = 0
         failed     = 0
 
-        for filePath in sorted( files ):
+        fileList = files[ 'bash' ]
+
+        for filePath in fileList:
             if os.path.basename( filePath ) in self.skippedFiles:
                 continue
 
