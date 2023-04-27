@@ -288,7 +288,7 @@ class CheckRoutine( object ):
         self._setupOptOutDirs()
         self._setupOptOutFiles()
         self._setupOptInFiles()
-        self.setupFilesByType()
+        self._setupFilesByType()
 
 
     def showSummary( self, state ):
@@ -403,7 +403,7 @@ class CheckRoutine( object ):
             self.rulesToRun = forceRules
 
 
-    def setupFilesByType( self ) -> None:
+    def _setupFilesByType( self ) -> None:
         """
             populates a dictionary `self.filesByType` with key as file type and
             value as list of files of that type.
@@ -561,7 +561,7 @@ class CheckRoutine( object ):
             else:
                 # filter-out rules not needed in the level at hand
                 # (don't filter-out if we force-run particular rules)
-                if self.useOptFlags:
+                if self.useOptFlags and ruleID in self.rulesToRun:
 
                     logging.debug( '%6s: no need to run at level=%s',
                                    ruleID, self.sqLevelToRun )

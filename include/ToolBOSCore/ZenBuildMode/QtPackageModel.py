@@ -237,7 +237,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def runSQCheck( self, rule ):
-        self._bstpkg_src.sqChecker.setupFilesByType()
+        self._bstpkg_src.sqChecker.setup()
         return rule.run( self._bstpkg_src.detector, self._bstpkg_src.sqChecker.filesByType )
 
 
