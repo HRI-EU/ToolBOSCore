@@ -172,7 +172,7 @@ def _parseSqArgs( cr, argv ):
 
     if forceFiles:
         logging.debug( 'check files: %s', forceFiles )
-        cr.setFiles( forceRules )
+        cr.setFiles( forceFiles )
 
     if forceLevel:
         logging.debug( 'check level: %s', forceLevel )

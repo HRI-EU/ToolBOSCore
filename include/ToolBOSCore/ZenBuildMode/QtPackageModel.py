@@ -237,7 +237,8 @@ class BSTPackageModel( QObject, object ):
 
 
     def runSQCheck( self, rule ):
-        return rule.run(self._bstpkg_src.detector, self._bstpkg_src.sqChecker.files)
+        self._bstpkg_src.sqChecker.setup()
+        return rule.run( self._bstpkg_src.detector, self._bstpkg_src.sqChecker.filesByType )
 
 
     def setSQLevel( self, level ):
@@ -455,7 +456,7 @@ class BSTPackageModel( QObject, object ):
         Any.requireIsInstance( self._bstpkg_src.sqChecker,
                                CheckRoutine.CheckRoutine )
 
-        Any.requireIsSet( self._bstpkg_src.sqChecker.files )
+        Any.requireIsDict( self._bstpkg_src.sqChecker.filesByType )
 
         self._sqPreparationDone = True
         self.sqCheckPrepared.emit()

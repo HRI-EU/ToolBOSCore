@@ -1,1 +1,1 @@
-../../../external/cmake.org/Linux-MSVC.cmake
+../../../external/cmake.org/Windows-MSVC-modHRI.cmake
