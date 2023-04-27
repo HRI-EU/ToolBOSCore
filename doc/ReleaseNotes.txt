@@ -1,4 +1,35 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.1
+
+
+NEW FEATURES
+============
+
+  - [#52] Flat Git-style directory structure support also for 3rd-party-packages
+  - [#15] Windows cross-compilation working with latest CMake 3.26 and Wine 8.0
+
+
+CHANGES
+=======
+
+  - [#49] SQ checks: run checkers only on files of programming languages they correspond to
+
+
+FIXED BUGS
+==========
+
+  - [#57] SQ checks: correct handling of opt-in/out files/rules when using the GUI
+  - [#56] SQ checks: correct handling of force-checked files (CLI + GUI)
+
+
+INTERNAL
+========
+
+  - [#15] fixed copyright attribution in files based upon CMake
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.0
 
 
