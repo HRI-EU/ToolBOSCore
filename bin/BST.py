@@ -139,6 +139,7 @@ def _parseSqArgs( cr, argv ):
     forceDirs  = set()
     forceFiles = set()
     forceLevel = None
+    forceLang = None
     forceRules = []
 
     for arg in argv:
@@ -161,6 +162,12 @@ def _parseSqArgs( cr, argv ):
             if tmp:
                 forceLevel = tmp.group(1)
 
+        elif arg.startswith( 'lang=' ):
+            tmp = re.search( 'lang=(\S+)', ' '.join(argv) )
+
+            if tmp:
+                forceLang = tmp.group(1)
+
         else:
             msg = '%s: No such file or directory, or rule ID' % arg
             raise ValueError( msg )
@@ -177,6 +184,10 @@ def _parseSqArgs( cr, argv ):
     if forceLevel:
         logging.debug( 'check level: %s', forceLevel )
         cr.setLevel( forceLevel )
+
+    if forceLang:
+        logging.debug( 'check language: %s', forceLang )
+        cr.setRulesForLang( forceLang )
 
     if forceRules:
         logging.debug( 'check rules: %s', forceRules )

@@ -261,6 +261,36 @@ class CheckRoutine( object ):
         self.sqLevelToRun = levelName
 
 
+    def setRulesForLang( self, language: str ) -> None:
+        """
+            sets rulesToRun list to a filtered list of rules based on the specified
+            programming language
+        """
+        Any.requireIsTextNonEmpty( language )
+        Any.requireIsIn( language, supportedLanguages )
+
+        filteredRules = []
+
+        if language in [ 'python' ]:
+            for ruleId in self.rulesToRun:
+                if ruleId.startswith( ( 'DOC', 'GEN', 'PY' ) ):
+                    filteredRules.append( ruleId )
+
+        elif language in [ 'c', 'cpp' ]:
+            for rule in self.rulesToRun:
+                if rule.startswith( ( 'DOC', 'GEN', 'SAFE', 'C' ) ):
+                    filteredRules.append( rule )
+
+        elif language in [ 'bash' ]:
+            for rule in self.rulesToRun:
+                if rule.startswith( ( 'DOC', 'GEN', 'BASH' ) ):
+                    filteredRules.append( rule )
+
+        self.rulesToRun = filteredRules
+
+        logging.debug( 'selected rules for %s language: %s', language, self.rulesToRun )
+
+
     def setRules( self, ruleIDs ):
         """
             Run only the given list of rules, instead of all.
