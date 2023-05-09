@@ -135,12 +135,12 @@ def _parseSqArgs( cr, argv ):
         pass
 
 
-    ruleIDs    = Rules.getRuleIDs()
-    forceDirs  = set()
-    forceFiles = set()
-    forceLevel = None
-    forceLang = None
-    forceRules = []
+    ruleIDs     = Rules.getRuleIDs()
+    forceDirs   = set()
+    forceFiles  = set()
+    forceLevel  = None
+    forceGroups = None
+    forceRules  = []
 
     for arg in argv:
 
@@ -162,11 +162,11 @@ def _parseSqArgs( cr, argv ):
             if tmp:
                 forceLevel = tmp.group(1)
 
-        elif arg.startswith( 'lang=' ):
-            tmp = re.search( 'lang=(\S+)', ' '.join(argv) )
+        elif arg.startswith( 'group=' ):
+            tmp = re.search( 'group=(\S+)', ' '.join(argv) )
 
             if tmp:
-                forceLang = tmp.group(1)
+                forceGroups = tmp.group(1)
 
         else:
             msg = '%s: No such file or directory, or rule ID' % arg
@@ -185,9 +185,9 @@ def _parseSqArgs( cr, argv ):
         logging.debug( 'check level: %s', forceLevel )
         cr.setLevel( forceLevel )
 
-    if forceLang:
-        logging.debug( 'check language: %s', forceLang )
-        cr.setRulesForLang( forceLang )
+    if forceGroups:
+        logging.debug( 'check groups: %s', forceGroups )
+        cr.setRulesForGroups( forceGroups )
 
     if forceRules:
         logging.debug( 'check rules: %s', forceRules )
@@ -381,6 +381,7 @@ argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C li
 argman.addExample( '%(prog)s -q                          # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
 argman.addExample( '%(prog)s -q sqLevel=advanced         # check with specified quality level' )
+argman.addExample( '%(prog)s -q group=GEN,PY             # check only rules for GEN & PY group' )
 argman.addExample( '%(prog)s -u                          # check for updates / apply patches' )
 argman.addExample( '%(prog)s --uninstall                 # remove package from SIT' )
 argman.addExample( '%(prog)s --deprecate                 # deprecate this package' )

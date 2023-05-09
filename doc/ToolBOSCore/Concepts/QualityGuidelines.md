@@ -131,12 +131,13 @@ subdirectory:
     $ cd MyPackage/1.0  
     $ BST.py -q src C01 C02 C03
 
-Users can also specify the programming language to run specific set of rules:
+Users can also select group of rules to run using following commands:
 
     $ cd MyPackage/1.0
-    $ BST.py -q 'lang=python'    # runs general, documentation and python specific rules
-    $ BST.py -q 'lang=cpp'       # runs general, documentation and Cpp specific rules
+    $ BST.py -q 'group=GEN,PY'  # runs general and python specific rules
+    $ BST.py -q 'group=C'       # runs C and Cpp specific rules
 
+The supported groups are: 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE', 'SPEC', 'BASH'
 
 ### Run quality checker via desktop utility: <a name="desktop_utility"></a>
 

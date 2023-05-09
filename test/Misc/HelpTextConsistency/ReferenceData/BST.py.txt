@@ -56,6 +56,7 @@ examples:
   BST.py -q                          # run all quality checks
   BST.py -q src C01 C02 C03          # run specified checks on "src" only
   BST.py -q sqLevel=advanced         # check with specified quality level
+  BST.py -q group=GEN,PY             # check only rules for GEN & PY group
   BST.py -u                          # check for updates / apply patches
   BST.py --uninstall                 # remove package from SIT
   BST.py --deprecate                 # deprecate this package

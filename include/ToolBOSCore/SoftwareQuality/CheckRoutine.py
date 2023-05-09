@@ -261,34 +261,28 @@ class CheckRoutine( object ):
         self.sqLevelToRun = levelName
 
 
-    def setRulesForLang( self, language: str ) -> None:
+    def setRulesForGroups( self, groups: str ) -> None:
         """
-            sets rulesToRun list to a filtered list of rules based on the specified
-            programming language
+            sets rules to run by checker to only the rules from the specified groups,
+            instead of all.
         """
-        Any.requireIsTextNonEmpty( language )
-        Any.requireIsIn( language, supportedLanguages )
+        Any.requireIsTextNonEmpty( groups )
+
+        groupList = groups.split( "," )
+
+        for group in groupList:
+            msg = '{}: No such a group in {}'.format( group, sectionKeys )
+            Any.requireIsIn( group, sectionKeys, msg )
 
         filteredRules = []
 
-        if language in [ 'python' ]:
-            for ruleId in self.rulesToRun:
-                if ruleId.startswith( ( 'DOC', 'GEN', 'PY' ) ):
-                    filteredRules.append( ruleId )
-
-        elif language in [ 'c', 'cpp' ]:
-            for rule in self.rulesToRun:
-                if rule.startswith( ( 'DOC', 'GEN', 'SAFE', 'C' ) ):
-                    filteredRules.append( rule )
-
-        elif language in [ 'bash' ]:
-            for rule in self.rulesToRun:
-                if rule.startswith( ( 'DOC', 'GEN', 'BASH' ) ):
-                    filteredRules.append( rule )
+        for ruleId in self.rulesToRun:
+            if ruleId.startswith( tuple( groupList ) ):
+                filteredRules.append( ruleId )
 
         self.rulesToRun = filteredRules
 
-        logging.debug( 'selected rules for %s language: %s', language, self.rulesToRun )
+        logging.info( 'selected rules for %s group: %s', groups, self.rulesToRun )
 
 
     def setRules( self, ruleIDs ):

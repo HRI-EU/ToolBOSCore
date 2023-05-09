@@ -77,8 +77,6 @@ sectionObjectives = { 'GEN' : 'Maintainability, compatibility',
                       'SPEC': 'Safety, portability',
                       'BASH': 'Maintainability, safety' }
 
-supportedLanguages = [ 'python', 'c', 'cpp', 'bash' ]
-
 tempPylintConf    = ToolBOSConf.getConfigOption( 'pylintConf' )
 pylintConf        = FastScript.expandVars( tempPylintConf )
 
