@@ -261,6 +261,30 @@ class CheckRoutine( object ):
         self.sqLevelToRun = levelName
 
 
+    def setRulesForGroups( self, groups: str ) -> None:
+        """
+            sets rules to run by checker to only the rules from the specified groups,
+            instead of all.
+        """
+        Any.requireIsTextNonEmpty( groups )
+
+        groupList = groups.split( "," )
+
+        for group in groupList:
+            msg = f'{group}: No such group in {sectionKeys}'
+            Any.requireIsIn( group, sectionKeys, msg )
+
+        filteredRules = []
+
+        for ruleId in self.rulesToRun:
+            if ruleId.startswith( tuple( groupList ) ):
+                filteredRules.append( ruleId )
+
+        self.rulesToRun = filteredRules
+
+        logging.info( 'selected rules for %s group: %s', groups, self.rulesToRun )
+
+
     def setRules( self, ruleIDs ):
         """
             Run only the given list of rules, instead of all.
