@@ -271,7 +271,7 @@ class CheckRoutine( object ):
         groupList = groups.split( "," )
 
         for group in groupList:
-            msg = '{}: No such a group in {}'.format( group, sectionKeys )
+            msg = f'{group}: No such group in {sectionKeys}'
             Any.requireIsIn( group, sectionKeys, msg )
 
         filteredRules = []
