@@ -56,7 +56,6 @@ from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import Klocwork,\
-                                                         Matlab,\
                                                          Valgrind, Shellcheck
 from ToolBOSCore.Util                             import Any, FastScript
 
