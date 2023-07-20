@@ -56,7 +56,6 @@ from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
 from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import Klocwork,\
-                                                         Matlab,\
                                                          Valgrind, Shellcheck
 from ToolBOSCore.Util                             import Any, FastScript
 
@@ -2077,127 +2076,6 @@ certain versions of Python.'''
                     'https://www.jetbrains.com/pycharm' }
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
-
-
-class Rule_MAT01( RemovedRule ):
-    pass
-
-
-class Rule_MAT02( AbstractRule ):
-
-    name        = 'security, reliability: static analysis'
-
-    brief       = '''Follow the suggestions of the Matlab code-checker. Write
-a comment in case you have to diverge from the suggestion.'''
-
-    description = '''Please clearly state why it is not advisable in the
-specific case to follow the Matlab code-checker.'''
-
-    sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
-
-    def run( self, details, files ):
-        """
-            Execute the Matlab source code analyzer in batch-mode for each
-            *.m file.
-        """
-        if not details.isMatlabPackage():
-            return NOT_APPLICABLE, 0, 0, 'no Matlab code found'
-
-        logging.debug( 'performing source code analysis using Matlab' )
-        passed = 0
-        failed = 0
-        cwd    = os.getcwd()
-        error  = False
-
-        for filePath in files[ 'all' ]:
-            if filePath.endswith( '.m' ):
-                logging.debug( 'checking %s...', filePath )
-                defects = None
-
-                try:
-                    defects = Matlab.codeCheck( filePath )
-                except RuntimeError as details:
-                    logging.error( 'MAT02: %s', details )
-                    failed += 1
-                    error   = True
-
-
-                relPath = os.path.relpath( filePath, cwd )
-
-                if defects:
-                    for item in defects:
-                        lineNumber = item[0]
-                        message    = item[1]
-                        logging.info( 'MAT02: %s:%s: %s', relPath, lineNumber, message )
-
-                    failed += 1
-
-                else:
-                    logging.debug( '%s: OK', filePath )
-                    passed += 1
-
-        if failed == 0:
-            result = ( OK, passed, failed,
-                       'no defects found' )
-        else:
-            if error:
-                result = ( FAILED, 0, 1,
-                           'unable to run code analysis with Matlab' )
-            else:
-                result = ( FAILED, passed, failed,
-                           'found %d defects' % failed )
-
-        return result
-
-
-class Rule_MAT03( AbstractRule ):
-
-    name        = 'security, maintainability: unintentional shadowing'
-
-    brief       = '''Avoid unintentional shadowing, i.e. function names should
-be unique.'''
-
-    description = '''Shadowing increases the possibility of unexpected
-behavior. Check with `which -all` or `exist`.'''
-
-    sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
-
-
-class Rule_MAT04( AbstractRule ):
-
-    name        = 'security, maintainability: loop-variable initialization'
-
-    brief       = '''Loop variables should be initialized immediately before
-the loop.'''
-
-    description = '''Initializing loop variables just before the loop is a
-good practice to avoid massive slow-down and unexpected values in case the
-loop does not execute for all possible indices.'''
-
-    goodExample = '''
-    result = zeros(nEntries,1);
-
-    for i = 1:nEntries
-        result(i) = foo(i)
-    end
-'''
-
-    sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
-
-
-class Rule_MAT05( AbstractRule ):
-
-    name        = 'understandability: function-header comments'
-
-    brief       = '''Function header comments should support the use of
-`help` and `lookfor`.
-'''
-
-    description = '''The `help` command prints the first contiguous block of
-comments; `lookfor` searches the first comment line of all `*.m`-files on the
-path.'''
-
-    sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 
 class Rule_DOC01( AbstractRule ):
