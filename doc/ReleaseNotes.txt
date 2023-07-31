@@ -1,12 +1,30 @@
 
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.1
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.2
 
 
 NEW FEATURES
 ============
 
-  - [#52] Flat Git-style directory structure support also for 3rd-party-packages
-  - [#15] Windows cross-compilation working with latest CMake 3.26 and Wine 8.0
+  - [#51] SQ checks: run selected categories only (e.g. BST.py -q group=GEN,PY)
+
+
+CHANGES
+=======
+
+  - [#62] dropped bin/Create{CLion,PyCharm}Project.py + internal code (unused)
+  - [#37] SQ checks: dropped Matlab rules + checks (unused)
+
+
+FIXED BUGS
+==========
+
+  - [#58] SQ checks: correct handling of empty 'sqLevel' value
+  - [#36] BST.py -zq: handle exceptions thrown by checkers in the GUI
+
+
+-----------------------------------------------------------------------------
+
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.1
 
 
 CHANGES
