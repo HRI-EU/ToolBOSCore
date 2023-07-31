@@ -123,7 +123,7 @@ def _createPackage( args, flatStyle ):
 def _parseSqArgs( cr, argv ):
     import re
 
-    from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
+    from ToolBOSCore.SoftwareQuality import CheckRoutine, Common, Rules
 
     Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
     Any.requireIsList( argv )
@@ -135,11 +135,12 @@ def _parseSqArgs( cr, argv ):
         pass
 
 
-    ruleIDs    = Rules.getRuleIDs()
-    forceDirs  = set()
-    forceFiles = set()
-    forceLevel = None
-    forceRules = []
+    ruleIDs     = Rules.getRuleIDs()
+    forceDirs   = set()
+    forceFiles  = set()
+    forceLevel  = None
+    forceGroups = None
+    forceRules  = []
 
     for arg in argv:
 
@@ -160,6 +161,18 @@ def _parseSqArgs( cr, argv ):
 
             if tmp:
                 forceLevel = tmp.group(1)
+            else:
+                msg = f"Wrong usage: please specify a quality level {Common.sqLevelNames}"
+                raise ValueError( msg )
+
+        elif arg.startswith( 'group=' ):
+            tmp = re.search( 'group=(\S+)', ' '.join(argv) )
+
+            if tmp:
+                forceGroups = tmp.group(1)
+            else:
+                msg = f"Wrong usage: please specify at least one group {Common.sectionKeys}"
+                raise ValueError( msg )
 
         else:
             msg = '%s: No such file or directory, or rule ID' % arg
@@ -177,6 +190,10 @@ def _parseSqArgs( cr, argv ):
     if forceLevel:
         logging.debug( 'check level: %s', forceLevel )
         cr.setLevel( forceLevel )
+
+    if forceGroups:
+        logging.debug( 'check groups: %s', forceGroups )
+        cr.setRulesForGroups( forceGroups )
 
     if forceRules:
         logging.debug( 'check rules: %s', forceRules )
@@ -370,6 +387,7 @@ argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C li
 argman.addExample( '%(prog)s -q                          # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
 argman.addExample( '%(prog)s -q sqLevel=advanced         # check with specified quality level' )
+argman.addExample( '%(prog)s -q group=GEN,PY             # check only rules for GEN & PY group' )
 argman.addExample( '%(prog)s -u                          # check for updates / apply patches' )
 argman.addExample( '%(prog)s --uninstall                 # remove package from SIT' )
 argman.addExample( '%(prog)s --deprecate                 # deprecate this package' )

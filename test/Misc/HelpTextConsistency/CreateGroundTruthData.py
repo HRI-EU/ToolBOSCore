@@ -94,6 +94,8 @@ pyScripts    = glob.glob( os.path.join( binDirNoArch, '*.py' ) )
 shScripts    = glob.glob( os.path.join( binDirNoArch, '*.sh' ) )
 executables  = glob.glob( os.path.join( binDirNoArch, hostPlatform, '*' ) )
 
+FastScript.remove( 'ReferenceData' )
+
 
 for program in pyScripts + shScripts + executables:
 

@@ -52,7 +52,7 @@ from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.GenericGUI      import IconProvider
-from ToolBOSCore.SoftwareQuality import CheckRoutine, Rules
+from ToolBOSCore.SoftwareQuality import CheckRoutine, Common, Rules
 from ToolBOSCore.Util            import Any
 from ToolBOSCore.ZenBuildMode    import QtPackageModel
 
@@ -680,8 +680,12 @@ class CheckRoutineDialog( QDialog, object ):
         def run( self ):
             logging.debug( 'executing rule checker' )
             if hasattr( self._rule, 'run' ):
-                self.result = self._model.runSQCheck( self._rule )
-                logging.debug( 'rule checker finished' )
+                try:
+                    self.result = self._model.runSQCheck( self._rule )
+                    logging.debug( 'rule checker finished' )
+                except ( AssertionError, EnvironmentError, OSError ) as e:
+                    self.result = ( Common.FAILED, 0, 0, e )
+                    logging.error( 'rule checker failed: %s', e )
 
 
 # EOF
