@@ -1785,7 +1785,13 @@ called from the outside. Doing it must be considered as wrong usage.'''
 
         for filePath in files[ 'python' ]:
             if os.path.exists( filePath ):
-                content = FastScript.getFileContent( filePath, splitLines=True )
+                try:
+                    content = FastScript.getFileContent( filePath, splitLines=True )
+                except UnicodeDecodeError as e:
+                    # TestFileGen02-ISO-8859-1.py has different encoding, hence Unicode decoding doesn't work with UTF-8
+                    # and an exception is thrown, continue even this happens
+                    logging.warning( f'{type(e)}: {filePath}')
+                    continue
 
                 for line in content:
                     tmp = regexp.search( line )
