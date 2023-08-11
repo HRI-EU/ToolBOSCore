@@ -469,7 +469,13 @@ copyright       =
         fileList = files[ 'all' ]
 
         for filePath in fileList:
-            content        = FastScript.getFileContent( filePath )
+            try:
+                content        = FastScript.getFileContent( filePath )
+            except UnicodeDecodeError as e:
+                # TestFileGen02-ISO-8859-1.py has different encoding, hence Unicode decoding
+                # with UTF-8 doesn't work and an exception is thrown, continue even this happens.
+                logging.warning(f'{type(e)}: {filePath}')
+                continue
             copyrightLines = self._getCopyrightLines( filePath, details.copyright )
 
             for line in copyrightLines:
@@ -1788,8 +1794,8 @@ called from the outside. Doing it must be considered as wrong usage.'''
                 try:
                     content = FastScript.getFileContent( filePath, splitLines=True )
                 except UnicodeDecodeError as e:
-                    # TestFileGen02-ISO-8859-1.py has different encoding, hence Unicode decoding doesn't work with UTF-8
-                    # and an exception is thrown, continue even this happens
+                    # TestFileGen02-ISO-8859-1.py has different encoding, hence Unicode decoding with
+                    # UTF-8 doesn't work and an exception is thrown, continue even this happens.
                     logging.warning( f'{type(e)}: {filePath}')
                     continue
 
@@ -1943,13 +1949,11 @@ potentially causing data loss or inconsistent states.'''
         for filePath in files[ 'python' ]:
             if not filePath.startswith( binDir ):
 
-                code = FastScript.getFileContent( filePath )
-
                 try:
+                    code = FastScript.getFileContent(filePath)
                     exitCalls = self.getExitCalls( code )
-                except SyntaxError as e:
-                    logging.error( 'PY04: %s: syntax error in line %d',
-                                   filePath, e.lineno )
+                except ( SyntaxError, UnicodeDecodeError) as e:
+                    logging.error( f'PY04: {e.__class__.__name__} error in file {filePath}' )
                     syntaxErr += 1
                     continue
 
