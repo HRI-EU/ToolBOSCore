@@ -85,9 +85,18 @@ def getTotalPylintIssues( pylintResult: linter  ) -> int:
     Any.requireIsInstance( pylintResult, linter )
 
     pylintStats = pylintResult.linter.stats
-    codeIssues  = pylintStats[ 'error' ] + pylintStats[ 'warning' ] \
-                + pylintStats[ 'refactor' ] + pylintStats[ 'convention' ] \
-                + pylintStats[ 'info' ]
+
+    # pylint >= 2.12, PyLinter.stats has been changed from dict to class
+    # To support the backward compatability, check type and access the lint stats.
+
+    if isinstance( pylintStats, dict ):
+        codeIssues  = pylintStats[ 'error' ] + pylintStats[ 'warning' ] \
+                    + pylintStats[ 'refactor' ] + pylintStats[ 'convention' ] \
+                    + pylintStats[ 'info' ]
+    else:
+        codeIssues  = pylintStats.error + pylintStats.warning \
+                    + pylintStats.refactor + pylintStats.convention \
+                    + pylintStats.info
 
     return codeIssues
 
