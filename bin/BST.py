@@ -565,7 +565,7 @@ try:
     bst.setTargetPlatform( platform )
 
 
-    if allTargets:
+    if allTargets and not quality:
         distclean     = True
         setup         = True
         build         = True
@@ -667,7 +667,13 @@ try:
         cr.excludeDir( './external' )
         cr.excludeDir( './3rdParty' )
 
-        cr.setup()
+        if allTargets:
+            # ignore all the sqOptOut rules and flags and
+            # perform SQ checks for all the available rules
+            cr.setup(False)
+        else:
+            # consider the rules and level set in the pkgInfo
+            cr.setup()
         cr.run()
 
         if cr.overallResult() is not True:
@@ -721,7 +727,7 @@ except ( AssertionError, EnvironmentError, RuntimeError, SyntaxError,
          ValueError ) as details:
 
     # e.g. unsupported cross-compilation
-    logging.error( details )
+    logging.error( f'{details.__class__.__name__}: {details}' )
 
     # show stacktrace in verbose mode
     if Any.getDebugLevel() >= 5:
