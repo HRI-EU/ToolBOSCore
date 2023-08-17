@@ -277,7 +277,9 @@ characters per line.'''
             try:
                 lines = FastScript.getFileContent( filePath, splitLines=True )
             except ( IOError, OSError, UnicodeDecodeError ) as e:
-                logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                # If file has different encoding than UTF-8 then the default
+                # encoding (UTF-8) won't work.
+                logging.error( f'GEN03: unable toopen file: {filePath}: {e}' )
                 failed += 1
                 continue
 
@@ -470,12 +472,14 @@ copyright       =
 
         for filePath in fileList:
             try:
-                content        = FastScript.getFileContent( filePath )
-            except UnicodeDecodeError as e:
-                # TestFileGen02-ISO-8859-1.py has different encoding, hence Unicode decoding
-                # with UTF-8 doesn't work and an exception is thrown, continue even this happens.
-                logging.warning(f'{type(e)}: {filePath}')
+                content = FastScript.getFileContent( filePath )
+            except ( IOError, OSError, UnicodeDecodeError ) as e:
+                # If file has different encoding than UTF-8 then the default
+                # encoding (UTF-8) won't work.
+                logging.error( f'GEN04: unable toopen file: {filePath}: {e}' )
+                failed += 1
                 continue
+
             copyrightLines = self._getCopyrightLines( filePath, details.copyright )
 
             for line in copyrightLines:
@@ -651,11 +655,13 @@ tabs.'''
 
         fileList = files[ 'all' ]
 
-        for fileName in fileList:
+        for filePath in fileList:
             try:
-                content = FastScript.getFileContent( fileName )
+                content = FastScript.getFileContent( filePath )
             except ( IOError, OSError, UnicodeDecodeError ) as e:
-                logging.error( 'unable to open file: %s: %s', fileName, type( e ) )
+                # If file has different encoding than UTF-8 then the default
+                # encoding (UTF-8) won't work.
+                logging.error( f'GEN06: unable toopen file: {filePath}: {e}' )
                 failed += 1
                 continue
 
@@ -670,14 +676,11 @@ tabs.'''
                     pos = line.find( '\t' )
 
                     if pos != -1:
-                        logging.info( 'GEN06: tab found in %s:%d',
-                                      fileName, lineNo )
-
+                        logging.info( 'GEN06: tab found in %s:%d', filePath, lineNo )
                         reported += 1
 
                     if reported > 10:
-                        logging.info( 'GEN06: tab found in %s:[...]',
-                                      fileName )
+                        logging.info( 'GEN06: tab found in %s:[...]', filePath )
                         break
 
                     lineNo += 1
@@ -1017,7 +1020,9 @@ causing data loss or inconsistent states.'''
             try:
                 content = FastScript.getFileContent( filePath )
             except ( IOError, OSError, UnicodeDecodeError ) as e:
-                logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
+                # If file has different encoding than UTF-8 then the default
+                # encoding (UTF-8) won't work.
+                logging.error( f'C01: unable toopen file: {filePath}: {e}' )
                 failed += 1
                 continue
 
@@ -1787,16 +1792,18 @@ called from the outside. Doing it must be considered as wrong usage.'''
 
         logging.debug( "checking for access to private members from outside" )
         found  = 0
+        errors = 0
         regexp = re.compile( r'(\w+)\._(\w+)' )
 
         for filePath in files[ 'python' ]:
             if os.path.exists( filePath ):
                 try:
                     content = FastScript.getFileContent( filePath, splitLines=True )
-                except UnicodeDecodeError as e:
-                    # TestFileGen02-ISO-8859-1.py has different encoding, hence Unicode decoding with
-                    # UTF-8 doesn't work and an exception is thrown, continue even this happens.
-                    logging.warning( f'{type(e)}: {filePath}')
+                except ( IOError, OSError, UnicodeDecodeError ) as e:
+                    # If file has different encoding than UTF-8 then the default
+                    # encoding (UTF-8) won't work.
+                    logging.error( f'PY02: unable to open file: {filePath}: {e}' )
+                    errors += 1
                     continue
 
                 for line in content:
@@ -1810,7 +1817,10 @@ called from the outside. Doing it must be considered as wrong usage.'''
                                           filePath, tmp.group() )
                             found += 1
 
-        if found == 0:
+        if errors > 0:
+            result = ( FAILED, 0, 1,
+                       '%d error(s) occurred during check' % errors )
+        elif found == 0:
             result = ( OK, 1, 0,
                        'no access to private members from outside' )
         else:
@@ -1940,10 +1950,9 @@ potentially causing data loss or inconsistent states.'''
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         logging.debug( "checking for calls to sys.exit(), os.exit() and os._exit()" )
-        passed    = 0
-        failed    = 0
-        syntaxErr = 0
-
+        passed = 0
+        failed = 0
+        errors = 0
         binDir = os.path.realpath( os.path.join( details.topLevelDir, 'bin' ) )
 
         for filePath in files[ 'python' ]:
@@ -1952,9 +1961,15 @@ potentially causing data loss or inconsistent states.'''
                 try:
                     code = FastScript.getFileContent(filePath)
                     exitCalls = self.getExitCalls( code )
-                except ( SyntaxError, UnicodeDecodeError) as e:
+                except SyntaxError as e:
                     logging.error( f'PY04: {e.__class__.__name__} error in file {filePath}' )
-                    syntaxErr += 1
+                    errors += 1
+                    continue
+                except UnicodeDecodeError as e:
+                    # If file has different encoding than UTF-8 then the default
+                    # encoding (UTF-8) won't work.
+                    logging.error( f'PY04: unable to open file: {filePath}: {e}' )
+                    errors += 1
                     continue
 
                 if not exitCalls:
@@ -1967,14 +1982,12 @@ potentially causing data loss or inconsistent states.'''
                     failed += len( exitCalls )
 
 
-        if syntaxErr:
-            msg    = 'syntax error(s) in %d files' % syntaxErr
+        if errors > 0:
+            msg    = '%d error(s) occurred during check' % errors
             status = FAILED
-
         elif failed:
             msg    = 'found %d exit() calls' % failed
             status = FAILED
-
         else:
             msg    = 'no exit() calls found'
             status = OK
@@ -2392,6 +2405,7 @@ label declared later in the same function.'''
         """
         logging.debug( 'looking for "goto"-statement' )
         found  = 0
+        errors = 0
 
         fileList = files[ 'c' ] + files[ 'cpp' ]
 
@@ -2400,15 +2414,18 @@ label declared later in the same function.'''
             try:
                 content = FastScript.getFileContent( filePath )
             except ( IOError, OSError, UnicodeDecodeError ) as e:
-                logging.error( 'unable to open file: %s: %s', filePath, type( e ) )
-                found += 1
+                logging.error( f'SAFE04: unable to open file: {filePath}: {e}' )
+                errors += 1
                 continue
 
             if content.find( ' goto ' ) > 0:
                 logging.info( 'SAFE04: goto-statement found: %s', filePath )
                 found += 1
 
-        if found == 0:
+        if errors > 0:
+            result = ( FAILED, 0, 1,
+                       '%d error(s) occurred during check' % errors )
+        elif found == 0:
             result = ( OK, 1, 0,
                        "'goto' not used" )
         else:
