@@ -1027,13 +1027,13 @@ causing data loss or inconsistent states.'''
                 continue
 
             if regexpExit1.search( content ):
-                logging.info( 'C01: exit() found in %s:1', filePath )
+                logging.info( f'C01: exit() found in {filePath}' )
                 failed += 1
             elif regexpExit2.search( content ):
-                logging.info( 'C01: _exit() found in %s:1', filePath )
+                logging.info( f'C01: _exit() found in {filePath}' )
                 failed += 1
             elif regexpAbort.search( content ):
-                logging.info( 'C01: abort() found in %s:1', filePath )
+                logging.info( f'C01: abort() found in {filePath}' )
                 failed += 1
             else:
                 passed += 1
