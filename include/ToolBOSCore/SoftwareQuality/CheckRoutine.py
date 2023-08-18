@@ -301,13 +301,20 @@ class CheckRoutine( object ):
         self.useOptFlags = False
 
 
-    def setup( self ):
+    def setup( self, useOptOptions = True ):
         """
-            Considers the opt-in/out files/rules in the pkgInfo.py (if any).
+            if useOptOptions is set, consider the optOut rules in the pkgInfo.py (if any).
+            else SQ checks will be performed against all the rules and optOut flags are ignored.
+
+            Note: OptOut/In will always be applied to the files and directories (if any).
         """
-        self._setupSqLevel()
+        self.useOptFlags = False
+
+        if useOptOptions:
+            self.useOptFlags = True
+            self._setupSqLevel()
+            self._setupOptOut()
         self._setupOptIn()
-        self._setupOptOut()
         self._setupOptInDirs()
         self._setupOptOutDirs()
         self._setupOptOutFiles()
@@ -342,7 +349,7 @@ class CheckRoutine( object ):
             try:
                 result = int( float(passed) / float(total) * 100 )
             except ZeroDivisionError:
-                # Devision by zero can only happen in case the total number
+                # Division by zero can only happen in case the total number
                 # is zero, f.i. the check did not apply to any file.
                 # Set percentage to 100% in this case == success.
                 result = 100
