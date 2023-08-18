@@ -30,7 +30,7 @@ optional arguments:
   -p PLATFORM, --platform PLATFORM
                         cross-compile for specified target platform ("-p help"
                         to list supported platforms)
-  -q, --quality         run SW Quality Guideline 2.0 checker
+  -q, --quality         run software quality checks
   -r, --release         create release tarball
   -s, --setup           setup/configure the package for being built
   -t, --test            run the unittest suite of the package
@@ -53,7 +53,8 @@ examples:
   BST.py -n                          # create new packages (GUI-version)
   BST.py -n help                     # show available templates
   BST.py -n --flat C_Library Foo 1.0 # create new-style C library "Foo"
-  BST.py -q                          # run all quality checks
+  BST.py -q                          # run quality checks (configured for this package
+  BST.py -q --all                    # run all quality checks
   BST.py -q src C01 C02 C03          # run specified checks on "src" only
   BST.py -q sqLevel=advanced         # check with specified quality level
   BST.py -q group=GEN,PY             # check only rules for GEN & PY group

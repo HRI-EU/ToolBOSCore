@@ -348,7 +348,7 @@ argman.addArgument( '-p', '--platform', default=hostPlatform,
                           '("-p help" to list supported platforms)' )
 
 argman.addArgument( '-q', '--quality', action='store_true',
-                    help='run SW Quality Guideline 2.0 checker' )
+                    help='run software quality checks' )
 
 argman.addArgument( '-r', '--release', action='store_true',
                     help='create release tarball' )
@@ -384,7 +384,8 @@ argman.addExample( '%(prog)s -p windows-amd64-vs2017     # cross-compile for Win
 argman.addExample( '%(prog)s -n                          # create new packages (GUI-version)' )
 argman.addExample( '%(prog)s -n help                     # show available templates' )
 argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C library "Foo"' )
-argman.addExample( '%(prog)s -q                          # run all quality checks' )
+argman.addExample( '%(prog)s -q                          # run quality checks (configured for this package' )
+argman.addExample( '%(prog)s -q --all                    # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
 argman.addExample( '%(prog)s -q sqLevel=advanced         # check with specified quality level' )
 argman.addExample( '%(prog)s -q group=GEN,PY             # check only rules for GEN & PY group' )
