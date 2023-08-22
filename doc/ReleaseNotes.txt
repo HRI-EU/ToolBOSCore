@@ -1,4 +1,28 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.3
+
+
+NEW FEATURES
+============
+
+  - [#38] Run *all* SQ checks ignoring pkgInfo.py settings: BST.py -q --all
+
+
+CHANGES
+=======
+
+  - [#63] SQ checks: support pylint 2.12 and newer
+  - [#55] SQ checks: improved error messages, handle more exception types
+
+
+FIXED BUGS
+==========
+
+  - [#59] SQ checks: C01 reported wrong line numbers
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.2
 
 
