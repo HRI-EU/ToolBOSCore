@@ -731,7 +731,7 @@ def getCommandLine( cmd, workingDir=None, host=None, user=None ):
     return resultCmd, resultWorkingDir
 
 
-def getEnv( varName = False ):
+def getEnv( varName=None ):
     """
         If called without parameter this function returns a deep copy of
         the whole environment map (not just references).
