@@ -56,24 +56,23 @@ def getDirsInDir( path = '.', excludePattern = None, onError = None ):
         Return all directories within a specified one, except "." and "..".
         You may specify a regular expression for directories to be excluded:
 
-        \param path absolute or relative path to directory
+        path:           absolute or relative path to directory
 
-        \param excludePattern regular expression object that will be
-                              used to match against the found element, e.g.:
-                              \code
-                                  excludePattern = re.compile( "\d+.\d+" )
-                                  dirList = getDirsInDir( "/tmp", excludePattern )
-                              \endcode
+        excludePattern: regular expression object that will be
+                        used to match against the found element, e.g.:
 
-        \param onError You may pass a function callback that will be called
-                       upon errors, e.g. permission denied. This function needs
-                       to take a single path parameter. If omitted, an
-                       OSError will be raised upon errors.
+                        excludePattern = re.compile( "\d+.\d+" )
+                        dirList = getDirsInDir( "/tmp", excludePattern )
 
-        \return List of all directories (except "." and "..") within the
-                specified on. If the directory does not exist, is empty or
-                if all subdirectories match the exclude blacklist then the
-                result list will be empty.
+        onError:        You may pass a function callback that will be called
+                        upon errors, e.g. permission denied. This function needs
+                        to take a single path parameter. If omitted, an
+                        OSError will be raised upon errors.
+
+        Returns a list of all directories (except "." and "..") within the
+        specified path. If the directory does not exist, is empty or if all
+        subdirectories match the exclude-blacklist then the result list will
+        be empty.
 
     """
     Any.requireIsTextNonEmpty( path )
@@ -117,11 +116,11 @@ def getDirsInDirRecursive( path = '.',
         'excludePattern' must be a regular expression object that will be
         used to match against the found element, e.g.:
 
-            excludePattern = re.compile( "\d+.\d+" )
+            excludePattern = re.compile( r"\d+.\d+" )
             dirList = getDirsInDirRecursive( "/tmp", excludePattern )
 
         If the directory does not exist, is empty or if all subdirectories
-        match the exclude blacklist then the result list will be empty.
+        match the exclude-blacklist then the result list will be empty.
 
         You may pass a function callback that will be called upon errors,
         e.g. permission denied. This function needs to take a single
@@ -582,7 +581,7 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
         The input argument is passed to Popen.communicate() and thus to the subprocess’s stdin.
         If used it must be a byte sequence, or a string if encoding is specified.
 
-        If 'host' is different than the default 'localhost' or the actual
+        If 'host' is different from the default 'localhost' or the actual
         hostname, an SSH tunnel will be opened and the command executed
         remotely. 'host' can also be an IPv4/IPv6 address.
 
@@ -676,7 +675,7 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
 
 def getCommandLine( cmd, workingDir=None, host=None, user=None ):
     """
-        Returns a tuple of the the appropriate SSH-wrapped commandline to
+        Returns a tuple of the appropriate SSH-wrapped commandline to
         execute the given command on the specified host, and the working
         directory to pass to Popen(), hence:
 
@@ -1253,7 +1252,7 @@ def now():
 def startTiming():
     """
         Returns a time object for measuring code execution times.
-        In fact it is the same as FastScript.now().
+        In fact, it is the same as FastScript.now().
     """
     return now()
 
@@ -1278,8 +1277,8 @@ def stopTiming( startTime ):
 
 def prettyPrintError( msg ):
     """
-        Throws a SystemExit exception, which if uncaught shows 'msg' as
-        red text on the console.
+        Throws a SystemExit exception which shows 'msg' as red text on
+        the console.
     """
     from textwrap import wrap
 
