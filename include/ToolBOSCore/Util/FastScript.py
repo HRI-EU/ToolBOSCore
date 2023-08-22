@@ -740,13 +740,13 @@ def getEnv( varName = False ):
         the value of that variable. If there is no such environment variable
         it will return 'None'.
     """
-    if not varName:
-        return os.environ
-    else:
+    if varName:
         try:
             return os.environ[ varName ]
         except KeyError:
             return None
+    else:
+        return os.environ
 
 
 def getEnvChk( varName, default=None ):
