@@ -140,8 +140,8 @@ def getDirsInDirRecursive( path = '.',
             continue
 
         if os.path.isdir( joinedPath ):
-            if ( excludePattern == None ) or \
-               ( excludePattern != None and excludePattern.search( item ) == None ):
+            if excludePattern is None or \
+               ( excludePattern is not None and excludePattern.search( item ) is None ):
 
                 subDirList = []
 
@@ -180,7 +180,7 @@ def getFilesInDir( path, excludePattern = '' ):
 
     for item in os.listdir( path ):
         if os.path.isfile( os.path.join( path, item ) ):
-            if excludePattern == '' or re.search( excludePattern, item ) == None:
+            if excludePattern == '' or re.search( excludePattern, item ) is None:
                 subdirList.append( item )
 
     return subdirList
@@ -389,7 +389,7 @@ def printPermissionDenied( path ):
     logging.warning( '%s: Permission denied', path )
 
 
-def ignore( path ):
+def ignore( _ ):
     pass
 
 
