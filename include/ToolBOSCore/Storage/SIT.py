@@ -314,10 +314,6 @@ def switch( dstPath ):
     """
         This function internally resets all variables etc. so that further
         calls to SIT.getPath() or so return the correct directory name.
-
-        Attention: You may need to reload or inform other packages about
-                   an SIT change. You can do so by registering some callback
-                   using SITSwitchObservers.register().
     """
     FastScript.setEnv( 'HRI_GLOBAL_ROOT', dstPath )
     FastScript.setEnv( 'SIT',             dstPath )
