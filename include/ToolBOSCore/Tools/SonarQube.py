@@ -68,7 +68,7 @@ def readToken( token: str ) -> str:
             _token = ToolBOSConf.getConfigOption( 'sonarToken' )
         except KeyError:
             logging.error( 'No SonarQube user token provided. Please, see --help for more details.' )
-            raise Exception ('Invalid Token!')
+            raise
     return _token
 
 
@@ -123,7 +123,7 @@ def runBuildWrapper( buildCommand: str ) -> None:
         logging.info( 'running SonarQube build wrapper' )
         FastScript.execProgram( cmd )
 
-    except ( subprocess.CalledProcessError, Exception ) as e:
+    except ( subprocess.CalledProcessError, AssertionError, OSError ) as e:
 
         logging.error( e )
         raise AssertionError() from e

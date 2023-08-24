@@ -88,7 +88,7 @@ try:
     SonarQube.runScan( _token )
     sys.exit( 0 )
 
-except ( AssertionError, Exception ):
+except ( AssertionError, KeyError ):
     logging.error( 'Failed to run SonarQube analysis' )
     sys.exit( -1 )
 
