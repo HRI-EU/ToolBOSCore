@@ -54,21 +54,22 @@ from ToolBOSCore.Util  import ArgsManagerV2
 
 desc   = "Launches the SonarQube scan to analyze the current package. " \
          "The SonarQube hostname is configured via ToolBOS.conf file, " \
-         "the authentication token can be passed via option or env.var. " \
-         "'SONAR_TOKEN'. If used in CI/CD pipelines, 'SONAR_TOKEN' might " \
-         "be globally predefined by administrators."
+         "the authentication token can be passed via cmd line option or env.var. " \
+         "'SONAR_TOKEN' or ToolBOS.conf settings. If used in CI/CD pipelines, 'SONAR_TOKEN' " \
+         "might be globally predefined by administrators."
 
 argman = ArgsManagerV2.ArgsManager( desc )
 
 argman.add_argument( '-t','--token', type=str,
-                     help='user auth token (alternatively via env.var. SONAR_TOKEN)' )
+                     help='user auth token (alternatively via env.var.SONAR_TOKEN or ' \
+                          'via ToolBOS.conf settings)' )
 
 argman.add_argument( '-b','--build', type=str,
                      help='command to build this package' )
 
-argman.addExample( '%(prog)s -t 123456789' )
-argman.addExample( '%(prog)s -t 123456789 -b BST.py' )
-argman.addExample( '%(prog)s -t 123456789 -b ./build.sh' )
+argman.addExample( '%(prog)s -t <auth-token>' )
+argman.addExample( '%(prog)s -t <auth-token> -b BST.py' )
+argman.addExample( '%(prog)s -t <auth-token> -b ./build.sh' )
 argman.addExample( '%(prog)s -b BST.py' )
 argman.addExample( '%(prog)s' )
 
@@ -78,13 +79,16 @@ token        = args[ 'token' ]
 
 
 try:
+    _token = SonarQube.readToken( token )
+
     if buildCommand:
         SonarQube.runBuildWrapper( buildCommand )
 
-    SonarQube.runScan( token )
+    # use the user provided auth token
+    SonarQube.runScan( _token )
     sys.exit( 0 )
 
-except AssertionError as e:
+except ( AssertionError, Exception ):
     logging.error( 'Failed to run SonarQube analysis' )
     sys.exit( -1 )
 

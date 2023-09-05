@@ -366,7 +366,7 @@ def mkdir( path, verbose=False ):
             # ensure it's really a directory and not a file
             Any.requireIsDir( path )
         else:
-            raise
+            raise Exception('Directory creation failed')
 
 
 def getFileOwner( path ):
