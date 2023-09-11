@@ -44,19 +44,42 @@ from ToolBOSCore.Settings import ProcessEnv, ToolBOSConf
 from ToolBOSCore.Util     import Any, FastScript
 
 
+def readToken( token: str ) -> str:
+    """
+    Check for the sonarqube token (if any),
+    1. command-line arguments
+    2. environment variables
+    3. ToolBOS.conf file
+    If token is not found in any of these places then raise an error
+
+    Args:
+        token : user auth token provided via command-line
+    """
+    _token = None
+
+    if token:
+        _token = token
+
+    if _token is None:
+        _token = FastScript.getEnv( 'SONAR_TOKEN' )
+
+    if _token is None:
+        try:
+            _token = ToolBOSConf.getConfigOption( 'sonarToken' )
+        except KeyError:
+            logging.error( 'No SonarQube user token provided. Please, see --help for more details.' )
+            raise Exception ('Invalid Token!')
+    return _token
+
+
 def runScan( token: str ) -> Union[ None, bool ]:
     """
         Run SonarQube scan for packages with programming language Python,
         C, C++, JS, Go, PHP etc.
 
         Args:
-            token : user token provided via commandline
+            token : SonarQube token returned by readToken(..)
     """
-    token = token if token else FastScript.getEnv( 'SONAR_TOKEN' )
-
-    if not token:
-        logging.error( 'no SonarQube user token provided' )
-        return False
 
     ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_sonarscanner' ) )
     ProcessEnv.requireCommand( 'sonar-scanner' )
@@ -90,13 +113,19 @@ def runBuildWrapper( buildCommand: str ) -> None:
 
     _cleanup()
 
-    cmd = 'build-wrapper-linux-x86-64 --out-dir bw-output' + ' ' + buildCommand
-
     try:
+
+        buildDir = './build/sonarQube/bw-output'
+        FastScript.mkdir( buildDir )
+
+        cmd = f'build-wrapper-linux-x86-64 --out-dir {buildDir}' + ' ' + buildCommand
+
         logging.info( 'running SonarQube build wrapper' )
         FastScript.execProgram( cmd )
-    except subprocess.CalledProcessError as e:
-        logging.debug( e )
+
+    except ( subprocess.CalledProcessError, Exception ) as e:
+
+        logging.error( e )
         raise AssertionError() from e
 
 
@@ -105,7 +134,6 @@ def _cleanup():
         Clean the build artifacts before executing the SonarQube build wrapper
     """
     FastScript.remove( 'build' )
-    FastScript.remove( 'bw-output' )
 
 
 # EOF

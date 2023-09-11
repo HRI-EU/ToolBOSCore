@@ -116,7 +116,7 @@ def copyBasePackages( srcRoot, dstRoot, packageList, verbose = True,
         'ignore' might be a callable that will be given to shutil.copytree()
         for filtering-out undesired content.
 
-        'resolveLTS' indicates whether or not symlinks to LTS packages
+        'resolveLTS' indicates whether symlinks to LTS packages
         shall be resolved:
             True  = copy content of LTS packages (resolve symlinks)
             False = keep LTS symlinks as they are
@@ -266,7 +266,7 @@ def bootstrap( dstPath, buildSDK = False, verbose = True, ignore = None,
         'ignore' might be a callable that will be given to shutil.copytree()
         for filtering-out undesired content.
 
-        'resolveLTS' indicates whether or not symlinks to LTS packages
+        'resolveLTS' indicates whether symlinks to LTS packages
         shall be resolved:
             True  = copy content of LTS packages (resolve symlinks)
             False = keep LTS symlinks as they are
@@ -427,7 +427,8 @@ def getRootPath( sitPath = '' ):
 
 def getBaseDir( sitRootPath = '' ):
     """
-        Returns the location where all the SIT's are located.
+        Returns the location where all the Software Installation Trees
+        are located.
 
         If you pass an existing SIT root path, its dirname will be returned,
         otherwise the default SIT location.
@@ -498,7 +499,7 @@ def collapseHGR( string ):
         linkTarget = os.readlink( linkName )
         tmp = tmp.replace( linkTarget + '/', '' )
     except( OSError,               # probably has no such link
-            AttributeError ):      # os.readlink n/a on Windows
+            AttributeError ):      # os.readlink not available on Windows
         pass
 
     return tmp
@@ -692,11 +693,11 @@ def getActiveRevision( sitPath, project ):
 def makeCategoryWriteable( sitPath, project, groupName='hriall', mode=0o0775 ):
     """
         Changes the group and permissions of all directories between
-        'sitPath' up to the project version (the project's main directory
+        'sitPath' up to the project version. The project's main directory
         will also be group-writeable so that different developers could
         install different versions.
 
-        Mind to provide an octal number as 'mode'!)
+        Mind to provide an octal number 'mode'!
     """
     from ToolBOSCore.Packages import ProjectProperties
 

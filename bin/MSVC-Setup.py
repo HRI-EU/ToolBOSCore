@@ -73,7 +73,7 @@ if not path:
     path = os.path.expandvars( '${HOME}/.wine' )
 
 if not version:
-    version = ToolBOConf.getConfigOption( 'msvcVersion')
+    version = ToolBOSConf.getConfigOption( 'msvcVersion' )
 
 
 #----------------------------------------------------------------------------
