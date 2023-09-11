@@ -1,4 +1,32 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.4
+
+
+NEW FEATURES
+============
+
+  - [#40,#44,#65] runSonarQube.py improvements:
+    Authentication token can now be provided via env.variable, ToolBOS.conf
+    setting, or commandline parameter
+
+
+CHANGES
+=======
+
+  - [#45] runSonarQube.py: temporary files now located in ./build/sonarQube
+  - use PyCharm and CLion version 2023.2
+
+
+FIXED BUGS
+==========
+
+  - MSVC-Setup.py: fixed internal function call
+
+
+-----------------------------------------------------------------------------
+
+
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.3
 
 
