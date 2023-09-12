@@ -1791,9 +1791,10 @@ called from the outside. Doing it must be considered as wrong usage.'''
             return NOT_APPLICABLE, 0, 0, 'no Python code found'
 
         logging.debug( "checking for access to private members from outside" )
-        found  = 0
-        errors = 0
-        regexp = re.compile( r'(\w+)\._(\w+)' )
+        found   = 0
+        errors  = 0
+        regexp  = re.compile( r'(\w+)\._(\w+)' )
+        allowed = r'__(\w+)__' # capture dunder methods
 
         for filePath in files[ 'python' ]:
             if os.path.exists( filePath ):
@@ -1810,9 +1811,9 @@ called from the outside. Doing it must be considered as wrong usage.'''
                     tmp = regexp.search( line )
 
                     if tmp:
-                        # Attention: regexp contains one underscore, so we
-                        # must check against "_init__" to match "__init__"
-                        if tmp.group(1) not in ( 'self', 'cls' ) and tmp.group(2) != '_init__':
+                        _match = re.match( allowed, tmp.group(2) )
+
+                        if tmp.group(1) not in ( 'self', 'cls' ) and not _match:
                             logging.info( 'PY02: %s: access to private member (%s)',
                                           filePath, tmp.group() )
                             found += 1
