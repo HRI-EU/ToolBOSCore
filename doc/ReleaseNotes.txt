@@ -1,4 +1,15 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.5
+
+
+INTERNAL
+========
+
+  - minor code clean-up + documentation corrections
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.4
 
 
@@ -24,8 +35,6 @@ FIXED BUGS
 
 
 -----------------------------------------------------------------------------
-
-
 
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.3
 
