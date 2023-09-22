@@ -765,6 +765,9 @@ def getDefaultDistcleanPatterns():
                   # temp. files left from previous program executions
                   '*.pyc', '*.backup.zip', 'LibIndex',
 
+                  # pylint log files
+                  'pylint_result_*.log',
+
                   # install procedure files
                   'install/??shSrc', 'bin/??shSrc',
                   'examples/??shSrc', 'test/??shSrc', 'install/CmdSrc.bat',
