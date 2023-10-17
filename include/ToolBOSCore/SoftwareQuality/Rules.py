@@ -1793,8 +1793,8 @@ called from the outside. Doing it must be considered as wrong usage.'''
         logging.debug( "checking for access to private members from outside" )
         found   = 0
         errors  = 0
-        regexp  = re.compile( r'(\w+)\._(\w+)' )
-        allowed = r'__(\w+)__' # capture dunder methods
+        regexp  = re.compile( r'(\w+)\._(\w+)' ) # capture private members
+        dunder  = re.compile( r'_(\w+)__' )      # capture dunder methods
 
         for filePath in files[ 'python' ]:
             if os.path.exists( filePath ):
@@ -1811,9 +1811,8 @@ called from the outside. Doing it must be considered as wrong usage.'''
                     tmp = regexp.search( line )
 
                     if tmp:
-                        _match = re.match( allowed, tmp.group(2) )
-
-                        if tmp.group(1) not in ( 'self', 'cls' ) and not _match:
+                        allowed = dunder.search( tmp.group(2) )
+                        if tmp.group(1) not in ( 'self', 'cls' ) and not allowed:
                             logging.info( 'PY02: %s: access to private member (%s)',
                                           filePath, tmp.group() )
                             found += 1
