@@ -1,4 +1,19 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.6
+
+
+CHANGES
+=======
+
+  - [#72] BST.py -d: clean-up pylint_result_*.log files
+  - [#71] SQ PY05: ignore import-errors of lxml.etree
+  - [#70] SQ PY02: ignore access to dunder-methods
+  - [#61] MakefileSystem.bash: support strict shell settings ("set -euxo pipefail")
+  - [#60] updated hostnames of cross-compile-hosts
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.5
 
 
