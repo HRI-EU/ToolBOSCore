@@ -78,10 +78,19 @@ else
     SIT=${BST_INSTALL_PREFIX}
 fi
 
+if [[ -z ${PROJECT_NAME+x} ]]
+then
+    export PROJECT_NAME=""
+fi
 
 if [[ -z "${PROJECT_NAME}" ]]
 then
     PROJECT_NAME=$(basename "$(dirname "${PWD}")")
+fi
+
+if [[ -z ${PROJECT_VERSION+x} ]]
+then
+    export PROJECT_VERSION=""
 fi
 
 if [[ -z "${PROJECT_VERSION}" ]]
