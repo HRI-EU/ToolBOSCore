@@ -766,7 +766,7 @@ def getDefaultDistcleanPatterns():
                   '*.pyc', '*.backup.zip', 'LibIndex',
 
                   # pylint log files
-                  'pylint_result_*.log',
+                  '*_pylint.log',
 
                   # install procedure files
                   'install/??shSrc', 'bin/??shSrc',

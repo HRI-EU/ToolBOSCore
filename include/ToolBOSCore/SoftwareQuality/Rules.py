@@ -2036,8 +2036,8 @@ Please regularly inspect your scripts using Pylint.'''
         failed        = 0
         overallIssues = 0
 
-        timestamp      = FastScript.now().strftime( '%d%m%Y_%H%M%S' )
-        outputFileName = 'pylint_result_' + timestamp + '.log'
+        timestamp      = FastScript.now().strftime( '%Y-%m-%d_%H-%M-%S' )
+        outputFileName = f'{timestamp}_pylint.log'
         logging.info( 'PY05: using pylint config file: %s', details.pylintConf )
 
         # pylint provides configuration '--output=<file>' to redirect output
