@@ -410,7 +410,7 @@ class InstallProcedure( object ):
 
 
     def copy( self, srcPath, dstPath=None, mandatory=False,
-              relativeToHGR=False ):
+              relativeToSIT=False ):
         """
             Schedules the file or directory 'srcPath' for later
             installation. If mandatory=False and the file does not exist,
@@ -455,13 +455,13 @@ class InstallProcedure( object ):
                 else:
                     dstPathArch = dstPath.replace( '${MAKEFILE_PLATFORM}', platform )
 
-                self._copy( srcPathArch, dstPathArch, mandatory, relativeToHGR )
+                self._copy( srcPathArch, dstPathArch, mandatory, relativeToSIT )
 
         else:
             # call worker function once with verbatim parameters
-            self._copy( srcPath, dstPath, mandatory, relativeToHGR )
+            self._copy( srcPath, dstPath, mandatory, relativeToSIT )
 
-    def _copy( self, srcPath, dstPath, mandatory, relativeToHGR ):
+    def _copy( self, srcPath, dstPath, mandatory, relativeToSIT ):
         srcPath = FastScript.expandVars( srcPath )
 
         if dstPath is not None:
@@ -491,7 +491,7 @@ class InstallProcedure( object ):
                                                     item )
 
                     if itemDstPath.find( '.svn' ) == -1:   # do not install ".svn"
-                        if relativeToHGR:
+                        if relativeToSIT:
                             self.index.append( ( itemSrcPath, itemDstPath ) )
                         else:
                             self.index.append( ( itemSrcPath,
@@ -515,14 +515,14 @@ class InstallProcedure( object ):
 
 
         elif os.path.exists( srcPath ):
-            if relativeToHGR:
+            if relativeToSIT:
                 self.index.append( ( srcPath, dstPath ) )
             else:
                 self.index.append( ( srcPath, os.path.join( self.startPath, dstPath ) ) )
 
 
     def copyMatching( self, srcDir, srcPattern, dstDir=None,
-                      relativeToHGR=False ):
+                      relativeToSIT=False ):
         r"""
             Schedules all files in the directory 'srcDir' which match
             the regular expression 'srcPattern' for later installation.
@@ -573,7 +573,7 @@ class InstallProcedure( object ):
             dstDir = srcDir
 
         matching = self.copyMatchingWorker( srcDir, srcPattern, dstDir,
-                                            relativeToHGR )
+                                            relativeToSIT )
 
         if matching:
             logging.info( 'adding %s/<%s>', dstDir, srcPattern )
@@ -584,7 +584,7 @@ class InstallProcedure( object ):
 
 
     def copyMatchingWorker( self, srcDir, srcPattern, dstDir,
-                            relativeToHGR=False ):
+                            relativeToSIT=False ):
         r"""
             Schedules all files in the directory 'srcDir' which match
             the regular expression 'srcPattern' for later installation.
@@ -637,7 +637,7 @@ class InstallProcedure( object ):
             src = os.path.join( srcDir, entry )
             dst = os.path.join( dstDir, entry )
 
-            if relativeToHGR:
+            if relativeToSIT:
                 self.index.append( ( src, dst ) )
             else:
                 self.index.append( ( src, os.path.join( self.startPath, dst ) ) )
@@ -645,7 +645,7 @@ class InstallProcedure( object ):
         return matching
 
 
-    def copyMandatory( self, srcPath, dstPath=None, relativeToHGR=False ):
+    def copyMandatory( self, srcPath, dstPath=None, relativeToSIT=False ):
         """
             Schedules the file 'srcPath' for later installation.
 
@@ -658,10 +658,10 @@ class InstallProcedure( object ):
                   and 'dstPath', e.g. "config/${MAKEFILE_PLATFORM}".
         """
         self.copy( srcPath, dstPath, mandatory=True,
-                   relativeToHGR=relativeToHGR )
+                   relativeToSIT=relativeToSIT )
 
 
-    def copyOptional( self, srcPath, dstPath=None, relativeToHGR=False ):
+    def copyOptional( self, srcPath, dstPath=None, relativeToSIT=False ):
         """
             Schedules the file or directory 'srcPath' for later
             installation. If it does not exist, the function will silently
@@ -678,7 +678,7 @@ class InstallProcedure( object ):
                   and 'dstPath', e.g. "config/${MAKEFILE_PLATFORM}".
         """
         self.copy( srcPath, dstPath, mandatory=False,
-                   relativeToHGR=relativeToHGR )
+                   relativeToSIT=relativeToSIT )
 
 
     @staticmethod
@@ -710,7 +710,7 @@ class InstallProcedure( object ):
             FastScript.copyWithRetry( src, dst )
 
 
-    def link( self, target, link, relativeToHGR=False ):
+    def link( self, target, link, relativeToSIT=False ):
         """
             Schedules a symlink "link" for installation. The symlink will
             point to "target".
@@ -722,8 +722,7 @@ class InstallProcedure( object ):
             for a package "Libraries/Foo/1.0" will create a symlink
             $HGR/Libraries/Foo/1.0/examples --> doc/examples
 
-
-            If relativeHGR=True, long paths relative to HRI_GLOBAL_ROOT
+            If relativeHGR=True, long paths relative to SIT
             can be specified. This allows installing outside of the package
             directory.
 
@@ -751,7 +750,7 @@ class InstallProcedure( object ):
         FastScript.link( target, tmpFile )
 
         # schedule symlink for installation
-        if relativeToHGR:
+        if relativeToSIT:
             linkPath = link
         else:
             linkPath = os.path.join( self.startPath, link )
@@ -1715,7 +1714,7 @@ class ProxyInstallProcedure( InstallProcedure ):
         """
         if not self.sitProxyPath:
             msg = 'Cannot perform proxy-installation: ' + \
-                  '${HRI_GLOBAL_ROOT} points to "%s" which is not a proxy' % \
+                  '${SIT} points to "%s" which is not a proxy' % \
                   self.sitRootPath
             raise EnvironmentError( msg )
 
@@ -1837,7 +1836,7 @@ class TarExportProcedure( InstallProcedure ):
             target  = "%s.%d" % ( self.details.packageVersion,
                                   self.details.patchlevel )
 
-            self.link( target, symlink, relativeToHGR=True )
+            self.link( target, symlink, relativeToSIT=True )
 
         else:
             self.startPath = self.details.canonicalPath

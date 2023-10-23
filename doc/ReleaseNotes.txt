@@ -1,4 +1,29 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.7
+
+
+NEW FEATURES
+============
+
+  - [#78] ArgsManagerV2.py: allow customizing the bugtracker-info in helppages
+
+
+CHANGES
+=======
+
+  - [#74] SQ PY05: changed pylint output filename to "YYYY-MM-DD_HH-MM-SS_pylint.log"
+  - FastScript.getEnv(): changed default argument from False to None
+  - InstallProcedure.py: parameter renamed from 'relativeToHGR' to 'relativeToSIT'
+
+
+INTERNAL
+========
+
+  - minor clean-up
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.6
 
 

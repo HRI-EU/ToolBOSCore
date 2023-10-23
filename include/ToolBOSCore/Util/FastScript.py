@@ -731,7 +731,7 @@ def getCommandLine( cmd, workingDir=None, host=None, user=None ):
     return resultCmd, resultWorkingDir
 
 
-def getEnv( varName = False ):
+def getEnv( varName=None ):
     """
         If called without parameter this function returns a deep copy of
         the whole environment map (not just references).
@@ -740,13 +740,13 @@ def getEnv( varName = False ):
         the value of that variable. If there is no such environment variable
         it will return 'None'.
     """
-    if not varName:
-        return os.environ
-    else:
+    if varName:
         try:
             return os.environ[ varName ]
         except KeyError:
             return None
+    else:
+        return os.environ
 
 
 def getEnvChk( varName, default=None ):
