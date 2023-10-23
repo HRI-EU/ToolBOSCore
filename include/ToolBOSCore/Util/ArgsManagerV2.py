@@ -39,9 +39,8 @@ import logging
 import sys
 import textwrap
 
-from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Settings import AppConfig, ToolBOSConf
+from ToolBOSCore.Util     import Any, FastScript
 
 
 class ArgsManager( argparse.ArgumentParser ):
@@ -69,6 +68,7 @@ class ArgsManager( argparse.ArgumentParser ):
         self.formatter_class = argparse.RawDescriptionHelpFormatter
 
         self._allowUnknown   = False
+        self._config         = None
         self._examples       = []
         self._supportInfo    = None
         self._unhandled      = None
@@ -118,6 +118,18 @@ class ArgsManager( argparse.ArgumentParser ):
         self._allowUnknown = boolean
 
 
+    def setAppConfig( self, config ):
+        """
+            You may provide an 'AppConfig' instance that the parser shall
+            use to obtain the bugtrack URL.
+
+            If omitted, the global ToolBOSCore AppConfig-instance is used.
+        """
+        Any.requireIsInstance( config, AppConfig.AppConfig )
+
+        self._config = config
+
+
     def _addVerboseOption( self ):
         self.add_argument( '-v', '--verbose',
                            action='store_true',
@@ -146,9 +158,11 @@ class ArgsManager( argparse.ArgumentParser ):
 
 
     def _setBugtrackerURL( self ):
+        config = self._config if self._config else ToolBOSConf.getGlobalToolBOSConf()
+
         try:
-            bugtrackName      = getConfigOption( 'bugtrackName' )
-            bugtrackURL       = getConfigOption( 'bugtrackURL' )
+            bugtrackName      = config.getConfigOption( 'bugtrackName' )
+            bugtrackURL       = config.getConfigOption( 'bugtrackURL' )
             self._supportInfo = f'\nPlease report bugs on {bugtrackName} ({bugtrackURL}).'
 
         except AttributeError:
