@@ -1237,12 +1237,12 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
         Any.requireIsTextNonEmpty( rtmapsVersion )
 
         hostPlatform   = Platforms.getHostPlatform()
-        symlink_relHGR = RTMaps.getIndexFilePath_relHGR( canonicalPath,
+        symlink_relSIT = RTMaps.getIndexFilePath_relSIT( canonicalPath,
                                                          rtmapsVersion,
                                                          hostPlatform )
-        Any.requireIsTextNonEmpty( symlink_relHGR )
+        Any.requireIsTextNonEmpty( symlink_relSIT )
 
-        symlinkPath    = os.path.join( sitProxyPath, symlink_relHGR )
+        symlinkPath    = os.path.join( sitProxyPath, symlink_relSIT )
         Any.requireIsTextNonEmpty( symlinkPath )
 
         FastScript.remove( symlinkPath, dryRun )

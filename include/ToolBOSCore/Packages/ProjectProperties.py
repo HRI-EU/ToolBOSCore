@@ -191,9 +191,8 @@ def getPackageCategoryFromPath( projectRootDir ):
     replace = ''
     tmp     = tmp.replace( search, replace )
 
-    # replace any values of ${HRI_GLOBAL_ROOT} or ${SIT}
-    tmp     = SIT.stripHGR( tmp )
-    tmp     = SIT.stripSIT( tmp )
+    # replace value of ${SIT}
+    tmp     = SIT.strip( tmp )
 
     # remove trailing slashes (occurs if user provides a string with trailing slashes)
     while tmp.endswith( '/' ):
@@ -631,12 +630,6 @@ def getDependencies( project, recursive = False, cache = None,
                 depList = []
         else:
             depList = []  # retrieving *.deb dependencies not implemented
-
-
-    # ensure to only use URL-style dependencies
-    for i, dep in enumerate( depList ):
-        if isinstance( dep, str ):
-            depList[i] = dep.replace( '${HRI_GLOBAL_ROOT}/', 'sit://' )
 
 
     # store the direct dependencies into the cache map

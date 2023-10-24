@@ -720,9 +720,9 @@ class InstallProcedure( object ):
               link( 'doc/examples', 'examples' )
 
             for a package "Libraries/Foo/1.0" will create a symlink
-            $HGR/Libraries/Foo/1.0/examples --> doc/examples
+            $SIT/Libraries/Foo/1.0/examples --> doc/examples
 
-            If relativeHGR=True, long paths relative to SIT
+            If relativeToSIT=True, long paths relative to SIT
             can be specified. This allows installing outside of the package
             directory.
 
@@ -730,7 +730,7 @@ class InstallProcedure( object ):
 
               link( '1.0.0', 'Libraries/Foo/1.0' )
 
-            will yield a symlink $HGR/Libraries/Foo/1.0 --> 1.0.0
+            will yield a symlink $SIT/Libraries/Foo/1.0 --> 1.0.0
 
             Note: Environment variables can be specified in both 'link'
                   and 'target', e.g. "config/${MAKEFILE_PLATFORM}".

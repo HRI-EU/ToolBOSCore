@@ -315,7 +315,6 @@ def switch( dstPath ):
         This function internally resets all variables etc. so that further
         calls to SIT.getPath() or so return the correct directory name.
     """
-    FastScript.setEnv( 'HRI_GLOBAL_ROOT', dstPath )
     FastScript.setEnv( 'SIT',             dstPath )
     FastScript.setEnv( 'SIT_VERSION',     os.path.basename( dstPath ) )
 
@@ -464,44 +463,7 @@ def collapseSIT( string ):
     return FastScript.collapseVar( string, 'SIT' )
 
 
-def collapseHGR( string ):
-    """
-        Returns all computable values of HRI_GLOBAL_ROOT with an
-        ${HRI_GLOBAL_ROOT} placeholder.
-
-        Deprecated: $HRI_GLOBAL_ROOT is not supposed to be used anymore.
-                    If not defined this function uses the value of $SIT
-                    instead.
-
-    """
-    envValue = FastScript.getEnv( 'HRI_GLOBAL_ROOT' )
-
-    # may no longer be defined, if so we use $SIT
-    if not envValue:
-        envValue = FastScript.getEnv( 'SIT' )
-
-
-    if not Any.isTextNonEmpty( envValue ):
-        raise EnvironmentError( "Environment variable $SIT not defined" )
-
-
-    # replace all occurrences of ${HRI_GLOBAL_ROOT} or its value
-    tmp = FastScript.collapseVar( string, 'HRI_GLOBAL_ROOT' )
-
-    # if existing, replace the path where ${HRI_GLOBAL_ROOT}/parentTree points to
-    linkName = os.path.join( envValue, parentLink )
-
-    try:
-        linkTarget = os.readlink( linkName )
-        tmp = tmp.replace( linkTarget + '/', '' )
-    except( OSError,               # probably has no such link
-            AttributeError ):      # os.readlink not available on Windows
-        pass
-
-    return tmp
-
-
-def stripSIT( string ):
+def strip( string ):
     """
         Removes all known placeholders or computable values of SIT
         from the string, so useful to get "canonical" path names.
@@ -523,47 +485,6 @@ def stripSIT( string ):
     tmp = tmp.replace( sitRootPath + '\\', '' )     # Windows
 
     return tmp
-
-
-def stripHGR( string ):
-    """
-        Removes all known placeholders or computable values of SIT
-        from the string, so useful to get "canonical" path names.
-    """
-    tmp = collapseHGR( string )
-
-    tmp = tmp.replace( '${HRI_GLOBAL_ROOT}/',  '' )
-    tmp = tmp.replace( '${HRI_GLOBAL_ROOT}\\', '' )
-    tmp = tmp.replace( '${HRI_GLOBAL_ROOT}',   '' )
-
-    tmp = tmp.replace( '%HRI_GLOBAL_ROOT%/',   '' )
-    tmp = tmp.replace( '%HRI_GLOBAL_ROOT%\\',  '' )
-    tmp = tmp.replace( '%HRI_GLOBAL_ROOT%',    '' )
-
-    return tmp
-
-
-def strip( string ):
-    """
-        As a collector function, this strips off all possible values of
-        $SIT, $HRI_GLOBAL_ROOT (incl. proxy directories) etc. and only
-        returns the inner part of e.g. a pathname.
-
-        e.g.:
-            /home/username/.HRI/sit/latest/Libraries/Serialize/3.0
-            /hri/sit/latest/Libraries/Serialize/3.0
-            sit://Libraries/Serialize/3.0
-
-        will all yield:
-            Libraries/Serialize/3.0
-
-        You do not need to provide a path to a project. This function
-        operates on pure strings and simply removes all possible
-        occurrences of known prefixes.
-    """
-    string = stripSIT( string )
-    string = stripHGR( string )
-    return string
 
 
 #----------------------------------------------------------------------------

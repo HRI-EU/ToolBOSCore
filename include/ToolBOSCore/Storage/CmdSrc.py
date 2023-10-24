@@ -73,8 +73,7 @@ class CmdSrcWriter( AbstractWriter ):
 
         substMap = { '${PROJECT_NAME}':       values['name'],
                      '${FULL_VERSION}':       values['version'],
-                     '${PROJECT_START_PATH}': values['startPath'],
-                     '${HRI_GLOBAL_ROOT}':    '${SIT}' }
+                     '${PROJECT_START_PATH}': values['startPath'] }
 
         content = 'echo %%PATH%% | find "%(canonicalPath)s" > null\n\n' \
                   ':: if already set then quit\n' \

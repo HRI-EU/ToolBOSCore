@@ -501,7 +501,7 @@ def _checkDefFiles( sitRootPkgList, sitProxyPkgList,
 
         # delete superfluous *.def files
         if defFile not in fakeDefs:
-            collapsed = SIT.collapseHGR( defPath )
+            collapsed = SIT.collapseSIT( defPath )
 
             if dryRun:
                 logging.info( '-- DRY RUN --   found superfluous %s', collapsed )
