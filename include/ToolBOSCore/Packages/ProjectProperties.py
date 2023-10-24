@@ -312,30 +312,6 @@ def splitURL( packageURL ):
 #----------------------------------------------------------------------------
 
 
-def guessGitLocation( package ):
-    """
-        If you don't know where a project's Git blessed repository is located,
-        this function may provide a reasonable hint.
-
-        'package' must be a canonical project path.
-    """
-    requireIsCanonicalPath( package )
-
-    url = None
-
-    try:
-        # first check if we have ground truth information available...
-        url = getGitLocationFromFilesystem( package )
-    except ( AssertionError, KeyError, IOError ):
-        pass
-
-
-    # TODO: implement guessing of URL on default host
-
-
-    return url
-
-
 def getSVNLocationFromFilesystem( package ):
     """
         This reads the 'repositoryUrl' from the pkgInfo.py.
