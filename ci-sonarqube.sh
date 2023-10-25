@@ -14,7 +14,15 @@
 #
 
 
-source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.1/BashSrc
+if [[ "$#" -eq 0 ]] # no parameter is passed, using default
+then
+    VERSION="4.2"
+else
+    VERSION="$1"
+fi
+
+# shellcheck source=/hri/sit/latest/DevelopmentTools/ToolBOSCore/4.2/BashSrc
+source "/hri/sit/latest/DevelopmentTools/ToolBOSCore/${VERSION}/BashSrc"
 source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
 
 set -euxo pipefail

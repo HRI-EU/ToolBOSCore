@@ -1,4 +1,32 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.2.8
+
+
+CHANGES
+=======
+
+  - [#83] ⬆️ use PackageCreator 1.4
+  - [#81] 🔥 dropped Git{Checkout,Clone}.py
+  - [#64] 🔥 dropped outdated references to HRI_GLOBAL_ROOT
+  - [#53] 🔥 dropped SVN{Import,Checkout}.py
+
+
+FIXED BUGS
+==========
+
+  - [#84] 🐛 ToolBOS-Setup.py did not start
+  - [#83] 📝 documentation (updated URLs)
+  - [#82] 📝 documentation (fixed broken link)
+
+
+INTERNAL
+========
+
+  - [#80] 🔧 use same ToolBOSCore version for all CI jobs
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.2.7
 
 

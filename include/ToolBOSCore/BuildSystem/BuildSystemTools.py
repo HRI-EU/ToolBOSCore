@@ -776,7 +776,7 @@ def getDefaultDistcleanPatterns():
                   'install/MD5SUMS', 'install/*.tar.gz', 'install/*.deb',
                   'install/*.tar.bz2', 'install/packageVar.cmake',
                   'install/pkgInfo.py', 'install/*.def',
-                  'install/debControl.txt', 'install/HRI_GLOBAL_ROOT',
+                  'install/debControl.txt',
                   '[A-Za-z]*[A-Za-z]PHP', '[A-Za-z]*[A-Za-z]PY',
                   'run*([^.])', 'src/.*.h.md5', 'build4all.cfg', 'run' ] )
 
@@ -823,7 +823,7 @@ def setEnv():
 
     for package in p.dependencies + p.buildDependencies:
         try:
-            envVars = PkgInfo.getPkgInfoContent( SIT.stripSIT(package) )['envVars']
+            envVars = PkgInfo.getPkgInfoContent( SIT.strip(package) )['envVars']
         except ( AssertionError, KeyError ):
             envVars = []                         # no envVars specified
         except ( IOError, OSError, SyntaxError ) as details:

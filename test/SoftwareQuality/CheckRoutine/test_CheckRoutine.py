@@ -343,7 +343,7 @@ def test_runPy04_files_with_exit_call( toolBOSCoreDetector ):
     files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
                             'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
                             'include/ToolBOSCore/Util/FastScript.py',
-                            'bin/GitCheckout.py' ] }
+                            'bin/UpdateProxyDir.py' ] }
 
     result  = rule.run( details, files )
 
@@ -371,8 +371,7 @@ def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
     details = toolBOSCoreDetector
     files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
                             'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                            'include/ToolBOSCore/Util/FastScript.py',
-                            'bin/GitCheckout.py' ] }
+                            'include/ToolBOSCore/Util/FastScript.py' ] }
 
     result  = rule.run( details, files )
 

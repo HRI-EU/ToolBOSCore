@@ -191,9 +191,8 @@ def getPackageCategoryFromPath( projectRootDir ):
     replace = ''
     tmp     = tmp.replace( search, replace )
 
-    # replace any values of ${HRI_GLOBAL_ROOT} or ${SIT}
-    tmp     = SIT.stripHGR( tmp )
-    tmp     = SIT.stripSIT( tmp )
+    # replace value of ${SIT}
+    tmp     = SIT.strip( tmp )
 
     # remove trailing slashes (occurs if user provides a string with trailing slashes)
     while tmp.endswith( '/' ):
@@ -311,30 +310,6 @@ def splitURL( packageURL ):
 #----------------------------------------------------------------------------
 # Advanced project management functions
 #----------------------------------------------------------------------------
-
-
-def guessGitLocation( package ):
-    """
-        If you don't know where a project's Git blessed repository is located,
-        this function may provide a reasonable hint.
-
-        'package' must be a canonical project path.
-    """
-    requireIsCanonicalPath( package )
-
-    url = None
-
-    try:
-        # first check if we have ground truth information available...
-        url = getGitLocationFromFilesystem( package )
-    except ( AssertionError, KeyError, IOError ):
-        pass
-
-
-    # TODO: implement guessing of URL on default host
-
-
-    return url
 
 
 def getSVNLocationFromFilesystem( package ):
@@ -631,12 +606,6 @@ def getDependencies( project, recursive = False, cache = None,
                 depList = []
         else:
             depList = []  # retrieving *.deb dependencies not implemented
-
-
-    # ensure to only use URL-style dependencies
-    for i, dep in enumerate( depList ):
-        if isinstance( dep, str ):
-            depList[i] = dep.replace( '${HRI_GLOBAL_ROOT}/', 'sit://' )
 
 
     # store the direct dependencies into the cache map

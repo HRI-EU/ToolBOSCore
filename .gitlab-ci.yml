@@ -21,23 +21,26 @@ stages:
     - test
     - check
 
+variables:
+    TBCORE_VERSION: "4.2"
+
 test:
     timeout: 20 minutes
     stage: test
     script:
-        - ./ci-test.sh
+        - ./ci-test.sh $TBCORE_VERSION
 
 #check:
 #    stage: check
 #    script:
-#        - ./ci-check.sh
+#        - ./ci-check.sh $TBCORE_VERSION
 #    allow_failure: true
 
 
 sonarqube:
   stage: check
   script:
-    - ./ci-sonarqube.sh
+    - ./ci-sonarqube.sh $TBCORE_VERSION
   needs: []
 
 # EOF

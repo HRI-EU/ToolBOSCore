@@ -320,7 +320,7 @@ def getIndexFileName( canonicalPath ):
     return result
 
 
-def getIndexFilePath_relHGR( canonicalPath, rtmapsVersion, platform ):
+def getIndexFilePath_relSIT( canonicalPath, rtmapsVersion, platform ):
     """
         Returns a path to the *.pck index filename for the package,
         relative to ${SIT}.
