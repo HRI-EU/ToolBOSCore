@@ -42,6 +42,7 @@
 
 import logging
 import os.path
+import re
 import sys
 
 # ATTENTION: Do imports from ToolBOSCore-package below after PYTHONPATH
@@ -66,8 +67,13 @@ sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 #
 sourced = False
 
+# Attention: In this expression the part '4.2' would actually need to
+#            be '4\.2' as we mean the literal dot and not any chracter!
+#            It is only done so that our bumpVersion.sh script replaces it!
+versionInclude = re.compile( 'ToolBOSCore/4.2.*/include' )
+
 for directory in sys.path:
-    if directory.endswith( 'ToolBOSCore/4.2/include' ) or \
+    if versionInclude.match( directory ) or \
        directory.endswith( 'ToolBOSCore/include' ):
         sourced = True
 

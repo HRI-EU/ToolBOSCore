@@ -33,7 +33,7 @@
 #
 #
 #  A global install log message is represented by a file within the
-#  directory ${HRI_GLOBAL_ROOT}/Temporary/GlobalInstallLogfiles.
+#  directory ${SIT}/Temporary/GlobalInstallLogfiles.
 #
 #  Please use this script to generate log entries as the internal structure
 #  of the files is subject to change (facade pattern).

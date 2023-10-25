@@ -723,8 +723,6 @@ pkgInfo.py, e.g.:
 scripts          = { 'unittest': 'myScript.sh' }
 '''
 
-    seeAlso     = { 'Unittest HowTo': 'ToolBOS_Util_BuildSystemTools_Unittesting' }
-
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
@@ -797,10 +795,10 @@ interface with it.'''
 \t\t\t\tMyPackage.h'''
 
     seeAlso     = { 'Source tree conventions':
-                    'ToolBOS_Concept_SourceTreeConventions',
+                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Concepts/SourceTreeConventions.md',
 
                     'Installation conventions':
-                    'ToolBOS_Concept_InstallationConventions' }
+                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Concepts/SourceTreeConventions.md' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
@@ -830,20 +828,18 @@ class Rule_GEN10( AbstractRule ):
 
     name        = 'maintainability: VCS usage'
 
-    brief       = '''Put package under version control system (Git/SVN).'''
+    brief       = '''Put package under version control system (Git).'''
 
     description = '''A version control system serves several purposes:
 
   * preserve individual source code states over time
   * track or rollback modifications
-  * agreed "master" location
+  * agreed "main" location
   * avoids chaos of various copies + patchfiles
-  * central backup
+  * central backup'''
 
-Note: HRI-EU recommends to use Git.'''
-
-    seeAlso     = { 'SVN HowTo': 'ToolBOS_HowTo_SVN',
-                    'Git HowTo': 'ToolBOS_HowTo_Git' }
+    seeAlso     = { 'Git HowTo':
+                    'https://hri-wiki.honda-ri.de/Git' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -1256,10 +1252,7 @@ reasons. And consistency is a soft skill for good quality software.'''
     ANY_TRACE( 0, "%d", x );
 '''
 
-    seeAlso     = { 'Any.h API documentation':
-                    'Any_About',
-
-                    'CERT ERR00-CPP':
+    seeAlso     = { 'CERT ERR00-CPP':
                     'https://wiki.sei.cmu.edu/confluence/display/c/ERR00-C.+Adopt+and+implement+a+consistent+and+comprehensive+error-handling+policy' }
 
     sqLevel     = frozenset()
@@ -1289,10 +1282,7 @@ types, f.i. `BaseI16` or `BaseI64`, defined in `Base.h.`'''
 
     badExample  = '''\tunsigned long long x = 42000000000;   // 42 billion'''
 
-    seeAlso     = { 'Base.h API documentation':
-                    'Base_About',
-
-                    'CERT NUM03-J':
+    seeAlso     = { 'CERT NUM03-J':
                     'https://wiki.sei.cmu.edu/confluence/display/java/NUM03-J.+Use+integer+types+that+can+fully+represent+the+possible+range+of++unsigned+data',
 
                     'CERT INT31-C':
@@ -1321,10 +1311,7 @@ interface for both humans and machines.
 Hence, please ensure that your package is compatible with `BST.py`.'''
 
     seeAlso     = { 'BST.py documentation':
-                    'ToolBOS_Util_BuildSystemTools',
-
-                    'About Continous Integration':
-                    'ToolBOS_UseCases_CIA' }
+                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md' }
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
@@ -1379,7 +1366,7 @@ Such inter-functional checks are complicated and time-consuming, but please
 once in a while inspect your code using Klocwork.'''
 
     seeAlso     = { 'Klocwork HowTo':
-                    'ToolBOS_HowTo_Klocwork' }
+                    'https://hri-wiki.honda-ri.de/Klocwork' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
@@ -1733,6 +1720,7 @@ circumstances.'''
 
     seeAlso     = { 'MISRA-2012 rule 4.9':
                     None,
+
                     'CERT PRE00-C':
                     'https://wiki.sei.cmu.edu/confluence/display/c/PRE00-C.+Prefer+inline+or+static+functions+to+function-like+macros' }
 
@@ -1872,9 +1860,6 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     Any.requireMsg( x == 123, "Oops..." )
     Any.requireIsDir( '/tmp' )
 '''
-
-    seeAlso     = { 'Any.py API documentation':
-                    'namespaceToolBOSCore_1_1Util_1_1Any' }
 
     sqLevel     = frozenset()
 
@@ -2536,9 +2521,6 @@ terminating `\\0` must not be used.'''
     [...]
 '''
 
-    seeAlso     = { 'AnyString.h API documentation':
-                    'AnyString_About' }
-
     sqLevel     = frozenset( [ 'safety' ] )
 
 
@@ -2609,10 +2591,7 @@ class Rule_SPEC01( AbstractRule ):
                     'http://www.klocwork.com/products-services/klocwork/detection/misra-coding-standards',
 
                     'Mapping of MISRA rules to Klocwork checkers':
-                    'http://docs.klocwork.com/Insight-10.0/MISRA-C_rules_mapped_to_Klocwork_checkers',
-
-                    'MISRA + Automotive HIS':
-                    'ToolBOS_Concept_CodingConventions_MISRA' }
+                    'http://docs.klocwork.com/Insight-10.0/MISRA-C_rules_mapped_to_Klocwork_checkers' }
 
     sqLevel     = frozenset( [ 'safety' ] )
 
@@ -2682,9 +2661,6 @@ The ToolBOSCore library defines `Any_strcmp()`, `Any_memset()` and friends for
 such purpose. They map to the underlying O.S.-specific functions with no cost
 (resolved at compile-time).'''
 
-    seeAlso     = { 'AnyString.h API documentation':
-                    'AnyString_About' }
-
     sqLevel     = frozenset()
 
 
@@ -2743,10 +2719,7 @@ atomic operations and the data-structures must also be reentrant.
 Note: The ToolBOSCore library offers all means to create thread-safe, portable
 applications.'''
 
-    seeAlso     = { 'Thread handling and synchronization primitives':
-                    'MThreads_About',
-
-                    'Wikipedia: Thread safety':
+    seeAlso     = { 'Wikipedia: Thread safety':
                     'https://en.wikipedia.org/wiki/Thread_safety' }
 
     sqLevel     = frozenset( [ 'advanced', 'safety' ] )
@@ -2793,8 +2766,11 @@ Output:
     Reilly
     '''
 
-    seeAlso     = { 'Shellcheck SC2046, SC2048, SC2068, SC2248, SC2248': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
-                    'Bash Pitfalls': 'http://mywiki.wooledge.org/BashPitfalls#echo_.24foo' }
+    seeAlso     = { 'Shellcheck SC2046, SC2048, SC2068, SC2248, SC2248':
+                    'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
+
+                    'Bash Pitfalls':
+                    'https://mywiki.wooledge.org/BashPitfalls#echo_.24foo' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
@@ -2856,7 +2832,8 @@ This construct is also faster, because it is a bash-builtin, whereas the single
     [ $var > b ] && echo "True"|| echo "False"
     '''
 
-    seeAlso     = { 'Bash best practices': 'https://mywiki.wooledge.org/BashGuide/Practices#Bash_Tests' }
+    seeAlso     = { 'Bash best practices':
+                    'https://mywiki.wooledge.org/BashGuide/Practices#Bash_Tests' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
@@ -2890,9 +2867,14 @@ parenthesis.
     a=`dirname \`which grep\``
     '''
 
-    seeAlso     = { 'Shellcheck SC2006': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
-                    'BashFAQ': 'http://mywiki.wooledge.org/BashFAQ/082',
-                    'Bash-hackers': 'https://wiki.bash-hackers.org/syntax/expansion/cmdsubst' }
+    seeAlso     = { 'Shellcheck SC2006':
+                    'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md',
+
+                    'BashFAQ':
+                    'https://mywiki.wooledge.org/BashFAQ/082',
+
+                    'Bash-hackers':
+                    'https://wiki.bash-hackers.org/syntax/expansion/cmdsubst' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
@@ -2963,7 +2945,8 @@ output:
     "args
     '''
 
-    seeAlso     = { 'Shellcheck SC2089, SC2090': 'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md' }
+    seeAlso     = { 'Shellcheck SC2089, SC2090':
+                    'https://gist.github.com/eggplants/9fbe03453c3f3fd03295e88def6a1324#file-_shellcheck-md' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
@@ -3018,7 +3001,8 @@ readable and a little more self-explanatory.
     date | grep -Eo '([0-9]{2}[:]){2}[0-9]{2}'
     '''
 
-    seeAlso     = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+    seeAlso     = { 'CheatSheet':
+                    'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
@@ -3053,8 +3037,11 @@ errors or behaviour.
     echo $foo
     '''
 
-    seeAlso     = { 'Shellcheck': 'https://github.com/koalaman/shellcheck/wiki/SC2250',
-                    'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+    seeAlso     = { 'Shellcheck':
+                    'https://github.com/koalaman/shellcheck/wiki/SC2250',
+
+                    'CheatSheet':
+                    'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced' ] )
 
@@ -3144,7 +3131,8 @@ placed anywhere after `set -euo pipefail`.
     [...]
     '''
 
-    seeAlso      = { 'CheatSheet': 'https://bertvv.github.io/cheat-sheets/Bash.html' }
+    seeAlso      = { 'CheatSheet':
+                     'https://bertvv.github.io/cheat-sheets/Bash.html' }
 
     sqLevel      = frozenset( [ 'basic', 'advanced' ] )
 
