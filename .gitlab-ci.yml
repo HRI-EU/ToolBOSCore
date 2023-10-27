@@ -22,25 +22,25 @@ stages:
     - check
 
 variables:
-    TBCORE_VERSION: "4.2"
+    TOOLBOSCORE_VERSION: "4.2"
 
 test:
     timeout: 20 minutes
     stage: test
     script:
-        - ./ci-test.sh $TBCORE_VERSION
+        - ./ci-test.sh $TOOLBOSCORE_VERSION
 
-#check:
-#    stage: check
-#    script:
-#        - ./ci-check.sh $TBCORE_VERSION
-#    allow_failure: true
-
+# jobs with leading '.' are considered disabled by Gitlab.
+.check:
+    stage: check
+    script:
+        - ./ci-check.sh $TOOLBOSCORE_VERSION
+    allow_failure: true
 
 sonarqube:
   stage: check
   script:
-    - ./ci-sonarqube.sh $TBCORE_VERSION
+    - ./ci-sonarqube.sh $TOOLBOSCORE_VERSION
   needs: []
 
 # EOF
