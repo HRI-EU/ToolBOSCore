@@ -156,11 +156,14 @@ def registerNormalPackages( sitPath, dryRun=False ):
     Any.requireIsList( pckPaths )
 
     logging.debug( 'found HORP files:' )
-    logging.debug( pckPaths )
 
+    for pckPath in sorted( pckPaths ):
+        logging.debug( f'  * {pckPath}' )
+    logging.debug( '' )
 
     # process each *.pck file (tokenize path and create symlink)
     for pckPath in pckPaths:
+        logging.debug( f'processing {pckPath}' )
 
         # the *.pck file is located on the 3rd subdirectory level relative
         # to the installRoot, so compute the installRoot based on this
@@ -189,6 +192,8 @@ def registerNormalPackage( package, sitProxyPath=None, indexBaseDir=None, dryRun
 
     if indexBaseDir is None:
         indexBaseDir = getIndexBaseDir( sitProxyPath )
+
+    logging.debug( f'processing package: {package}' )
 
     ProjectProperties.requireIsCanonicalPath( package )
     Any.requireIsDir( sitProxyPath )

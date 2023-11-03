@@ -1112,25 +1112,28 @@ def expandVars( string ):
     return string
 
 
-def collapseVar( string, varName ):
+def collapseVar( string, envName ):
     """
         This function retrieves the value of the environment variable
-        "varName". Then it searches for this value in "string" and
-        replaces it with the "${varName}", e.g.:
+        "envName". Then it searches for this value in "string" and
+        replaces it with "${envName}", e.g.:
 
-            path = "/hri/sit/latest/DevelopmentTools/ToolBOSCore"
-            str  = FastScript.collapseVar( str, 'SIT' )
+            path   = "/hri/sit/latest/DevelopmentTools/ToolBOSCore"
+            result = FastScript.collapseVar( path, 'SIT' )
 
-        "str" will then be '${SIT}/DevelopmentTools/ToolBOSCore'
+        "result" will then be '${SIT}/DevelopmentTools/ToolBOSCore'
     """
     Any.requireIsTextNonEmpty( string )
-    Any.requireIsTextNonEmpty( varName )
-    value = getEnv( varName )
+    Any.requireIsTextNonEmpty( envName )
+    envValue = getEnv( envName )
 
-    if not value:
+    # logging.info( envValue )
+    # logging.info( type(envValue) )
+
+    if not envValue:
         return string
     else:
-        return string.replace( value, "${" + varName + "}" )
+        return string.replace( envValue, "${" + envName + "}" )
 
 
 def countCharacters( string ):
