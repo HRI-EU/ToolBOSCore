@@ -43,7 +43,7 @@ FastScript.tryImport( 'pylint' )
 from pylint.lint import Run as linter
 
 
-def getPylintResult( file: str, pylintConf: str ) -> Type[ linter ]:
+def getPylintResult( file: str, pylintConf: str ) -> linter:
     """
         invokes pylint programmatically and returns instance of pylint.lint.Run class
 
@@ -59,7 +59,7 @@ def getPylintResult( file: str, pylintConf: str ) -> Type[ linter ]:
     Any.requireIsTextNonEmpty( file )
     Any.requireIsTextNonEmpty( pylintConf )
 
-    # Somewhen between pylint 2.4 and 2.9 an 'exit'-argument was added.
+    # Somewhere between pylint 2.4 and 2.9 an 'exit'-argument was added.
     #
     # Adding this try-block for Python 2.7 (pylint 2.4.4).
     # Without exit=False pylint terminates the Python process!
@@ -73,14 +73,14 @@ def getPylintResult( file: str, pylintConf: str ) -> Type[ linter ]:
 
 def getTotalPylintIssues( pylintResult: linter  ) -> int:
     """
-            takes instance of pylint.lint.Run class as input and returns
-            number of code issues found by the pylint
+        takes instance of pylint.lint.Run class as input and returns
+        number of code issues found by the pylint
 
-            Args:
-                pylintResult: instance of pylint.lint.Run class
-            Returns:
-                codeIssues: number of code issues found by pylint for given file
-        """
+        Args:
+            pylintResult: instance of pylint.lint.Run class
+        Returns:
+            codeIssues: number of code issues found by pylint for a given file
+    """
 
     Any.requireIsInstance( pylintResult, linter )
 
@@ -90,13 +90,9 @@ def getTotalPylintIssues( pylintResult: linter  ) -> int:
     # To support the backward compatability, check type and access the lint stats.
 
     if isinstance( pylintStats, dict ):
-        codeIssues  = pylintStats[ 'error' ] + pylintStats[ 'warning' ] \
-                    + pylintStats[ 'refactor' ] + pylintStats[ 'convention' ] \
-                    + pylintStats[ 'info' ]
+        codeIssues  = pylintStats[ 'error' ] + pylintStats[ 'warning' ]
     else:
-        codeIssues  = pylintStats.error + pylintStats.warning \
-                    + pylintStats.refactor + pylintStats.convention \
-                    + pylintStats.info
+        codeIssues  = pylintStats.error + pylintStats.warning
 
     return codeIssues
 

@@ -77,14 +77,14 @@ echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
 
 export TOOLBOSCORE_ROOT="${NEW_TOOLBOSCORE_ROOT}"
 
-if [[ "$#" -eq 0 ]] # no parameter is passed, using default
+if [[ "$#" -eq 0 ]] # no argument supplied, using default
 then
-    VERSION="4.2"
+    TOOLBOSCORE_VERSION="4.2"
 else
-    VERSION="$1"
+    TOOLBOSCORE_VERSION="$1"
 fi
 
-export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/${VERSION}"
+export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/${TOOLBOSCORE_VERSION}"
 export PATH="${TOOLBOSCORE_ROOT}/bin:${TOOLBOSCORE_ROOT}/bin/${MAKEFILE_PLATFORM}:${PATH}"
 export LD_LIBRARY_PATH="${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}"
 export PYTHONPATH="${TOOLBOSCORE_ROOT}/include:${TOOLBOSCORE_ROOT}/external:${TOOLBOSCORE_ROOT}/lib/${MAKEFILE_PLATFORM}:${PYTHONPATH}"

@@ -460,29 +460,46 @@ def collapseSIT( string ):
     """
         Returns all computable values of SIT with an ${SIT} placeholder.
     """
-    return FastScript.collapseVar( string, 'SIT' )
+    # if existing, replace the path where ${SIT}/parentTree points to
+    envValue = FastScript.getEnv( 'SIT' )
+    linkName = os.path.join( envValue, parentLink )
+
+    try:
+        linkTarget = os.readlink( linkName )
+        tmp = string.replace( linkTarget + '/', '' )
+    except( OSError,               # probably has no such link
+            AttributeError ):      # os.readlink not available on Windows
+        tmp = string
+
+    tmp = FastScript.collapseVar( tmp, 'SIT' )
+
+    return tmp
 
 
 def strip( string ):
     """
         Removes all known placeholders or computable values of SIT
         from the string, so useful to get "canonical" path names.
+
+        Supporting both forward-slashes (Linux/POSIX) and
+        backslashes (Windows)
     """
-    sitRootPath = getRootPath()
+    sitPath     = getPath()          # those two are equal if user has
+    sitRootPath = getRootPath()      # no Proxy-SIT configured
 
     tmp = collapseSIT( string )
 
-    tmp = tmp.replace( '${SIT}/',  '' )
-    tmp = tmp.replace( '${SIT}\\', '' )
-    tmp = tmp.replace( '${SIT}',   '' )
-
-    tmp = tmp.replace( '%SIT%/',   '' )
-    tmp = tmp.replace( '%SIT%\\',  '' )
-    tmp = tmp.replace( '%SIT%',    '' )
-
-    tmp = tmp.replace( 'sit://',   '' )
-    tmp = tmp.replace( sitRootPath + '/', '' )      # Linux
-    tmp = tmp.replace( sitRootPath + '\\', '' )     # Windows
+    tmp = tmp.replace( '${SIT}/',          '' )
+    tmp = tmp.replace( '${SIT}\\',         '' )
+    tmp = tmp.replace( '${SIT}',           '' )
+    tmp = tmp.replace( '%SIT%/',           '' )
+    tmp = tmp.replace( '%SIT%\\',          '' )
+    tmp = tmp.replace( '%SIT%',            '' )
+    tmp = tmp.replace( 'sit://',           '' )
+    tmp = tmp.replace( sitPath + '/',      '' )
+    tmp = tmp.replace( sitPath + '\\',     '' )
+    tmp = tmp.replace( sitRootPath + '/',  '' )
+    tmp = tmp.replace( sitRootPath + '\\', '' )
 
     return tmp
 
