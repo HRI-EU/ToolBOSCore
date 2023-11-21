@@ -46,8 +46,9 @@ extension-pkg-allow-list = 'lxml.etree'
 enable     = [ 'E' ]
 
 # disable all warning, convention, refactoring issues
-# and E0602: undefined variables
-disable    = [ 'W', 'C', 'R', 'E0602' ]
+# E0602: undefined variables and
+# E0401: import errors
+disable    = [ 'W', 'C', 'R', 'E0602', 'E0401' ]
 
 [tool.pylint.format]
 max-line-length = 120

@@ -13,14 +13,14 @@
 #
 #
 
-if [[ "$#" -eq 0 ]] # no parameter is passed, using default
+if [[ "$#" -eq 0 ]] # no argument supplied, using default
 then
-    VERSION="4.2"
+    TOOLBOSCORE_VERSION="4.2"
 else
-    VERSION="$1"
+    TOOLBOSCORE_VERSION="$1"
 fi
 
-source useFromHere.sh "${VERSION}"
+source useFromHere.sh "${TOOLBOSCORE_VERSION}"
 source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
 
 set -euxo pipefail
