@@ -85,6 +85,7 @@ therefore most names are abbreviated for data privacy reasons.
 * Matthias G.
 * <a href="https://github.com/mrz">Mattia Ziulu</a>
 * Mauro Chiado' Caponet
+* <a href="https://github.com/monicadasi">Monica Dasi</a>
 * <a href="https://github.com/Ol-Sc">Oliver Schön</a>
 * <a href="https://github.com/robyf70">Roberto Fichera</a>
 * Rocco P.
