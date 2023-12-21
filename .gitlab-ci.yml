@@ -57,10 +57,5 @@ test:
         - ./ci-check.sh $TOOLBOSCORE_VERSION
     allow_failure: true
 
-sonarqube:
-  stage: check
-  script:
-    - ./ci-sonarqube.sh $TOOLBOSCORE_VERSION
-  needs: []
 
 # EOF
