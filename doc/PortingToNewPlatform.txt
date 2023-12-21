@@ -3,17 +3,11 @@ WHAT TO DO WHEN INTRODUCING NEW PLATFORMS:
 
   * Platforms.getPlatformList()
 
-  * review CMakeLists.txt
-
-  * update packageVar.cmake
-
   * extend BST_DefaultSettings.cmake
 
   * ToolBOS.conf: compile host assignment for Zen Build Mode, or None
 
   * list in documentation ("supported platforms")
-
-  
 
 
 # EOF
