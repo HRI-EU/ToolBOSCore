@@ -36,7 +36,7 @@
 
 if [[ "$#" -eq 0 ]] # no argument supplied, using default
 then
-    TOOLBOSCORE_VERSION="4.2"
+    TOOLBOSCORE_VERSION="4.3"
 else
     TOOLBOSCORE_VERSION="$1"
 fi

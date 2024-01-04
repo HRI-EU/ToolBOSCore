@@ -42,7 +42,7 @@ stages:
     - check
 
 variables:
-    TOOLBOSCORE_VERSION: "4.2"
+    TOOLBOSCORE_VERSION: "4.3"
 
 test:
     timeout: 20 minutes
