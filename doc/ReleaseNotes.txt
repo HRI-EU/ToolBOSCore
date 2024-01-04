@@ -1,30 +1,27 @@
 
-                     RELEASE NOTES FOR <PACKAGE> <VERSION>
-                     (to be populated in release branches)
+                     RELEASE NOTES FOR TOOLBOS CORE 4.3.0
 
 
 NEW FEATURES
-=============
+============
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [#31] ✨ initial support for Ubuntu 22.04 LTS ("jammy64")
 
 
-CHANGES
-=======
+INTERNAL
+========
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [#86] 🔥 dropped SonarQube CI job and configfile
+  - 📄 fixed copyright header in several scripts
+  - 👥 updated author list
 
 
-FIXED BUGS
-==========
+-----------------------------------------------------------------------------
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+
+ToolBOS Core 4.3.0 is based upon ToolBOS Core 4.2.9.
+You may continue reading the Release Notes there.
 
 
 # EOF
+
