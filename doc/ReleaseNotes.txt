@@ -1,221 +1,27 @@
 
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.9
-
-
-CHANGES
-=======
-
-  - [#76] ✨ SQ PY05: ignore import-errors
-  - [#75] ✨ SQ PY05: report only warnings + errors
-
-
-FIXED BUGS
-==========
-
-  - [#85] ⏪ reverting changes which caused UpdateProxyDir.py regression
-
-
-INTERNAL
-========
-
-  - [#80] 🔧 aligned variable-names across CI scripts
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.8
-
-
-CHANGES
-=======
-
-  - [#83] ⬆️ use PackageCreator 1.4
-  - [#81] 🔥 dropped Git{Checkout,Clone}.py
-  - [#64] 🔥 dropped outdated references to HRI_GLOBAL_ROOT
-  - [#53] 🔥 dropped SVN{Import,Checkout}.py
-
-
-FIXED BUGS
-==========
-
-  - [#84] 🐛 ToolBOS-Setup.py did not start
-  - [#83] 📝 documentation (updated URLs)
-  - [#82] 📝 documentation (fixed broken link)
-
-
-INTERNAL
-========
-
-  - [#80] 🔧 use same ToolBOSCore version for all CI jobs
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.7
+                     RELEASE NOTES FOR TOOLBOS CORE 4.3.0
 
 
 NEW FEATURES
 ============
 
-  - [#78] ArgsManagerV2.py: allow customizing the bugtracker-info in helppages
-
-
-CHANGES
-=======
-
-  - [#74] SQ PY05: changed pylint output filename to "YYYY-MM-DD_HH-MM-SS_pylint.log"
-  - FastScript.getEnv(): changed default argument from False to None
-  - InstallProcedure.py: parameter renamed from 'relativeToHGR' to 'relativeToSIT'
+  - [#31] ✨ initial support for Ubuntu 22.04 LTS ("jammy64")
 
 
 INTERNAL
 ========
 
-  - minor clean-up
+  - [#86] 🔥 dropped SonarQube CI job and configfile
+  - 📄 fixed copyright header in several scripts
+  - 👥 updated author list
 
 
 -----------------------------------------------------------------------------
 
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.6
 
-
-CHANGES
-=======
-
-  - [#72] BST.py -d: clean-up pylint_result_*.log files
-  - [#71] SQ PY05: ignore import-errors of lxml.etree
-  - [#70] SQ PY02: ignore access to dunder-methods
-  - [#61] MakefileSystem.bash: support strict shell settings ("set -euxo pipefail")
-  - [#60] updated hostnames of cross-compile-hosts
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.5
-
-
-INTERNAL
-========
-
-  - minor code clean-up + documentation corrections
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.4
-
-
-NEW FEATURES
-============
-
-  - [#40,#44,#65] runSonarQube.py improvements:
-    Authentication token can now be provided via env.variable, ToolBOS.conf
-    setting, or commandline parameter
-
-
-CHANGES
-=======
-
-  - [#45] runSonarQube.py: temporary files now located in ./build/sonarQube
-  - use PyCharm and CLion version 2023.2
-
-
-FIXED BUGS
-==========
-
-  - MSVC-Setup.py: fixed internal function call
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.3
-
-
-NEW FEATURES
-============
-
-  - [#38] Run *all* SQ checks ignoring pkgInfo.py settings: BST.py -q --all
-
-
-CHANGES
-=======
-
-  - [#63] SQ checks: support pylint 2.12 and newer
-  - [#55] SQ checks: improved error messages, handle more exception types
-
-
-FIXED BUGS
-==========
-
-  - [#59] SQ checks: C01 reported wrong line numbers
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.2
-
-
-NEW FEATURES
-============
-
-  - [#51] SQ checks: run selected categories only (e.g. BST.py -q group=GEN,PY)
-
-
-CHANGES
-=======
-
-  - [#62] dropped bin/Create{CLion,PyCharm}Project.py + internal code (unused)
-  - [#37] SQ checks: dropped Matlab rules + checks (unused)
-
-
-FIXED BUGS
-==========
-
-  - [#58] SQ checks: correct handling of empty 'sqLevel' value
-  - [#36] BST.py -zq: handle exceptions thrown by checkers in the GUI
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.1
-
-
-CHANGES
-=======
-
-  - [#49] SQ checks: run checkers only on files of programming languages they correspond to
-
-
-FIXED BUGS
-==========
-
-  - [#57] SQ checks: correct handling of opt-in/out files/rules when using the GUI
-  - [#56] SQ checks: correct handling of force-checked files (CLI + GUI)
-
-
-INTERNAL
-========
-
-  - [#15] fixed copyright attribution in files based upon CMake
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 4.2.0
-
-
-NEW FEATURES
-============
-
-  - [#52] Flat Git-style directory structure support also for 3rd-party-packages
-  - [#15] Windows cross-compilation working with latest CMake 3.26 and Wine 8.0
-
-
------------------------------------------------------------------------------
-
-
-ToolBOS Core 4.2.0 is based upon ToolBOS Core 4.1.5.
+ToolBOS Core 4.3.0 is based upon ToolBOS Core 4.2.9.
 You may continue reading the Release Notes there.
 
 
 # EOF
+

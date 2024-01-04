@@ -18,7 +18,7 @@ name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
-version          = '4.2'
+version          = '4.3'
 
 section          = 'DevelopmentTools'
 
@@ -30,7 +30,7 @@ maintainer       = ( 'mstein', 'mstein' )
 
 gitBranch        = 'develop'
 
-gitCommitID      = 'c9372675ebbd36580b0d5cdd8b1189a347ca7247'
+gitCommitID      = '864a3dcf4d9a461fc0254212fc47ab810d975300'
 
 gitOrigin        = 'git@dmz-gitlab.honda-ri.de:TECH_Team/ToolBOSCore.git'
 

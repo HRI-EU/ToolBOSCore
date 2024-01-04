@@ -34,8 +34,8 @@
 #
 
 
-OLD_VERSION=4[.]1
-NEW_VERSION=4.2
+OLD_VERSION=4[.]2
+NEW_VERSION=4.3
 
 
 sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
@@ -50,7 +50,8 @@ sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           include/ToolBOSCore/Settings/ToolBOSConf.py \
                                           test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
                                           useFromHere.sh \
-                                          useFromHere.bat
+                                          useFromHere.bat \
+                                          .gitlab-ci.yml
 
 
 # EOF
