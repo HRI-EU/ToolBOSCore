@@ -33,6 +33,8 @@
 #
 #
 
+# strict shell settings
+set -euxo pipefail
 
 function check
 {
@@ -52,7 +54,7 @@ function check
 function execTest()
 {
     FILENAME=$1
-    CMDLINE=$@
+    CMDLINE=$*
 
     if [[ -z ${USE_RUNFROMSOURCETREE+x} ]]
     then
@@ -66,9 +68,9 @@ function execTest()
         if [[  ( "${USE_RUNFROMSOURCETREE}" == "FALSE" ) ||
              ( ( ! -e CMakeLists.txt ) && ( ! -e pkgInfo.py ) )  ]]
         then
-            ${CMDLINE}
+            ${CMDLINE[*]}
         else
-            RunFromSourceTree.sh "${CMDLINE}"
+            RunFromSourceTree.sh "${CMDLINE[*]}"
          fi
 
         if [[ $? != 0 ]]
@@ -87,7 +89,7 @@ function execTest()
 
 function runTest()
 {
-    CMDLINE=$@
+    CMDLINE=$*
 
     execTest "$@"
 
@@ -109,7 +111,7 @@ function runTests()
 function runMatlabTest()
 {
     FILENAME=$1
-    CMDLINE=$@
+    CMDLINE=$*
 
     if [[ -f "${FILENAME}" ]]
     then

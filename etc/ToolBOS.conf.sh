@@ -43,7 +43,10 @@
 # URL of issue tracking system, this is shown on help pages where to
 # send bug reports to
 #
-TOOLBOS_CONF_BUGTRACK_URL='https://jira.honda-ri.de:8443'
+
+# supress the unused warning
+# shellcheck disable=SC2034
+TOOLBOS_CONF_BUGTRACK_URL='https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/issues'
 
 
 # EOF

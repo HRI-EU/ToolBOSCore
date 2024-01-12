@@ -1,0 +1,2 @@
+# (SC1091) whether or not to follow arbitrary file paths in source statements
+external-sources=true

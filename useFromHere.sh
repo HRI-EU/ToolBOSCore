@@ -71,8 +71,7 @@ fi
 
 
 SCRIPT_PATH=$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")
-OLD_TOOLBOSCORE_ROOT="${TOOLBOSCORE_ROOT}"
-NEW_TOOLBOSCORE_ROOT=$(builtin cd "${SCRIPT_PATH}" ; pwd)
+NEW_TOOLBOSCORE_ROOT=$(builtin cd "${SCRIPT_PATH}" ; pwd) || exit 1
 echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
 
 export TOOLBOSCORE_ROOT="${NEW_TOOLBOSCORE_ROOT}"

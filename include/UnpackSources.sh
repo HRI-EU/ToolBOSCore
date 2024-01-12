@@ -34,6 +34,7 @@
 #
 
 
+# shellcheck source=/dev/null
 source "${TOOLBOSCORE_ROOT}/include/MakefileSystem.bash"
 
 
