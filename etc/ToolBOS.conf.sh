@@ -46,7 +46,7 @@
 
 # supress the unused warning
 # shellcheck disable=SC2034
-TOOLBOS_CONF_BUGTRACK_URL='https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/issues'
+TOOLBOS_CONF_BUGTRACK_URL='https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues'
 
 
 # EOF

@@ -45,6 +45,11 @@ cd "${CWD}/GlobalInstallLogEntry" && runTest ./TestGlobalInstallLogEntry.py
 cd "${CWD}/NativeCompilation"     && runTest ./TestNativeCompilation.py
 
 
+if [[ -z ${CIA+x} ]]
+then
+    export CIA=""
+fi
+
 if [[ "${CIA}" != "TRUE" ]]
 then
     # skip complex cross-compilation setup during Nightly Build

@@ -33,8 +33,6 @@
 #
 #
 
-# strict shell settings
-set -euxo pipefail
 
 if [[ "$#" -eq 0 ]] # no argument supplied, using default
 then

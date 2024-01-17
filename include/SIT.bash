@@ -62,11 +62,11 @@ function SIT_getRootPath()
     LOOPGUARD=10;    # allow max. 10 nesting levels of proxy directories
     SITPATH=$(SIT_getPath)
 
-    while [ -e "${SITPATH}/${SIT_PROXY_LINK_NAME}" -a "${LOOPGUARD}" -gt 0 ]
+    while [ -e "${SITPATH}/${SIT_PROXY_LINK_NAME}" ] && [ "${LOOPGUARD}" -gt 0 ]
     do
 
         SITPATH="${SITPATH}/${SIT_PROXY_LINK_NAME}"
-        LOOPGUARD=$(( ${LOOPGUARD} - 1 ))
+        LOOPGUARD=$(( LOOPGUARD - 1 ))
 
     done
 

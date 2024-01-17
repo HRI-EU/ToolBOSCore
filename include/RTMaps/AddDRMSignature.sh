@@ -56,8 +56,6 @@ function showHelp()
 
   echo -e "Example:"
   echo -e "${SCRIPTNAME} CMakeLists.txt ./MyPackage.pckinfo ./lib/${MAKEFILE_PLATFORM}/MyPackage.pck\n\n"
-
-  exit
 }
 
 

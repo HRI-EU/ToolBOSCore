@@ -95,7 +95,7 @@ CMD="clion.sh $(pwd)"
 echo "Launching ${DESCRIPTION}..."
 # shellcheck source=/hri/sit/latest/External/CLion/2022.2/BashSrc
 source "${SIT}/${IDE_PACKAGE}/BashSrc"
-exec "${CMD}"
+exec ${CMD}
 
 
 # EOF
