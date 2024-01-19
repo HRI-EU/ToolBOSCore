@@ -50,6 +50,7 @@ source "${TOOLBOSCORE_ROOT}/include/SIT.bash"
 if [[ -r definitions.sh ]]
 then
     echo "sourcing definitions.sh"
+    # shellcheck source=/dev/null
     source ./definitions.sh
 fi
 
@@ -73,6 +74,7 @@ if [[ -z "${BST_INSTALL_PREFIX}" ]]
 then
     # do nothing, otherwise mostly everybody (who does not use BST_INSTALL_PREFIX)
     # sourcing this file will get their $SIT altered, which we really don't want
+    # shellcheck disable=SC2269
     SIT=${SIT}
 else
     SIT=${BST_INSTALL_PREFIX}
@@ -98,8 +100,8 @@ then
     PROJECT_VERSION=$(basename "${PWD}")                # 2 digits
 fi
 
-PROJECT_VERSION_MAJOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $1 }')
-PROJECT_VERSION_MINOR=$(echo "${PROJECT_VERSION}" | awk -F. '{ print $2 }')
+echo "Major version: ${PROJECT_VERSION}" | awk -F. '{ print $1 }'
+echo "Minor version: ${PROJECT_VERSION}" | awk -F. '{ print $2 }'
 
 if [[ -z ${PROJECT_CATEGORY+x} ]]
 then
@@ -122,7 +124,6 @@ SOURCES_DIR=sources
 PACKAGE_DIR=package
 BUILD_DIR=src/build/${MAKEFILE_PLATFORM}
 
-EXIT_SUCCESS=0
 EXIT_FAILURE=1
 
 
@@ -139,6 +140,7 @@ fi
 
 if [[ -r definitions.sh ]]
 then
+    # shellcheck source=/dev/null
     source ./definitions.sh
 fi
 
@@ -172,7 +174,7 @@ function MakefileSystem_unpackSources()
     if [[ -d ${DIR} ]]
     then
         OLDCWD=$(pwd)
-        cd "${DIR}"
+        cd "${DIR}" || exit
 
         if [[ -r ${SRC_TARBALL_NAME} ]]
         then
@@ -185,7 +187,7 @@ function MakefileSystem_unpackSources()
             exit "${EXIT_FAILURE}"
         fi
 
-        cd "${OLDCWD}"
+        cd "${OLDCWD}" || exit
     fi
 }
 
@@ -197,7 +199,7 @@ function MakefileSystem_unpackBinaries()
     if [[ -d ${DIR} ]]
     then
         OLDCWD=$(pwd)
-        cd "${DIR}"
+        cd "${DIR}" || exit
 
         if [[ -r ${BIN_TARBALL_NAME} ]]
         then
@@ -207,7 +209,7 @@ function MakefileSystem_unpackBinaries()
             tar xjf "${BIN_TARBALL_NAME}" -C "${PACKAGE_DIR}"
         fi
 
-        cd "${OLDCWD}"
+        cd "${OLDCWD}" || exit
     fi
 }
 
@@ -216,7 +218,7 @@ function MakefileSystem_makeBuildDir()
 {
     OLDCWD=$(pwd)
 
-    if [[ ! -z "${BUILD_DIR}" && -d "${BUILD_DIR}" ]]
+    if [[ -n "${BUILD_DIR}" && -d "${BUILD_DIR}" ]]
     then
         echo "removing build directory left over from a previous build"
         rm -rf "${BUILD_DIR}"
@@ -224,7 +226,7 @@ function MakefileSystem_makeBuildDir()
 
     mkdir -pv "${BUILD_DIR}"
 
-    cd "${OLDCWD}"
+    cd "${OLDCWD}" || exit
 }
 
 
@@ -322,7 +324,7 @@ function MakefileSystem_addGlobalInstallLogEntry()
 
     if [[ -z "${PROJECT_ROOT}" ]]
     then
-        echo "${FUNCNAME}: Parameter 1 (PROJECT_ROOT) is missing"
+        echo "${FUNCNAME[*]}: Parameter 1 (PROJECT_ROOT) is missing"
         exit 1
     fi
 
@@ -345,7 +347,7 @@ function MakefileSystem_addGlobalInstallLogEntry()
 
         echo -en "\tReason          = "
 
-        read -e MAKEFILE_GLOBALINSTALLREASON
+        read -re MAKEFILE_GLOBALINSTALLREASON
     fi
 
     if [[ ${DRY_RUN} == "TRUE" ]]
@@ -361,7 +363,7 @@ function MakefileSystem_addGlobalInstallLogEntry()
 
 function MakefileSystem_generateDefaultReadme()
 {
-    if [[ ! -e doc/README.txt && ! -z "${SETUP_SCRIPT}" && -r "${SETUP_SCRIPT}" ]]
+    if [[ ! -e doc/README.txt && -n "${SETUP_SCRIPT}" && -r "${SETUP_SCRIPT}" ]]
     then
         if [[ ! -d doc ]]
         then
@@ -372,12 +374,11 @@ function MakefileSystem_generateDefaultReadme()
         PKG_VERSION=$(python "${SETUP_SCRIPT}" --version)
         PKG_URL=$(python "${SETUP_SCRIPT}" --url)
 
-        echo -e "\nPACKAGE INFORMATION:"             > doc/README.txt
-        echo -e "====================\n"            >> doc/README.txt
-
-        echo -e "Description: ${PKG_DESCRIPTION}\n" >> doc/README.txt
-        echo -e "Version:     ${PKG_VERSION}\n"     >> doc/README.txt
-        echo -e "Homepage:    ${PKG_URL}\n"         >> doc/README.txt
+        { echo -e "\nPACKAGE INFORMATION:";
+          echo -e "====================\n";
+          echo -e "Description: ${PKG_DESCRIPTION}\n";
+          echo -e "Version:     ${PKG_VERSION}\n";
+          echo -e "Homepage:    ${PKG_URL}\n"; } >> doc/README.txt
     fi
 }
 

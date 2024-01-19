@@ -33,6 +33,8 @@
 #
 #
 
+# strict shell settings
+set -euxo pipefail
 
 source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 

@@ -35,6 +35,9 @@
 #
 
 
+# strict shell settings
+set -euxo pipefail
+
 #----------------------------------------------------------------------------
 # Commandline parsing
 #----------------------------------------------------------------------------
@@ -52,9 +55,7 @@ function showHelp()
   echo -e "    ${SCRIPTNAME} <CMakeLists> <pckInfoFile> <pckFile>\n"
 
   echo -e "Example:"
-  echo -e "    ${SCRIPTNAME} CMakeLists.txt ./MyPackage.pckinfo ./lib/${MAKEFILE_PLATFORM}/MyPackage.pck\n\n"
-
-  exit
+  echo -e "${SCRIPTNAME} CMakeLists.txt ./MyPackage.pckinfo ./lib/${MAKEFILE_PLATFORM}/MyPackage.pck\n\n"
 }
 
 
@@ -94,7 +95,7 @@ fi
 # Launch DRM tool
 #----------------------------------------------------------------------------
 
-
+# shellcheck source=/hri/sit/latest/External/RTMaps/4.7/BashSrc
 source "${SIT}/External/RTMaps/${RTMAPS_VERSION}/BashSrc"
 
 if [[ -z "${RTMAPS_SDKDIR}" ]]

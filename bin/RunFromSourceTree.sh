@@ -73,9 +73,7 @@ function print_help()
     echo "Examples:"
     echo "        ${PROGNAME} ./examples/${MAKEFILE_PLATFORM}/myExample"
     echo ""
-    echo "Please report bugs on JIRA (${TOOLBOS_CONF_BUGTRACK_URL})."
-
-    exit
+    echo "Please report bugs on GitLab (${TOOLBOS_CONF_BUGTRACK_URL})."
 }
 
 
@@ -84,14 +82,12 @@ CWD=$(pwd)
 
 while :
 do
-
     case $1 in
 
     -h|--help)
         print_help "${0}"
-        shift
+        exit
         ;;
-
     *)
         break;
 

@@ -33,6 +33,8 @@
 #
 #
 
+# strict shell settings
+set -euxo pipefail
 
 function check
 {
@@ -52,7 +54,7 @@ function check
 function execTest()
 {
     FILENAME=$1
-    CMDLINE=$@
+    CMDLINE=$*
 
     if [[ -z ${USE_RUNFROMSOURCETREE+x} ]]
     then
@@ -66,11 +68,12 @@ function execTest()
         if [[  ( "${USE_RUNFROMSOURCETREE}" == "FALSE" ) ||
              ( ( ! -e CMakeLists.txt ) && ( ! -e pkgInfo.py ) )  ]]
         then
-            ${CMDLINE}
+            "${CMDLINE[*]}"
         else
-            RunFromSourceTree.sh "${CMDLINE}"
+            RunFromSourceTree.sh "${CMDLINE[*]}"
          fi
 
+        # shellcheck disable=SC2181
         if [[ $? != 0 ]]
         then
             echo -e "Stop test:  ${FILENAME}  [\033[1;31mFAILED\033[00m]"
@@ -87,11 +90,9 @@ function execTest()
 
 function runTest()
 {
-    CMDLINE=$@
+    CMDLINE=$*
 
-    execTest "$@"
-
-    if [[ $? != 0 ]]
+    if ! execTest "$@"
     then
         exit 1
     fi
@@ -109,15 +110,14 @@ function runTests()
 function runMatlabTest()
 {
     FILENAME=$1
-    CMDLINE=$@
+    CMDLINE=$*
 
     if [[ -f "${FILENAME}" ]]
     then
         if [[ ${FILENAME} == *.m ]]
         then
             echo -e "\nStart test: ${FILENAME}"
-            matlab -nodisplay -nosplash -nodesktop -r "try,run ${FILENAME},exit(0),catch e, disp(e.identifier), disp(e.message),clear e, exit(-1),end"
-            if [[ $? != 0 ]]
+            if ! matlab -nodisplay -nosplash -nodesktop -r "try,run ${FILENAME}, exit(0),catch e, disp(e.identifier), disp(e.message), clear e, exit(-1),end"
             then
                 echo -e "Stop test:  ${FILENAME}  [\033[1;31mFAILED\033[00m]"
                 exit 1

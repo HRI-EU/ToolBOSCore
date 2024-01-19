@@ -33,7 +33,7 @@
 #
 #
 
-
+# shellcheck source=/dev/null
 source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
@@ -41,6 +41,10 @@ CWD=$(pwd)
 cd "${CWD}/Bootstrap"      && runTest ./TestBootstrap.py
 cd "${CWD}/DeprecatedFlag" && runTest ./TestDeprecatedFlag.py
 
+if [[ -z ${CIA+x} ]]
+then
+    export CIA=""
+fi
 
 if [[ "${CIA}" != "TRUE" ]]
 then

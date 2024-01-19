@@ -41,7 +41,10 @@ else
     TOOLBOSCORE_VERSION="$1"
 fi
 
+# shellcheck source=/dev/null
 source useFromHere.sh "${TOOLBOSCORE_VERSION}"
+
+# shellcheck source=/hri/sit/latest/External/anaconda3/envs/common/3.9/BashSrc
 source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
 
 set -euxo pipefail

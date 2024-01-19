@@ -37,6 +37,7 @@
 set -euxo pipefail
 
 source useFromHere.sh
+# shellcheck source=/dev/null
 source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
