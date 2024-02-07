@@ -1,7 +1,6 @@
-#!/usr/bin/env bash
-# -*- coding: utf-8 -*-
-#
-#  default / fallback settings for ToolBOSCore package
+# .shellcheckrc
+
+#  shellcheck config file
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,19 +33,8 @@
 #
 #
 
-
-#----------------------------------------------------------------------------
-# Site-specific settings
-#----------------------------------------------------------------------------
-
-
-# URL of issue tracking system, this is shown on help pages where to
-# send bug reports to
-#
-
-# supress the unused warning
-# shellcheck disable=SC2034
-TOOLBOS_CONF_BUGTRACK_URL='https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues'
+# Allow ShellCheck to follow external sources
+external-sources=true
 
 
 # EOF

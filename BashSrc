@@ -230,8 +230,8 @@ then
 
     # check if the user has got a local SIT sandbox ("Proxy directory")
     #
-    # to entirely disable an existing proxy prefefine SIT_PROXY=NONE
-    # ("NONE" [most proably] isn't a directory hence will be ignored)
+    # to entirely disable an existing proxy predefine SIT_PROXY=NONE
+    # ("NONE" [most probably] isn't a directory hence will be ignored)
 
     if [[ -z "${SIT_PROXY+x}" ]]
     then

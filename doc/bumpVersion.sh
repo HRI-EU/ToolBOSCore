@@ -34,11 +34,11 @@
 #
 
 
-OLD_VERSION=4[.]2
+OLD_VERSION=( 4[.]2 )
 NEW_VERSION=4.3
 
 
-sed -i "s@${OLD_VERSION}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
+sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           bin/*.bat \
                                           bin/ToolBOS-Setup.py \
                                           ci-check.sh \
