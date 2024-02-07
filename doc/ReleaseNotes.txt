@@ -1,4 +1,28 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.3.1
+
+
+NEW FEATURES
+============
+
+  - [#88] ✨ support Windows cross-compilation on Ubuntu 22.04
+
+
+CHANGES
+=======
+
+  - [#89] ⬆️ use PyCharm + CLion 2023.3
+  - [#22] ⬆️ use shellcheck 0.9
+
+
+INTERNAL
+========
+
+  - [#22] 🔒 improved quality of shellscripts (fixed shellcheck-warnings)
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.3.0
 
 
