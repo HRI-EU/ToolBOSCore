@@ -34,21 +34,10 @@
 
 stages: [test, check]
 
-variables:
-    TOOLBOSCORE_VERSION: "4.3"
-
 include:
-  # include the component located in the current project from the current SHA
   - component: $CI_SERVER_HOST/TECH_Team/cicd-components/test@v0.5
     inputs:
       stage: test
-      vargs: $TOOLBOSCORE_VERSION
-
-# jobs with leading '.' are considered disabled by Gitlab.
-.check:
-    stage: check
-    script: ./ci-check.sh $TOOLBOSCORE_VERSION
-    allow_failure: true
 
 
 # EOF
