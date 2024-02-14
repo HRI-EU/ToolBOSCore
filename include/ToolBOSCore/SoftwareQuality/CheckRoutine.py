@@ -41,6 +41,7 @@ import os
 from typing import Dict, List, Optional, Set
 
 from ToolBOSCore.BuildSystem              import BuildSystemTools
+from ToolBOSCore.Packages                 import AppDetector
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.SoftwareQuality.Common   import *
@@ -664,8 +665,12 @@ class CheckRoutine( object ):
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
         Any.requireIsTextNonEmpty( self.details.sqLevel )
 
-        print( '\n\nResults for %s (SQ level: %s):\n' %
-               ( self.details.canonicalPath, self.sqLevelToRun ) )
+        tcRoot    = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
+        tcVersion = AppDetector.getAppVersion( tcRoot )
+
+        print( f'\nPackage:       {self.details.canonicalPath}' )
+        print(   f'Quality level: {self.sqLevelToRun}' )
+        print(   f'Scan engine:   {tcVersion}\n' )
 
 
     def _showSummaryTable( self ):
