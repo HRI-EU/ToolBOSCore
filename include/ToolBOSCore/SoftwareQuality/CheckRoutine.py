@@ -38,11 +38,10 @@ import copy
 import logging
 import os
 
-from typing import Dict, List, Optional, Set
+from typing import List, Optional, Set
 
 from ToolBOSCore.BuildSystem              import BuildSystemTools
-from ToolBOSCore.Packages                 import AppDetector
-from ToolBOSCore.Packages.PackageDetector import PackageDetector
+from ToolBOSCore.Packages                 import AppDetector, PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.SoftwareQuality.Common   import *
 from ToolBOSCore.Util                     import Any, ColoredOutput, FastScript
@@ -57,12 +56,12 @@ class CheckRoutine( object ):
 
     def __init__( self, projectRoot=None, details=None ):
         """
-            By default scans the package within the current working directory.
+            By default, scans the package within the current working directory.
             Alternatively 'projectRoot' may be specified to point to any
             other top-level directory of a source package.
 
             If a PackageDetector instance is already at hand it can be
-            provided here to speed-up the things. In such case its
+            provided here to speed up the things. In such case its
             retrieveMakefileInfo() and retrieveVCSInfo() must have already
             been called.
 
@@ -376,14 +375,14 @@ class CheckRoutine( object ):
 
     def _populatePackage( self, projectRoot, details ):
         if details:
-            Any.requireIsInstance( details, PackageDetector )
+            Any.requireIsInstance( details, PackageDetector.PackageDetector )
             self.details = details
 
         else:
             BuildSystemTools.requireTopLevelDir( projectRoot )
 
             logging.info( 'analyzing package... (this may take some time)' )
-            self.details = PackageDetector( projectRoot )
+            self.details = PackageDetector.PackageDetector( projectRoot )
             self.details.retrieveMakefileInfo()
             self.details.retrieveVCSInfo()
 
