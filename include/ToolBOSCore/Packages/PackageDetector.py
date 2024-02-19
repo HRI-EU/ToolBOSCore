@@ -109,6 +109,7 @@ class PackageDetector( object ) :
         # values extracted from install/user{Install,Src}.php / pkgInfo.py
         self.pkgInfoContent    = pkgInfoContent
         self.copyright         = None
+        self.docFiles          = None
         self.docTool           = None
         self.install           = []
         self.installExclude    = []
@@ -656,6 +657,7 @@ class PackageDetector( object ) :
         self.gitOrigin         = getValue( 'gitOrigin',        self.gitOrigin )
         self.gitOriginForCIA   = getValue( 'gitOriginForCIA',  self.gitOriginForCIA )
         self.gitRelPath        = getValue( 'gitRelPath',       self.gitRelPath )
+        self.docFiles          = getValue( 'docFiles',         self.docFiles )
         self.docTool           = getValue( 'docTool',          self.docTool )
         self.install           = getValue( 'install',          self.install )
 
