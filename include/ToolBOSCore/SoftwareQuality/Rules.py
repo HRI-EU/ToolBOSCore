@@ -2101,12 +2101,18 @@ in case you don't precisely remember the name of a package anymore.
 
 Documentation should be maintained under one of the following locations:
 
-* ./README.md (recommended)
-* src/packageName.h
-* src/documentation.h
+* README.md (recommended)
 * doc/documentation.h
 * doc/Mainpage.dox
 * doc/Mainpage.md
+* doc/html/index.html
+* src/__init__.py
+* src/documentation.h
+* src/<PackageName>.h
+* src/<PackageName>/__init__.py
+
+Alternatively, you may specify the list of documentation files in the
+pkgInfo.py file.
 '''
 
     goodExample = '''
@@ -2136,16 +2142,10 @@ Hence a doxygen mainpage is not needed in such case.
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
 
     def run( self, details, files ):
-        """
-            Checks if package has documentation in either of the following locations:
-              * ./README.md
-              * src/<PackageName>.h
-              * src/documentation.h
-              * doc/documentation.h
-              * doc/Mainpage.md
-              * doc/html/index.html
-        """
-        if details.isMatlabPackage():
+        if details.docFiles:
+            return self._searchDocFiles( details )
+
+        elif details.isMatlabPackage():
             return self._searchMatlab( details )
 
         elif details.isRTMapsPackage():
@@ -2153,6 +2153,26 @@ Hence a doxygen mainpage is not needed in such case.
 
         else:
             return self._searchDoxygen( details )
+
+
+    def _searchDocFiles( self, details ):
+        docFiles   = details.docFiles
+        found      = False
+        expected   = len( docFiles )
+
+        logging.debug( 'searching for: %s', docFiles )
+
+        for docFile in docFiles:
+            if os.path.exists( docFile ):
+                logging.info( f'DOC01: {docFile} found' )
+                found += 1
+            else:
+                logging.error( f'DOC01: {docFile} not found' )
+
+        if found == expected:
+            return OK, found, 0, 'documentation found'
+        else:
+            return FAILED, found, expected - found, 'not all documentation found'
 
 
     def _searchDoxygen( self, details ):

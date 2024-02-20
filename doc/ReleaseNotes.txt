@@ -1,4 +1,16 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.3.2
+
+
+NEW FEATURES
+============
+
+  - [#90] ✨ SQ checks summary: show version
+  - [#50] ✨ SQ DOC01: allow customization of documentation files
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.3.1
 
 

@@ -225,8 +225,7 @@ class ArgsManager( argparse.ArgumentParser ):
 
             Then these information are displayed on the console.
         """
-        from ToolBOSCore.Packages import BSTPackage, PackageDetector, \
-                                         ProjectProperties
+        from ToolBOSCore.Packages import AppDetector, ProjectProperties
 
         scriptPath  = sys.argv[0]
         Any.requireIsTextNonEmpty( scriptPath )
@@ -234,27 +233,7 @@ class ArgsManager( argparse.ArgumentParser ):
         projectRoot = ProjectProperties.detectTopLevelDir( scriptPath )
         Any.requireIsDirNonEmpty( projectRoot )
 
-        bstpkg      = BSTPackage.BSTPackage()
-        bstpkg.open( projectRoot )
-
-        detector    = bstpkg.detector
-        Any.requireIsInstance( detector, PackageDetector.PackageDetector )
-
-        name        = detector.packageName
-        version     = detector.packageVersion
-        patchlevel  = detector.patchlevel
-        gitCommit   = detector.gitCommitIdShort
-        gitBranch   = detector.gitBranch
-
-        msg         = f'{name} {version}'
-
-        if patchlevel is not None:
-            msg += f'.{patchlevel}'
-
-        if gitCommit is not None or gitBranch is not None:
-            msg += f" (Git commit {gitCommit} from {gitBranch} branch)"
-
-        print( msg )
+        print( AppDetector.getAppVersion( projectRoot ) )
 
 
 # EOF
