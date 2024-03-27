@@ -77,8 +77,14 @@ sqLevel          = 'advanced'
 
 sqOptOutRules    = [ 'C10' ]
 
+# This file serves as base for all HRI-EU code projects, and therefore must contain
+# the resulting copyright header of the project - and not the one of ToolBOSCore itself
+sqOptOutFiles    = [ 'etc/mako-templates/master/unittest.sh' ]
+
 # opt-out testcase data that would provoke a failure of SQ check onto this package
-sqOptOutDirs     = [ 'test/SoftwareQuality/CheckRoutine/ReferenceData' ]
+sqOptOutDirs     = [ 'test/BuildSystemTools/BashSrcWriter',
+                     'test/MakeShellfiles',
+                     'test/SoftwareQuality/CheckRoutine/ReferenceData' ]
 
 sqComments       = { 'GEN03': 'confirmed, to be fixed',
                      'C10'  : 'do not invoke Klocwork on example files' }
