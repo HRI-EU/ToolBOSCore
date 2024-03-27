@@ -77,9 +77,17 @@ sqLevel          = 'advanced'
 
 sqOptOutRules    = [ 'C10' ]
 
-# This file serves as base for all HRI-EU code projects, and therefore must contain
-# the resulting copyright header of the project - and not the one of ToolBOSCore itself
-sqOptOutFiles    = [ 'etc/mako-templates/master/unittest.sh' ]
+# unittest.sh: base for all HRI-EU code projects and therefore must contain
+#              the resulting copyright header of the project and not the one
+#              of ToolBOSCore itself
+#
+# CrossCompilation.py: contains long / fixed environment settings needed by MSVC
+#
+# Rules.py: contains long URLs which exceed the max. line limit
+#
+sqOptOutFiles    = [ 'etc/mako-templates/master/unittest.sh',
+                     'include/ToolBOSCore/Platforms/CrossCompilation.py',
+                     'include/ToolBOSCore/SoftwareQuality/Rules.py' ]
 
 # opt-out testcase data that would provoke a failure of SQ check onto this package
 sqOptOutDirs     = [ 'test/BuildSystemTools/BashSrcWriter',
