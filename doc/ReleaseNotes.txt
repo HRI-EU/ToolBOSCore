@@ -1,4 +1,29 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.3.3
+
+
+NEW FEATURES
+============
+
+  - [#96] ✨ SQ GEN05: handle special characters in filenames
+
+
+CHANGES
+=======
+
+  - [#99] ⬆️ use PyCharm + CLion 2024.1
+  - [#86] 📦 updated requirements.txt
+  - 💄 fixes for SQ GEN04,GEN06,C03,C05
+
+
+INTERNAL
+========
+
+  - [#91] ⚗ GitLab CI: simplification
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.3.2
 
 

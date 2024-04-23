@@ -32,30 +32,12 @@
 #
 #
 
+stages: [test, check]
 
-default:
-    image: dmz-gitlab.honda-ri.de:5050/gitlabrunner/buildcontainers/hri-eu-main:latest
-    interruptible: true
-
-stages:
-    - test
-    - check
-
-variables:
-    TOOLBOSCORE_VERSION: "4.3"
-
-test:
-    timeout: 20 minutes
-    stage: test
-    script:
-        - ./ci-test.sh $TOOLBOSCORE_VERSION
-
-# jobs with leading '.' are considered disabled by Gitlab.
-.check:
-    stage: check
-    script:
-        - ./ci-check.sh $TOOLBOSCORE_VERSION
-    allow_failure: true
+include:
+  - component: $CI_SERVER_HOST/TECH_Team/cicd-components/test@v0.5
+    inputs:
+      stage: test
 
 
 # EOF

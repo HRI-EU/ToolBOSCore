@@ -33,8 +33,8 @@
  */
 
 
-#ifndef TOOLBOSCONF_H
-#define TOOLBOSCONF_H
+#ifndef TOOLBOS_CONF_H
+#define TOOLBOS_CONF_H
 
 
 #define TOOLBOS_CONF_BUGTRACK_URL  "https://jira.honda-ri.de:8443"
