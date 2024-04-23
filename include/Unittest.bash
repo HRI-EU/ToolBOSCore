@@ -80,7 +80,7 @@ function execTest()
             return 1
         else
             echo -e "Stop test:  ${FILENAME}  [\033[1;32mOK\033[00m]"
-	    return 0
+            return 0
         fi
     else
         echo -e "Error: ${FILENAME}  [\033[1;31mNOT FOUND\033[00m]"

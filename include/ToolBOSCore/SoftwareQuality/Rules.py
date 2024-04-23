@@ -1197,8 +1197,10 @@ and other compile errors.'''
             #           FOO_PACKAGENAME_BAZ_H_BAR
             #               PACKAGENAME_BAZ_H
 
-            safeguard   = '#ifndef %s_H' % moduleUpper
-            regexp      = re.compile( r'#ifndef\s(\S*?%s\S*_H\S*)' % moduleUpper )
+            macroName   = moduleUpper.replace( '.', '_' )
+            macroName   = macroName.replace( '-', '_' )
+            safeguard   = '#ifndef %s_H' % macroName
+            regexp      = re.compile( r'#ifndef\s(\S*?%s\S*_H\S*)' % macroName )
 
             tmp = regexp.search( content )
 

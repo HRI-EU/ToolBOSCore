@@ -33,7 +33,14 @@
  */
 
 
+#ifndef PRINTFUNC_H
+#define PRINTFUNC_H
+
+
 void printfunc( const char* message );
+
+
+#endif
 
 
 /* EOF */

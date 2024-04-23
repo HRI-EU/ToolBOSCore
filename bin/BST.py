@@ -384,7 +384,7 @@ argman.addExample( '%(prog)s -p windows-amd64-vs2017     # cross-compile for Win
 argman.addExample( '%(prog)s -n                          # create new packages (GUI-version)' )
 argman.addExample( '%(prog)s -n help                     # show available templates' )
 argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C library "Foo"' )
-argman.addExample( '%(prog)s -q                          # run quality checks (configured for this package' )
+argman.addExample( '%(prog)s -q                          # run quality checks (configured for this package)' )
 argman.addExample( '%(prog)s -q --all                    # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
 argman.addExample( '%(prog)s -q sqLevel=advanced         # check with specified quality level' )
@@ -671,7 +671,7 @@ try:
         if allTargets:
             # ignore all the sqOptOut rules and flags and
             # perform SQ checks for all the available rules
-            cr.setup(False)
+            cr.setup( False )
         else:
             # consider the rules and level set in the pkgInfo
             cr.setup()
