@@ -35,6 +35,7 @@
 #
 
 
+import glob
 import os
 import pytest
 import sys
@@ -367,11 +368,12 @@ def test_runPy05_files_with_lint_issues( toolBOSCoreDetector ):
     """
         test rule PY05 for files with pylint issues
     """
-    rule    = Rules.Rule_PY05()
-    details = toolBOSCoreDetector
-    files   = { 'python': [ 'include/ToolBOSCore/Util/Any.py',
-                            'include/ToolBOSCore/BuildSystem/InstallProcedure.py',
-                            'include/ToolBOSCore/Util/FastScript.py' ] }
+    rule      = Rules.Rule_PY05()
+    details   = toolBOSCoreDetector
+    filesDir  = 'include/ToolBOSCore/GenericGUI/'
+    pyScripts = glob.glob(os.path.join( filesDir, '*.py' ))
+
+    files   = { 'python': pyScripts }
 
     result  = rule.run( details, files )
 

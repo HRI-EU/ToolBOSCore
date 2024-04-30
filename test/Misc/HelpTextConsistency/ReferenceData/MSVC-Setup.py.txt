@@ -2,7 +2,7 @@ usage: MSVC-Setup.py [-h] [-p PATH] [-m MSVC_VERSION] [-v] [-V]
 
 Configures the user's shell environment to use MSVC (with Wine).
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -p PATH, --path PATH  Wine config directory (default: $HOME/.wine)
   -m MSVC_VERSION, --msvc-version MSVC_VERSION
