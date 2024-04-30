@@ -8,7 +8,7 @@ with compiling, installing and maintaining software packages. They are
 used as an abstraction layer to the underlying build system and
 utilities.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -a, --all             same as distclean, setup, build and test
   -B BUILD_TYPE, --build-type BUILD_TYPE

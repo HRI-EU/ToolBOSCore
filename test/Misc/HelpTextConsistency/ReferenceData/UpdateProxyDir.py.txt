@@ -4,7 +4,7 @@ usage: UpdateProxyDir.py [-h] [-b] [-c] [-d] [-e] [-f] [-i] [-n] [-r] [-s]
 Update your Software Installation Tree (SIT) sandbox and ToolBOS
 settings (if necessary).
 
-optional arguments:
+options:
   -h, --help         show this help message and exit
   -b, --keep-broken  do not remove broken symlinks
   -c, --no-check     ignore symlinks not pointing into global SIT

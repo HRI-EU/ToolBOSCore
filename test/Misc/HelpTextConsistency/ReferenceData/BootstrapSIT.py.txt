@@ -6,7 +6,7 @@ some essential packages.
 positional arguments:
   path                  directory where to create the new SIT
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -b, --buildSDK        include essential build environment
   -d, --documentation   filter-out / exclude documentation
