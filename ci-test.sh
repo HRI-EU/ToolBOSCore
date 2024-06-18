@@ -34,18 +34,52 @@
 #
 
 
-if [[ "$#" -eq 0 ]] # no argument supplied, using default
+CONDA_CANONICAL_PATH=""
+CONDA_VERSION="3.9" # backward compatability
+
+
+SourceAnaconda() {
+    VERSION="$1"
+
+    # hack for now to parse the canonical path of anaconda correctly!
+    if [[ "${VERSION}" == "${CONDA_VERSION}" ]]
+    then
+        CONDA_CANONICAL_PATH="${SIT}/External/anaconda3/envs/common/${VERSION}/BashSrc"
+    else
+        CONDA_CANONICAL_PATH="${SIT}/External/anaconda/envs/common/${VERSION}/BashSrc"
+    fi
+
+    echo "sourcing Anaconda from ${CONDA_CANONICAL_PATH}"
+    # shellcheck source=/hri/sit/latest/External/anaconda/envs/common/3.11/BashSrc
+    source "${CONDA_CANONICAL_PATH}"
+}
+
+
+if [[ "$#" -eq 0 ]] # no arguments supplied
 then
-    TOOLBOSCORE_VERSION="4.3"
-else
+    echo "No arguments supplied, please provide the necessary arguments!"
+    echo "Usage: $0 TOOLBOSCORE_VERSION PYTHON_VERSION"
+    exit 1
+fi
+
+
+if [[ -n "$1" ]]
+then
     TOOLBOSCORE_VERSION="$1"
 fi
+
 
 # shellcheck source=/dev/null
 source useFromHere.sh "${TOOLBOSCORE_VERSION}"
 
-# shellcheck source=/hri/sit/latest/External/anaconda3/envs/common/3.9/BashSrc
-source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
+
+if [[ -z "$2" ]] # no argument supplied, using default
+then
+    echo "Using the default Python version from Ubuntu!"
+else
+    SourceAnaconda "$2"
+fi
+
 
 set -euxo pipefail
 

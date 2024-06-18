@@ -3,7 +3,7 @@ usage: ToolBOS-Config.py [-h] [-f VAR] [-p VAR] [-r VAR] [-s EXPR] [-z] [-v]
 
 Configure ToolBOS SDK preferences.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -f VAR, --format VAR  show value of specified config option in native Python
                         format

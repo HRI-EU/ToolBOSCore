@@ -7,7 +7,7 @@ positional arguments:
   installRoot           install path (e.g. ${SIT}/Libraries/Foo/1.0)
   message               the log message
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -d, --dry-run         do not write the log entry, just show the information
                         (for debugging)

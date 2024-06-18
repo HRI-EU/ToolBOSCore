@@ -1,4 +1,27 @@
 
+                     RELEASE NOTES FOR TOOLBOS CORE 4.3.4
+
+
+NEW FEATURES
+============
+
+  - [#98] ⬆️ support Python 3.11
+
+
+FIXED BUGS
+==========
+
+  - [#100] 📝 updated SQ documentation
+
+
+INTERNAL
+========
+
+  - [#98] 🏗 GitLab CI: execute tests under different Python interpreter versions
+
+
+-----------------------------------------------------------------------------
+
                      RELEASE NOTES FOR TOOLBOS CORE 4.3.3
 
 

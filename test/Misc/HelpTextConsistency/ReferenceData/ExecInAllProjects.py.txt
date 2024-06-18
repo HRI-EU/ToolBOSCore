@@ -7,7 +7,7 @@ directory.
 positional arguments:
   command               command to execute within projects
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -f FILE, --file FILE  path to script to execute within each project
   -i, --ignore-errors   ignore errors

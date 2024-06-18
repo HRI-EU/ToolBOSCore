@@ -32,12 +32,25 @@
 #
 #
 
-stages: [test, check]
 
-include:
-  - component: $CI_SERVER_HOST/TECH_Team/cicd-components/test@v0.5
-    inputs:
-      stage: test
+variables:
+  TOOLBOSCORE_VERSION: "4.3"
+
+
+stages:
+  - test
+  - check
+
+
+test:
+  image: dmz-gitlab.honda-ri.de:5050/gitlabrunner/buildcontainers/hri-eu-main:latest
+  interruptible: true
+  stage: test
+  parallel:
+    matrix:
+      - PYTHON_VERSION: [ '3.9', '3.11' ]
+  script:
+    - ./ci-test.sh "$TOOLBOSCORE_VERSION" "$PYTHON_VERSION"
 
 
 # EOF
