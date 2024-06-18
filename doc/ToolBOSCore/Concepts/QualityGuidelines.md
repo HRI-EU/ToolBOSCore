@@ -13,8 +13,8 @@
 ### Prerequisite:
 
 Source ToolBOSCore in your path:
-   
-       $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.0/BashSrc
+
+    $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.3/BashSrc
 
 
 ###  Defining quality requirements:
@@ -100,9 +100,9 @@ package.
 ### Generating pkgInfo.py using desktop utility: <a name="pkgInfo_via_desktop_utility"></a>
 
 1. Launch application:
-   
-       $ BST.py -qz
-   
+
+    $ BST.py -qz
+
 2. Choose a desired quality level from the dropdown menu.
 3. In case opt-in/out further rules enable/disable using the checkboxes.
 3. Press "Save settings".
