@@ -2,7 +2,7 @@ usage: ToolBOS-Setup.py [-h] [-r PATH] [-p PATH] [-a] [-v] [-V]
 
 Configures your shell for using the ToolBOS SDK.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -r PATH, --rootDir PATH
                         path to global SIT (default: /hri/sit/latest)

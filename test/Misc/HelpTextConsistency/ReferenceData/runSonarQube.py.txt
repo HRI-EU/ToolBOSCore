@@ -6,7 +6,7 @@ authentication token can be passed via cmd line option or env.var.
 'SONAR_TOKEN' or ToolBOS.conf settings. If used in CI/CD pipelines,
 'SONAR_TOKEN' might be globally predefined by administrators.
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -t TOKEN, --token TOKEN
                         user auth token (alternatively via env.var.SONAR_TOKEN

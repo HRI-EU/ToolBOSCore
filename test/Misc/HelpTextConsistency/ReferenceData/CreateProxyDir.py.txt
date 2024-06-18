@@ -6,7 +6,7 @@ directory specified with -p|--proxyDir, or in the default location
 "/home/<user>/.HRI/sit/<build>" (where <build> will be replaced by the
 SIT release identifier such as "latest").
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -b BUILD, --build BUILD
                         SIT release to use (default: "latest")

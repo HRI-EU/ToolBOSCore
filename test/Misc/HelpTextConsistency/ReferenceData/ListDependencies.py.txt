@@ -7,7 +7,7 @@ appears only once for better readability.
 positional arguments:
   package             absolute or canonical package path
 
-optional arguments:
+options:
   -h, --help          show this help message and exit
   -d, --direct        direct dependencies only, exclude transitive ones
   -f, --full          show full tree (default: suppress duplicates)
