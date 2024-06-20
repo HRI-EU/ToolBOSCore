@@ -28,7 +28,6 @@ This package provides `BST.py` (Build System Tools):
 
 * [Package Creator](doc/ToolBOSCore/Tools/PackageCreator/PackageCreator.md)
 * [Build System Tools](doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md)
-* [ExecInAllProjects.py](doc/ToolBOSCore/Tools/ExecInAllProjects.md)
 
 
 #### HowTo's
