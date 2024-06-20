@@ -64,7 +64,7 @@ class TestMakeShellfiles( unittest.TestCase ):
         makeShellfiles( projectRoot )
 
         # check result
-        for fileName in ( 'pkgInfo.py', 'BashSrc', 'CmdSrc.bat' ):
+        for fileName in ( 'pkgInfo.py', 'BashSrc' ):
             expectedFile = fileNamePrefix + fileName
             resultFile   = os.path.join( installDir, fileName )
 

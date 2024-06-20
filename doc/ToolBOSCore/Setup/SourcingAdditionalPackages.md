@@ -13,15 +13,4 @@ ToolBOSCore/3.2/BashSrc).
     # optional:
     source ${SIT}/Applications/ABC/1.0/BashSrc
     source ${SIT}/Libraries/Foo/42.0/BashSrc
-    
- 
-###  Windows
 
-Create a custom batch script, e.g. C:\CmdSrc.bat, to load additional packages:
-
-    call ${SIT}/Applications/ABC/1.0/CmdSrc.bat
-    call ${SIT}/Libraries/Foo/42.0/CmdSrc.bat
-    
-Then invoke it on your Windows console:
-
-    c:\CmdSrc.bat

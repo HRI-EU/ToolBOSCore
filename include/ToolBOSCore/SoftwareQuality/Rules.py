@@ -401,21 +401,6 @@ HTML documentation or generated SWIG code).
     %
     %
 
-*Example for Windows `.bat` scripts:*
-
-    ::
-    :: <description>
-    ::
-    :: Copyright (C)
-    :: Honda Research Institute Europe GmbH
-    :: Carl-Legien-Str. 30
-    :: 63073 Offenbach/Main
-    :: Germany
-    ::
-    :: UNPUBLISHED PROPRIETARY MATERIAL.
-    :: ALL RIGHTS RESERVED.
-    ::
-
 *Example for HTML / XML files:*
 
     <!--

@@ -5,7 +5,6 @@
 
 * [About](AboutBST.md)
 * [Quick Start on Linux](QuickStartOnLinux.md)
-* [Quick Start on Windows](QuickstartOnWindows.md)
 
 
 ###  Creating packages
@@ -22,7 +21,6 @@
 * [Static linking](StaticLinking.md)
 * [In-tree- vs. out-of-tree builds](InTreeVsOutOfTreeBuilds.md)
 * [Macros documentation](Macros.md)
-* [FAQ (Windows)](FAQ_Windows.md)
 * [Clang/LLVM](ClangLLVM.md)
 
 

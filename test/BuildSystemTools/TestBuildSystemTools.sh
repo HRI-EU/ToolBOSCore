@@ -41,7 +41,6 @@ CWD=$(pwd)
 cd "${CWD}/BashSrcWriter"         && runTest ./test_BashSrcWriter.py
 cd "${CWD}/CMakeLists"            && runTest ./TestCMakeLists.py
 cd "${CWD}/DocumentationCreator"  && runTest ./TestDocumentationCreator.py
-cd "${CWD}/GlobalInstallLogEntry" && runTest ./TestGlobalInstallLogEntry.py
 cd "${CWD}/NativeCompilation"     && runTest ./TestNativeCompilation.py
 
 

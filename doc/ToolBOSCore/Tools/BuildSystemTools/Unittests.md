@@ -7,9 +7,7 @@ The command
 
     $ BST.py -t
 
-launches the script unittest.sh on Unix resp. unittest.bat on Windows.
-
-![](WindowsUnittest.png)
+launches the script unittest.sh.
 
 You may call arbitrary test programs from such scripts, incl. calling Python- or Matlab interpreters.
   

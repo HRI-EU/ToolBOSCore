@@ -281,7 +281,6 @@ function MakefileSystem_installShellfiles()
     if [[ -d "${INSTALL_ROOT}" ]]
     then
         cp -v install/BashSrc "${INSTALL_ROOT}"
-        cp -v install/CmdSrc.bat "${INSTALL_ROOT}"
         cp -v install/pkgInfo.py "${INSTALL_ROOT}"
     else
         echo "${INSTALL_ROOT}: No such directory"

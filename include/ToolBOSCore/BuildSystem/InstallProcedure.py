@@ -770,7 +770,6 @@ class InstallProcedure( object ):
             Collect basic files used by the ToolBOS SDK itself.
         """
         self.copyMandatory( 'install/BashSrc',          'BashSrc'    )
-        self.copyMandatory( 'install/CmdSrc.bat',       'CmdSrc.bat' )
         self.copyMandatory( 'install/packageVar.cmake', 'packageVar.cmake' )
         self.copyMandatory( 'install/pkgInfo.py',       'pkgInfo.py' )
 
@@ -991,11 +990,7 @@ class InstallProcedure( object ):
         except KeyError:
             pass            # no such setting, this is OK
 
-
-        if self.hostPlatform.startswith( 'windows' ):
-            fileName = '%s.bat' % name
-        else:
-            fileName = './%s.sh' % name
+        fileName = './%s.sh' % name
 
         if os.path.exists( fileName ):
             logging.info( 'executing hook script: %s', fileName )

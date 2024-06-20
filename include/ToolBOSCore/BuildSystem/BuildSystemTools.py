@@ -338,29 +338,15 @@ class BuildSystemTools( object ):
     def _assembleScriptCmd( self, name, forceFilePath=None ):
         Any.requireIsTextNonEmpty( name )
 
-        # When compiling natively, under Linux the *.sh and on Windows the
-        # *.bat needs to be executed.
-        #
-        # But also when cross-compiling we need to execute the script for
-        # the host platform, f.i. a Windows *.bat script won't work on
-        # Linux.
-        #
-        # Hence there is no need to check for the targetPlatform at all,
-        # see TBCORE-1217.
+        filename = '%s.sh' % name
 
-        if self._hostPlatform.startswith( 'windows' ):
-            filename = '%s.bat' % name
-            cmd      = filename
+        if forceFilePath:
+            filename = forceFilePath
+
+        if Any.getDebugLevel() > 3:
+            cmd = 'bash -x ./%s' % filename
         else:
-            filename = '%s.sh' % name
-
-            if forceFilePath:
-                filename = forceFilePath
-
-            if Any.getDebugLevel() > 3:
-                cmd = 'bash -x ./%s' % filename
-            else:
-                cmd = './' + filename
+            cmd = './' + filename
 
         return filename, cmd
 
@@ -770,7 +756,7 @@ def getDefaultDistcleanPatterns():
 
                   # install procedure files
                   'install/??shSrc', 'bin/??shSrc',
-                  'examples/??shSrc', 'test/??shSrc', 'install/CmdSrc.bat',
+                  'examples/??shSrc', 'test/??shSrc',
                   'doc/autoDoxyfile', 'doc/doxygen*', 'doc/*.tag',
                   'doc/html', 'matdoc.log', 'install/LinkAllLibraries',
                   'install/MD5SUMS', 'install/*.tar.gz', 'install/*.deb',

@@ -38,8 +38,7 @@ OLD_VERSION=( 4[.]3 )
 NEW_VERSION=5.0
 
 
-sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
-                                          bin/*.bat \
+sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc \
                                           bin/ToolBOS-Setup.py \
                                           ci-check.sh \
                                           ci-test.sh \
@@ -49,9 +48,7 @@ sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           doc/ToolBOSCore/Concepts/Terminology.md \
                                           doc/ToolBOSCore/Setup/ShellConfig.md \
                                           include/ToolBOSCore/Settings/ToolBOSConf.py \
-                                          test/MakeShellfiles/ToolBOSCore-CmdSrc.bat \
                                           useFromHere.sh \
-                                          useFromHere.bat \
                                           .gitlab-ci.yml
 
 

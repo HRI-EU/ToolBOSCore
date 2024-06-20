@@ -5,15 +5,10 @@
 BST.py searches for scripts that entirely replace the default compile- resp. install procedures. If present,
 they get executed in behalf of the standard procedure.
 
-![](/home/snaik/code/ToolBOSCore/doc/html/BuildSystemTools-Timeline.png)
+![](BuildSystemTools-Timeline.png)
 *script execution when invoked within Nightly Build: pre/post-<stepName>.sh scripts only once, and the <stepName>.sh
  once per supported platform*
  
-> **Note**  
-> Wherever the filename extension .sh (on Linux) is mentioned, the same applies for .bat on Windows.
-> So you can provide e.g. both unittest.sh and unittest.bat on Windows
-
-
 The following stepNames are supported:
 
 * configure

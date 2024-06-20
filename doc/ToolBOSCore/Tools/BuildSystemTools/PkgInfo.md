@@ -325,7 +325,7 @@ installUmask = "0022"      # for permissions rwxr-xr-x
     <td>envVars</td>
     <td>list of tuples</td>
     <td>environment variable assignments to put into auto-generated
-         \c BashSrc and \c CmdSrc.bat files
+         \c BashSrc files
          each tuple (of two elements) contains a varName-value assignment
          Note: this was not implemented as \c dict in order to preserve
          the list of appearance in the file</td>
@@ -334,7 +334,7 @@ installUmask = "0022"      # for permissions rwxr-xr-x
     <td>aliases</td>
     <td>list of tuples</td>
     <td>command aliases to put into auto-generated
-         \c BashSrc and \c CmdSrc.bat files
+         \c BashSrc files
          each tuple (of two elements) contains an alias-command assignment
          Note: this was not implemented as \c dict in order to preserve
          the list of appearance in the file</td>
@@ -344,12 +344,6 @@ installUmask = "0022"      # for permissions rwxr-xr-x
     <td>list of strings</td>
     <td>Bash code to be injected into auto-generated \c BashSrc files,
          line-wise</td>
-</tr>
-<tr>
-    <td>cmdCode</td>
-    <td>list of strings</td>
-    <td>Windows \c cmd.exe code to be injected into auto-generated
-         \c CmdSrc.bat files, line-wise</td>
 </tr>
 <tr>
     <td style="background: #CCCCFF; text-align: center; font-weight: bold;"

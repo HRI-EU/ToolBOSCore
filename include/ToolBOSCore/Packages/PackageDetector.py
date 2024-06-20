@@ -650,7 +650,6 @@ class PackageDetector( object ) :
         self.dependsArch       = getValue( 'dependsArch',      self.dependsArch )
         self.userSrcEnv        = getValue( 'envVars',          self.userSrcEnv )
         self.userSrcBashCode   = getValue( 'bashCode',         self.userSrcBashCode )
-        self.userSrcCmdCode    = getValue( 'cmdCode',          self.userSrcCmdCode )
         self.gitBranch         = getValue( 'gitBranch',        self.gitBranch )
         self.gitBranchForCIA   = getValue( 'gitBranchForCIA',  self.gitBranchForCIA )
         self.gitCommitIdLong   = getValue( 'gitCommitID',      self.gitCommitIdLong )

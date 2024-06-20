@@ -44,7 +44,6 @@ from ToolBOSCore.Packages.ProjectProperties import requireIsCanonicalPath
 from ToolBOSCore.Settings                   import ToolBOSConf
 from ToolBOSCore.Storage                    import SIT
 from ToolBOSCore.Storage.BashSrc            import BashSrcWriter
-from ToolBOSCore.Storage.CmdSrc             import CmdSrcWriter
 from ToolBOSCore.Storage.PackageVar         import PackageVarCmakeWriter
 from ToolBOSCore.Storage.PkgInfoWriter      import PkgInfoWriter
 from ToolBOSCore.Util                       import Any, FastScript, TemplateEngine
@@ -1169,12 +1168,6 @@ def makeShellfiles( projectRoot ):
         shutil.copy2( 'BashSrc', './install/BashSrc' )
     else:
         BashSrcWriter( details ).write( './install/BashSrc'    )
-
-    if os.path.exists( 'CmdSrc.bat' ):
-        logging.info( 'cp CmdSrc.bat ./install/' )
-        shutil.copy2( 'CmdSrc.bat', './install/CmdSrc.bat' )
-    else:
-        CmdSrcWriter(  details ).write( './install/CmdSrc.bat' )
 
     # Note: pkgInfo.py is always generated (merged)
     PkgInfoWriter( details ).write( './install/pkgInfo.py' )

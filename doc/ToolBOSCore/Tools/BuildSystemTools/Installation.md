@@ -159,7 +159,6 @@ This hook function will be executed by the installation procedure at the beginni
        [<string>:127 INFO] packageName=MyPackage
        [...output of myHelperProgram...]
        [PackageCreator.py:966 INFO] cp BashSrc ./install/
-       [PackageCreator.py:978 INFO] cp CmdSrc.bat ./install/
        [...]
        
 #### For the experts: Install hooks (Bash)
