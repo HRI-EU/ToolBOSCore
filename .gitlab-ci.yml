@@ -34,7 +34,7 @@
 
 
 variables:
-  TOOLBOSCORE_VERSION: "4.3"
+  TOOLBOSCORE_VERSION: "5.0"
 
 
 stages:

@@ -36,7 +36,7 @@
 
 name             = 'ToolBOSCore'
 
-version          = '4.3'
+version          = '5.0'
 
 category         = 'DevelopmentTools'
 

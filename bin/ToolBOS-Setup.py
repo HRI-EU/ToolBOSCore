@@ -62,15 +62,15 @@ sys.path.append( os.path.join( tcRootDir, 'include' ) )
 sys.path.append( os.path.join( tcRootDir, 'src'     ) )
 
 
-# check if ToolBOSCore/4.3/BashSrc was sourced (so PYTHONPATH was set),
+# check if ToolBOSCore/5.0/BashSrc was sourced (so PYTHONPATH was set),
 # otherwise we will not be able to import any ToolBOSCore Python package
 #
 sourced = False
 
-# Attention: In this expression the part '4.3' would actually need to
+# Attention: In this expression the part '5.0' would actually need to
 #            be '4\.2' as we mean the literal dot and not any chracter!
 #            It is only done so that our bumpVersion.sh script replaces it!
-versionInclude = re.compile( 'ToolBOSCore/4.3.*/include' )
+versionInclude = re.compile( 'ToolBOSCore/5.0.*/include' )
 
 for directory in sys.path:
     if versionInclude.match( directory ) or \
@@ -79,7 +79,7 @@ for directory in sys.path:
 
 if not sourced:
     print( "\nPlease run the following command first:" )
-    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.3/BashSrc\n" )
+    print( "source /hri/sit/latest/DevelopmentTools/ToolBOSCore/5.0/BashSrc\n" )
     sys.exit( -1 )
 
 

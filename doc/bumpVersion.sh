@@ -34,8 +34,8 @@
 #
 
 
-OLD_VERSION=( 4[.]2 )
-NEW_VERSION=4.3
+OLD_VERSION=( 4[.]3 )
+NEW_VERSION=5.0
 
 
 sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
@@ -45,7 +45,7 @@ sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc CmdSrc.bat \
                                           ci-test.sh \
                                           etc/ToolBOS.conf \
                                           doc/documentation.h \
-                                          doc/ToolBOSCore/Concepts/QualityGuidelines.md
+                                          doc/ToolBOSCore/Concepts/QualityGuidelines.md \
                                           doc/ToolBOSCore/Concepts/Terminology.md \
                                           doc/ToolBOSCore/Setup/ShellConfig.md \
                                           include/ToolBOSCore/Settings/ToolBOSConf.py \

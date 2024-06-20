@@ -14,7 +14,7 @@
 
 Source ToolBOSCore in your path:
 
-    $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/4.3/BashSrc
+    $ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/5.0/BashSrc
 
 
 ###  Defining quality requirements:

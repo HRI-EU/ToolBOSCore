@@ -32,12 +32,12 @@
 ::
 ::
 ::  Example usage in Windows cmd.exe:
-::  C:\>S:\DevelopmentTools\ToolBOSCore\4.3\CmdSrc.bat
+::  C:\>S:\DevelopmentTools\ToolBOSCore\5.0\CmdSrc.bat
 ::
 ::  If you need to use a different location for the SIT than S:
 ::  just set the variable SIT_LOCATION before calling this batch script, e.g.
 ::  set SIT_LOCATION=C:\Users\Me\MyLocalSIT
-::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\4.3\CmdSrc.bat
+::  C:\Users\Me\MyLocalSIT\DevelopmentTools\ToolBOSCore\5.0\CmdSrc.bat
 
 
 
@@ -50,7 +50,7 @@
 
 
 :: avoid multiple inclusion
-echo %PATH% | find "DevelopmentTools/ToolBOSCore/4.3" > null
+echo %PATH% | find "DevelopmentTools/ToolBOSCore/5.0" > null
 if %errorlevel% equ 0 ( goto :EOF )
 
 
@@ -99,7 +99,7 @@ if defined SIT_LOCATION (
     set SIT=S:
 )
 
-set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/4.3
+set TOOLBOSCORE_ROOT=%SIT%/DevelopmentTools/ToolBOSCore/5.0
 
 :: Run-time libraries paths
 set PATH=%TOOLBOSCORE_ROOT%\bin;%PATH%

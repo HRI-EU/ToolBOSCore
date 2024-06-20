@@ -78,7 +78,7 @@ export TOOLBOSCORE_ROOT="${NEW_TOOLBOSCORE_ROOT}"
 
 if [[ "$#" -eq 0 ]] # no argument supplied, using default
 then
-    TOOLBOSCORE_VERSION="4.3"
+    TOOLBOSCORE_VERSION="5.0"
 else
     TOOLBOSCORE_VERSION="$1"
 fi
