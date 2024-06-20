@@ -24,7 +24,7 @@ options:
   -k, --codecheck       static source code analysis
   -l, --list            list all used env. variables + build settings
   -M MESSAGE, --message MESSAGE
-                        message for global installation and deprecation
+                        message for deprecation
   -m, --doc             make API documentation (HTML)
   -n, --new             create new package from template (see examples below)
   -p PLATFORM, --platform PLATFORM

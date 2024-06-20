@@ -1385,8 +1385,6 @@ class GlobalInstallProcedure( InstallProcedure ):
 
 
     def preInstall( self ):
-        self._globalInstallReason()
-
         if self.details.installMode == 'clean':
             PackageCreator.uninstall( self.details.canonicalPath, True )
 
@@ -1424,96 +1422,6 @@ class GlobalInstallProcedure( InstallProcedure ):
         self._registerComponent_RTMaps()
 
 
-    def _globalInstallReason( self ):
-        """
-            If the global SIT has been flagged to require a global install
-            log message, the user will be interactively asked to input such.
-
-            For batch processings, the user may also specify a message
-            using the MAKEFILE_GLOBALINSTALLREASON environment variable.
-        """
-        if ToolBOSConf.getConfigOption( 'askGlobalInstallReason' ) is False:
-            logging.debug( 'global install log disabled')
-            return
-
-
-        from ToolBOSCore.BuildSystem.GlobalInstallLog import GlobalInstallLog
-
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
-
-        try:
-            reason = self._globalInstallReason_prompt()
-        except ValueError:
-            raise
-
-        installRoot    = os.path.join( self.sitRootPath, self.details.canonicalPath )
-        isFirstInstall = not os.path.exists( installRoot )
-        msgType        = reason[:3]
-        message        = reason[5:]
-
-        g = GlobalInstallLog( self.details.canonicalPath, isFirstInstall,
-                              msgType, message )
-
-        # do not write in case MAKEFILE_CHEATCODE_42=TRUE is set
-        if FastScript.getEnv( 'MAKEFILE_CHEATCODE_42' ) != 'TRUE':
-
-            try:
-                g.writeFile( self.dryRun )
-            except ( IOError, OSError ) as details:
-                # just that file might exist, especially during Nightly Build
-                # two packages could by chance be installed simultaneously
-                logging.warning( details )
-
-
-    def _globalInstallReason_prompt(self):
-        """
-            Interactively asks the user for a global install reason.
-
-            For batch processings, the user may also specify such message
-            using the MAKEFILE_GLOBALINSTALLREASON environment variable.
-        """
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
-
-        reason = FastScript.getEnv( 'MAKEFILE_GLOBALINSTALLREASON' )
-
-        if not reason:
-            logging.info( '' )
-            logging.info( 'Please enter a reason for this global installation.' )
-            logging.info( 'Syntax:  <TYPE>: <short description>' )
-            logging.info( '' )
-            logging.info( 'examples:' )
-            logging.info( '    DOC: PDF manual updated' )
-            logging.info( '    FIX: buffer overflow in _doCompute() fixed' )
-            logging.info( '    IMP: improved performance by 20%' )
-            logging.info( '    NEW: now supports shared memory' )
-            logging.info( '' )
-            logging.info( 'This will appear on the Global Install Log.' )
-            logging.info( '' )
-
-            try:
-                prompt = '\n\t--> Reason:  '
-                reason = input( prompt )
-            except EOFError:
-                # user hit <CTRL+D>
-                raise KeyboardInterrupt( 'operation aborted by user' )
-
-            if not reason:
-                raise ValueError( 'no reason specified' )
-            else:
-                Any.logVerbatim( 0, '' )   # an additional newline after the prompt
-
-
-        # remove leading and trailing spaces (if any)
-        reason = reason.strip()
-
-        try:
-            self._globalInstallReason_verify(reason)
-        except ValueError:
-            raise
-
-        return reason
-
-
     def _ensureWorldWritableIndex( self ):
         # when installing components, (try to) ensure the Index-directory is
         # world-writeable
@@ -1526,54 +1434,6 @@ class GlobalInstallProcedure( InstallProcedure ):
                 # probably not owner --> cannot change
                 logging.debug( details )
 
-
-    @staticmethod
-    def _globalInstallReason_verify( reason ):
-        """
-            Checks if the provided input is somehow reasonable.
-
-            It's not a sophisticated verification, but at least allows
-            rejecting due to syntax errors (or too trivial messages).
-
-            Throws 'ValueError' exceptions if messages are not OK.
-            If the reason is OK it will return 'True'.
-        """
-        Any.requireIsTextNonEmpty( reason )
-
-        # check for correct syntax
-        if not re.match( '^(DOC|FIX|IMP|NEW)', reason ):
-            msg = 'invalid reason type (must be one out of: DOC, FIX, IMP, NEW)'
-            raise ValueError( msg )
-
-        # syntax errors
-        try:
-            if reason[3] != ':':
-                msg = 'invalid reason syntax (3rd character in message must be a colon (:) )'
-                raise ValueError( msg )
-
-            if reason[4] != ' ':
-                msg = 'invalid reason syntax (4th character in message must be a blank/space)'
-                raise ValueError( msg )
-        except IndexError:
-            raise ValueError( 'invalid reason (format: "TYPE: message")' )
-
-        # given the type, the colon, a space and a minimum text length of
-        # 5 characters, the overall length must at least be 10 characters
-        if len(reason) < 10:
-            msg = 'invalid reason (message too short)'
-            raise ValueError( msg )
-
-        if not re.match( r'^(DOC|FIX|IMP|NEW):\s\S+', reason ):
-            msg = 'invalid reason syntax (please see examples)'
-            raise ValueError( msg )
-
-        # check for stupid message, check if reason contains at least 4
-        # different characters
-        if FastScript.countCharacters( reason ) < 4:
-            msg = 'invalid reason (insufficient description)'
-            raise ValueError( msg )
-
-        return True
 
     def _patchlevel_updateGlobalSymlink(self):
         if self.details.usePatchlevels:

@@ -47,10 +47,6 @@
    <td>skip documentation creation (doxygen/matdoc)</td>
  </tr>
  <tr>
-   <td>export MAKEFILE_GLOBALINSTALLREASON="NEW: fixed XY"</td>
-   <td>Non-Interactive global installation (e.g. for shell scripts)</td>
- </tr>
- <tr>
    <td>export MAKEFILE_GLOBALINSTALLUSER=username</td>
    <td>override auto-detected global install username, maybe useful if
        LDAP server is busy and not responsive</td>

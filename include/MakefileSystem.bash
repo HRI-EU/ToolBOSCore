@@ -327,37 +327,6 @@ function MakefileSystem_addGlobalInstallLogEntry()
         echo "${FUNCNAME[*]}: Parameter 1 (PROJECT_ROOT) is missing"
         exit 1
     fi
-
-    echo -e "please provide a reason for this global installation:\n"
-
-    if [[ -z ${MAKEFILE_GLOBALINSTALLREASON} ]]
-    then
-        echo -e "\tReason syntax   = <TYPE>: <short description>\n"
-        echo -e "\t                  for example:"
-        echo -e "\t                  DOC: PDF manual updated"
-        echo -e "\t                  FIX: buffer overflow in _doCompute() fixed"
-        echo -e "\t                  NEW: now supports shared memory\n"
-
-        if [[ ${DRY_RUN} == "TRUE" ]]
-        then
-            echo -e "\n ----------------------------------------------------------------------------"
-            echo  "|  This is fake. Will not actually publish this message in dry run mode ;-)  |"
-            echo -e " ----------------------------------------------------------------------------\n"
-        fi
-
-        echo -en "\tReason          = "
-
-        read -re MAKEFILE_GLOBALINSTALLREASON
-    fi
-
-    if [[ ${DRY_RUN} == "TRUE" ]]
-    then
-        "${TOOLBOSCORE_ROOT}"/bin/AddGlobalInstallLogEntry.py -d "$1" \
-                                "${MAKEFILE_GLOBALINSTALLREASON}"
-    else
-        "${TOOLBOSCORE_ROOT}"/bin/AddGlobalInstallLogEntry.py "$1" \
-                                "${MAKEFILE_GLOBALINSTALLREASON}"
-    fi
 }
 
 
@@ -405,8 +374,6 @@ function MakefileSystem_install()
 function MakefileSystem_globalinstall()
 {
     # $1 = path to installed project (3-digit version)
-
-    MakefileSystem_addGlobalInstallLogEntry "$1"
 }
 
 

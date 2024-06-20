@@ -335,7 +335,7 @@ argman.addArgument( '-l', '--list', action='store_true',
                     help='list all used env. variables + build settings' )
 
 argman.addArgument( '-M', '--message', action='store', type=str, default='',
-                    help='message for global installation and deprecation' )
+                    help='message for deprecation' )
 
 argman.addArgument( '-m', '--doc', action='store_true',
                     help='make API documentation (HTML)' )
@@ -445,10 +445,6 @@ if globalInstall and proxyInstall:
 
 if yes:
     FastScript.setEnv( 'MAKEFILE_FASTINSTALL', 'TRUE' )
-
-
-if message:
-    FastScript.setEnv( 'MAKEFILE_GLOBALINSTALLREASON', message )
 
 
 try:
