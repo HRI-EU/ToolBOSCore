@@ -2,7 +2,6 @@
 
 - [Terminology](Terminology.md)
 - [SIT](SIT.md)
-- [ProxyDirectory](ProxyDirectory.md)
 - [QualityGuidelines](QualityGuidelines.md)
 - [SourceTreeConventions](SourceTreeConventions.md)
 - [InstallationConventions](InstallationConventions.md)

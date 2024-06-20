@@ -30,15 +30,5 @@ For human readability the directory tree is organized in categories, e.g.:
 
 
 #### See also
-[Proxy Directory](ProxyDirectory.md)  
 [Installation Conventions](InstallationConventions.md)
-
-
-### Advanced: Bootstrapping a new SIT
-
-A brand-new SIT can be created using BootstrapSIT.py. This might be useful when distributing software to partners. 
-See also:
- 
-    $ BootstrapSIT.py --help
-
 

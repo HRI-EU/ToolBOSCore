@@ -92,40 +92,6 @@ fi
     FastScript.setFileContent( fileName, content )
 
 
-def setupProxy( sitRootPath=None, sitProxyPath=None ):
-    """
-        Convenience-wrapper to create a default proxy directory.
-
-        WARNING: If a proxy already exists, it will be DELETED !
-
-        You may specify the absolute paths for the SIT root- and/or
-        proxy directories. If omitted, typical defaults will be used.
-    """
-    from ToolBOSCore.Storage import ProxyDir
-    from ToolBOSCore.Storage import SIT
-
-    if not sitRootPath:
-        sitRootPath  = SIT.getDefaultRootPath()
-
-    if not sitProxyPath:
-        sitProxyPath = SIT.getDefaultProxyPath()
-
-    Any.requireIsTextNonEmpty( sitRootPath )
-    Any.requireIsTextNonEmpty( sitProxyPath )
-    Any.requireIsDir( sitRootPath )
-
-
-    # delete existing proxy if it exists, it might be screwed up
-    if os.path.exists( sitProxyPath ):
-        logging.info( 'cleaning existing proxy in %s', sitProxyPath )
-        FastScript.remove( sitProxyPath )
-
-    logging.info( 'creating proxy directory... (this may take some time)' )
-    logging.info( 'SIT Root:  %s', sitRootPath )
-    logging.info( 'SIT Proxy: %s', sitProxyPath )
-    ProxyDir.createProxyDir( sitRootPath, sitProxyPath, verbose=False )
-
-
 def getWineConfigDir( postfix='' ):
     configDir = FastScript.getEnv( 'WINEPREFIX' )
 

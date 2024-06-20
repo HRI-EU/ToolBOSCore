@@ -40,17 +40,5 @@ CWD=$(pwd)
 
 cd "${CWD}/DeprecatedFlag" && runTest ./TestDeprecatedFlag.py
 
-if [[ -z ${CIA+x} ]]
-then
-    export CIA=""
-fi
-
-if [[ "${CIA}" != "TRUE" ]]
-then
-    # Disabled during CIA because no proxy directory present at that time.
-    #
-    cd "${CWD}/ProxyDirectory" && runTest ./TestProxyDirectory.py
-fi
-
 
 # EOF

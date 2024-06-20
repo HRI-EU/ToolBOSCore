@@ -124,56 +124,6 @@ def findProxyInstallations( checkLinks = False ):
     return resultList
 
 
-def createProxyDir( sitRoot, sitProxy, verbose=True ):
-    """
-        Creates an SIT proxy directory for the current user in the
-        directory <sitProxy> with symlinks pointing into <sitRoot>.
-    """
-    sitRootPkgList = []
-
-    if not os.path.isdir( sitRoot ):
-        msg = '%s: No such directory (please check $SIT)' % sitRoot
-        raise AssertionError( msg )
-
-    if os.path.exists( sitProxy ):
-        msg = '%s: Directory exists' % sitProxy
-        raise AssertionError( msg )
-
-    if os.path.exists( os.path.join( sitRoot, SIT.parentLink ) ):
-        msg = '$SIT=%s already points to a proxy ' % sitRoot + \
-              'directory (cascades are not allowed)'
-        raise AssertionError( msg )
-
-    if os.path.realpath( sitRoot ) == os.path.realpath( sitProxy ):
-        msg = 'SIT proxy path must be different from parent SIT!'
-        raise AssertionError( msg )
-
-
-    SIT.getProjectsWithErrorHandling( sitRoot, sitRootPkgList )
-
-    for package in sitRootPkgList:
-        linkName = os.path.join( sitProxy, package )
-        target   = os.path.join( sitRoot, package )
-
-        if verbose:
-            logging.info( 'linking %s', package )
-
-        # create directory where the link shall be created
-        FastScript.mkdir( os.path.dirname( linkName ) )
-
-        logging.debug( 'linking %s --> %s', linkName, target )
-        os.symlink( target, linkName )
-
-
-    # create a symlink inside the proxy that points to the parent
-    linkName = os.path.join( sitProxy, SIT.parentLink )
-    os.symlink( sitRoot, linkName )
-
-
-    logging.info( '' )
-    logging.info( 'Proxy created in %s', sitProxy )
-
-
 def updateProxyDir( removeBrokenSymlinks     = True,
                     removeEmptyCategories    = True,
                     linkNewPackagesIntoProxy = True,

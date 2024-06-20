@@ -1,13 +1,8 @@
 # ToolBOS Core
 
-This package contains:
-
-* multi-platform build system based upon CMake (CLI + GUI)
-* package templates / skeletons
-* Software Installation Tree (SIT) management tools
-* helpers for VCS access
-* tools for distributing and deploying SIT-packages
-* software quality guidelines and check routines
+This package provides `BST.py` (Build System Tools):
+* Simplifies using CMake at scale
+* Orchestrates various software quality checks
 
 
 #### Setup
@@ -22,7 +17,6 @@ This package contains:
 
 * [Terminology](doc/ToolBOSCore/Concepts/Terminology.md)
 * [Software Installation Tree (SIT)](doc/ToolBOSCore/Concepts/SIT.md)
-* [Proxy Directory](doc/ToolBOSCore/Concepts/ProxyDirectory.md)
 * [Quality Guideline](doc/ToolBOSCore/Concepts/QualityGuidelines.md)
 * [Source tree conventions](doc/ToolBOSCore/Concepts/SourceTreeConventions.md)
 * [Installation conventions](doc/ToolBOSCore/Concepts/InstallationConventions.md)
