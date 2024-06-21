@@ -45,8 +45,6 @@ recommends       = [ 'deb://git',
                      'sit://External/git/2.18',
                      'sit://External/wine/3.5' ]
 
-delete           = [ '*py.class' ]
-
 usePatchlevels   = True
 
 patchlevel       = 0

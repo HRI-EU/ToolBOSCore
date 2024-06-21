@@ -789,9 +789,7 @@ class InstallProcedure( object ):
         self.copyMatching( 'doc', r'.*\.(jpg|log|pdf|png|txt)$' )
         self.copyOptional( 'etc' )
         self.copyOptional( 'include' )
-        self.copyMatching( 'install', r'.*\.jar$', 'lib' )
 
-        self.copyMatching( 'lib', r'.*\.jar$', 'lib' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'lib', platform ),
                                '.*(a|def|dll|exp|lib|manifest|mex|mexa64|pck|so)' )

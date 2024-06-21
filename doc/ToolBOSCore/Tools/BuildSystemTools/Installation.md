@@ -67,17 +67,17 @@ Same as above, except that 'external' will get installed as '3rdParty':
 To install only those files matching a certain regexp, use the copyMatching() function instead. Each element in the
 list must be a tuple of (source dir.,regular expression).
 
-This installs all Java examples:
+This installs all Rust-examples:
 
-    installMatching  = [ ( 'examples', '\.java' ) ]            # (srcDir,regexp)
+    installMatching  = [ ( 'examples', '\.rs' ) ]            # (srcDir,regexp)
     
     
 #### Install files/directories matching regular expression, with different destination
      
 Tuples might contain three elements in case the destination directory shall be different.
-If Java examples were to be installed into a destination directory 'HowTo' instead, the code would look like:
+If Rust examples were to be installed into a destination directory 'HowTo' instead, the code would look like:
 
-    installMatching  = [ ( 'examples', '\.java', 'HowTo' ) ]   # (srcDir,regexp,dstDir)
+    installMatching  = [ ( 'examples', '\.rs', 'HowTo' ) ]   # (srcDir,regexp,dstDir)
     
 #### Installing symlinks
      

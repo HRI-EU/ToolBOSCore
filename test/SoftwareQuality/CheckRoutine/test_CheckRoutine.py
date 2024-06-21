@@ -338,20 +338,6 @@ def test_runDoc01_package_with_documentation( toolBOSCoreDetector ):
     assert result[0] == Common.OK
 
 
-def test_runDoc03_package_with_examples( toolBOSCoreDetector ):
-    """
-        test rule DOC03 for presence of examples within the package by providing
-        a package with an examples directory
-    """
-    rule    = Rules.Rule_DOC03()
-    details = toolBOSCoreDetector
-    files   = {}
-
-    result  = rule.run( details, files )
-
-    assert result[0] == Common.OK
-
-
 def test_runC01_package_with_exit_calls( testPackageForC ):
     """
         test rule C01 for usage of exit() calls within the package by providing

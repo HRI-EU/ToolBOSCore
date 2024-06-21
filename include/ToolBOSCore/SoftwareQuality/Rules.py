@@ -334,7 +334,7 @@ for HRI-EU.
 This rule does not need to be applied to auto-generated files (such as doxygen
 HTML documentation or generated SWIG code).
 
-*Header for C / C++ / Java files:*
+*Header for C and C++ files:*
 
     /*
      * <description>
@@ -1719,7 +1719,7 @@ class Rule_PY02( AbstractRule ):
     brief       = '''Private class members and methods (name starting with
 underscore) must not be accessed from the outside.'''
 
-    description = '''Unlike C++ or Java, Python has no strong concept of
+    description = '''Unlike C++, Python has no strong concept of
 **private** methods. By convention they start with a leading underscore.
 
 Even though there is no technical protection, private methods should not be
@@ -3239,7 +3239,7 @@ def getRules():
 
     # keep sorting as appears in SQ Guideline
 
-    for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
+    for category in ( 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE',
                       'MT', 'SPEC', 'BASH' ):
         for i in range(50):
 

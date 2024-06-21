@@ -80,7 +80,7 @@ class CheckRoutine( object ):
                                   'precompiled', 'sources', '.git', '.svn' }
         self.excludeFiles     = set()
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
-                                  '.java', '.m', '.bash', '.sh', '.ipynb' }
+                                  '.m', '.bash', '.sh', '.ipynb' }
         self.bashExts         = { '.bash', '.sh' }
 
         self.sqLevelToRun     = None   # level to use for this SQ check run
