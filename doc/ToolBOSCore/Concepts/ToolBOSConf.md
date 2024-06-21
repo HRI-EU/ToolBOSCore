@@ -82,4 +82,3 @@ You may configure your settings using ToolBOS-Config.py:
 | package_rtmaps           | canonical path of RTMaps SIT package (e.g. "External/RTMaps/4.7")
 | serverAccounts 	       | username to use for SSH when connecting to certain hosts (a Python dictionary mapping hostname => username)
 | SVN_allowedHosts 	       | whitelist of hosts allowed to checkout from during Nightly Build, aka servers considered to contain the official versions 
-| sonarToken               | SonarQube user auth token for static code analysis
