@@ -248,14 +248,6 @@ def _switchEnv_jammy64_to_windowsamd64vs2017():
     _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
 
 
-def _switchEnv_bionic64_to_peakcan():
-    _switchEnv_linuxIntelToARM( 'peakcan' )
-
-
-def _switchEnv_bionic64_to_phyboardwega():
-    _switchEnv_linuxIntelToARM( 'phyboardwega' )
-
-
 def _switchEnv_linuxToWindows( targetPlatform ):
     import logging
 
@@ -396,63 +388,6 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     FastScript.unsetEnv( 'GLIBC_ALIAS' )
     FastScript.unsetEnv( 'GLIBC_VERSION' )
-
-
-def _switchEnv_linuxIntelToARM( targetPlatform ):
-    from ToolBOSCore.Settings import ProcessEnv
-    from ToolBOSCore.Settings import ToolBOSConf
-
-    Any.requireIsTextNonEmpty( targetPlatform )
-
-
-    # source cross-compiler package if not already done
-
-    bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
-    Any.requireIsDictNonEmpty( bspMap )
-
-    neededBSP  = bspMap[ targetPlatform ]
-    Any.requireIsTextNonEmpty( neededBSP )
-    ProcessEnv.source ( neededBSP )
-
-
-    # setup arguments which will be passed to CMake
-
-    if targetPlatform == 'peakcan':
-
-        fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'include/CMake/Peakcan-cross.cmake' )
-
-        Any.requireIsFileNonEmpty( fileName )
-
-        FastScript.setEnv( 'TARGETOS',   'peakcan' )
-        FastScript.setEnv( 'TARGETARCH', 'peakcan' )
-        FastScript.setEnv( 'COMPILER',   'gcc'     )
-        FastScript.setEnv( 'BST_CMAKE_OPTIONS', '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
-
-    elif targetPlatform == 'phyboardwega':
-
-        fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'include/CMake/phyBOARD-WEGA-cross.cmake' )
-
-        Any.requireIsFileNonEmpty( fileName )
-
-        FastScript.setEnv( 'TARGETOS', 'phyboardwega' )
-        FastScript.setEnv( 'TARGETARCH', 'phyboardwega' )
-        FastScript.setEnv( 'COMPILER', 'gcc' )
-        FastScript.setEnv( 'BST_CMAKE_OPTIONS',
-                           '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
-
-    else:
-
-        fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'include/CMake/Linux-ARMv7-cross.cmake' )
-
-        Any.requireIsFileNonEmpty( fileName )
-
-        FastScript.setEnv( 'TARGETOS',   'linux'   )
-        FastScript.setEnv( 'TARGETARCH', 'armv7'   )
-        FastScript.setEnv( 'COMPILER',   'gcc'     )
-        FastScript.setEnv( 'BST_CMAKE_OPTIONS', '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
 
 
 # EOF

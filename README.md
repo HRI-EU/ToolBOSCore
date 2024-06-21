@@ -10,7 +10,6 @@ This package provides `BST.py` (Build System Tools):
 * [Installing ToolBOS on disk](doc/ToolBOSCore/Setup/InstallingToolBOS.md)
 * [Shell configuration](doc/ToolBOSCore/Setup/ShellConfig.md)
 * [Sourcing additional packages](doc/ToolBOSCore/Setup/SourcingAdditionalPackages.md)
-* [Supported platforms](doc/ToolBOSCore/Setup/SupportedPlatforms.md)
 
 
 #### Concepts

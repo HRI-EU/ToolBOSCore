@@ -148,35 +148,6 @@ elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
     set(BST_DEFAULT_DEFINES     "-D__64BIT__ -D__linux__")
     add_definitions(${BST_DEFAULT_DEFINES})
 
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32armv7" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal32armv7")
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -march=armv7-a -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -march=armv7-a")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__linux__ -D__arm__ -D__armv7__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "peakcan")
-
-    set(PEAKCAN_RUN_MODE "ROM_RUN")
-    set(PEAKCAN_MCU "arm7tdmi-s")
-    set(PEAKCAN_SUBMDL "Flash")
-    set(PEAKCAN_FORMAT "ihex")
-
-    set(PEAKCAN_DEFAULT_CFLAGS "-O2 -Wall -Wcast-align -Wcast-qual -Wimplicit -Wpointer-arith -Wswitch -Wredundant-decls -Wreturn-type -Wshadow -Wunused -Wno-long-long -Wno-variadic-macros -Wfloat-equal -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -gdwarf-2 -mcpu=${PEAKCAN_MCU}")
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${PEAKCAN_DEFAULT_CFLAGS} -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${PEAKCAN_DEFAULT_CFLAGS}")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__peakcan__ -D__arm__ -D__armv7tdmi__")
-    set(CMAKE_EXE_LINKER_FLAGS  "-nostartfiles -lc -lgcc -T$ENV{TOOLBOSCORE_ROOT}/include/CMake/Platform/Peakcan_${PEAKCAN_SUBMDL}.ld")
-    add_definitions(${BST_DEFAULT_DEFINES} "-D${PEAKCAN_RUN_MODE}")
-
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "phyboardwega")
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -std=c99 -mfpu=neon -mfloat-abi=hard")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX}")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__linux__ -D__arm__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
 elseif(WIN32) # AND CMAKE_CL_64 EQUAL 0)
 
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG     "/DEBUG /NODEFAULTLIB:MSVCRT")

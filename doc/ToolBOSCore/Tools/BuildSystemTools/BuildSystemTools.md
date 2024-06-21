@@ -36,7 +36,6 @@
 
 * [Custom scripts for compilation + installation](CustomCompilationInstallation.md)
 * [Environment variables](EnviornmentVariables.md)
-* [Multi-platform support](MultiPlatformSupport.md)
 
 See also
 
