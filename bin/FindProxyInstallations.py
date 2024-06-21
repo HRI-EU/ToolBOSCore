@@ -80,7 +80,7 @@ except AssertionError as details:
 
 
 # suppress the specific package "Modules/Index/*" which contains
-# registered components for DTBOS/RTMaps (see JIRA ticket TBCORE-910)
+# registered components for DTBOS (see JIRA ticket TBCORE-910)
 sitPath   = SIT.getPath()
 indexPath = os.path.join( sitPath, 'Modules/Index' )
 

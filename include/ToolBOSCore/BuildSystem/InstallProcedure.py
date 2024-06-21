@@ -50,7 +50,6 @@ from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings                 import ToolBOSConf
 from ToolBOSCore.Storage                  import VersionControl
-from ToolBOSCore.Tools                    import RTMaps
 from ToolBOSCore.Util                     import Any, FastScript
 
 
@@ -792,7 +791,7 @@ class InstallProcedure( object ):
 
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'lib', platform ),
-                               '.*(a|def|dll|exp|lib||pck|so)' )
+                               '.*(a|def|dll|exp|lib||so)' )
 
         if self.details.linkAllLibraries:
             dummyFile = os.path.join( 'install/LinkAllLibraries' )
@@ -1411,10 +1410,6 @@ class GlobalInstallProcedure( InstallProcedure ):
         self._setPermissions( self.installRoot, self.sitRootPath )
 
 
-    def postInstall( self ):
-        self._registerComponent_RTMaps()
-
-
     def _ensureWorldWritableIndex( self ):
         # when installing components, (try to) ensure the Index-directory is
         # world-writeable
@@ -1467,23 +1462,6 @@ class GlobalInstallProcedure( InstallProcedure ):
                 FastScript.link( target, symlink )
             else:
                 logging.info( 'keeping existing version symlink' )
-
-
-    def _registerComponent_RTMaps( self ):
-        """
-            Register RTMaps component into user's index (if applicable).
-
-            This step is skipped in case this is not an RTMaps package or
-            the user does not have a proxy directory.
-        """
-        if self.details.isRTMapsPackage():
-
-            if self.sitProxyPath:
-                logging.info( 'registering RTMaps component' )
-                RTMaps.registerNormalPackage( self.details.canonicalPath,
-                                              self.sitProxyPath )
-            else:
-                logging.info( 'skipped RTMaps component registration (no proxy SIT found)' )
 
 
     def _updateProxyDir( self ):
@@ -1618,20 +1596,6 @@ class ProxyInstallProcedure( InstallProcedure ):
     def preInstall( self ):
         if self.details.installMode == 'clean':
             PackageCreator.uninstall( self.details.canonicalPath, False )
-
-
-    def postInstall( self ):
-        self._registerComponent_RTMaps()
-
-
-    def _registerComponent_RTMaps( self ):
-        """
-            Register RTMaps component into user's index.
-        """
-        if self.details.isRTMapsPackage():
-            logging.info( 'registering RTMaps component' )
-            RTMaps.registerNormalPackage( self.details.canonicalPath,
-                                          self.sitProxyPath )
 
 
 class TarExportProcedure( InstallProcedure ):

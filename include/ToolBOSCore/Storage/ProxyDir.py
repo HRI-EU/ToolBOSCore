@@ -131,7 +131,6 @@ def updateProxyDir( removeBrokenSymlinks     = True,
                     checkProxyLinkedVersion  = True,
                     removeProxyInstallations = False,
                     cleanHomeDirectory       = True,
-                    updateRTMapsIndex        = True,
                     dryRun                   = False ):
     """
         Updates the SIT proxy directory of the current user.
@@ -162,12 +161,8 @@ def updateProxyDir( removeBrokenSymlinks     = True,
 
           cleanHomeDirectory:       clean-up unused files under ~/.HRI
 
-          updateRTMapsIndex:        update *.pck symlinks in ~/.HRI/RTMaps
-
         If dryRun=True, nothing will actually be done.
     """
-    from ToolBOSCore.Tools import RTMaps
-
     sitRoot         = SIT.getParentPath()
     sitProxy        = SIT.getPath()
     proxyChanged    = False
@@ -182,7 +177,6 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     Any.requireIsBool( checkProxyLinkedVersion  )
     Any.requireIsBool( removeProxyInstallations )
     Any.requireIsBool( cleanHomeDirectory       )
-    Any.requireIsBool( updateRTMapsIndex        )
     Any.requireIsBool( dryRun )
 
     Any.requireMsg( sitRoot != sitProxy,
@@ -221,32 +215,20 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     pluginsEnabled.append( _checkDefFiles )
 
     tp = ThreadPool.ThreadPool()
-
     tp.add( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
     tp.add( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
-
     tp.run()
-
 
     if removeProxyInstallations:
         changed = _removeProxyInstallations( sitRootPkgList, sitProxyPkgList,
                                              sitRoot, sitProxy, dryRun )
-
         if changed > 0:
             sitProxyPkgList = []
             SIT.getProjectsWithErrorHandling( sitProxy, sitProxyPkgList )
 
-
     for func in pluginsEnabled:
         proxyChanged |= func( sitRootPkgList, sitProxyPkgList,
                               sitRoot, sitProxy, dryRun )
-
-
-    if updateRTMapsIndex:
-        if RTMaps.isInstalled( sitRoot ):
-            RTMaps.updateComponentIndex( sitRoot, sitProxy, dryRun )
-        else:
-            logging.debug( 'RTMaps not installed' )
 
     msg = 'Your proxy is up-to-date%s.' % ( ' now' if proxyChanged == True else '' )
     logging.info( '' )

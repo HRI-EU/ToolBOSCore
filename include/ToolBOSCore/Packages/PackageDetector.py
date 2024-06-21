@@ -393,8 +393,7 @@ class PackageDetector( object ) :
 
         isBBDMAll        = self.packageName == 'BBDMAll'
         isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
-                           self.packageCategory.startswith( 'Modules/ROS' ) or \
-                           self.packageCategory.startswith( 'Modules/RTMaps' )
+                           self.packageCategory.startswith( 'Modules/ROS' )
         result           = ( not isBBDMAll ) & isModuleCategory
 
         return result
@@ -417,18 +416,6 @@ class PackageDetector( object ) :
                  os.path.exists( 'src/I%s.xml' % self.packageName ) ) or (
                      os.path.exists( 'src/%s.bbml' % self.packageName ) and
                      os.path.exists( 'src/I%s.bbml' % self.packageName ) )
-
-
-    def isRTMapsPackage( self ):
-        """
-            Returns True if the package is intended for usage within the
-            RTMaps framework of Intempora, f.i. if the following file exists:
-               * src/maps_*.cpp
-        """
-        expr  = re.compile( r'^maps_.*\.cpp' )
-        found = FastScript.findFiles( 'src', regexp=expr )
-
-        return bool( found )            # True if at least one file found
 
 
     #------------------------------------------------------------------------

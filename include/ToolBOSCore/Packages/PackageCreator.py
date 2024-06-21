@@ -110,14 +110,12 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
             * Proxy SIT directory
             * Global SIT installation
             * BBCM *.def file
-            * RTMaps index entry
 
         If 'cleanGlobalInstallation=True' the package will also be
         uninstalled from global SIT (if applicable). If False it
         will only be uninstalled from the proxy SIT.
     """
     from ToolBOSCore.Platforms  import Platforms
-    from ToolBOSCore.Tools      import RTMaps
 
     requireIsCanonicalPath( canonicalPath )
 
@@ -131,10 +129,7 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
     installRoot_proxy  = os.path.join( sitProxyPath, canonicalPath )
     installRoot_root   = os.path.join( sitRootPath, canonicalPath )
 
-    rtmapsVersion      = FastScript.getEnv( 'RTMAPS_VERSION' )
-
     logging.info( 'uninstalling %s', canonicalPath )
-
 
     logging.info( 'cleaning proxy-installation' )
     FastScript.remove( installRoot_proxy, dryRun )
@@ -142,22 +137,6 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
     if cleanGlobalInstallation:
         logging.info( 'cleaning global-installation' )
         FastScript.remove( installRoot_root, dryRun )
-
-    if rtmapsVersion:
-        Any.requireIsTextNonEmpty( rtmapsVersion )
-
-        hostPlatform   = Platforms.getHostPlatform()
-        symlink_relSIT = RTMaps.getIndexFilePath_relSIT( canonicalPath,
-                                                         rtmapsVersion,
-                                                         hostPlatform )
-        Any.requireIsTextNonEmpty( symlink_relSIT )
-
-        symlinkPath    = os.path.join( sitProxyPath, symlink_relSIT )
-        Any.requireIsTextNonEmpty( symlinkPath )
-
-        FastScript.remove( symlinkPath, dryRun )
-    else:
-        logging.debug( 'skipped searching for RTMaps index symlink (RTMaps not sourced)' )
 
 
 def randomizeValidityFlags():

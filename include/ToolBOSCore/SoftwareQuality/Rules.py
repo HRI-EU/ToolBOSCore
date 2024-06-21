@@ -2106,10 +2106,6 @@ pkgInfo.py file.
     def run( self, details, files ):
         if details.docFiles:
             return self._searchDocFiles( details )
-
-        elif details.isRTMapsPackage():
-            return self._searchRTMaps( details )
-
         else:
             return self._searchDoxygen( details )
 
@@ -2186,10 +2182,6 @@ pkgInfo.py file.
             logging.info( 'DOC01: neither README.md nor doxygen mainpage found' )
 
             return FAILED, 0, 1, 'documentation not found'
-
-
-    def _searchRTMaps( self, *kwargs ):
-        return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
 
 
 class Rule_DOC02( AbstractRule ):

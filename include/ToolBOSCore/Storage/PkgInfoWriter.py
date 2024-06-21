@@ -181,7 +181,7 @@ class PkgInfoWriter( AbstractWriter ):
             In case of BBCM/BBDM packages generates the section about
             inputs, outputs, and references.
         """
-        if not self.details.isComponent() or self.details.isRTMapsPackage():
+        if not self.details.isComponent():
             # no need to create ToolBOS-style component interface info
             return ''
 

@@ -272,28 +272,4 @@ macro(bst_build_libraries FILELIST LIBNAME LINK_LIBRARIES)
 endmacro()
 
 
-# An RTMaps package actually is a shared library with ".pck" extension and
-# a binary blob (signature) near the end. This blob can be added using a
-# tool provided by Intempora. However it requires a valid RTMaps license.
-macro(bst_build_rtmaps_package FILELIST LIBNAME LINK_LIBRARIES)
-
-    bst_build_libraries("${FILELIST}" "${LIBNAME}" "${LINK_LIBRARIES}")
-
-    add_custom_command(TARGET "${LIBNAME}-shared"
-                       POST_BUILD
-
-                       COMMAND ${CMAKE_COMMAND}
-                       ARGS    -E copy ${CMAKE_HOME_DIRECTORY}/lib/$ENV{MAKEFILE_PLATFORM}/lib${LIBNAME}.so
-                                       ${CMAKE_HOME_DIRECTORY}/lib/$ENV{MAKEFILE_PLATFORM}/${LIBNAME}.pck
-
-                       COMMAND $ENV{TOOLBOSCORE_ROOT}/include/RTMaps/AddDRMSignature.sh
-                       ARGS    ${CMAKE_HOME_DIRECTORY}/CMakeLists.txt
-                               ${CMAKE_HOME_DIRECTORY}/${PROJECT_NAME}.pckinfo
-                               ${CMAKE_HOME_DIRECTORY}/lib/$ENV{MAKEFILE_PLATFORM}/${LIBNAME}.pck
-
-                       COMMENT "Adding RTMaps DRM signature")
-
-endmacro()
-
-
 # EOF
