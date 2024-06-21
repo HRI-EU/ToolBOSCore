@@ -56,22 +56,11 @@ function execTest()
     FILENAME=$1
     CMDLINE=$*
 
-    if [[ -z ${USE_RUNFROMSOURCETREE+x} ]]
-    then
-        export USE_RUNFROMSOURCETREE="FALSE"
-    fi
-
     if [[ -f "${FILENAME}" ]]
     then
         echo -e "Start test: ${FILENAME}"
 
-        if [[  ( "${USE_RUNFROMSOURCETREE}" == "FALSE" ) ||
-             ( ( ! -e CMakeLists.txt ) && ( ! -e pkgInfo.py ) )  ]]
-        then
-            "${CMDLINE[*]}"
-        else
-            RunFromSourceTree.sh "${CMDLINE[*]}"
-         fi
+        "${CMDLINE[*]}"
 
         # shellcheck disable=SC2181
         if [[ $? != 0 ]]

@@ -34,7 +34,7 @@
 //  2.  List each testcase in main() function
 //
 //  3.  Compile package and run test program like:
-//      $ RunFromSourceTree.sh ./test/\${MAKEFILE_PLATFORM}/unittest
+//      $ ./test/\${MAKEFILE_PLATFORM}/unittest
 //
 //
 //----------------------------------------------------------------------------

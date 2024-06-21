@@ -137,7 +137,7 @@ mtrace writes memory usage information into a file. Specify its path using the M
 
 Then run your program, e.g.:
 
-    $ RunFromSourceTree.sh ./examples/${MAKEFILE_PLATFORM}/ExampleProgram [args]
+    $ ./examples/${MAKEFILE_PLATFORM}/ExampleProgram [args]
 
 **3. Show memory information**
 
