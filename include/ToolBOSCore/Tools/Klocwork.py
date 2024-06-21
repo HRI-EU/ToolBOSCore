@@ -42,17 +42,16 @@ import shlex
 import subprocess
 import tempfile
 
-from ToolBOSCore.Packages  import PackageCreator, PackageDetector
+from ToolBOSCore.Packages  import PackageDetector
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ProcessEnv
 from ToolBOSCore.Settings  import ToolBOSConf
-from ToolBOSCore.Util      import FastScript
-from ToolBOSCore.Util      import Any
+from ToolBOSCore.Util      import Any, FastScript, TemplateEngine
 
 
 def isWithinTmpDir():
     """
-        Returns whether or not the current working directory is within
+        Returns whether the current working directory is within
         the location for temporary files, f.i. "/tmp" on Linux.
 
         Background: Klocwork ignores sources files in such directories,
@@ -157,12 +156,10 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
     # create workingset
     values  = { 'dirList': dirList }
-    creator = PackageCreator.PackageCreator( 'dummy', '1.0', values )
-    srcDir  = os.path.join( creator.templateDir, 'KlocworkProject' )
-    dstDir  = kwlpDir
 
-    creator.templatize( os.path.join( srcDir, 'workingsets.xml' ),
-                        os.path.join( dstDir, 'workingsets.xml' ) )
+    TemplateEngine.run( os.path.join( tcRoot, 'etc/Klocwork/workingsets.xml' ),
+                        os.path.join( kwlpDir, 'workingsets.xml' ),
+                        values )
 
 
 def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None, logToConsole=False ):

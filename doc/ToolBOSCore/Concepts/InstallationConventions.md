@@ -137,6 +137,5 @@ Please stick to those directory names for the mentioned content:
    
 **See also**
 
-[Source tree conventions](SourceTreeConventions.md)  
 [Software Installation Tree (SIT)](SIT.md)
 

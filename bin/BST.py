@@ -46,9 +46,7 @@ import sys
 
 from ToolBOSCore.BuildSystem         import BuildSystemTools
 from ToolBOSCore.Platforms.Platforms import getHostPlatform
-from ToolBOSCore.Util                import ArgsManagerV2
-from ToolBOSCore.Util                import FastScript
-from ToolBOSCore.Util                import Any
+from ToolBOSCore.Util                import Any, ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -87,37 +85,6 @@ def _checkForUpdates():
         logging.info( '' )
     else:
         logging.debug( 'no need to patch' )
-
-
-def _createPackage( args, flatStyle ):
-    from ToolBOSCore.Packages import PackageCreator
-
-
-    try:
-        templateName = args[0]
-    except IndexError:
-        templateName = None
-
-
-    if templateName is None:
-        # cmdline arguments were not specified, open GUI in this case
-        from ToolBOSCore.Packages.PackageCreatorGUI import PackageCreatorGUI
-        PackageCreatorGUI().main()
-        return True
-
-    elif templateName == 'help':
-        _showAvailableTemplates()
-        return True
-
-    else:
-        try:
-            packageName    = args[1]
-            packageVersion = args[2]
-            return PackageCreator.runTemplate( templateName, packageName, packageVersion,
-                                               flatStyle=flatStyle )
-        except IndexError:
-            logging.error( 'Please specify a package name and version (see help)' )
-            return False
 
 
 def _parseSqArgs( cr, argv ):
@@ -234,48 +201,6 @@ def _runZenBuildModeGUI():
     MainWindow.MainWindow( projectRoot ).main()
 
 
-def _showAvailableTemplates():
-    """
-        Lists all available templates on the console.
-    """
-    from ToolBOSCore.Packages import PackageCreator
-
-
-    print( '' )
-    print( '\nAvailable templates:' )
-    print( '--------------------\n' )
-
-    for template in PackageCreator.getTemplatesAvailable():
-        print( '  %s' % template )
-
-    print( '\n\nExample usage:' )
-    print( '--------------\n' )
-
-    print( "<template>       -- specifies the type of package to be created" )
-    print( "<packageName>    -- descriptive name of new software project" )
-    print( "<packageVersion> -- version number, e.g.:" )
-    print( "                    0.1 = initial development" )
-    print( "                    1.0 = first release" )
-    print( "                    1.1 = minor update" )
-    print( "                    2.0 = major change\n" )
-
-    print( "BST.py -n <template> <packageName> <packageVersion>" )
-    print( "e.g.:" )
-    print( "BST.py -n C_Library MyPackage 0.1\n" )
-
-    print( "This will result in the following directory structure:" )
-    print( "MyPackage/" )
-    print( "└── 1.0" )
-    print( "    ├── bin" )
-    print( "    ├── CMakeLists.txt" )
-    print( "    ├── doc" )
-    print( "    ├── examples" )
-    print( "    ├── src" )
-    print( "    │   ├── MyPackage.c" )
-    print( "    │   └── MyPackage.h" )
-    print( "    └── test\n" )
-
-
 #----------------------------------------------------------------------------
 # Commandline parsing
 #----------------------------------------------------------------------------
@@ -340,9 +265,6 @@ argman.addArgument( '-M', '--message', action='store', type=str, default='',
 argman.addArgument( '-m', '--doc', action='store_true',
                     help='make API documentation (HTML)' )
 
-argman.addArgument( '-n', '--new', action='store_true',
-                    help='create new package from template (see examples below)' )
-
 argman.addArgument( '-p', '--platform', default=hostPlatform,
                     help='cross-compile for specified target platform ' + \
                           '("-p help" to list supported platforms)' )
@@ -381,9 +303,6 @@ argman.addExample( '%(prog)s -bv                         # build in verbose mode
 argman.addExample( '%(prog)s /path/to/sourcetree         # out-of-tree build' )
 argman.addExample( '%(prog)s -p help                     # show cross-compile platforms' )
 argman.addExample( '%(prog)s -p windows-amd64-vs2017     # cross-compile for Windows' )
-argman.addExample( '%(prog)s -n                          # create new packages (GUI-version)' )
-argman.addExample( '%(prog)s -n help                     # show available templates' )
-argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C library "Foo"' )
 argman.addExample( '%(prog)s -q                          # run quality checks (configured for this package)' )
 argman.addExample( '%(prog)s -q --all                    # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
@@ -413,7 +332,6 @@ globalInstall = args['install']
 jobs          = args['jobs']
 listEnv       = args['list']
 message       = args['message']
-new           = args['new']
 platform      = args['platform']
 proxyInstall  = args['proxy']
 quality       = args['quality']
@@ -582,11 +500,6 @@ try:
 
     if distclean:
         bst.distclean()
-
-
-    if new:
-        status = _createPackage( unhandled, flatStyle )
-        sys.exit( 0 if status else -5 )
 
 
     if zen:

@@ -40,21 +40,6 @@ CWD=$(pwd)
 
 cd "${CWD}/BashSrcWriter"         && runTest ./test_BashSrcWriter.py
 cd "${CWD}/CMakeLists"            && runTest ./TestCMakeLists.py
-cd "${CWD}/DocumentationCreator"  && runTest ./TestDocumentationCreator.py
-cd "${CWD}/NativeCompilation"     && runTest ./TestNativeCompilation.py
-
-
-if [[ -z ${CIA+x} ]]
-then
-    export CIA=""
-fi
-
-if [[ "${CIA}" != "TRUE" ]]
-then
-    # skip complex cross-compilation setup during Nightly Build
-
-    cd "${CWD}/WineMSVC"          && runTest ./TestWineMSVC.py
-fi
 
 
 # EOF

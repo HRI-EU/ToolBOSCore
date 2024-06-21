@@ -779,12 +779,6 @@ interface with it.'''
 \t\t\t\tMyPackage.c
 \t\t\t\tMyPackage.h'''
 
-    seeAlso     = { 'Source tree conventions':
-                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Concepts/SourceTreeConventions.md',
-
-                    'Installation conventions':
-                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Concepts/SourceTreeConventions.md' }
-
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
 

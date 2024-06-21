@@ -1,7 +1,7 @@
 usage: BST.py [-h] [-a] [-B BUILD_TYPE] [-b] [-d] [--deprecate]
               [--deprecate-all] [-f] [--flat] [-i] [-j JOBS] [-k] [-l]
-              [-M MESSAGE] [-m] [-n] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U]
-              [-u] [-x] [-y] [-z] [-v] [-V]
+              [-M MESSAGE] [-m] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U] [-u]
+              [-x] [-y] [-z] [-v] [-V]
 
 The Build System Tools (BST.py) are used for various tasks dealing
 with compiling, installing and maintaining software packages. They are
@@ -26,7 +26,6 @@ options:
   -M MESSAGE, --message MESSAGE
                         message for deprecation
   -m, --doc             make API documentation (HTML)
-  -n, --new             create new package from template (see examples below)
   -p PLATFORM, --platform PLATFORM
                         cross-compile for specified target platform ("-p help"
                         to list supported platforms)
@@ -50,9 +49,6 @@ examples:
   BST.py /path/to/sourcetree         # out-of-tree build
   BST.py -p help                     # show cross-compile platforms
   BST.py -p ${MAKEFILE_PLATFORM}     # cross-compile for Windows
-  BST.py -n                          # create new packages (GUI-version)
-  BST.py -n help                     # show available templates
-  BST.py -n --flat C_Library Foo 1.0 # create new-style C library "Foo"
   BST.py -q                          # run quality checks (configured for this package)
   BST.py -q --all                    # run all quality checks
   BST.py -q src C01 C02 C03          # run specified checks on "src" only

@@ -40,7 +40,6 @@ import os
 import pytest
 import sys
 
-from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.SoftwareQuality          import Common, Rules
 from ToolBOSCore.Util                     import FastScript
@@ -214,36 +213,6 @@ def test_runGen07_package_with_unittest( toolBOSCoreDetector ):
     assert result[0] == Common.OK
 
 
-def test_runGen07_package_without_unittest(  tmp_path ):
-    """
-        test rule GEN07 for existence of unittests by providing package
-        without unittest
-    """
-    rule  = Rules.Rule_GEN07()
-    files = {}
-
-    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation
-    FastScript.changeDirectory( tmp_path )
-
-    # create a new python package
-    creator = PackageCreator.PackageCreator_Python( 'MyPackage', '1.0', flatStyle=True )
-    creator.run()
-
-    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-    FastScript.changeDirectory( MyPackageRoot )
-
-    # to test this we need a package without unittest.sh. thus, removing unittest.sh
-    FastScript.remove( 'unittest.sh' )
-
-    # create an instance of this packageDetector instance for this package
-    details = PackageDetector( MyPackageRoot )
-    details.retrieveMakefileInfo()
-
-    result  = rule.run( details, files )
-
-    assert result[0] == Common.FAILED
-
-
 def test_runGen10_package_managed_via_vcs( toolBOSCoreDetector ):
     """
         test rule GEN10 for VCS usage by providing a package which is
@@ -257,31 +226,6 @@ def test_runGen10_package_managed_via_vcs( toolBOSCoreDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == Common.OK
-
-
-def test_runGen10_package_not_managed_via_vcs( tmp_path ):
-    """
-        test rule GEN10 for VCS usage by providing a package which is
-        not managed by Git or SVN
-    """
-    rule  = Rules.Rule_GEN10()
-    files = {}
-
-    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation,
-    FastScript.changeDirectory( tmp_path )
-
-    # create a new python package, which is not managed under any VCS
-    creator = PackageCreator.PackageCreator_Python( 'MyPackage', '1.0', flatStyle=True )
-    creator.run()
-
-    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-    details       = PackageDetector( MyPackageRoot )
-    details.retrieveMakefileInfo()
-    details.retrieveVCSInfo()
-
-    result = rule.run( details, files )
-
-    assert result[0] == Common.FAILED
 
 
 def test_runPy02_files_without_private_members_access( toolBOSCoreDetector ):
@@ -394,63 +338,6 @@ def test_runDoc01_package_with_documentation( toolBOSCoreDetector ):
     assert result[0] == Common.OK
 
 
-def test_runDoc01_package_without_documentation( tmp_path ):
-    """
-        test rule DOC01 for presence of documentation within the package by
-        providing a package without any documentation
-    """
-    rule  = Rules.Rule_DOC01()
-    files = {}
-
-    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation
-    # without any documentation
-    FastScript.changeDirectory( tmp_path )
-
-    # create a new python package
-    creator = PackageCreator.PackageCreator_Python( 'MyPackage', '1.0', flatStyle=True )
-    creator.run()
-
-    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-    details     = PackageDetector( MyPackageRoot )
-    details.retrieveMakefileInfo()
-
-    result = rule.run( details, files )
-
-    assert result[0] == Common.FAILED
-
-
-def test_runDoc01_package_with_empty_README( tmp_path ):
-    """
-        test rule DOC01 for presence of documentation within the package by
-        providing a package with empty README.md file
-    """
-    from pathlib import Path
-
-    rule  = Rules.Rule_DOC01()
-    files = {}
-
-    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation
-    # without any documentation
-    FastScript.changeDirectory( tmp_path )
-
-    # create a new python package
-    creator = PackageCreator.PackageCreator_Python( 'MyPackage', '1.0', flatStyle=True )
-    creator.run()
-
-    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-    FastScript.changeDirectory( MyPackageRoot )
-
-    # add an empty README.md file
-    Path('README.md').touch()
-
-    details = PackageDetector( MyPackageRoot )
-    details.retrieveMakefileInfo()
-
-    result = rule.run( details, files )
-
-    assert result[0] == Common.FAILED
-
-
 def test_runDoc03_package_with_examples( toolBOSCoreDetector ):
     """
         test rule DOC03 for presence of examples within the package by providing
@@ -463,30 +350,6 @@ def test_runDoc03_package_with_examples( toolBOSCoreDetector ):
     result  = rule.run( details, files )
 
     assert result[0] == Common.OK
-
-
-def test_runDoc03_package_without_examples( tmp_path ):
-    """
-        test rule DOC03 for presence of examples within the package by providing
-        a package without any examples directory
-    """
-    rule  = Rules.Rule_DOC03()
-    files = {}
-
-    # using 'tmp_path' fixture to create a temporary directory unique to this test invocation
-    # without any documentation
-    FastScript.changeDirectory( tmp_path )
-
-    # create a new python package
-    creator = PackageCreator.PackageCreator_Python( 'MyPackage', '1.0', flatStyle=True )
-    creator.run()
-
-    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-    details       = PackageDetector( MyPackageRoot )
-
-    result = rule.run( details, files )
-
-    assert result[0] == Common.FAILED
 
 
 def test_runC01_package_with_exit_calls( testPackageForC ):
@@ -561,35 +424,6 @@ def test_runC09_BST_compliant_package( testPackageForC ):
     result  = rule.run( details, files )
 
     assert result[0] == Common.OK
-
-
-def test_runC09_non_BST_compliant_package( tmp_path ):
-    """
-        test rule C09 that package can be built using BST.py by providing
-        a non BST-compliant package
-    """
-    rule  = Rules.Rule_C09()
-    files = {}
-
-    # using 'tmp_path' fixture to create a temporary directory
-    # unique to this test invocation
-    FastScript.changeDirectory( tmp_path )
-
-    # create a new C library
-    creator = PackageCreator.PackageCreator_C_Library( 'MyPackage', '1.0', flatStyle=True )
-    creator.run()
-
-    MyPackageRoot = os.path.join( tmp_path, 'MyPackage' )
-
-    FastScript.changeDirectory( MyPackageRoot )
-    FastScript.remove( 'pkgInfo.py' )    # to get non BST-compliant package
-
-    details = PackageDetector( MyPackageRoot )
-    details.retrieveMakefileInfo()
-
-    result = rule.run( details, files )
-
-    assert result[0] == Common.FAILED
 
 
 def test_runC10_package_with_Klocwork_issues( testPackageForC ):
