@@ -385,22 +385,6 @@ HTML documentation or generated SWIG code).
     #
     #
 
-*Header for Matlab script files:*
-
-    %
-    % <description>
-    %
-    % Copyright (C)
-    % Honda Research Institute Europe GmbH
-    % Carl-Legien-Str. 30
-    % 63073 Offenbach/Main
-    % Germany
-    %
-    % UNPUBLISHED PROPRIETARY MATERIAL.
-    % ALL RIGHTS RESERVED.
-    %
-    %
-
 *Example for HTML / XML files:*
 
     <!--
@@ -935,7 +919,7 @@ directly terminate the application. Prefer returning a status code indicating
 the error, or throw an exception in C++, so that the caller at least has a
 chance to appropriately handle it.
 
-Mind that the caller might be a 3rd party application such as *Matlab*.
+Mind that the caller might be a 3rd party application executing Python.
 In such case the `exit()` will terminate the whole application, potentially
 causing data loss or inconsistent states.'''
 
@@ -2115,9 +2099,6 @@ pkgInfo.py file.
      * \\author Steve Jobs
      * \\author Lerry Page
      */
-
-Note that Matlab-packages are documented using `matdoc` instead of `doxygen`.
-Hence a doxygen mainpage is not needed in such case.
 '''
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
@@ -2125,9 +2106,6 @@ Hence a doxygen mainpage is not needed in such case.
     def run( self, details, files ):
         if details.docFiles:
             return self._searchDocFiles( details )
-
-        elif details.isMatlabPackage():
-            return self._searchMatlab( details )
 
         elif details.isRTMapsPackage():
             return self._searchRTMaps( details )
@@ -2208,24 +2186,6 @@ Hence a doxygen mainpage is not needed in such case.
             logging.info( 'DOC01: neither README.md nor doxygen mainpage found' )
 
             return FAILED, 0, 1, 'documentation not found'
-
-
-    def _searchMatlab( self, details ):
-        logging.debug( 'Matlab package detected, looking for HTML documentation' )
-
-        # Matlab-packages do not contain a doxygen mainpage, hence only
-        # check for existence of index.html after doc-build
-
-        DocumentationCreator( details.topLevelDir ).generate()
-
-        indexPath = os.path.join( details.topLevelDir, 'doc/html/index.html' )
-        logging.debug( 'looking for documentation in: %s', indexPath )
-        found     = os.path.exists( indexPath )
-
-        if found:
-            return OK, 1, 0, 'documentation (index.html) found'
-        else:
-            return FAILED, 0, 1, 'documentation (index.html) found'
 
 
     def _searchRTMaps( self, *kwargs ):

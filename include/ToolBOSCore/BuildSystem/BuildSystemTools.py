@@ -736,7 +736,7 @@ def getDefaultDistcleanPatterns():
 
                   # compilation files
                   'makeDepend', 'ui_*h', 'qrc_*.cpp', 'moc_*.cpp', 'qt/*.h',
-                  'qt/*.cpp', 'qt/moc_*cpp', '.*ui.md5', 'wrapper/*.mex*',
+                  'qt/*.cpp', 'qt/moc_*cpp', '.*ui.md5',
 
                   # editor backup files
                   '*~', '*.bak',
@@ -751,7 +751,7 @@ def getDefaultDistcleanPatterns():
                   'install/??shSrc', 'bin/??shSrc',
                   'examples/??shSrc', 'test/??shSrc',
                   'doc/autoDoxyfile', 'doc/doxygen*', 'doc/*.tag',
-                  'doc/html', 'matdoc.log', 'install/LinkAllLibraries',
+                  'doc/html', 'install/LinkAllLibraries',
                   'install/MD5SUMS', 'install/*.tar.gz', 'install/*.deb',
                   'install/*.tar.bz2', 'install/packageVar.cmake',
                   'install/pkgInfo.py', 'install/*.def',
@@ -772,22 +772,6 @@ def setEnv():
         This function loads the pkgInfo.py of each dependency package.
         If environment settings are found there they will be loaded into
         the environment of the current Python process.
-
-        Example:
-            The pkgInfo.py of Matlab states MATLAB_ROOT, PATH and
-            LD_LIBRARY_PATH settings in its pkgInfo.py. Before compiling
-            such variables must be set.
-
-        On Linux, alternatively, this can be achieved by sourcing the
-        BashSrc files.
-
-        With some modifications this setEnv() approach conceptually
-        potentially could also work on Windows.
-
-        Attention: This function should only be called once (at least not
-                   repeatedly when compiling the same package again from
-                   within Python) to not unnecessarily increase the length
-                   of PATH, LD_LIBRARY_PATH etc.
     """
     try:
         p = PackageDetector()

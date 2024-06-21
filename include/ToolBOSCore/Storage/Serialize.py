@@ -41,8 +41,7 @@ from ToolBOSCore.Util import Any
 from ToolBOSCore.Util import DynamicLoader
 
 
-formatsAvailable = frozenset( [ 'Ascii', 'Binary', 'Json', 'Matlab',
-                                'Python', 'Xml' ] )
+formatsAvailable = frozenset( [ 'Ascii', 'Binary', 'Json', 'Python', 'Xml' ] )
 
 
 def requireValidFormat( formatName ):

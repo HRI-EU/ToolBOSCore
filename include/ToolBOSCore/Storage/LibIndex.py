@@ -419,7 +419,6 @@ def fuseIntoSingleDirectory( index, canonicalPath ):
         (in both normal and inverse directory layout style) get fused into
         the same single output directory.
 
-        This implies that Matlab Mexfiles are included, too.
         Note that Python *.egg files are excluded for now (no need).
 
         The files skipLibIndex and linkAllLibraries are not considered.

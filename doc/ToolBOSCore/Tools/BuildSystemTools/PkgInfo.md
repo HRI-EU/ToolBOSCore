@@ -233,8 +233,7 @@ docFiles = [ 'README.md',
 <tr>
     <td>docTool</td>
     <td>string</td>
-    <td>force particular documentation tool ("doxygen", "matdoc"), or
-         disable documentation creation using an empty string ("")</td>
+    <td>disable documentation creation using an empty string ("")</td>
 </tr>
 <tr>
     <td style="background: #CCCCFF; text-align: center; font-weight: bold;"

@@ -792,7 +792,7 @@ class InstallProcedure( object ):
 
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'lib', platform ),
-                               '.*(a|def|dll|exp|lib|manifest|mex|mexa64|pck|so)' )
+                               '.*(a|def|dll|exp|lib||pck|so)' )
 
         if self.details.linkAllLibraries:
             dummyFile = os.path.join( 'install/LinkAllLibraries' )

@@ -44,7 +44,7 @@
  </tr>
  <tr>
    <td>export MAKEFILE_DOC=FALSE</td>
-   <td>skip documentation creation (doxygen/matdoc)</td>
+   <td>skip doxygen-documentation creation</td>
  </tr>
  <tr>
    <td>export MAKEFILE_GLOBALINSTALLUSER=username</td>

@@ -52,16 +52,6 @@ class PackageDetector( object ) :
         Retrieves advanced properties of a package, such as used programming
         languages etc.
 
-        It is also quite common to call a package like "Python package",
-        "Matlab package" or "C++ shared library package". However, be aware
-        that we do verification of properties instead of falsification.
-
-        If a package contains mixed Python (.py) and Matlab (.m) files,
-        both checks isPythonPackage() and isMatlabPackage() will return True.
-
-        It can be only known to the context what to do with this info,
-        and which other properties to falsify to come to some conclusions.
-
         To avoid repetitive reads of the pkgInfo.py file, you may cache
         its values in a dict and provide it as parameter. This may improve
         performance by avoiding redundant file I/O.
@@ -307,10 +297,6 @@ class PackageDetector( object ) :
             Returns True if package contains C++ code in source directory.
         """
         return self._hasSourceFiles( '.cpp' )
-
-
-    def isMatlabPackage( self ):
-        return self._hasSourceFiles( '.m' )
 
 
     def isPythonPackage( self, files=None ):

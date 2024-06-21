@@ -803,15 +803,15 @@ def setEnv_withExpansion( varName, varValue ):
 
         Example:
 
-            setEnv_withExpansion( 'MATLAB_ROOT',
-                                  '${SIT}/External/Matlab/8.4' )
+            setEnv_withExpansion( 'EXAMPLE_ROOT',
+                                  '${SIT}/External/Example/1.0' )
 
             setEnv_withExpansion( 'PATH',
-                                  '${MATLAB_ROOT}/bin:${PATH}' )
+                                  '${EXAMPLE_ROOT}/bin:${PATH}' )
 
-            will first define MATLAB_ROOT as absolute path to Matlab/8.4
+            will first define EXAMPLE_ROOT as absolute path to Example/1.0
             (replacing ${SIT} by its current environment value)
-            and in a second step prepend the absolute path to Matlab's
+            and in a second step prepend the absolute path to Example's
             "bin"-directory to the current value of ${PATH}.
     """
     Any.requireIsTextNonEmpty( varName )
