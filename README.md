@@ -1,45 +1,24 @@
 # ToolBOS Core
 
 This package provides `BST.py` (Build System Tools):
-* Simplifies using CMake at scale
 * Orchestrates various software quality checks
+* Simplifies using CMake at scale [DEPRECATED]
 
 
-#### Setup
+### Installation
 
-* [Installing ToolBOS on disk](doc/ToolBOSCore/Setup/InstallingToolBOS.md)
-* [Shell configuration](doc/ToolBOSCore/Setup/ShellConfig.md)
-* [Sourcing additional packages](doc/ToolBOSCore/Setup/SourcingAdditionalPackages.md)
+    $ pip install toolbos-core
+    
+    $ source /path/to/ToolBOSCore/5.0/BashSrc
 
+### Usage
 
-#### Concepts
-
-* [Terminology](doc/ToolBOSCore/Concepts/Terminology.md)
-* [Software Installation Tree (SIT)](doc/ToolBOSCore/Concepts/SIT.md)
-* [Quality Guideline](doc/ToolBOSCore/Concepts/QualityGuidelines.md)
-* [Source tree conventions](doc/ToolBOSCore/Concepts/SourceTreeConventions.md)
-* [Installation conventions](doc/ToolBOSCore/Concepts/InstallationConventions.md)
-* [ToolBOS.conf](doc/ToolBOSCore/Concepts/ToolBOSConf.md)
-* [SIT builds](doc/ToolBOSCore/HowTo/SITBuilds.md)
-
-
-#### Tools
-
-* [Build System Tools](doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md)
-
-
-#### HowTo's
-
-* [Debugging](doc/ToolBOSCore/HowTo/Debugging.md)
-* [Writing C/C++ libraries](doc/ToolBOSCore/HowTo/WritingC_CPlusPlusLibraries.md)
-* [External packages](doc/ToolBOSCore/HowTo/ExternalPackages.md)
-* [userDoxyfile](doc/ToolBOSCore/HowTo/UserDoxyfile.md)
+* [Software Quality checks](doc/ToolBOSCore/Concepts/QualityGuidelines.md)
 * [License checks](doc/ToolBOSCore/HowTo/LicenseChecks.md)
-* [ToolBOS release rollback or beta-test ](doc/ToolBOSCore/HowTo/ToolBOSBetaTest.md)
-* [Deprecated packages](doc/ToolBOSCore/HowTo/DeprecatedPkg.md)
+* [(Cross-)Compilation [DEPRECATED]](doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md)
+* [Fine-tuning](doc/ToolBOSCore/Concepts/ToolBOSConf.md)
 
-
-#### Details
+### Details
 
 * [Authors](AUTHORS.md)
-* [License](LICENSE)
+* [BSD 3-Clause License](LICENSE)
