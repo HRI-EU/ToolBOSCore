@@ -7,7 +7,6 @@ A pkgInfo.py file might be present in a package, both in VCS and/or in the SIT.
 
 * Each package installed in the SIT should have a pkgInfo.py file containing
   meta-information, such as location of VCS repository or current maintainer.
-  These information are used e.g. by the CIA (aka Nightly Build) system.
   Such files are typically auto-generated at install time.
 
 > **Note:**
@@ -373,11 +372,6 @@ installUmask = "0022"      # for permissions rwxr-xr-x
     <td>revision</td>
     <td>string</td>
     <td>SVN revision number</td>
-</tr>
-<tr>
-    <td>revisionforCIA</td>
-    <td>string</td>
-    <td>SVN revision which shall be build by CIA</td>
 </tr>
 <tr>
     <td style="background: #CCCCFF; text-align: center; font-weight: bold;"

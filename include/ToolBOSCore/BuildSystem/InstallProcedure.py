@@ -1300,7 +1300,7 @@ class InstallProcedure( object ):
                     # consider executable-flag of file when applying mode
                     #
                     # in case of symlink operate on the link itself
-                    # (do not follow), CIA-1023
+                    # (do not follow)
                     if stat.S_IXUSR & os.lstat( path )[stat.ST_MODE]:
                         fileMode = 0o777 & ~umask
                     else:

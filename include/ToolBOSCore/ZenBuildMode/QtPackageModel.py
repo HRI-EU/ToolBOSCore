@@ -44,7 +44,6 @@ import dill
 
 from PyQt5.QtCore import pyqtSignal, QByteArray, QObject, QThread
 
-from ToolBOSCore.CIA.PatchSystem import PatchSystem
 from ToolBOSCore.GenericGUI      import ProcessExecutor, UnicodeSupport
 from ToolBOSCore.Packages        import BSTPackage
 from ToolBOSCore.SoftwareQuality import CheckRoutine
@@ -63,7 +62,6 @@ class BSTPackageModel( QObject, object ):
     newRevision      = pyqtSignal( str )
     depsDetected     = pyqtSignal( bool )
     sqCheckPrepared  = pyqtSignal()
-    updatesAvailable = pyqtSignal()
 
 
     def __init__( self ):
@@ -343,14 +341,6 @@ class BSTPackageModel( QObject, object ):
         self._sqPreparer.finished.connect( self._onSQPreparerFinished )
         self._sqPreparer.start()
 
-        self._updateCheckThread = self.UpdatesAvailableThread()
-        self._updateCheckThread.updatesAvailable.connect( self._onUpdatesAvailable )
-        self._updateCheckThread.start()
-
-
-    def _onUpdatesAvailable(self):
-        self.updatesAvailable.emit()
-
 
     def _onDepDetectorFinished( self ):
         logging.debug( 'dependency detection in progress (helper-process finished)' )
@@ -474,37 +464,6 @@ class BSTPackageModel( QObject, object ):
 
         def run( self ):
             self._bstpkg.prepareQualityCheck()
-
-
-    class UpdatesAvailableThread( QThread, object ):
-
-        updatesAvailable = pyqtSignal()
-
-
-        def __init__( self ):
-            QThread.__init__( self )
-
-
-        def run( self ):
-
-            # suppress dry-run patching output
-            oldDebugLevel = Any.getDebugLevel()
-            Any.setDebugLevel( 1 )
-
-            try:
-                patchesAvailable = PatchSystem().run( dryRun=True )
-            except AssertionError as e:
-                # e.g. templates not installed, let's gnore this case
-                logging.debug( e )
-                patchesAvailable = False
-
-
-            Any.setDebugLevel( oldDebugLevel )
-
-
-            if patchesAvailable:
-                logging.debug( 'patches available' )
-                self.updatesAvailable.emit()
 
 
 # EOF

@@ -61,8 +61,6 @@ installMatching  = [ ('', '^useFromHere.+'),
                      ('doc/Logos', '\\.(jpg|png|svg)$'),
                      ('examples', '\\.(py|c|conf)$') ]
 
-gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore.git'
-
 sqLevel          = 'advanced'
 
 

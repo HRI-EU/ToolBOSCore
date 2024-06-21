@@ -30,13 +30,11 @@ maintainer       = ( 'mstein', 'mstein' )
 
 gitBranch        = 'develop'
 
-gitCommitID      = 'c4b237967213264b6d5dcf1cd88e3a8818d0ea45'
+gitCommitID      = '307d5f1adb135dcb58a2e062fc80f613dd330469'
 
 gitOrigin        = 'git@dmz-gitlab.honda-ri.de:TECH_Team/ToolBOSCore.git'
 
 gitRelPath       = ''
-
-gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore.git'
 
 recommends       = [ 'deb://git',
                      'sit://External/CMake/3.4',

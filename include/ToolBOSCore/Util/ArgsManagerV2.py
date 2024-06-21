@@ -175,12 +175,7 @@ class ArgsManager( argparse.ArgumentParser ):
             pass
 
         except KeyError:
-            # In CIA the CIA-Start.sh script sets TOOLBOSCORE_ROOT to point
-            # into the new SIT location which does not exist, yet.
-            # In this case, its etc/ToolBOS.conf won't be found.
-            #
-            # The same applies while debugging incomplete setups.
-            # Fine to not show bugtrackURL in such cornercases, too.
+            # When debugging incomplete setups, the ToolBOS.conf might not be found.
             pass
 
 

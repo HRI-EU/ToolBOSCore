@@ -104,11 +104,6 @@ def baseSetupWine( configDir, msvc, stdout, stderr, postfix ):
     if not configDir:
         configDir = getWineConfigDir( postfix )
 
-    # safety check: exit if we are within CIA and configdir points to
-    # home directories!
-    if FastScript.getEnv( 'CIA' ) == 'TRUE' and configDir.startswith( '/home' ):
-        raise SystemExit( 'SAFETY GUARD: Do not touch home directory within CIA!' )
-
     sourceWindowsBSP( msvc )
     ProcessEnv.requireCommand( 'winecfg' )
 

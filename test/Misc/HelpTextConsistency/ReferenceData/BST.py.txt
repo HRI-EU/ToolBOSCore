@@ -1,7 +1,7 @@
 usage: BST.py [-h] [-a] [-B BUILD_TYPE] [-b] [-d] [--deprecate]
               [--deprecate-all] [-f] [--flat] [-i] [-j JOBS] [-k] [-l]
-              [-M MESSAGE] [-m] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U] [-u]
-              [-x] [-y] [-z] [-v] [-V]
+              [-M MESSAGE] [-m] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U] [-x]
+              [-y] [-z] [-v] [-V]
 
 The Build System Tools (BST.py) are used for various tasks dealing
 with compiling, installing and maintaining software packages. They are
@@ -34,7 +34,6 @@ options:
   -s, --setup           setup/configure the package for being built
   -t, --test            run the unittest suite of the package
   -U, --uninstall       remove package from SIT
-  -u, --upgrade         automatic upgrade (apply all available patches)
   -x, --proxy           install package into SIT-Proxy (sandbox)
   -y, --yes             reply "yes" to all prompts, f.i. run non-interactively
   -z, --zen             zen build mode (GUI)

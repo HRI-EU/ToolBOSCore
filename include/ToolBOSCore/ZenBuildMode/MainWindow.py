@@ -40,11 +40,6 @@ import shlex
 import socket
 import threading
 
-import sip
-
-sip.setapi( 'QString', 2 )
-sip.setapi( 'QVariant', 2 )
-
 from PyQt5.QtCore    import pyqtSignal, QObject, QByteArray
 from PyQt5.QtWidgets import *
 
@@ -463,8 +458,6 @@ class MainWindow( QObject, object ):
 
         self.externalTools = ExternalToolsWidget.ExternalToolsWidget( self.model, self.window )
 
-        self.model.updatesAvailable.connect( self.externalTools.showUpdateIndicator )
-
         # build options in right pane
         self.rightPaneLayout.setContentsMargins( 0, 0, 0, 0 )
         self.platformCBs_natWidget.setLayout( self.platformCBs_natLayout )
@@ -474,7 +467,6 @@ class MainWindow( QObject, object ):
         self.rightPaneLayout.addWidget( self.platformCBs_natWidget )
         self.rightPaneLayout.addWidget( self.platformCBs_xcmpWidget )
         self.rightPaneLayout.addWidget( self.optionsWidget )
-
 
         self.console.localCommand.connect( self._onLocalShellInput )
         self.console.remoteCommand.connect( self._onRemoteShellInput )
@@ -939,10 +931,6 @@ class MainWindow( QObject, object ):
 
     def _onSeqTasksFinished( self ):
         logging.debug( 'processing sequential tasks finished' )
-
-
-    def _onUpdatesAvailable( self ):
-        self._extTools.showUpdateIndicator()
 
 
     def _programCounter_increment( self, ):

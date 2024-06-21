@@ -89,7 +89,7 @@ class DocumentationCreator( object ):
         elif details.isMatlabPackage():
 
             # Matlab is no longer needed, and there are also issues starting
-            # with Ubuntu 16.04 (see CIA-1131)
+            # with Ubuntu 16.04
 
             handler = NullBackend
 

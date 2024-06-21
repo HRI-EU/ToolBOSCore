@@ -140,12 +140,10 @@ class PackageDetector( object ) :
 
         # revision control system
         self.gitBranch         = None
-        self.gitBranchForCIA   = None
         self.gitFound          = None
         self.gitCommitIdLong   = None
         self.gitCommitIdShort  = None
         self.gitOrigin         = None
-        self.gitOriginForCIA   = None
         self.gitRelPath        = None
         self.gitRepositoryRoot = None
         self.svnFound          = None
@@ -153,7 +151,6 @@ class PackageDetector( object ) :
         self.svnRevision       = None
         self.svnRepositoryURL  = None
         self.svnRepositoryRoot = None
-        self.svnRevisionForCIA = None
         self.vcsBranch         = None
         self.vcsFound          = None
         self.vcsURL            = None
@@ -651,10 +648,8 @@ class PackageDetector( object ) :
         self.userSrcEnv        = getValue( 'envVars',          self.userSrcEnv )
         self.userSrcBashCode   = getValue( 'bashCode',         self.userSrcBashCode )
         self.gitBranch         = getValue( 'gitBranch',        self.gitBranch )
-        self.gitBranchForCIA   = getValue( 'gitBranchForCIA',  self.gitBranchForCIA )
         self.gitCommitIdLong   = getValue( 'gitCommitID',      self.gitCommitIdLong )
         self.gitOrigin         = getValue( 'gitOrigin',        self.gitOrigin )
-        self.gitOriginForCIA   = getValue( 'gitOriginForCIA',  self.gitOriginForCIA )
         self.gitRelPath        = getValue( 'gitRelPath',       self.gitRelPath )
         self.docFiles          = getValue( 'docFiles',         self.docFiles )
         self.docTool           = getValue( 'docTool',          self.docTool )
@@ -686,7 +681,6 @@ class PackageDetector( object ) :
         self.svnRepositoryRoot = getValue( 'repositoryRoot',   self.svnRepositoryRoot )
         self.svnRepositoryURL  = getValue( 'repositoryUrl',    self.svnRepositoryURL )
         self.svnRevision       = getValue( 'revision',         self.svnRevision )
-        self.svnRevisionForCIA = getValue( 'revisionForCIA',   self.svnRevisionForCIA )
         self.scripts           = getValue( 'scripts',          self.scripts )
         self.sqComments        = getValue( 'sqComments',       self.sqComments )
         self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )

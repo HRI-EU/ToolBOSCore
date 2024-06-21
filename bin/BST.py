@@ -54,39 +54,6 @@ from ToolBOSCore.Util                import Any, ArgsManagerV2, FastScript
 #----------------------------------------------------------------------------
 
 
-def _checkForUpdates():
-    """
-        Check if there are any updates for this package.
-    """
-    from ToolBOSCore.CIA.PatchSystem import PatchSystem
-
-    logging.debug( 'checking for updates' )
-
-    oldDebugLevel = Any.getDebugLevel()
-    Any.setDebugLevel( 1 )
-
-    patcher = PatchSystem()
-    result  = patcher.run( dryRun=True )
-
-    Any.setDebugLevel( oldDebugLevel )
-
-    if len(result) > 0:
-        logging.info( '' )
-        logging.info( '\033[7;37m\033[1;31m' + ' ' * 60 + '\033[0m' )
-        logging.info( '\033[1;31mupdates are available for this package:\033[0m' )
-
-        for patch in result:
-            logging.info( '  - %s', patch[0] )
-
-        logging.info( '' )
-        logging.info( '' )
-        logging.info( '\033[0;31mYou may apply them using "BST.py --upgrade".\033[0m' )
-        logging.info( '\033[7;37m\033[1;31m' + ' ' * 60 + '\033[0m' )
-        logging.info( '' )
-    else:
-        logging.debug( 'no need to patch' )
-
-
 def _parseSqArgs( cr, argv ):
     import re
 
@@ -168,14 +135,6 @@ def _parseSqArgs( cr, argv ):
         cr.showSummary( False )
     else:
         cr.showSummary( True )
-
-
-def _runPatchSystemGUI():
-    logging.info( 'starting zen update' )
-
-    from ToolBOSCore.CIA import PatchSystemGUI
-
-    PatchSystemGUI.run()
 
 
 def _runCheckRoutineDialog():
@@ -284,9 +243,6 @@ argman.addArgument( '-t', '--test', action='store_true' ,
 argman.addArgument( '-U', '--uninstall', action='store_true' ,
                     help='remove package from SIT' )
 
-argman.addArgument( '-u', '--upgrade', action='store_true' ,
-                    help='automatic upgrade (apply all available patches)' )
-
 argman.addArgument( '-x', '--proxy', action='store_true',
                     help='install package into SIT-Proxy (sandbox)' )
 
@@ -340,7 +296,6 @@ shellfiles    = args['shellfiles']
 setup         = args['setup']
 test          = args['test']
 uninstall     = args['uninstall']
-upgrade       = args['upgrade']
 verbose       = args['verbose']
 yes           = args['yes']
 zen           = args['zen']
@@ -390,7 +345,7 @@ try:
     if not any ( [ allTargets, build, codecheck, deprecate, deprecate_all,
                    distclean, documentation, globalInstall, listEnv, quality,
                    proxyInstall, release, setup, shellfiles, test, uninstall,
-                   upgrade, zen ] ):
+                   zen ] ):
         build = True
 
 
@@ -505,10 +460,7 @@ try:
     if zen:
         FastScript.tryImport( 'PyQt5' )
 
-        if upgrade:
-            _runPatchSystemGUI()
-
-        elif quality:
+        if quality:
             _runCheckRoutineDialog()
 
         else:
@@ -520,13 +472,6 @@ try:
     if setup or noArgs:
         if not bst.configure():
             sys.exit( -2 )
-
-
-    if upgrade:
-        from ToolBOSCore.CIA.PatchSystem import PatchSystem
-
-        patcher = PatchSystem()
-        patcher.run()
 
 
     if build or noArgs:

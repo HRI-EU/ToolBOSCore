@@ -364,17 +364,10 @@ class PkgInfoWriter( AbstractWriter ):
                      'gitOrigin'     : self.details.gitOrigin,
                      'gitRelPath'    : self.details.gitRelPath }
 
-            if self.details.gitBranchForCIA:
-                data[ 'gitBranchForCIA' ] = self.details.gitBranchForCIA
-
-            if self.details.gitOriginForCIA:
-                data[ 'gitOriginForCIA' ] = self.details.gitOriginForCIA
-
         else:
             data = { 'revision'      : self.details.svnRevision,
                      'repositoryRoot': self.details.svnRepositoryRoot,
-                     'repositoryUrl' : self.details.svnRepositoryURL,
-                     'revisionForCIA': self.details.svnRevisionForCIA }
+                     'repositoryUrl' : self.details.svnRepositoryURL }
 
         return self.writeTable( data )
 

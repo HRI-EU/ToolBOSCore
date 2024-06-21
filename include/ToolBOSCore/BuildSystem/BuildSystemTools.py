@@ -319,13 +319,6 @@ class BuildSystemTools( object ):
             return False
 
 
-    def upgrade( self ):
-        from ToolBOSCore.CIA.PatchSystem import PatchSystem
-
-        patcher = PatchSystem()
-        patcher.run()
-
-
     def getCanonicalPath( self ):
         p = PackageDetector( self._sourceTree )
         p.retrieveMakefileInfo()
@@ -786,9 +779,7 @@ def setEnv():
             such variables must be set.
 
         On Linux, alternatively, this can be achieved by sourcing the
-        BashSrc files. Nevertheless this is not possible in all cases
-        (especially Matlab because multiple versions are available)
-        when used within CIA.
+        BashSrc files.
 
         With some modifications this setEnv() approach conceptually
         potentially could also work on Windows.

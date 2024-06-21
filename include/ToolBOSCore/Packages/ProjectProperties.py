@@ -823,7 +823,7 @@ def isDeprecated( canonicalPath ):
                <sitRoot>/Libraries/Spam/deprecated.txt
 
                or if the canonicalPath is listed in the file
-               <sitPath>/Temporary/CIA/1.0/deprecatedOverride.txt.
+               <sitPath>/Temporary/Example/1.0/deprecatedOverride.txt.
     """
     requireIsCanonicalPath( canonicalPath )
 
@@ -833,61 +833,16 @@ def isDeprecated( canonicalPath ):
     check1   = os.path.join( sitRoot, os.path.dirname( canonicalPath ), filename )
     check2   = os.path.join( sitRoot, canonicalPath, filename )
 
-
     # if package is not present in SIT we can't give reliable information
     # if it is deprecated or not
 
     if not os.path.exists( pkgPath ):
         raise ValueError( "%s: Package not installed in SIT" % canonicalPath )
 
-
     if os.path.exists( check1 ) or os.path.exists( check2 ):
         return True
 
-
-    # check CIA operator "sudo override"
-    overrideFile = os.path.join( SIT.getPath(),
-                                 'Temporary/CIA/1.0/deprecatedOverride.txt' )
-
-    if os.path.exists( overrideFile ):
-        for line in FastScript.getFileContent( overrideFile,
-                                               splitLines=True ):
-            if line.strip() == canonicalPath:
-                return True
-
     return False
-
-
-def isExcludedFromCIA( package ):
-    """
-        Checks from the filesystem if the specified package (canonical path)
-        is flagged as being opted-out from the Continuous Integration
-        system.
-
-        The function checks if "excludeFromCIA = True" is specified in
-        the pkgInfo.py of the installed package.
-    """
-    from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
-
-    status = False
-
-    # temporarily disable verbosity, to prevent flooding CIA log
-    oldLevel = Any.getDebugLevel()
-    Any.setDebugLevel( 3 )
-
-    try:
-        pkgInfo = getPkgInfoContent( package )
-
-        if pkgInfo['excludeFromCIA']:
-            status = True
-
-    except ( AssertionError, IOError, KeyError ):
-        # if pkgInfo.py not present, the package surely was not opted-out
-        pass
-
-    Any.setDebugLevel( oldLevel )
-
-    return status
 
 
 def setDeprecated( canonicalPath, allVersions=False, message='' ):
