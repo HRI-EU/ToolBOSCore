@@ -202,8 +202,6 @@ def isString( obj ):
     return isinstance( obj, str )
 
 
-# legacy leftovers from Python 2/3 migration when there was a need to
-# distinguish 8-bit char strings from Unicode strings
 isText        = isString
 requireIsText = requireIsString
 
@@ -572,7 +570,6 @@ def isCallable( obj ):
         Returns a boolean whether or not 'obj' is callable (read as function
         or method).
     """
-    # PY3k Note: Python 3.0/3.1 don't have callable() but it's back in 3.2
     return callable( obj )
 
 

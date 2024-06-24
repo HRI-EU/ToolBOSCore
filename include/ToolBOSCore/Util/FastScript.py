@@ -906,7 +906,7 @@ def chmodRecursive( path, dirPermission, filePermission ):
         FastScript.setPermissions( '/path', 0o775, 0o664 )
 
         ATTENTION: <dirPermission> and <filePermission> needs to be passed as octal number,
-         with a leading '0o' prefix to support Python 2 and 3.
+        with a leading '0o' prefix!
     """
     Any.requireIsTextNonEmpty( path )
     Any.requireIsIntNotZero( dirPermission  )

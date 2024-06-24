@@ -2637,8 +2637,8 @@ future or for other Python implementations like PyPy, Jython or IronPython.
 In this case you have to use other means to ensure thread-safety instead.
 Do not rely on such implementation-specific side effects!'''
 
-    seeAlso     = { 'Thread handling and synchronization primitives in Python 2.7':
-                    'https://docs.python.org/2/library/threading.html',
+    seeAlso     = { 'Thread handling and synchronization primitives in Python 3':
+                    'https://docs.python.org/3/library/threading.html',
 
                     'Wikipedia: Thread safety':
                     'https://en.wikipedia.org/wiki/Thread_safety' }

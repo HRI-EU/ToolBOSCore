@@ -45,9 +45,8 @@ class ThreadPool( object ):
         It is meant to simplify usage of multiple threads at once and reduce
         off-topic code.
 
-        Py3k
-        Python3 offers the same functionality with the
-        concurrent.futures package and its subclass ThreadPoolExecutor.
+        [OBSOLETE] Can be replaced by the concurrent.futures package and its
+        subclass ThreadPoolExecutor.
     """
 
     def __init__( self ):

@@ -35,8 +35,6 @@
 #
 
 
-import logging
-
 from PyQt5.QtCore import QByteArray
 
 from ToolBOSCore.Util import Any
@@ -49,12 +47,10 @@ def convert( x ):
         accepts objects of type:
             * bytes
             * str
-            * unicode
             * QByteArray
 
         returns:
-            Py2: unicode
-            Py3: str
+            * str
     """
     if isinstance( x, QByteArray ):
         return convertQByteArray( x )
@@ -63,9 +59,6 @@ def convert( x ):
         return convertBytes( x )
 
     elif isinstance( x, str ):
-        return convertStr( x )
-
-    elif isinstance( x, unicode ):
         return x
 
     else:
@@ -83,10 +76,7 @@ def convertBytes( b ):
 
 def convertQByteArray( qba ):
     """
-        Converts a string of PyQt's 'QByteArray' type to:
-
-        Py2: unicode
-        Py3: str
+        Converts a string of PyQt's 'QByteArray' type to 'str':
     """
     Any.requireIsInstance( qba, QByteArray )
 
@@ -94,20 +84,6 @@ def convertQByteArray( qba ):
     Any.requireIsInstance( data, bytes )
 
     return convertBytes( data )
-
-
-def convertStr( s ):
-    """
-        Converts a string of Python's 'str' type to:
-
-        Py2: unicode
-        Py3: str (no need to do anything)
-    """
-    Any.requireIsInstance( s, str )
-
-    # no need to do anything (str-objects are unicode-ready)
-
-    return s
 
 
 # EOF

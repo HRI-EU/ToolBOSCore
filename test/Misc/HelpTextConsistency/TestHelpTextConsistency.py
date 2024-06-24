@@ -108,10 +108,11 @@ class TestHelpTextConsistency( unittest.TestCase ):
             Any.isTextNonEmpty( expected )
             Any.isTextNonEmpty( result )
 
-            # To support the backward compatability with anaconda 3.9 common environment
+            # To support the backward compatability with Python 3.9,
             # ignore the 'optional arguments' string which is part of help text.
-            # Note: In the newer versions it is displayed as 'options' instead.
-            # TODO: Once the migration to anaconda 3.11 is done we can remove this.
+            #
+            # In Python 3.11+ it is displayed as 'options' instead.
+
             if "optional arguments" in result:
                 expected = expected.replace("options", "")
                 result   = result.replace("optional arguments", "")
