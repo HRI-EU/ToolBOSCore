@@ -125,7 +125,6 @@ class PackageDetector( object ) :
         self.sqOptOutFiles     = []
         self.sqCheckExe        = []
         self.sqComments        = {}
-        self.useClang          = None
 
         # revision control system
         self.gitBranch         = None
@@ -520,7 +519,6 @@ class PackageDetector( object ) :
 
         # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
-        self.useClang          = getValue( 'BST_useClang',     self.useClang )
         self.buildCommand      = getValue( 'buildCommand',     'BST.py -sb' )
         self.buildDependencies = getValue( 'buildDepends',     self.buildDependencies )
         self.buildDependsArch  = getValue( 'buildDependsArch', self.buildDependsArch )

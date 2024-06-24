@@ -104,12 +104,6 @@ buildDependsArch = { 'focal64': [ 'deb://gcc-9.3' ] }
         colspan="3">compilation</td>
 </tr>
 <tr>
-    <td>BST_useClang</td>
-    <td>bool</td>
-    <td>enable / disable the usage of Clang/LLVM for compiling C/C++ code</td>
-</tr>
-
-<tr>
     <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
         colspan="3">distclean</td>
 </tr>

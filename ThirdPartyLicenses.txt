@@ -9,12 +9,6 @@ different than the ToolBOSCore software:
   https://www.emenda.com
   https://emenda.com/klocwork-his-metrics-ruleset
 
-- Icecream Monitor (distributed compiler monitoring tool) icons released under
-  GNU General Public License v2.0
-  https://github.com/icecc/icemon
-  https://github.com/icecc/icemon/blob/master/src/images/128-apps-icemon.png
-  https://github.com/icecc/icemon/blob/master/COPYING
-
 - AtomicFile (Python module) released under MIT License
   https://github.com/sashka/atomicfile
   https://github.com/sashka/atomicfile/blob/master/LICENSE.rst

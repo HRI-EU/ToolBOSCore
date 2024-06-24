@@ -20,8 +20,6 @@
 * [Zen Build Mode](ZBM.md)
 * [Static linking](StaticLinking.md)
 * [In-tree- vs. out-of-tree builds](InTreeVsOutOfTreeBuilds.md)
-* [Macros documentation](Macros.md)
-* [Clang/LLVM](ClangLLVM.md)
 
 
 ###  Post-build

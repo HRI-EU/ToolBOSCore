@@ -630,24 +630,7 @@ class BuildSystemTools( object ):
         hostArch = Platforms.getHostArch()
         hostOS   = Platforms.getHostOS()
 
-        clangEnv = FastScript.getEnv( 'BST_USE_CLANG' )
-
-        if clangEnv is None:
-            try:
-                useClang = PkgInfo.getPkgInfoContent()['BST_useClang']
-            except ( AssertionError, KeyError ):
-                useClang = getConfigOption( 'BST_useClang' )
-
-            clangEnv = 'TRUE' if useClang else 'FALSE'
-
-        else:
-            useClang = True if clangEnv == 'TRUE' else False
-
-
-        logging.debug( 'use Clang/LLVM: %s', useClang )
-
-        envSettings  = { 'BST_USE_CLANG': clangEnv,
-                         'HOSTARCH':      hostArch,
+        envSettings  = { 'HOSTARCH':      hostArch,
                          'HOSTOS':        hostOS,
                          'TARGETARCH':    hostArch,
                          'TARGETOS':      hostOS }

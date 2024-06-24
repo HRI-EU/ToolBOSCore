@@ -32,12 +32,6 @@
        avoid recursion when called from within \c compile.sh)</td>
  </tr>
  <tr>
-   <td>export BST_USE_ICECC=TRUE</td>
-   <td>explicitly force usage of IceCC distributing compiler on Linux
-       (TRUE or FALSE)</td>
- </tr>
-
- <tr>
    <td>export DRY_RUN=TRUE</td>
    <td>don't actually do anything (considered by install procedure and
        cleaning routine only)</td>
