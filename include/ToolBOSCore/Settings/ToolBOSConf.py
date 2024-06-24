@@ -61,19 +61,9 @@ class ToolBOSConf( AppConfig.AppConfig ):
         userDir    = os.path.join( os.path.expanduser( '~' ), '.HRI', appName )
         addFiles   = []
 
-
         # integrate settings from other ToolBOS and user specified packages, if present
 
-        mwRoot           = FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' )
         toolBOSConfPaths = FastScript.getEnv( 'TOOLBOSCONF_PATH' )
-
-        if mwRoot:
-            Any.requireIsDirNonEmpty( mwRoot )
-            mwFile = os.path.join( mwRoot, 'etc', 'ToolBOS-Middleware.conf' )
-
-            if os.path.exists( mwFile ):
-                logging.debug( 'found ToolBOS Middleware in %s', mwRoot )
-                addFiles.append( mwFile )
 
         if toolBOSConfPaths:
             Any.requireIsText( toolBOSConfPaths )

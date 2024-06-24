@@ -303,13 +303,6 @@ installUmask = "0022"      # for permissions rwxr-xr-x
          e.g. 123 to yield full version string "1.0.123"</td>
 </tr>
 <tr>
-    <td>linkAllLibraries</td>
-    <td>bool</td>
-    <td>flag if CreateLibIndex for RTBOS shall consider all.so files
-         in the install directory, or only the main one named after the
-         package</td>
-</tr>
-<tr>
     <td>Install_on{Startup,Exit}Stage{1..5}</td>
     <td>callable</td>
     <td>Python function to be executed at startup/exit of the
@@ -410,8 +403,6 @@ version          = '1.0'
 category         = 'Applications'
 
 sqLevel          = 'advanced'
-
-linkAllLibraries = True
 
 envVars          = [ ( 'PATH', '${INSTALL_ROOT}/bin/${MAKEFILE_PLATFORM}:${PATH}' ),
                      ( 'LD_LIBRARY_PATH', '${INSTALL_ROOT}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}' ) ]

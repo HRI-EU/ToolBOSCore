@@ -233,9 +233,9 @@ def getProjects( path, keepPath = True, onError = None ):
              getProjects( '/hri/sit/latest' )
 
              True:
-                   [ '/hri/sit/latest/Libraries/Serialize/3.0', ... ]
+                   [ '/hri/sit/latest/Libraries/Example/3.0', ... ]
              False:
-                   [ 'Libraries/Serialize/3.0', ... ]
+                   [ 'Libraries/Example/3.0', ... ]
 
         You may pass a function callback that will be called upon errors,
         e.g. permission denied. This function needs to take a single

@@ -177,10 +177,10 @@ def getPackageCategoryFromPath( projectRootDir ):
         Returns the packageCategory (former known as "project start path") of a
         module, e.g.:
 
-          getPackageCategoryFromPath( '/hri/sit/latest/Modules/BBCM/Food/FeedSnake/42.0' )
-          getPackageCategoryFromPath( 'Modules/BBCM/Food/FeedSnake/42.0' )
+          getPackageCategoryFromPath( '/hri/sit/latest/Food/FeedSnake/42.0' )
+          getPackageCategoryFromPath( 'Food/FeedSnake/42.0' )
 
-        return both 'Modules/BBCM/Food'.
+        return both 'Food'.
     """
     Any.requireIsTextNonEmpty( projectRootDir )
 
@@ -205,10 +205,10 @@ def getPackageName( projectRootDir ):
     """
         Returns the project name of a module, e.g.:
 
-          getPackageName( '/hri/sit/latest/Modules/BBCM/Food/FeedSnake/42.0' )
-          getPackageName( 'Modules/BBCM/Food/FeedSnake/42.0' )
+          getPackageName( '/hri/sit/latest/Food/FeedSnake/42.0' )
+          getPackageName( 'Food/FeedSnake/42.0' )
 
-        return both 'Modules/BBCM/Food'.
+        return both 'FeedSnake'.
 
         If projectRootDir does not exist, an OSError will be thrown.
     """
@@ -232,8 +232,8 @@ def getPackageVersion( projectRootDir, verbatim = False ):
     """
         Returns the version of a module, e.g.:
 
-          getPackageVersion( '/hri/sit/latest/Modules/BBCM/Food/FeedSnake/42.0' )
-          getPackageVersion( 'Modules/BBCM/Food/FeedSnake/42.0' )
+          getPackageVersion( '/hri/sit/latest/FeedSnake/42.0' )
+          getPackageVersion( 'Food/FeedSnake/42.0' )
 
         return both '42.0'.
 
@@ -283,7 +283,7 @@ def getPackageVersions( project, includePatchlevelVersions = False ):
 def splitPath( projectRootDir ):
     """
         Splits the given path and returns a tuple of three elements:
-        - the packageCategory, e.g. 'Modules/BBCM/InputOutput'
+        - the packageCategory, e.g. 'Modules/Example/InputOutput'
         - the project name, e.g. 'UltimaTest' and
         - the project version, e.g. '2.2'
     """
@@ -374,7 +374,7 @@ def areAllDependenciesInstalled( project, dependencyList = None ):
         a 'True' status is quite reliable.
 
         'project' must be in canonical form,
-        e.g. 'Libraries/Serialize/3.0'.
+        e.g. 'Libraries/Example/3.0'.
 
         If 'dependencyList' (an optionally nested list of dependencies) is
         specified it will be used as a cache instead of querying the
@@ -413,7 +413,7 @@ def isInstalled( url, sitPath=None ):
         Checks if the given package is installed. Depending on the URL type
         different checks will be performed, e.g.:
 
-        'sit://Libraries/Serialize/3.0'    # check in current SIT
+        'sit://Libraries/Example/3.0'    # check in current SIT
         'deb://binutils'                   # check for O.S. packages (*.deb)
 
         You may speed-up this function by providing 'sitPath' so that it
@@ -451,7 +451,7 @@ def isInstalled_sitPackage( package, sitPath ):
         Looks for a certain package in the specified SIT and returns whether
         or not it has been found.
 
-        'package' must be in the form e.g. 'Libraries/Serialize/3.0'.
+        'package' must be in the form e.g. 'Libraries/Example/3.0'.
 
         Returns a boolean status if it is installed.
     """
@@ -558,8 +558,8 @@ def getDependencies( project, recursive = False, cache = None,
         dependencies the list will be empty.
 
         'project' must be specified in canonical form, e.g.:
-           - 'Libraries/Serialize/3.0'
-           - 'sit://Libraries/Serialize/3.0'
+           - 'Libraries/Example/3.0'
+           - 'sit://Libraries/Example/3.0'
            - 'deb://gcc'
 
         If 'recursive=False', the list will contain the pure untreated

@@ -54,11 +54,8 @@ def silentUpgrade():
     """
     dirName = os.path.expandvars( '${HOME}/.HRI' )
 
-
     # clean-up no longer needed files / directories
-    FastScript.remove( os.path.join( dirName, 'DTBOS' ) )
     FastScript.remove( os.path.join( dirName, 'ToolBOSCore' ) )
-
 
     # move settings file to new location
     oldFile = os.path.join( dirName, 'LocalSettings.py' )

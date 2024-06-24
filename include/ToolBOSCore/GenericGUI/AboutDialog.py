@@ -78,19 +78,8 @@ class AboutDialog( QDialog ):
         tcVersion += '.%d' % tcDetector.patchlevel if tcDetector.patchlevel else ''
         tcInfo     = '%s (Version: %s)' % ( tcRoot, tcVersion )
 
-        mwRoot     = FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' )
-        if mwRoot:
-            mwDetector = PackageDetector( mwRoot )
-            mwDetector.retrieveMakefileInfo()
-            mwVersion  = mwDetector.packageVersion
-            mwVersion += '.%d' % mwDetector.patchlevel if mwDetector.patchlevel else ''
-            mwInfo     = '%s (Version: %s)' % ( mwRoot, mwVersion )
-        else:
-            mwInfo     = 'not available'
-
         #          label text (key)       value                                     lines to display
         info = [ ( 'ToolBOS Core',        tcInfo,                                   1 ),
-                 ( 'ToolBOS Middleware',  mwInfo,                                   1 ),
                  ( '$SIT',                FastScript.getEnv( 'SIT'               ), 1 ),
                  ( '$MAKEFILE_PLATFORM',  FastScript.getEnv( 'MAKEFILE_PLATFORM' ), 1 ),
                  ( '$PATH',               FastScript.getEnv( 'PATH'              ), 3 ),

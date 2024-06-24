@@ -67,17 +67,17 @@ No setting is needed, as this is the assumed default.
 #### Example: Complete package under GPLv3
 
     copyright = [ 'Copyright (c) Honda Research Institute Europe GmbH',
-                'This file is part of ToolBOSLib.',
-                'ToolBOSLib is free software: you can redistribute it and/or modify',
+                'This file is part of XY.',
+                'XY is free software: you can redistribute it and/or modify',
                 'it under the terms of the GNU General Public License as published by',
                 'the Free Software Foundation, either version 3 of the License, or',
                 '(at your option) any later version.',
-                'ToolBOSLib is distributed in the hope that it will be useful,',
+                'XY is distributed in the hope that it will be useful,',
                 'but WITHOUT ANY WARRANTY; without even the implied warranty of',
                 'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the',
                 'GNU General Public License for more details.',
                 'You should have received a copy of the GNU General Public License',
-                'along with ToolBOSLib. If not, see <http://www.gnu.org/licenses/>.' ]
+                'along with XY. If not, see <http://www.gnu.org/licenses/>.' ]
 
 #### Example: Project under HRI-EU license, with one file under BSD 3-clause
 

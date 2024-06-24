@@ -397,9 +397,9 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
             Returns the name of a repository which can be different from
             the package name, e.g.:
 
-            URL = git@dmz-gitlab.honda-ri.de:ToolBOS/BasicComponents.git
+            URL = git@dmz-gitlab.honda-ri.de:Group/Example.git
 
-            returns: "BasicComponents"
+            returns: "Example"
         """
         Any.requireIsTextNonEmpty( self.url )
 

@@ -109,7 +109,6 @@ class PackageDetector( object ) :
         self.installGroup      = None
         self.installUmask      = None
         self.installMode       = 'incremental'
-        self.linkAllLibraries  = False
         self.pylintConf        = pylintConf
         self.usePatchlevels    = False
         self.userSrcContent    = None
@@ -327,95 +326,6 @@ class PackageDetector( object ) :
             package.
         """
         return self._search( self.topLevelDir, '__init__.py' )
-
-
-    def isOldBBCM( self ):
-        """
-            Returns True if package is a BBCM based upon template 2.5.
-        """
-        from glob import glob
-
-        if glob( 'src/*_onFatalError.inc' ):
-            return True
-        else:
-            return False
-
-
-    def isNewBBCM( self ):
-        """
-            Returns True if package is a BBCM based upon template 2.7
-            (or higher).
-        """
-        from glob import glob
-
-        if glob( 'src/*_info.c' ) or glob( 'src/*_info.cpp' ):
-            return True
-        else:
-            return False
-
-
-    def isBBCM( self ):
-        """
-            Returns True if package is a regular BBCM, but not a
-            Virtual Module.
-        """
-        return self.isOldBBCM() or self.isNewBBCM()
-
-
-    def isBBDM( self ):
-        """
-            Returns True if package is a BBDM component.
-
-            The specific "BBDMAll" collector-package is explicitly
-            blacklisted because is not a real component by itself.
-        """
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageCategory )
-
-        isBBDMAll      = self.packageName == 'BBDMAll'
-        isBBDMName     = self.packageName.startswith( 'BBDM' )
-        isBBDMCategory = self.packageCategory == 'Modules/BBDM'
-        result         = ( not isBBDMAll ) & isBBDMName & isBBDMCategory
-
-        return result
-
-
-    def isComponent( self ):
-        """
-            Returns True if package is installed under "Modules" category,
-            but is not a library containing the implementation of a module.
-
-            The specific "BBDMAll" collector-package is explicitly
-            blacklisted because is not a real component by itself.
-        """
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageCategory )
-
-        isBBDMAll        = self.packageName == 'BBDMAll'
-        isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
-                           self.packageCategory.startswith( 'Modules/ROS' )
-        result           = ( not isBBDMAll ) & isModuleCategory
-
-        return result
-
-
-    def isROSComponent( self ):
-        """
-            Returns True if the install category is 'Modules/ROS'.
-        """
-        return self.packageCategory == 'Modules/ROS'
-
-
-    def isVirtualModule( self ):
-        """
-            Returns True if the following files exist:
-              * src/<packageName.[xml,bbml]
-              * src/I<packageName.[xml,bbml]
-        """
-        return ( os.path.exists( 'src/%s.xml' % self.packageName ) and
-                 os.path.exists( 'src/I%s.xml' % self.packageName ) ) or (
-                     os.path.exists( 'src/%s.bbml' % self.packageName ) and
-                     os.path.exists( 'src/I%s.bbml' % self.packageName ) )
 
 
     #------------------------------------------------------------------------
@@ -646,7 +556,6 @@ class PackageDetector( object ) :
         self.installMode       = getValue( 'installMode',      self.installMode  )
         self.installSymlinks   = getValue( 'installSymlinks',  self.installSymlinks )
         self.installUmask      = getValue( 'installUmask',     self.installUmask )
-        self.linkAllLibraries  = getValue( 'linkAllLibraries', self.linkAllLibraries )
         self.packageName       = getValue( 'name',             self.packageName )
         self.patchlevel        = getValue( 'patchlevel',       self.patchlevel )
         self.pylintConf        = getValue( 'pylintConf',       self.pylintConf )

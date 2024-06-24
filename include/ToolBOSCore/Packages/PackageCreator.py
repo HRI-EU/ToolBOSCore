@@ -109,7 +109,6 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
 
             * Proxy SIT directory
             * Global SIT installation
-            * BBCM *.def file
 
         If 'cleanGlobalInstallation=True' the package will also be
         uninstalled from global SIT (if applicable). If False it

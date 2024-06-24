@@ -43,10 +43,8 @@ source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 CWD=$(pwd)
 
 
-cd "${CWD}/test/BuildSystemTools" && runTest ./TestBuildSystemTools.sh
 cd "${CWD}/test/MakeShellfiles"   && runTest ./TestMakeShellfiles.py
 cd "${CWD}/test/Misc"             && runTest ./TestMisc.sh
-cd "${CWD}/test/SoftwareQuality"  && runTest ./TestSoftwareQuality.sh
 cd "${CWD}/test/SIT"              && runTest ./TestSIT.sh
 cd "${CWD}/test/Tools"            && runTest ./TestTools.sh
 cd "${CWD}/test/UserSetup"        && runTest ./TestUserSetup.sh

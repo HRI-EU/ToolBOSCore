@@ -209,11 +209,6 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     if not pluginsEnabled:
         raise ValueError( 'Nothing to do. Please check your parameters.' )
 
-
-    # in any case, after updating the proxy verify that there are no legacy
-    # *.def files laying around
-    pluginsEnabled.append( _checkDefFiles )
-
     tp = ThreadPool.ThreadPool()
     tp.add( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
     tp.add( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
@@ -386,64 +381,6 @@ def _linkNewPackagesIntoProxy( sitRootPkgList, sitProxyPkgList,
     return proxyChanged
 
 
-def _checkDefFiles( sitRootPkgList, sitProxyPkgList,
-                    sitRoot, sitProxy, dryRun ):
-    """
-        Checks that there are no orphaned *.def files in the proxy,
-        f.i. leftovers from previous proxy-installations that have been
-        deleted in the meanwhile.
-
-        Superfluous *.def files might be a really hard-to-track source of
-        errors: In case they don't match the actual interface of the
-        (globally) installed component, it might be very difficult to find
-        out why certain inputs/outputs/references do / don't appear in DTBOS.
-    """
-    from ToolBOSCore.Packages.ProjectProperties import isCanonicalPath
-    from ToolBOSCore.Packages.ProjectProperties import splitPath
-
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
-
-
-    proxyPackages = findProxyInstallations()  # list of absolute paths
-    Any.requireIsList( proxyPackages )
-    proxyPackages = map( SIT.strip, proxyPackages )
-
-    # filter-out 3-digit version numbers, as *.def files by convention
-    # are for 2-digit versions only
-    proxyPackages = filter( isCanonicalPath, proxyPackages )
-
-    # create a corresponding fake-index for each proxy installation, for easy
-    # string-based matching later
-    #
-    fakeDefs      = []
-
-    for package in proxyPackages:
-        ( category, packageName, packageVersion ) = splitPath( package )
-        fakeDefs.append( '%s_%s.def' % ( packageName, packageVersion ) )
-
-    indexDir      = os.path.join( sitProxy, 'Modules/Index' )
-    defPathList   = glob.glob( os.path.join( indexDir, '*.def' ) )
-    proxyChanged  = False
-
-    for defPath in defPathList:
-        defFile = os.path.basename( defPath )
-
-        # delete superfluous *.def files
-        if defFile not in fakeDefs:
-            collapsed = SIT.collapseSIT( defPath )
-
-            if dryRun:
-                logging.info( '-- DRY RUN --   found superfluous %s', collapsed )
-            else:
-                logging.info( 'deleting %s', defPath )
-                FastScript.remove( defPath )
-
-    return proxyChanged
-
-
 def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
                            sitRoot, sitProxy, dryRun ):
     """
@@ -451,7 +388,7 @@ def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
         points into the SIT root directory or outside (e.g. group proxy)
 
         'projectList' must be a list containing canonical path names such
-        as ['Libraries/Serialize/3.0'].
+        as ['Libraries/Example/3.0'].
     """
     Any.requireIsListNonEmpty( sitRootPkgList )
     Any.requireIsListNonEmpty( sitProxyPkgList )
@@ -481,10 +418,10 @@ def _checkProxyLinkedVersion( sitRootPkgList, sitProxyPkgList,
         Checks if the two-digit version in the proxy points to the most
         recent version. Otherwise this can happen:
 
-          * Developer A installs "Serialize/3.0.100" into his proxy, the
+          * Developer A installs "Example/3.0.100" into his proxy, the
             2-digit link "3.0" points into the proxy to version 3.0.100.
 
-          * Developer B installs "Serialize/3.0.101" globally.
+          * Developer B installs "Example/3.0.101" globally.
 
           * Now the 3.0-symlink of developer A is outdated.
     """
@@ -553,13 +490,6 @@ def _findBrokenLinks( sitProxy ):
                         resultList.append( path )
 
                 except OSError as details:
-
-                    # Symlink cannot be read e.g. due to I/O error
-                    #
-                    # We experienced this when sbd. by chance was installing
-                    # a BBCM component and the corresponding index file link
-                    # has not been written, yet. Indeed a cornercase ;-)
-
                     logging.debug( 'unable to read symlink: %s', details )
 
     return resultList

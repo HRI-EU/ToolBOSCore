@@ -72,7 +72,6 @@ class AbstractWriter( object ):
         suggestions        = self.addSuggestions()
         buildSystemInfo    = self.addBuildSystemInfo()
         mainLoop           = self.addMainLoop()
-        componentInterface = self.addComponentInterface()
         leadOut            = self.addLeadOut()
 
         Any.requireIsText( leadIn )
@@ -86,14 +85,13 @@ class AbstractWriter( object ):
         Any.requireIsText( suggestions )
         Any.requireIsText( buildSystemInfo )
         Any.requireIsText( mainLoop )
-        Any.requireIsText( componentInterface )
         Any.requireIsText( leadOut )
 
         self.content       = leadIn + basicInfo + originalName + \
                              maintainer + repositoryInfo + dependencies + \
                              buildDependencies + recommendations + \
                              suggestions + buildSystemInfo + mainLoop + \
-                             componentInterface + leadOut
+                             leadOut
 
 
     def _replace( self, string, substMap ):
@@ -143,9 +141,6 @@ class AbstractWriter( object ):
         return ''
 
     def addBuildSystemInfo( self ):
-        return ''
-
-    def addComponentInterface( self ):
         return ''
 
     def addMainLoop( self ):

@@ -742,7 +742,7 @@ def getDefaultDistcleanPatterns():
                   '*~', '*.bak',
 
                   # temp. files left from previous program executions
-                  '*.pyc', '*.backup.zip', 'LibIndex',
+                  '*.pyc', '*.backup.zip',
 
                   # pylint log files
                   '*_pylint.log',
@@ -751,10 +751,10 @@ def getDefaultDistcleanPatterns():
                   'install/??shSrc', 'bin/??shSrc',
                   'examples/??shSrc', 'test/??shSrc',
                   'doc/autoDoxyfile', 'doc/doxygen*', 'doc/*.tag',
-                  'doc/html', 'install/LinkAllLibraries',
+                  'doc/html',
                   'install/MD5SUMS', 'install/*.tar.gz', 'install/*.deb',
                   'install/*.tar.bz2', 'install/packageVar.cmake',
-                  'install/pkgInfo.py', 'install/*.def',
+                  'install/pkgInfo.py',
                   'install/debControl.txt',
                   '[A-Za-z]*[A-Za-z]PHP', '[A-Za-z]*[A-Za-z]PY',
                   'run*([^.])', 'src/.*.h.md5', 'build4all.cfg', 'run' ] )

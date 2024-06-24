@@ -702,10 +702,6 @@ scripts          = { 'unittest': 'myScript.sh' }
                                                        'Please check pkginfo.py '
                                                        'for category information.' )
 
-        if details.isComponent():
-            return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
-
-
         if 'unittest' in details.scripts:
             candidates = [ details.scripts[ 'unittest' ] ]
         else:
@@ -2230,9 +2226,6 @@ provide small, easy-to-understand example programs / showcases.
         Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
                                                        'Please check pkginfo.py '
                                                        'or CMakeLists.txt for category information.' )
-
-        if details.isComponent():
-            return NOT_APPLICABLE, 0, 0, 'examples not required for components'
 
         logging.debug( 'looking for example programs' )
         examplesDir = os.path.join( details.topLevelDir, 'examples' )

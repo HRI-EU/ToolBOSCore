@@ -400,7 +400,7 @@ try:
             except EOFError as details:
                 raise FileNotFoundError( details )
             except dill.UnpicklingError as e:
-                logging.warning( 'unable to deserialize %s: %s', bstCache, e )
+                logging.warning( 'unable to parse %s: %s', bstCache, e )
                 logging.warning( 'ignoring cache file!' )
                 raise IOError( e )
 

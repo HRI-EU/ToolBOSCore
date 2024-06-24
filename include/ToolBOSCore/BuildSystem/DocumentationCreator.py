@@ -208,10 +208,6 @@ class DoxygenBackend( AbstractBackend ):
                        'EXAMPLE_PATTERNS       =\n' + \
                        'EXAMPLE_RECURSIVE      = YES\n'
 
-        if self.details.isComponent():
-            logging.debug( 'doxygen: indexing src/*.{c,cpp}' )
-            content += 'FILE_PATTERNS          = *.c *.cpp *.h\n'
-
         content = FastScript.getFileContent( template ) + content
         FastScript.setFileContent( self.mainDoxyfile, content )
 

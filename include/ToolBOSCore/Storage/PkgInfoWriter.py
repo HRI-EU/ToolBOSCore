@@ -34,23 +34,18 @@
 #
 
 
-import glob
 import io
-import logging
 import os
 import pprint
-import re
 
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Settings                 import ToolBOSConf
 from ToolBOSCore.Storage.AbstractWriter   import AbstractWriter
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Util                     import Any, FastScript
 
 
 class PkgInfoWriter( AbstractWriter ):
 
-    _indentation     = len( 'linkAllLibraries' )   # reference width
+    _indentation     = 16   # reference width
     _indentationIter = _indentation + len( ' = [' )
     _valueWidthMax   = 78 - _indentation
 
@@ -176,186 +171,6 @@ class PkgInfoWriter( AbstractWriter ):
         return self.writeTable( { 'maintainer': data } )
 
 
-    def addComponentInterface( self ):
-        """
-            In case of BBCM/BBDM packages generates the section about
-            inputs, outputs, and references.
-        """
-        if not self.details.isComponent():
-            # no need to create ToolBOS-style component interface info
-            return ''
-
-        try:
-            from Middleware.InfoParser import BBCMInfoParser, BBDMInfoParser, Utils
-        except ImportError as e:
-            pkg = ToolBOSConf.getConfigOption( 'package_toolbosmiddleware' )
-            msg = 'To work with Middleware-related packages, please run ' \
-                  '"source ${SIT}/%s/BashSrc" first.' % pkg
-
-            logging.debug( e )
-
-            raise EnvironmentError( msg )
-
-
-        srcDir               = os.path.join( self.details.topLevelDir, 'src' )
-        infoFileExtensionSet = [ '.c', '.cpp', '.cxx', '.cc', '.c++' ]
-
-        if self.details.isOldBBCM():
-            bbcmInfo = Utils.collectOldStyleBBCMInfos( self.details.packageName, srcDir )
-            cm       = Utils.createCodeModule( bbcmInfo )
-
-            initRefs     = cm.referenceSettings.values( )
-            inputEvents  = cm.inputEvents.values( )
-            inputs       = cm.inputs.values( )
-            outputEvents = cm.outputEvents.values( )
-            outputs      = cm.outputs.values( )
-            sysRefs      = cm.systemReferences.values( )
-
-            return self.writeTable( { 'description'      : cm.description,
-                                      'systemModule'     : cm.isSystemModule,
-                                      'longDescription'  : cm.longDescription,
-                                      'computingMode'    : cm.computingMode,
-                                      'references'       : _generateReferences( initRefs ),
-                                      'systemReferences' : _generateReferences( sysRefs ),
-                                      'outputEvents'     : _generateEvents( outputEvents, outputs, 'output' ),
-                                      'inputEvents'      : _generateEvents( inputEvents, inputs, 'input' ),
-                                      'outputs'          : _generatePorts( outputs ),
-                                      'inputs'           : _generatePorts( inputs ),
-                                      'initFromXML'      : False,
-                                      'moduleType'       : cm.moduleType,
-                                      'isOldStyleBBCM'   : True } )
-
-        elif self.details.isNewBBCM():
-            infoFiles      = glob.glob( os.path.join( srcDir, '{}_info.*'.format( self.details.packageName ) ) )
-            validInfoFiles = []
-
-            hasInitFromXML = Utils.hasInitFromXML( 'BBCM', srcDir, self.details.packageName )
-
-            Any.requireIsListNonEmpty( infoFiles )
-
-            for f in infoFiles:
-                name, ext = os.path.splitext( f )
-                if ext.lower( ) in infoFileExtensionSet:
-                    validInfoFiles.append( f )
-
-            numValid = len( validInfoFiles )
-            Any.requireMsg( numValid == 1,
-                            'expected one *_info.c file, found %d' % numValid )
-
-            infoFilePath = validInfoFiles[ 0 ]
-            Any.requireIsFileNonEmpty( infoFilePath )
-
-            parser = BBCMInfoParser.BBCMInfoParser( )
-            infos  = parser.parse( FastScript.getFileContent( infoFilePath ) )
-
-            cm = Utils.createCodeModule( infos )
-
-            initRefs     = cm.referenceSettings.values( )
-            inputEvents  = cm.inputEvents.values( )
-            inputs       = cm.inputs.values( )
-            outputEvents = cm.outputEvents.values( )
-            outputs      = cm.outputs.values( )
-            sysRefs      = cm.systemReferences.values( )
-
-            return self.writeTable( { 'description'      : cm.description,
-                                      'systemModule'     : cm.isSystemModule,
-                                      'longDescription'  : cm.longDescription,
-                                      'computingMode'    : cm.computingMode,
-                                      'references'       : _generateReferences( initRefs ),
-                                      'systemReferences' : _generateReferences( sysRefs ),
-                                      'outputEvents'     : _generateEvents( outputEvents, outputs, 'output' ),
-                                      'inputEvents'      : _generateEvents( inputEvents, inputs, 'input' ),
-                                      'outputs'          : _generatePorts( outputs ),
-                                      'inputs'           : _generatePorts( inputs ),
-                                      'moduleType'       : cm.moduleType,
-                                      'initFromXML'      : hasInitFromXML,
-                                      'isOldStyleBBCM'   : False } )
-
-        elif self.details.isBBDM():
-
-            # BBDMAll is special, it does not have its own interface
-            if self.details.packageName == 'BBDMAll':
-                return ''
-
-            srcFiles      = glob.glob( os.path.join( srcDir, '{}.*'.format( self.details.packageName ) ) )
-            validSrcFiles = []
-
-            hasInitFromXML = Utils.hasInitFromXML( 'BBDM', srcDir, self.details.packageName )
-
-            for f in srcFiles:
-                name, ext = os.path.splitext( f )
-                if ext.lower( ) in infoFileExtensionSet:
-                    validSrcFiles.append( f )
-
-            numValid = len( validSrcFiles )
-            Any.requireMsg( numValid == 1,
-                            'expected one source file, found %d' % numValid )
-
-            infoFilePath = validSrcFiles[ 0 ]
-            Any.requireIsFileNonEmpty( infoFilePath )
-
-            parser = BBDMInfoParser.BBDMInfoParser()
-            infos  = parser.parse( FastScript.getFileContent( infoFilePath ) )
-
-            cm = Utils.createDataModule( infos )
-
-            initRefs     = cm.referenceSettings.values( )
-            inputs       = cm.inputs.values( )
-            outputs      = cm.outputs.values( )
-            sysRefs      = cm.systemReferences.values( )
-
-            return self.writeTable( { 'description'      : cm.description,
-                                      'references'       : _generateReferences( initRefs ),
-                                      'outputs'          : _generatePorts( outputs ),
-                                      'inputs'           : _generatePorts( inputs ),
-                                      'moduleType'       : cm.moduleType,
-                                      'initFromXML'      : hasInitFromXML,
-                                      'systemReferences' : _generateReferences( sysRefs ) } )
-
-        elif self.details.isVirtualModule():
-            from Middleware.BBMLv1.LoadBBML import loadVirtualModule
-
-            projectName    = self.details.packageName
-            projectVersion = self.details.packageVersion
-            canonicalPath  = self.details.canonicalPath
-            category       = self.details.packageCategory
-
-            Any.requireIsTextNonEmpty( projectName )
-            Any.requireIsTextNonEmpty( projectVersion )
-            Any.requireIsTextNonEmpty( canonicalPath )
-            Any.requireIsTextNonEmpty( category )
-
-            sourcePath    = _getSourceFile( projectName, srcDir )
-            interfacePath = _getInterfaceFile( projectName, srcDir )
-            sourcePathExt = os.path.splitext( sourcePath )[1]
-
-            Any.requireIsFileNonEmpty( sourcePath )
-            Any.requireIsFileNonEmpty( interfacePath )
-
-            # generate content
-            virtualModule = loadVirtualModule( sourcePath, interfacePath, synthesizable=True )
-
-            inputs       = virtualModule.inputs.values()
-            outputs      = virtualModule.outputs.values()
-            inputEvents  = virtualModule.inputEvents.values()
-            outputEvents = virtualModule.outputEvents.values()
-
-            return self.writeTable( {
-                'inputEvents'     : _generateVirtualModulePorts( inputEvents ),
-                'inputs'          : _generateVirtualModulePorts( inputs ),
-                'library'         : 'VirtualModule',
-                'moduleType'      : 'VirtualModule',
-                'outputEvents'    : _generateVirtualModulePorts( outputEvents ),
-                'outputs'         : _generateVirtualModulePorts( outputs ),
-                'references'      : _generateVirtualModuleReferences( virtualModule ),
-                'sourcePath'      : os.path.join( r'${SIT}', canonicalPath, 'include', projectName + sourcePathExt ),
-                'virtualExecutor' : _generateVirtualExecutors( virtualModule )
-            } )
-
-        else:
-            raise ValueError( 'unknown component type' )
-
-
     def addRepositoryInfo( self ):
         if self.details.gitFound:
 
@@ -416,7 +231,7 @@ class PkgInfoWriter( AbstractWriter ):
             which contained the loop over all inherited BashSrc files to
             source the dependencies. It also contained add. environment
             settings the user might have specified in the pkgInfo.py.
-                Hence we use the same function here to store the environment
+                Hence, we use the same function here to store the environment
             settings even if no "MainLoop" equivalent is present.
         """
         envVars = []
@@ -467,11 +282,6 @@ class PkgInfoWriter( AbstractWriter ):
         self.content = FastScript.getFileContent( filePath )
 
 
-    def setLinkAllLibraries( self, boolean ):
-        Any.requireIsBool( boolean )
-        self.content += self.writeTable( { 'linkAllLibraries': boolean } )
-
-
     def setUsePatchlevelSystem( self, boolean ):
         Any.requireIsBool( boolean )
         self.content += self.writeTable( { 'usePatchlevels': boolean } )
@@ -497,123 +307,5 @@ class PkgInfoWriter( AbstractWriter ):
         self.content = self.content.replace( '# EOF\n', '' )
         self.content += '\n# EOF\n'
 
-
-# ----------------------------------------------------------------------------
-# Private functions
-# ----------------------------------------------------------------------------
-
-def _generateReferences( references ):
-    retVal = [ ]
-
-    for r in references:
-        retVal.append( (r.name, r.type, r.format, r.default, r.description, r.range, r.complex) )
-
-    return retVal
-
-
-def _generateEvents( eventPorts, dataPorts, direction ):
-    retVal = [ ]
-
-    for e in eventPorts:
-        retVal.append( (e.name, e.description) )
-
-    for d in dataPorts:
-        retVal.append( (d.name, 'Notify a change in the ' + direction) )
-
-    return retVal
-
-
-def _generatePorts( ports ):
-    retVal = [ ]
-
-    for p in ports:
-        retVal.append( (p.name, p.portType, p.description, p.necessity) )
-
-    return retVal
-
-def _generateVirtualExecutors( virtualModule ):
-    from Middleware.BBMLv1.Graph import VirtualModule
-
-    Any.requireIsInstance( virtualModule, VirtualModule )
-
-    retVal = []
-
-    for executor in virtualModule.executors.values():
-        retVal.append( ( executor.name,
-                         executor.type,
-                         '<NO DESCRIPTION>' ) )
-
-    return retVal
-
-
-def _generateVirtualModulePorts( ports ):
-    retVal = []
-
-    for p in ports:
-        mandatory = 'MANDATORY' if p.mandatory == 'true' else 'OPTIONAL'
-        retVal.append( (p.name, p.dataType, p.description, p.contents, mandatory) )
-
-    return retVal
-
-
-def _generateVirtualModuleReferences( virtualModule ):
-    from Middleware.BBMLv1.Graph import VirtualModule
-
-    Any.requireIsInstance( virtualModule, VirtualModule )
-
-    retVal                   = []
-    referenceImplementations = dict( (d.name, d.value) for d in virtualModule.referenceImplementations )
-
-    for definition in virtualModule.referenceDefinitions:
-        value = ''
-
-        if definition.name in referenceImplementations:
-            value = referenceImplementations[ definition.name ]
-
-        retVal.append( ( definition.name,
-                         definition.dataType or '<NO DATA TYPE>',
-                         definition.format,
-                         value,
-                         definition.description or '<NO DESCRIPTION>',
-                         '<NO RANGE DESCRIPTION>' ) )
-
-    return retVal
-
-def _getSourceFile( projectName, srcDir ):
-
-    Any.requireIsTextNonEmpty( projectName )
-    Any.requireIsDir( srcDir )
-
-    r     = r'^({}\.[x,bb]ml)$'.format( projectName )
-    files = []
-
-    for f in os.listdir( srcDir ):
-        match = re.search( r, f )
-        if match:
-            files.append( os.path.join( srcDir, match.group(1) ) )
-
-    Any.requireIsListNonEmpty( files )
-    Any.requireMsg( len(files) == 1, 'More than one valid source file was found for VirtualModule {}: {}'.format( projectName,
-                                                                                                                  files ) )
-
-    return files[0]
-
-def _getInterfaceFile( projectName, srcDir ):
-    Any.requireIsTextNonEmpty( projectName )
-    Any.requireIsDir( srcDir )
-
-    r     = r'^(I{}\.[x,bb]ml)$'.format( projectName )
-    files = []
-
-    for f in os.listdir( srcDir ):
-        match = re.match( r, f )
-        if match:
-            files.append( os.path.join( srcDir, match.group(1) ) )
-
-    Any.requireIsListNonEmpty( files )
-    Any.requireMsg( len(files) == 1, 'More than one valid interface file was found for VirtualModule {}: {}'.format( projectName,
-                                                                                                                     files ) )
-
-    return files[0]
 
 # EOF

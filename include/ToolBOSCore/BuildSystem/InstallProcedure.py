@@ -251,12 +251,7 @@ class InstallProcedure( object ):
             fields (see the documentation) to customize what gets
             installed and where.
         """
-        self._extractVM()
-
         self._collectEssentials()
-
-        self._registerComponent_ToolBOS()
-
         self._collectDefault()
         self._collectCustom()
 
@@ -793,11 +788,6 @@ class InstallProcedure( object ):
             self.copyMatching( os.path.join( 'lib', platform ),
                                '.*(a|def|dll|exp|lib||so)' )
 
-        if self.details.linkAllLibraries:
-            dummyFile = os.path.join( 'install/LinkAllLibraries' )
-            FastScript.setFileContent( dummyFile, '' )
-            self.copyMandatory( dummyFile, 'LinkAllLibraries' )
-
         self.copyOptional( 'pymodules' )
         self.copyOptional( 'sbin' )
         self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
@@ -994,36 +984,6 @@ class InstallProcedure( object ):
             FastScript.execProgram( fileName )
 
 
-    def _extractVM( self ):
-        """
-            Attempts to run extractVM() over the package, in case it is
-            a Virtual Module package.
-        """
-        if self.details.isComponent():
-            from Middleware.BBMLv1.VirtualModules import extractVM
-
-            srcDir     = 'src/'
-            candidates = []
-            candidates.extend( glob.glob( 'test/*.xml'  ) )
-            candidates.extend( glob.glob( 'test/*.bbml' ) )
-
-            try:
-                candidates.remove( 'test/ModuleList.xml' )    # blacklisted
-            except ValueError:
-                pass   # no ModuleList.xml present
-
-            if candidates:
-                try:
-                    logging.debug( 'trying to extract VM from %s', candidates[0] )
-                    extractVM( self.details.topLevelDir, srcDir, candidates[0] )
-                    self.copyMatching( 'src', r'.*\.xml$', 'include' )
-
-                except ( AssertionError, IndexError ):    # most likely is not a VM package
-                    logging.debug( "package doesn't seem to be a VM package" )
-                except ValueError:
-                    pass
-
-
     def _installWorker( self, rootDir ):
         """
             Copies all files from self.index() relative to <rootDir>.
@@ -1062,23 +1022,6 @@ class InstallProcedure( object ):
 
         self.installRoot = os.path.join( sitPath, self.startPath )
         logging.debug( 'installRoot=%s', self.installRoot )
-
-
-    def _registerComponent_ToolBOS( self ):
-        """
-            Add a symlink to the pkgInfo.py file into the module index.
-        """
-        if self.details.isBBCM() or self.details.isBBDM():
-
-            canonicalPath  = self.details.canonicalPath
-            packageName    = self.details.packageName
-            packageVersion = self.details.packageVersion
-
-            symlinkFile    = '%s_%s.py' % ( packageName, packageVersion )
-            symlinkRelPath = os.path.join( 'Modules', 'Index', symlinkFile )
-            target         = os.path.join( '../..', canonicalPath, 'pkgInfo.py' )
-
-            self.link( target, symlinkRelPath, True )
 
 
     def _setUmask( self ):
@@ -1401,26 +1344,12 @@ class GlobalInstallProcedure( InstallProcedure ):
         logging.debug( '' )
 
         self._installWorker( self.sitRootPath )
-        self._ensureWorldWritableIndex()
         self._patchlevel_updateGlobalSymlink()
         self._updateProxyDir()
 
 
     def setPermissions( self ):
         self._setPermissions( self.installRoot, self.sitRootPath )
-
-
-    def _ensureWorldWritableIndex( self ):
-        # when installing components, (try to) ensure the Index-directory is
-        # world-writeable
-        if self.details.isComponent():
-            try:
-                path = os.path.join( self.sitRootPath, 'Modules/Index' )
-                logging.debug( 'chmod 0777 %s', path )
-                os.chmod( path, 0o777 )
-            except OSError as details:
-                # probably not owner --> cannot change
-                logging.debug( details )
 
 
     def _patchlevel_updateGlobalSymlink(self):

@@ -79,14 +79,8 @@ except AssertionError as details:
     sys.exit( -1 )
 
 
-# suppress the specific package "Modules/Index/*" which contains
-# registered components for DTBOS (see JIRA ticket TBCORE-910)
-sitPath   = SIT.getPath()
-indexPath = os.path.join( sitPath, 'Modules/Index' )
-
-for project in packageList:
-
-    if not project.startswith( indexPath ) or verbose:
+if verbose:
+    for project in packageList:
         print( project )
 
 
