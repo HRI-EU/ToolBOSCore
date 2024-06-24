@@ -2,7 +2,7 @@
 
 This package provides `BST.py` (Build System Tools):
 * Orchestrates various software quality checks
-* Simplifies using CMake at scale [DEPRECATED]
+* Simplifies (cross-)compilation using CMake
 
 
 ### Installation
@@ -15,10 +15,9 @@ This package provides `BST.py` (Build System Tools):
 
 * [Software Quality checks](doc/ToolBOSCore/Concepts/QualityGuidelines.md)
 * [License checks](doc/ToolBOSCore/HowTo/LicenseChecks.md)
-* [(Cross-)Compilation [DEPRECATED]](doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md)
+* [(Cross-)Compilation](doc/ToolBOSCore/Tools/BuildSystemTools/BuildSystemTools.md)
 * [Fine-tuning](doc/ToolBOSCore/Concepts/ToolBOSConf.md)
 
-### Details
+### License
 
-* [Authors](AUTHORS.md)
 * [BSD 3-Clause License](LICENSE)
