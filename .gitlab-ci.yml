@@ -38,7 +38,7 @@ stages:
 
 
 test:
-  image: dmz-gitlab.honda-ri.de:5050/gitlabrunner/buildcontainers/hri-eu-main:latest
+  image: dmz-gitlab.honda-ri.de:5050/tech_team/docker/ubuntu2004-hri-main:1.0
   interruptible: true
   stage: test
   parallel:
