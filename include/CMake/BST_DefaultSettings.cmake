@@ -84,8 +84,7 @@ if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "")
 
     message(FATAL_ERROR "Please set the MAKEFILE_PLATFORM environment variable.")
 
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal64"  OR
+elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal64"  OR
        "$ENV{MAKEFILE_PLATFORM}" STREQUAL "jammy64")
 
     set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -m64 -std=c99")

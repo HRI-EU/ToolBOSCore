@@ -123,7 +123,6 @@ def getPlatformList():
            [3]  default compiler, e.g. "gcc" or "msvc"
     """
     return (
-             ( 'bionic64',              'linux',     64, 'gcc',    'Ubuntu 18.04 LTS (64 bit)' ),
              ( 'focal64',               'linux',     64, 'gcc',    'Ubuntu 20.04 LTS (64 bit)' ),
              ( 'jammy64',               'linux',     64, 'gcc',    'Ubuntu 22.04 LTS (64 bit)' ),
              ( 'windows-amd64-vs2017',  'windows',   64, 'vs2017', 'Visual Studio 2017 on Microsoft Windows (64 bit)' )

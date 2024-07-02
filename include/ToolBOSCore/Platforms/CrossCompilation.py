@@ -129,7 +129,7 @@ def getSwitchEnvironmentList( fromPlatform=None ):
             Any.requireIsTextNonEmpty( targetPlatform )
 
             # Windows-platforms are named e.g. 'windows-amd64-vs2017'.
-            # However names with dashes can't be used as function names
+            # However, names with dashes can't be used as function names
             # thus the above candidates don't contain such dashes.
             #
             # As a hack I'm replacing such well-known names here by hand.
@@ -232,12 +232,8 @@ def getCrossCompileHost( platform ):
 #----------------------------------------------------------------------------
 
 
-# Change the environment so it appears to the build system as if we would
+# Change the environment so that it appears to the build system as if we would
 # run on another platform, e.g. Windows with Visual Studio installed.
-
-
-def _switchEnv_bionic64_to_windowsamd64vs2017():
-    _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
 
 
 def _switchEnv_focal64_to_windowsamd64vs2017():

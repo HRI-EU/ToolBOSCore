@@ -492,8 +492,8 @@ class InstallProcedure( object ):
                                                  os.path.join( self.startPath, itemDstPath ) ) )
 
                 # os.walks() puts symlinks to directories into the 'directories'
-                # list, and not into 'files', hence symlinks like "focal64" -->
-                # "bionic64" would not get installed, see JIRA ticket TBCORE-947
+                # list, and not into 'files', hence symlinks like "platformFoo" -->
+                # "platformBar" would not get installed, see JIRA ticket TBCORE-947
                 for item in dirs:
                     itemSrcPath = os.path.join( root, item )
 
