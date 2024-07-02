@@ -773,7 +773,7 @@ class InstallProcedure( object ):
             Collect scripts, executables, libraries, documentation,...
 
         """
-        self.copyMatching( 'bin', r'.*\.(m|php|py|sh)$', 'bin' )
+        self.copyMatching( 'bin', r'.*\.(m|py|sh)$', 'bin' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'bin', platform ), '.*' )
 
@@ -791,7 +791,6 @@ class InstallProcedure( object ):
         self.copyOptional( 'pymodules' )
         self.copyOptional( 'sbin' )
         self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
-        self.copyOptional( 'web' )
 
 
     def _collectCustom( self ):

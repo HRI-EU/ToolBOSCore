@@ -96,7 +96,7 @@ class PackageDetector( object ) :
         self.recommendations   = []
         self.suggestions       = []
 
-        # values extracted from install/user{Install,Src}.php / pkgInfo.py
+        # general pkgInfo.py settings
         self.pkgInfoContent    = pkgInfoContent
         self.copyright         = None
         self.docFiles          = None

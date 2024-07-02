@@ -97,7 +97,7 @@ def isInstalled( packageName ):
         computer running this Python process.
 
         The packageName must be in typical Debian/Ubuntu/... style, e.g.:
-        'gcc', 'php5-cli', 'libpng2',...
+        'gcc', 'libpng2',...
 
         Attention: This function will not work on Microsoft Windows and
                    Non-Debian-based Linux distributions unless the 'dpkg'

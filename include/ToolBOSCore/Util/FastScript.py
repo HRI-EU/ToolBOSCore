@@ -1141,8 +1141,6 @@ def countCharacters( string ):
         Returns the number of different characters within given string.
 
         Example:  countCharacters( 'abcabc' ) would return 3.
-
-        This is a re-implementation of PHP's count_chars() function.
     """
     Any.requireIsText( string )
 

@@ -718,7 +718,7 @@ def getDefaultDistcleanPatterns():
                   'sources', 'build', '.tmp-install*', 'precompiled/package',
 
                   # compilation files
-                  'makeDepend', 'ui_*h', 'qrc_*.cpp', 'moc_*.cpp', 'qt/*.h',
+                  'ui_*h', 'qrc_*.cpp', 'moc_*.cpp', 'qt/*.h',
                   'qt/*.cpp', 'qt/moc_*cpp', '.*ui.md5',
 
                   # editor backup files
@@ -735,12 +735,8 @@ def getDefaultDistcleanPatterns():
                   'examples/??shSrc', 'test/??shSrc',
                   'doc/autoDoxyfile', 'doc/doxygen*', 'doc/*.tag',
                   'doc/html',
-                  'install/MD5SUMS', 'install/*.tar.gz', 'install/*.deb',
                   'install/*.tar.bz2', 'install/packageVar.cmake',
-                  'install/pkgInfo.py',
-                  'install/debControl.txt',
-                  '[A-Za-z]*[A-Za-z]PHP', '[A-Za-z]*[A-Za-z]PY',
-                  'run*([^.])', 'src/.*.h.md5', 'build4all.cfg', 'run' ] )
+                  'install/pkgInfo.py' ] )
 
     return patternList
 
