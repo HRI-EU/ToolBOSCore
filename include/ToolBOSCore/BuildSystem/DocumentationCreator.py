@@ -254,26 +254,13 @@ class DoxygenBackend( AbstractBackend ):
 
 
     def _findDoxygen( self ):
-        sitPath      = SIT.getRootPath()
-        package      = getConfigOption( 'package_doxygen' )
-        hostPlatform = getHostPlatform()
-        fileName     = 'doxygen'
-        exePath      = os.path.join( sitPath, package, 'bin', hostPlatform, fileName )
+        found = ProcessEnv.which( 'doxygen' )
 
-        if os.path.exists( exePath ):
-            return exePath
-
+        if found:
+            logging.debug( 'using doxygen from $PATH: %s', found )
+            return found
         else:
-            logging.debug( '%s: No such file', exePath )
-            logging.debug( 'falling back to "doxygen" in $PATH' )
-
-            found = ProcessEnv.which( 'doxygen' )
-
-            if found:
-                logging.debug( 'using doxygen from $PATH: %s', found )
-                return found
-            else:
-                raise EnvironmentError( '"doxygen" neither found in SIT nor installed locally' )
+            raise EnvironmentError( '"doxygen" not installed' )
 
 
 # EOF
