@@ -53,4 +53,11 @@ test:
     - ./ci-test.sh "$TOOLBOSCORE_VERSION" "$PYTHON_VERSION"
 
 
+include:
+  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/dependency-scanning@1.0.0
+  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/secrets-detection@1.0.0
+    inputs:
+      stage: test
+
+
 # EOF
