@@ -49,7 +49,7 @@ from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings                 import ToolBOSConf
-from ToolBOSCore.Storage                  import VersionControl
+from ToolBOSCore.Tools                    import Git
 from ToolBOSCore.Util                     import Any, FastScript
 
 
@@ -484,12 +484,11 @@ class InstallProcedure( object ):
                         itemDstPath = os.path.join( root.replace( srcPath, dstPath ),
                                                     item )
 
-                    if itemDstPath.find( '.svn' ) == -1:   # do not install ".svn"
-                        if relativeToSIT:
-                            self.index.append( ( itemSrcPath, itemDstPath ) )
-                        else:
-                            self.index.append( ( itemSrcPath,
-                                                 os.path.join( self.startPath, itemDstPath ) ) )
+                    if relativeToSIT:
+                        self.index.append( ( itemSrcPath, itemDstPath ) )
+                    else:
+                        self.index.append( ( itemSrcPath,
+                                             os.path.join( self.startPath, itemDstPath ) ) )
 
                 # os.walks() puts symlinks to directories into the 'directories'
                 # list, and not into 'files', hence symlinks like "platformFoo" -->
@@ -853,7 +852,7 @@ class InstallProcedure( object ):
 
     def _computePatchlevel( self ):
         """
-            Attempts to set the patchlevel from SVN revision.
+            Attempts to auto-increment the patchlevel.
             If this fails tries to compute from last globally installed
             revision.
 
@@ -870,16 +869,8 @@ class InstallProcedure( object ):
             logging.info( 'found MAKEFILE_PATCHLEVELVERSION=%d', int(env) )
             self.details.patchlevel = int(env)
 
-
         if self.details.patchlevel is None:
-            # try to set patchlevel from SVN revision
-            if self.details.svnFound:
-                self.details.patchlevel = self.details.svnRevision
-
-
-        if self.details.patchlevel is None and not self.details.svnFound:
-            # when not using SVN (e.g. Git), attempt to increment number of
-            # last installation
+            # attempt to increment number of last installation
 
             sitPath      = getPath()
             majorVersion = int( splitVersion( self.details.packageVersion )[0] )
@@ -1309,12 +1300,6 @@ class GlobalInstallProcedure( InstallProcedure ):
         Any.requireIsDir( self.sitRootPath )
         Any.requireIsTextNonEmpty( self.details.canonicalPath )
 
-        try:
-            self._vcsConsistencyCheck()
-        except ValueError as details:
-            FastScript.prettyPrintError( str(details) )
-            raise SystemExit( details )
-
         self._patchlevel_changeInstallRoot( self.sitRootPath )
 
 
@@ -1419,32 +1404,6 @@ class GlobalInstallProcedure( InstallProcedure ):
                                         str(self.details.patchlevel) )
 
                 FastScript.link( target, symlink )
-
-
-    def _vcsConsistencyCheck( self ):
-        if FastScript.getEnv( 'MAKEFILE_SKIPSVNCHECK' ) == 'TRUE' or \
-           ToolBOSConf.getConfigOption( 'BST_svnCheck' ) is False:
-
-            logging.warning( 'VCS consistency check skipped' )
-            return
-
-        if not self.details.svnFound and not self.details.gitFound:
-            logging.error( 'VCS consistency check failed' )
-            msg = 'Global installation can only be done from a clean working tree.'
-            raise ValueError( msg )
-
-
-        vcs    = VersionControl.auto()
-        errors = vcs.consistencyCheck()
-
-        if errors:
-            # Not performance-critical and too complex if rewritten.
-            # pylint: disable=logging-not-lazy
-            logging.error( errors[0] + ':' )
-            logging.error( errors[1] )
-            raise ValueError( errors[2] )
-
-        logging.info( 'VCS consistency check passed' )
 
 
 class ProxyInstallProcedure( InstallProcedure ):

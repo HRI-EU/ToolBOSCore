@@ -40,18 +40,16 @@ import os
 import re
 import urllib.parse
 
-from ToolBOSCore.Settings import ToolBOSConf
-from ToolBOSCore.Storage  import AbstractVCS
-from ToolBOSCore.Util     import Any, FastScript
+from ToolBOSCore.Util import Any, FastScript
 
 
-class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
+class LocalGitRepository:
 
     _modifiedFileExpr = re.compile( r'^\sM\s(.+)$' )
 
 
     def __init__( self ):
-        super( LocalGitRepository, self ).__init__()
+        self._dryRun = FastScript.getEnv( 'DRY_RUN' ) == 'TRUE'
 
 
     def add( self, fileList, output=None ):
@@ -307,6 +305,18 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
             FastScript.execProgram( cmd, stdout=output, stderr=output )
 
 
+    def setDryRun( self, boolean ):
+        """
+            If 'dryRun' is True, nothing will actually happen but the command
+            is just printed (for debugging purposes).
+        """
+        Any.requireIsBool( boolean )
+
+        self._dryRun = boolean
+
+        logging.debug( 'Git operating in dry-run mode: %s', self._dryRun )
+
+
     def switchToBranch( self, branch, output=None ):
         """
             Switches bare repository to the given branch.
@@ -320,21 +330,13 @@ class LocalGitRepository( AbstractVCS.AbstractWorkingTree ):
         FastScript.execProgram( cmd, stdout=output, stderr=output )
 
 
-    def update( self, output=None ):
-        """
-            Alias for fetch() to satisfy AbstractVCS.update() interface.
-        """
-        return self.fetch( output )
-
-
-class RemoteGitRepository( AbstractVCS.RemoteRepository ):
+class RemoteGitRepository:
 
     def __init__( self, url ):
         Any.requireIsTextNonEmpty( url )
 
-        super( RemoteGitRepository, self ).__init__( url )
-
-        self._allowedHosts = ToolBOSConf.getConfigOption( 'Git_allowedHosts' )
+        self.url       = url
+        self._hostName = self.getHostName()
 
 
     def clone( self, output=None ):
@@ -428,6 +430,26 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
         return cmd
 
 
+    def _insertUsernameIntoURL( self, url, username ):
+        """
+            If a particular account has to be used to log into the server
+            specified in 'url', you can inject a "<username>@" using this
+            function.
+
+            Note: The function works with other protocols such as "http://"
+                  as well, e.g. as used by Git.
+        """
+        Any.requireIsTextNonEmpty( url )
+
+        urlData    = list( urllib.parse.urlsplit( url )[ : ] )
+        urlData[1] = '%s@%s' % ( username, urlData[1] )
+
+        result     = urllib.parse.urlunsplit( urlData )
+        Any.requireIsTextNonEmpty( result )
+
+        return result
+
+
     def setUserName( self, username ):
         """
             Sets the URL to the given 'username'.
@@ -473,11 +495,9 @@ class RemoteGitRepository( AbstractVCS.RemoteRepository ):
             return hostName
 
 
-class WorkingTree( AbstractVCS.AbstractWorkingTree ):
+class WorkingTree:
 
     def __init__( self ):
-        super( WorkingTree, self ).__init__()
-
         self._repo = LocalGitRepository()
 
 
@@ -494,7 +514,7 @@ class WorkingTree( AbstractVCS.AbstractWorkingTree ):
 
 def git2https( gitURL:str ) -> str:
     """
-        Translates an URL in form "[git+ssh://]git@<host>:<group>/<project>.git"
+        Translates a URL in form "[git+ssh://]git@<host>:<group>/<project>.git"
         into the form "https://<host>/<group>/<project>".
 
         If the URL already starts with 'https://' then the same string

@@ -116,12 +116,9 @@ class BSTPackageModel( QObject, object ):
 
 
     def getRevision( self ):
-        svnRev = self._bstpkg_src.detector.svnRevision
         gitID  = self._bstpkg_src.detector.gitCommitIdShort
 
-        if svnRev is not None and svnRev > 0:
-            return str(svnRev)
-        elif gitID:
+        if gitID:
             return gitID
         else:
             return None

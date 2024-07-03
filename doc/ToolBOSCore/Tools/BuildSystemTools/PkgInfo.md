@@ -355,11 +355,6 @@ installUmask = "0022"      # for permissions rwxr-xr-x
     <td>path of the files relative within the Git repository root</td>
 </tr>
 <tr>
-    <td>revision</td>
-    <td>string</td>
-    <td>SVN revision number</td>
-</tr>
-<tr>
     <td style="background: #CCCCFF; text-align: center; font-weight: bold;"
         colspan="3">legacy settings</td>
 </tr>

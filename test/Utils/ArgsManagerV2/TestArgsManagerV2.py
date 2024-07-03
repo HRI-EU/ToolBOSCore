@@ -51,13 +51,10 @@ class TestArgManagerV2( unittest.TestCase ):
 
     def test_API(self):
 
-        example = 'BST.py   # build (setup once + compile)'
-        desc = 'Download the source code of a particular package from SVN. ' \
+        example = 'Example.py   # build (setup once + compile)'
+        desc = 'Download the source code of a particular package from Git. ' \
                'By default will fetch the HEAD revision, but with "--global" ' \
-               'will checkout the revision that was used at last globalinstall ' \
-               'time. Please note that certain SVN servers may require ' \
-               'additional steps before connecting, such as setting up ' \
-               '"authorized keys" or SSH agents.'
+               'will checkout the revision that was used at last deployment.'
 
         argman  = ArgsManagerV2.ArgsManager(desc)
 

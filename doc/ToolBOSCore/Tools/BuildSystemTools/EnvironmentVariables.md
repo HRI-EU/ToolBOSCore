@@ -94,9 +94,4 @@
    <td>MAKEFILE_OS</td>
    <td>use TARGETOS instead</td>
  </tr>
- <tr>
-   <td>MAKEFILE_SKIPSVNCHECK</td>
-   <td>use [ToolBOS.conf](../../Concepts/ToolBOSConf.md)instead</td>
- </tr>
-
  </table>

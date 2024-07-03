@@ -118,7 +118,7 @@ Please select an appropriate way and put either of the following settings in you
 
        usePatchlevels   = True
     
-       patchlevel       = 123                                     # default: SVN revision
+       patchlevel       = 42
     
 ####  Solution B: clean existing installation
 

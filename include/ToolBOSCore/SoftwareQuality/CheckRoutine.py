@@ -77,7 +77,7 @@ class CheckRoutine( object ):
         self.includeFiles     = set()
         self.excludeDirs      = { '3rdParty', 'build', 'cmake-build-debug',
                                   'external', 'install', 'klocwork',
-                                  'precompiled', 'sources', '.git', '.svn' }
+                                  'precompiled', 'sources', '.git' }
         self.excludeFiles     = set()
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
                                   '.m', '.bash', '.sh', '.ipynb' }

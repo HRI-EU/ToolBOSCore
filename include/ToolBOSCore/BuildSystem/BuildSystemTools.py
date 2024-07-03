@@ -46,10 +46,8 @@ from ToolBOSCore.Packages                 import ProjectProperties
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
-from ToolBOSCore.Storage                  import SIT
-from ToolBOSCore.Storage                  import PkgInfo
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Storage                  import PkgInfo, SIT
+from ToolBOSCore.Util                     import Any, FastScript
 
 
 class BuildSystemTools( object ):
@@ -557,12 +555,9 @@ class BuildSystemTools( object ):
 
 
     def _distclean_inTree( self ):
-        from ToolBOSCore.Storage import VersionControl
-
         requireTopLevelDir( os.getcwd() )
 
-        excludeSVN = re.compile( '.svn' )
-        subDirList = FastScript.getDirsInDirRecursive( excludePattern=excludeSVN )
+        subDirList = FastScript.getDirsInDirRecursive()
         subDirList.append( '.' )
 
         # do not cache those variables as their change would not be reflected
@@ -577,25 +572,13 @@ class BuildSystemTools( object ):
             _cleanDir( subDir, patternList, verbose, dryRun )
 
 
-        # specifically check for empty directories (mind the ".svn"):
+        # specifically check for empty directories
         for candidate in ( 'doc', 'install', 'lib', 'obj' ):
             if os.path.isdir( candidate ):
                 content = os.listdir( candidate )
 
-                if not content:
-                    FastScript.remove( candidate )  # does not contain ".svn"
-                elif content == [ '.svn' ]:
-
-                    # With recent versions of SVN there are no more ".svn"
-                    # directories in all the various paths, instead of a
-                    # single one in top-level directory. Therefore most
-                    # likely this code is dead.
-
-                    try:
-                        vcs = VersionControl.auto()
-                        vcs.remove( candidate )
-                    except subprocess.CalledProcessError:
-                        pass                        # keep it (safety first)
+                if not content:                      # is empty dir.
+                    FastScript.remove( candidate )
 
         return True
 

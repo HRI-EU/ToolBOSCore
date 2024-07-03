@@ -312,60 +312,6 @@ def splitURL( packageURL ):
 #----------------------------------------------------------------------------
 
 
-def getSVNLocationFromFilesystem( package ):
-    """
-        This reads the 'repositoryUrl' from the pkgInfo.py.
-
-        If the URL cannot be retrieved for any reason, 'None' will be
-        returned.
-
-    """
-    from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
-
-    requireIsCanonicalPath( package )
-
-    try:
-        url = getPkgInfoContent( package )['repositoryUrl']
-    except ( AssertionError, KeyError, IOError ):
-        url = None
-
-    return url
-
-
-def guessSVNLocation( package ):
-    """
-        If you don't know where a project's SVN repository is located,
-        this function may provide a reasonable hint.
-
-        'package' must be a canonical project path.
-    """
-    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
-
-    requireIsCanonicalPath( package )
-
-    url = None
-
-    try:
-        # first check if we have ground truth information available...
-        url = getSVNLocationFromFilesystem( package )
-    except ( AssertionError, KeyError, IOError ):
-        pass
-
-
-    if not url:
-        # otherwise use default server and path as good guess
-        server      = getConfigOption( 'defaultSVNServer' )
-        path        = getConfigOption( 'defaultSVNRepositoryPath' )
-        url = 'svn+ssh://%s%s/%s' % ( server, path, package )
-        logging.debug( 'guessing SVN location: %s' % url )
-
-    Any.requireIsMatching( url, ".*://.*" )
-    Any.requireMsg( url[0] != "'", 'invalid URL string' )
-    Any.requireMsg( url[0] != '"', 'invalid URL string' )
-
-    return url
-
-
 def areAllDependenciesInstalled( project, dependencyList = None ):
     """
         Checks and returns a boolean if all dependencies of a project are

@@ -191,10 +191,10 @@ def getFilesInDirRecursive( path, excludePattern = None ):
         Returns a set of all files that can be recursively found under 'path'.
 
         'excludePattern' must be a regular expression object that will be
-        used to exclude certain directories (such as "build" and ".svn") in
+        used to exclude certain directories (such as "build" and ".git") in
         the following example:
 
-            excludePattern = re.compile( "(build|.svn)" )
+            excludePattern = re.compile( "(build|.git)" )
             fileList = getFilesInDirRecursive( "Package/1.0", excludePattern )
     """
     result  = set()
@@ -491,7 +491,7 @@ def deserializeFromFile( filename ):
     return obj
 
 
-def findFiles( path, regexp=None, ext=None, excludeSVN=True ):
+def findFiles( path, regexp=None, ext=None ):
     """
         Returns a list with all files in 'path' whoms names match a certain
         pattern. Pattern can be:
@@ -502,8 +502,6 @@ def findFiles( path, regexp=None, ext=None, excludeSVN=True ):
         Note that both 'regexp' and 'ext' can be scalar values as well
         as lists. In such case, any of the expression (or extension) must
         match.
-
-        If 'excludeSVN=True', files under ".svn" are skipped.
     """
     fileList = []
 
@@ -513,10 +511,6 @@ def findFiles( path, regexp=None, ext=None, excludeSVN=True ):
         for entry in files:
             path    = os.path.join( root, entry )
             fileExt = os.path.splitext( entry )[1]
-
-            # skip SVN files (if requested)
-            if excludeSVN == True and path.find( '.svn' ) != -1:
-                continue
 
             # found a file with requested extension
             if isinstance(ext,str) and ext == fileExt:

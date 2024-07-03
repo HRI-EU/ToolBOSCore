@@ -245,7 +245,7 @@ def getProjects( path, keepPath = True, onError = None ):
 
     path           = os.path.normpath( path )
     projectList    = []
-    excludePattern = re.compile( r"(parentTree|^\d+\.\d+)|.svn" )
+    excludePattern = re.compile( r"(parentTree|^\d+\.\d+)" )
     criteria       = re.compile( r"^(\d+)\.(\d+)(.*)" )
 
     for directory in FastScript.getDirsInDirRecursive( path, excludePattern,
@@ -302,8 +302,8 @@ def getCanonicalPaths( sitPath ):
 
 def getActiveRevision( sitPath, project ):
     """
-        This function returns the currently installed patchlevel (SVN
-        revision) of a project, by resolving the 2-digit symlinks.
+        This function returns the currently installed patchlevel
+        of a project, by resolving the 2-digit symlinks.
 
             in root SIT:
             2.2 --> 2.2.500

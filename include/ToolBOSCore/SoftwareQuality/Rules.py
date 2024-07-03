@@ -751,10 +751,6 @@ interface with it.'''
 \t\t\t\t\t[...]
 \t\t\t\tgnome.org
 \t\t\t\t\t[...]
-\t\t\t\tmathworks.com
-\t\t\t\t\t[...]
-\t\t\t\tsubversion.apache.org
-\t\t\t\t\t[...]
 \t\t\tsrc
 \t\t\t\tMyPackage.c
 \t\t\t\tMyPackage.h'''
@@ -785,7 +781,7 @@ it with reasonable effort to an alternative software.'''
 
 class Rule_GEN10( AbstractRule ):
 
-    name        = 'maintainability: VCS usage'
+    name        = 'maintainability: Git usage'
 
     brief       = '''Put package under version control system (Git).'''
 
@@ -804,21 +800,15 @@ class Rule_GEN10( AbstractRule ):
 
     def run( self, details, files ):
         """
-            Checks if the package is managed via VCS.
+            Checks if the package is managed via Git version control system.
         """
-        logging.debug( 'looking for VCS repository information' )
-
+        logging.debug( 'looking for Git repository information' )
 
         if details.gitFound:
             logging.debug( 'Git found: %s', details.gitRepositoryRoot )
             result = ( OK, 1, 0, 'Git repository found' )
-
-        elif details.svnFound:
-            logging.debug( 'SVN found: %s', details.svnRepositoryURL )
-            result = ( OK, 1, 0, 'SVN repository found' )
-
         else:
-            result = ( FAILED, 0, 1, 'no VCS information found' )
+            result = ( FAILED, 0, 1, 'no Git information found' )
 
         return result
 
@@ -2220,7 +2210,7 @@ provide small, easy-to-understand example programs / showcases.
         """
             Looks for example programs to demonstrate basic usage.
 
-            Test passes if there are any Non-SVN files within the
+            Test passes if there are any files within the
             "examples" subdirectory.
         """
         Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
@@ -2233,8 +2223,7 @@ provide small, easy-to-understand example programs / showcases.
         if not os.path.exists( examplesDir ):
             result  = ( FAILED, 0, 1, '"examples" directory not found' )
         else:
-            exclude = re.compile( '^.svn' )
-            files   = FastScript.getFilesInDir( examplesDir, exclude )
+            files   = FastScript.getFilesInDir( examplesDir )
             found   = len(files)
 
             if found == 0:

@@ -83,7 +83,7 @@ class PackageDetector( object ) :
         self.packageName       = None
         self.packageVersion    = None   # e.g. "2.0"
         self.packageVersionRaw = None   # e.g. "2.0-rc3" (corresponds to dir.name)
-        self.patchlevel        = None   # e.g. 42, may correspond to SVN rev.
+        self.patchlevel        = None   # e.g. 42
         self.topLevelDir       = None
         self.versionTokens     = None   # e.g. ( "2", "0", "123" )
 
@@ -134,11 +134,6 @@ class PackageDetector( object ) :
         self.gitOrigin         = None
         self.gitRelPath        = None
         self.gitRepositoryRoot = None
-        self.svnFound          = None
-        self.svnRelPath        = None
-        self.svnRevision       = None
-        self.svnRepositoryURL  = None
-        self.svnRepositoryRoot = None
         self.vcsBranch         = None
         self.vcsFound          = None
         self.vcsURL            = None
@@ -367,25 +362,8 @@ class PackageDetector( object ) :
             Any.requireIsTextNonEmpty( self.vcsRevision )
             Any.isOptional( self.vcsRelPath )
 
-        elif self.svnRepositoryURL and self.svnRevision:
-            self.vcsURL      = self.svnRepositoryURL
-            self.vcsRevision = self.svnRevision
-            self.vcsRelPath  = self.svnRelPath
-            self.vcsRoot     = self.svnRepositoryRoot
-
-            # svnRelPath is not present in pkgInfo.py but solely computed
-            # from the svnRepositoryURL and svnRepositoryRoot
-            self.svnRelPath  = os.path.relpath( self.svnRepositoryURL,
-                                                self.svnRepositoryRoot )
-            self.vcsRelPath  = self.svnRelPath
-
-            Any.requireIsTextNonEmpty( self.vcsURL )
-            Any.requireIsTextNonEmpty( self.vcsRoot )
-            Any.requireIsIntNotZero( self.vcsRevision )
-            Any.isOptional( self.vcsRelPath )
-
         if not self.vcsURL:
-            logging.debug( 'neither SVN nor Git repository information found' )
+            logging.debug( 'no Git repository information found' )
 
         self.isDeprecated = ProjectProperties.isDeprecated( self.canonicalPath )
 
@@ -393,7 +371,7 @@ class PackageDetector( object ) :
     def retrieveVCSInfo( self ):
         """
             Helper function which retrieves all relevant information from
-            underlying revision control system (Subversion or Git).
+            underlying revision control system (Git).
 
             This function needs to be called before accessing the
             corresponding member fields.
@@ -405,20 +383,8 @@ class PackageDetector( object ) :
             self.vcsRevision = self.gitCommitIdLong
             self.vcsURL      = self.gitOrigin
 
-        else:
-            try:
-                self._retrieveSVNInfo()
-            except AttributeError:
-                msg = 'unable to parse SVN output, please check if "svn info" works'
-                logging.debug( msg )
-
-            if self.svnFound:
-                self.vcsFound    = True
-                self.vcsRevision = self.svnRevision
-                self.vcsURL      = self.svnRepositoryURL
-
         if not self.vcsURL:
-            logging.debug( 'neither SVN nor Git repository information found' )
+            logging.debug( 'no Git repository information found' )
 
 
     #------------------------------------------------------------------------
@@ -558,9 +524,6 @@ class PackageDetector( object ) :
         self.patchlevel        = getValue( 'patchlevel',       self.patchlevel )
         self.pylintConf        = getValue( 'pylintConf',       self.pylintConf )
         self.recommendations   = getValue( 'recommends',       self.recommendations )
-        self.svnRepositoryRoot = getValue( 'repositoryRoot',   self.svnRepositoryRoot )
-        self.svnRepositoryURL  = getValue( 'repositoryUrl',    self.svnRepositoryURL )
-        self.svnRevision       = getValue( 'revision',         self.svnRevision )
         self.scripts           = getValue( 'scripts',          self.scripts )
         self.sqComments        = getValue( 'sqComments',       self.sqComments )
         self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )
@@ -651,28 +614,6 @@ class PackageDetector( object ) :
         except ValueError as details:  # e.g. has no 'origin'
             logging.warning( details )
             self.gitFound = False
-
-
-    def _retrieveSVNInfo( self ):
-        from ToolBOSCore.Tools import SVN
-
-        try:
-            wc = SVN.WorkingCopy()
-
-            self.svnRevision       = wc.getRevision()
-            self.svnRepositoryURL  = wc.getRepositoryURL()
-            self.svnRepositoryRoot = wc.getRepositoryRoot()
-            self.svnRelPath        = os.path.relpath( self.svnRepositoryURL,
-                                                      self.svnRepositoryRoot )
-            self.svnFound          = True
-
-        except ( subprocess.CalledProcessError, OSError ):
-            logging.debug( 'this is not an SVN working copy' )
-
-            self.svnRevision       = -1
-            self.svnRepositoryURL  = ''
-            self.svnRepositoryRoot = ''
-            self.svnFound          = False
 
 
     def _getInheritedProjects( self ):

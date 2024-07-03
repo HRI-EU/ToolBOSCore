@@ -180,9 +180,7 @@ class PkgInfoWriter( AbstractWriter ):
                      'gitRelPath'    : self.details.gitRelPath }
 
         else:
-            data = { 'revision'      : self.details.svnRevision,
-                     'repositoryRoot': self.details.svnRepositoryRoot,
-                     'repositoryUrl' : self.details.svnRepositoryURL }
+            data = {}
 
         return self.writeTable( data )
 

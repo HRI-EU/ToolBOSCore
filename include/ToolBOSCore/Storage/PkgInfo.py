@@ -76,25 +76,4 @@ def getPkgInfoContent( project = None, dirName = None, filename = None ):
     return content
 
 
-def getSVNRevision( package ):
-    """
-        Returns the last globally installed SVN revision of the package
-        as stored in the pkgInfo.py file.
-    """
-    return getPkgInfoContent( package )['revision']
-
-
-def getSVNLocation( package ):
-    """
-        Returns the SVN repository URL of the package as stored in the
-        pkgInfo.py file.
-    """
-    try:
-        return getPkgInfoContent( package )['repositoryUrl']
-    except AssertionError:
-        raise AssertionError( "%s: No such package" % package )
-    except KeyError:
-        raise AssertionError( "%s: SVN repository location unknown" % package )
-
-
 # EOF

@@ -168,7 +168,7 @@ class BSTPackage( AbstractPackage ):
 class BSTSourcePackage( BSTPackage ):
     """
         Represents a software package in source-tree form, i.e.
-        a Git / SVN working copy where the developer may run the
+        a Git working tree where the developer may run the
         compilation process.
     """
     def __init__( self, url=None ):
