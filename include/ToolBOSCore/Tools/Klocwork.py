@@ -132,19 +132,6 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
     cmd = 'kwcheck import -pd %s %s' % ( kwlpDir, buildSpec )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
 
-
-    # install the HIS-Subset taxonomy so that the user may select it
-    tcRoot   = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
-    fileName = 'HIS_Subset_MISRA_C_1.0.2.tconf'
-    srcFile  = os.path.join( tcRoot, 'external/emenda.com', fileName )
-    dstDir   = os.path.join( kwpsDir, 'servercache' )
-    dstFile  = os.path.join( dstDir, fileName )
-
-    Any.requireIsFileNonEmpty( srcFile )
-    FastScript.mkdir( dstDir )
-    FastScript.copy( srcFile, dstFile )
-
-
     # auto-detect source code directories (exclude some blacklisted ones)
     dirList = []
     cwd     = os.getcwd()
@@ -155,7 +142,8 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
 
     # create workingset
-    values  = { 'dirList': dirList }
+    tcRoot = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
+    values = { 'dirList': dirList }
 
     TemplateEngine.run( os.path.join( tcRoot, 'etc/Klocwork/workingsets.xml' ),
                         os.path.join( kwlpDir, 'workingsets.xml' ),
