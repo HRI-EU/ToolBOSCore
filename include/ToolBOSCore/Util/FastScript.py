@@ -1123,10 +1123,8 @@ def flattenList( nestedList ):
     """
         Flattens a nested list into a one-dimensional list.
     """
-    from ToolBOSCore.External.Flatten import flatten
-
     Any.requireIsList( nestedList )
-    return flatten( nestedList )
+    return [ i for j in nestedList for i in j ]
 
 
 def removeDuplicates( aList ):
