@@ -456,41 +456,6 @@ def setFileContent( filename, content ):
     f.close()
 
 
-def serializeToFile( filename, obj ):
-    """
-        This function serializes 'object' into 'filename'.
-
-        Attention: If the specified file exists it will be overwritten.
-    """
-    from pickle import Pickler
-
-    from ToolBOSCore.External.atomicfile import AtomicFile
-
-
-    Any.requireIsTextNonEmpty( filename )
-
-    with AtomicFile( filename, 'wb' ) as f:          # Pickle uses binary streams
-        Pickler( f ).dump( obj )
-
-
-def deserializeFromFile( filename ):
-    """
-        Deserializes the content from 'filename' and returns it as
-        Python object.
-    """
-    from pickle import Unpickler
-    Any.requireIsTextNonEmpty( filename )
-
-    try:
-        f = open( filename, 'rb' )              # Pickle uses binary streams
-        obj = Unpickler( f ).load()
-        f.close()
-    except EOFError as details:
-        raise IOError( details )
-
-    return obj
-
-
 def findFiles( path, regexp=None, ext=None ):
     """
         Returns a list with all files in 'path' whoms names match a certain

@@ -421,9 +421,7 @@ try:
                 FastScript.tryImport( 'dill' )
                 import dill
 
-                from ToolBOSCore.External.atomicfile import AtomicFile
-
-                with AtomicFile(bstCache, 'wb') as f:
+                with open( bstCache, 'wb' ) as f:
                     dill.dump( bst, f )
             except ( IOError, OSError ) as details:
                 logging.debug( 'unable to create %s', bstCache )
