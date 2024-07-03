@@ -772,7 +772,7 @@ class InstallProcedure( object ):
             Collect scripts, executables, libraries, documentation,...
 
         """
-        self.copyMatching( 'bin', r'.*\.(m|py|sh)$', 'bin' )
+        self.copyMatching( 'bin', r'.*\.(py|sh)$', 'bin' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'bin', platform ), '.*' )
 
@@ -787,8 +787,6 @@ class InstallProcedure( object ):
             self.copyMatching( os.path.join( 'lib', platform ),
                                '.*(a|def|dll|exp|lib||so)' )
 
-        self.copyOptional( 'pymodules' )
-        self.copyOptional( 'sbin' )
         self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
 
 
