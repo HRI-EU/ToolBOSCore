@@ -155,48 +155,12 @@ else:
             self.show()
 
 
-def openDocumentation( canonicalPath, parent=None ):
-    """
-        Opens a webbrowser window which shows the documentation of the
-        given SIT package.
-    """
-
-    Any.requireIsTextNonEmpty( canonicalPath )
-
-    logging.info( 'opening docu for %s', canonicalPath )
-
-    url = ToolBOSConf.getConfigOption( 'documentationURL_sit' ) + \
-          canonicalPath + '/doc/html/index.html'
-
-    title   = 'Documentation of %s' % canonicalPath
-    browser = WebBrowser( title, parent=parent )
-    browser.open( url )
-
-
-def openToolBOSDocumentation( fileName, parent=None ):
-    """
-        Opens a webbrowser window which shows the particular HTML file
-        within the ToolBOS SDK documentation (e.g. "index").
-
-        Note that ".html" will be added automatically.
-    """
-    Any.requireIsTextNonEmpty( fileName )
-
-    logging.info( 'opening online documentation' )
-
-    url = ToolBOSConf.getConfigOption( 'documentationURL_dir' ) + \
-          fileName + '.html'
-
-    browser = WebBrowser( 'Documentation', parent )
-    browser.open( url )
-
-
 if __name__ == '__main__':
     app    = QApplication( [] )
     app.setStyle( 'fusion' )
 
     browser = WebBrowser( 'Test' )
-    browser.open( 'http://www.honda-ri.de' )
+    browser.open( 'https://www.honda-ri.de' )
 
     app.exec_()
 
