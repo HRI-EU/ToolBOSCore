@@ -46,13 +46,12 @@ from PyQt5.QtWidgets import *
 from ToolBOSCore.BuildSystem  import BuildSystemTools
 from ToolBOSCore.ZenBuildMode import BuildOptionsWidget, ConsoleWidget,\
                                      DependencyChecker, ExternalToolsWidget,\
-                                     InstallDialog, MenuBar, MetaInfoWidget,\
+                                     MenuBar, MetaInfoWidget,\
                                      QtPackageModel, TaskButtonsWidget
 from ToolBOSCore.GenericGUI   import IconProvider, TerminalWidget
 from ToolBOSCore.Packages     import ProjectProperties
 from ToolBOSCore.Platforms    import CrossCompilation, Platforms
 from ToolBOSCore.Settings     import ToolBOSConf
-from ToolBOSCore.Storage      import VersionControl
 from ToolBOSCore.Tools        import SSH
 from ToolBOSCore.Util         import Any, FastScript
 
@@ -179,72 +178,16 @@ class MainWindow( QObject, object ):
 
 
     def globalInstall( self ):
-        force = self._toolBOSConf.getConfigOption( 'BST_svnCheck' ) == False
-
-        if force or self.globalInstall_vcsCheck():
-            self.globalInstall_askReason()
-
-
-    def globalInstall_vcsCheck( self ):
-        try:
-            vcs    = VersionControl.auto()
-            errors = vcs.consistencyCheck()
-
-        except EnvironmentError:
-
-            errors = [ 'No VCS revision information.',
-                       'Unable to find ".svn" or ".git" directories.',
-                       'Please make sure to install from a SVN working '
-                       'copy or Git repository.' ]
-
-
-        if errors:
-            title = errors[0]
-            msg   = 'Attention: ' + errors[1] + '\n\n' + errors[2]
-
-            dialog = QMessageBox()
-            dialog.critical( self.window, title, msg, QMessageBox.Cancel )
-            dialog.show()
-
-            return False
-        else:
-            return True
-
-
-    def globalInstall_askReason( self ):
-        self.globalInstDialog = InstallDialog.GlobalInstallDialog()
-        self.globalInstDialog.cancelled.connect( self._enableButtons )
-        self.globalInstDialog.ready.connect( self.globalInstall_exec )
-        self.globalInstDialog.show()
-
-
-    def globalInstall_exec(self, changeType, reason):
-        Any.requireIsTextNonEmpty( changeType )
-        Any.requireIsTextNonEmpty( reason )
-
-        # escape any doublequotes to not confuse the shlex used later on
-        # (TBCORE-1323)
-        reason     = reason.replace( '"', '\\"' )
-        logging.debug( 'reason: %s', reason )
-
-
         # Potentially this could be more generalized, f.i. into
         # PackageDetector / pkgInfo.py --> "Does pkg. need seq. install"?
         Any.requireIsTextNonEmpty( self.projectRoot )
         installHook  = os.path.join( self.projectRoot, 'installHook.sh' )
         doSeqInstall = os.path.exists( installHook )
 
-
-        if doSeqInstall:
-            msg = '%s: %s (<MAKEFILE_PLATFORM>)' % ( changeType, reason )
-        else:
-            msg = '%s: %s' % ( changeType, reason )
-
-
         if self.optionsWidget.getVerboseValue():
-            command = 'BST.py -ivy -M "%s"' % msg
+            command = 'BST.py -ivy'
         else:
-            command = 'BST.py -iy -M "%s"' % msg
+            command = 'BST.py -iy'
 
 
         # If the package has a installHook.sh (like in most "External" pkg.)
