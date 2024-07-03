@@ -10,10 +10,6 @@ different than the ToolBOSCore software:
   https://commons.wikimedia.org/wiki/Oxygen_icons
   https://community.kde.org/Policies/Licensing_Policy
 
-- f5 list de-duplication code released as public domain ("free to all")
-  by Peter Bengtsson
-  https://www.peterbe.com/plog/uniqifiers-benchmark
-
 - list flattening code published by Mike C. Fletcher
   http://rightfootin.blogspot.com/2006/09/more-on-python-flatten.html
 

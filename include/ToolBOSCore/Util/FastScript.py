@@ -1133,10 +1133,8 @@ def removeDuplicates( aList ):
     """
         Removes all duplicate elements from a list.
     """
-    from ToolBOSCore.External.f5 import f5
-
     Any.requireIsList( aList )
-    return f5( aList )
+    return list( dict.fromkeys( aList ) )
 
 
 def reduceList( nestedList ):
