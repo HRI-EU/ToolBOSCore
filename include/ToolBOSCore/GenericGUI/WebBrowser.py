@@ -37,122 +37,59 @@
 
 import logging
 
-
-try:
-    from PyQt5.QtCore             import QUrl, Qt
-    from PyQt5.QtNetwork          import QNetworkReply, QNetworkProxy
-    from PyQt5.QtWidgets          import QApplication, QWidget, QLabel, QDialog
-    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
-
-    _qt = 5
-
-except ImportError:
-
-    logging.debug( 'No suitable Qt WebKit engine installed.' )
-
-    _qt = 0
-
+from PyQt5.QtCore             import QUrl, Qt
+from PyQt5.QtNetwork          import QNetworkReply, QNetworkProxy
+from PyQt5.QtWidgets          import QApplication, QWidget, QLabel, QDialog
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import Any
 
 
+class WebPage( QWebEnginePage ):
 
-if _qt == 4:
+    def certificateError( self, e ):
+        logging.debug( 'ignoring SSL errors for now' )
 
-    class WebBrowser( QWidget ):
-
-        def __init__( self, windowTitle, parent=None ):
-            super( WebBrowser, self ).__init__()
-
-            screen = QApplication.desktop().screenGeometry()
-
-            self._browser = QWebView( parent=parent )
-            self._browser.resize( screen.width( ) / 4 * 3,
-                                  screen.height() / 4 * 3 )
-
-            # TODO: move proxy settings to ToolBOS.conf
-
-            proxy = QNetworkProxy( )
-            proxy.setType( QNetworkProxy.HttpProxy )
-            proxy.setHostName( 'hri-proxy.honda-ri.de' )
-            proxy.setPort( 3128 )
-
-            nm = self._browser.page().networkAccessManager()
-            nm.setProxy( proxy )
-            nm.sslErrors.connect( QNetworkReply.ignoreSslErrors )
-
-            self._browser.setWindowTitle( windowTitle )
+        return True
 
 
-        def open( self, url ):
-            logging.info( 'opening %s', url )
+class WebBrowser( QDialog ):
 
-            self._browser.show( )
-            self._browser.load( QUrl( url ) )
+    def __init__( self, windowTitle, parent=None ):
+        super( WebBrowser, self ).__init__( parent=parent )
 
-elif _qt == 5:
+        screen = QApplication.desktop().screenGeometry()
 
-    class WebPage( QWebEnginePage ):
+        self._setupProxy()
 
-        def certificateError( self, e ):
-            logging.debug( 'ignoring SSL errors for now' )
+        self._page = WebPage()
 
-            return True
+        self._browser = QWebEngineView( parent=self )
+        self._browser.setPage( self._page )
+        self._browser.resize( screen.width( ) / 4 * 3,
+                              screen.height() / 4 * 3 )
 
-
-    class WebBrowser( QDialog ):
-
-        def __init__( self, windowTitle, parent=None ):
-            super( WebBrowser, self ).__init__( parent=parent )
-
-            screen = QApplication.desktop().screenGeometry()
-
-            self._setupProxy()
-
-            self._page = WebPage()
-
-            self._browser = QWebEngineView( parent=self )
-            self._browser.setPage( self._page )
-            self._browser.resize( screen.width( ) / 4 * 3,
-                                  screen.height() / 4 * 3 )
-
-            self._browser.setWindowTitle( windowTitle )
+        self._browser.setWindowTitle( windowTitle )
 
 
-        def open( self, url ):
-            logging.info( 'opening %s', url )
+    def open( self, url ):
+        logging.info( 'opening %s', url )
 
-            self._page.load( QUrl( url ) )
+        self._page.load( QUrl( url ) )
 
-            self.show()
-
-
-        def _setupProxy( self ):
-            # TODO: move proxy settings to ToolBOS.conf
-
-            proxy = QNetworkProxy( )
-            proxy.setType( QNetworkProxy.HttpProxy )
-            proxy.setHostName( 'hri-proxy.honda-ri.de' )
-            proxy.setPort( 3128 )
-
-            QNetworkProxy.setApplicationProxy( proxy )
-
-else:
-
-    class WebBrowser( QLabel ):
-
-        def __init__( self, dummy ):
-            super( WebBrowser, self ).__init__()
-
-            self.resize( 400, 200 )
-            self.setAlignment( Qt.AlignCenter )
-            self.setText( 'No suitable Qt WebKit engine installed.' )
-            self.setWindowTitle( 'Error' )
+        self.show()
 
 
-        def open( self, url ):
-            self.show()
+    def _setupProxy( self ):
+        # TODO: move proxy settings to ToolBOS.conf
+
+        proxy = QNetworkProxy( )
+        proxy.setType( QNetworkProxy.HttpProxy )
+        proxy.setHostName( 'hri-proxy.honda-ri.de' )
+        proxy.setPort( 3128 )
+
+        QNetworkProxy.setApplicationProxy( proxy )
 
 
 if __name__ == '__main__':
