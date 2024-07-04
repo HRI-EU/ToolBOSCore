@@ -34,20 +34,10 @@
 #
 
 
-if [[ "$#" -eq 0 ]] # no argument supplied, using default
-then
-    TOOLBOSCORE_VERSION="5.0"
-else
-    TOOLBOSCORE_VERSION="$1"
-fi
-
-# shellcheck source=/dev/null
-source useFromHere.sh "${TOOLBOSCORE_VERSION}"
-
-# shellcheck source=/hri/sit/latest/External/anaconda3/envs/common/3.9/BashSrc
-source "${SIT}/External/anaconda3/envs/common/3.9/BashSrc"
-
 set -euxo pipefail
+
+source ./useFromHere.sh
+source ./activate-venv.sh
 
 BST.py --quality
 

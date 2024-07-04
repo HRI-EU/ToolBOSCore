@@ -1,5 +1,6 @@
+#!/bin/bash
 #
-#  GitLab CI/CD configuration
+#  Setup Python environment
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -33,34 +34,29 @@
 #
 
 
-stages:
-  - test
+set -euxo pipefail
+
+export PIP_INDEX_URL="https://package-cache.honda-ri.de/repository/pypi-proxy/simple"
+export REQUESTS_CA_BUNDLE="/usr/local/share/ca-certificates/HRI-CA_cert_2020.crt"
+
+PKG_NAME=$(basename "${PWD}")
 
 
-default:
-  image: dmz-gitlab.honda-ri.de:5050/tech_team/docker/ubuntu2004-hri-main:1.0
-  interruptible: true
+if [[ -d "/hri/localdisk" ]]
+then
+    ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
+else
+    ENV_ROOT="./venv"
+fi
 
 
-setup-venv:
-  stage: test
-  script:
-    - ./setup-venv.sh
-  artifacts:
-    paths:
-      - venv
+rm -rf "${ENV_ROOT}"
 
+python3 -m venv "${ENV_ROOT}"
+source "${ENV_ROOT}/bin/activate"
 
-test:
-  stage: test
-  needs: ["setup-venv"]
-  script:
-    - ./ci-test.sh
-
-
-include:
-  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/dependency-scanning@1.0.0
-  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/secrets-detection@1.0.0
+pip install --trusted-host package-cache.honda-ri.de --upgrade pip
+pip install --trusted-host package-cache.honda-ri.de -r requirements.txt
 
 
 # EOF

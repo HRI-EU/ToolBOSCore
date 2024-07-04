@@ -1,5 +1,6 @@
+#!/bin/bash
 #
-#  GitLab CI/CD configuration
+#  Make use of Python environment
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -33,34 +34,24 @@
 #
 
 
-stages:
-  - test
+set -euo pipefail
 
+PKG_NAME=$(basename "${PWD}")
 
-default:
-  image: dmz-gitlab.honda-ri.de:5050/tech_team/docker/ubuntu2004-hri-main:1.0
-  interruptible: true
+if [[ -d "/hri/localdisk" ]]
+then
+    ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
+else
+    ENV_ROOT="./venv"
+fi
 
-
-setup-venv:
-  stage: test
-  script:
-    - ./setup-venv.sh
-  artifacts:
-    paths:
-      - venv
-
-
-test:
-  stage: test
-  needs: ["setup-venv"]
-  script:
-    - ./ci-test.sh
-
-
-include:
-  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/dependency-scanning@1.0.0
-  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/secrets-detection@1.0.0
+if [[ -d "${ENV_ROOT}" ]]
+then
+    source "${ENV_ROOT}/bin/activate"
+else
+    echo -e "\n${ENV_ROOT}: Python environment not yet set up.\n"
+    echo -e "Please run \033[1m./setup-venv.sh\033[0m first!\n"
+fi
 
 
 # EOF
