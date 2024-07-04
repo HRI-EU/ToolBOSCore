@@ -34,18 +34,13 @@
 #
 
 
+import atexit
+import glob
 import logging
 import io
+import re
 import os
 
-from atexit import register
-from glob   import glob
-from re     import match
-
-try:
-    _FILE_TYPES = (io.IOBase, file)
-except NameError:
-    _FILE_TYPES = (io.IOBase,)
 
 #----------------------------------------------------------------------------
 # Public functions for assertion (condition checking)
@@ -369,7 +364,7 @@ def isFileHandle( handle ):
     """
         Returns a boolean whether 'handle' points to an open file handle.
     """
-    return isinstance( handle, _FILE_TYPES )
+    return isinstance( handle, io.IOBase )
 
 def isFile( path ):
 
@@ -444,7 +439,7 @@ def isEmptyDir( path ):
         Returns a boolean whether 'path' points to an empty directory.
     """
     requireIsTextNonEmpty( path )
-    return glob( path + '/*' ) == []
+    return glob.glob( path + '/*' ) == []
 
 
 def requireIsEmptyDir( path ):
@@ -461,7 +456,7 @@ def isDirNonEmpty( path ):
         Returns a boolean whether 'path' points to a directory.
     """
     requireIsTextNonEmpty( path )
-    return glob( path + '/*' ) != []
+    return glob.glob( path + '/*' ) != []
 
 
 isNonEmptyDir = isDirNonEmpty
@@ -531,7 +526,7 @@ def isMatching( string, pattern ):
     requireIsTextNonEmpty( string )
     requireIsTextNonEmpty( pattern )
 
-    return bool( match( pattern, string ) )
+    return bool( re.match( pattern, string ) )
 
 
 def requireIsMatching( string, pattern ):
@@ -671,8 +666,7 @@ rootLogger.setLevel( logging.INFO )
 
 
 # ensure flushing the streams at application exit
-
-register( logging.shutdown )
+atexit.register( logging.shutdown )
 
 
 def setOutputFile( filename, rotate=False, size=None, count=None ):
