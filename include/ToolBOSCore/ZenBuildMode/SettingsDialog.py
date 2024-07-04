@@ -93,7 +93,7 @@ class SettingsDialog( QWidget, object ):
         table.setSpan( 0, 0, 1, 3 )
         table.setItem( 0, 0, nativeLabel )
 
-        validator = QRegExpValidator( QRegExp( "[a-z]{1,16}[a-z0-9\-]*" ) )
+        validator = QRegExpValidator( QRegExp( r"[a-z]{1,16}[a-z0-9\-]*" ) )
 
         i = 1
         for platform in nativePlatforms:
@@ -203,8 +203,8 @@ class SettingsDialog( QWidget, object ):
         self._dialogLayout.addWidget( self._tableWidget )
         self._dialogLayout.addWidget( self._submitWidget )
 
-        dialogWidth  = table.width() * 1.75 # screen.width() / 5 * 3
-        dialogHeight = table.height() * 1.5 #screen.height() / 5 * 3
+        dialogWidth  = int( table.width()  * 1.75 )
+        dialogHeight = int( table.height() * 1.50 )
 
         self._settingsDialog = QDialog( parent )
         self._settingsDialog.setLayout( self._dialogLayout )

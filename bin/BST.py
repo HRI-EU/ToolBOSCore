@@ -91,7 +91,7 @@ def _parseSqArgs( cr, argv ):
             forceFiles.add( os.path.abspath( arg ) )
 
         elif arg.startswith( 'sqLevel=' ):
-            tmp = re.search( 'sqLevel=(\S+)', ' '.join(argv) )
+            tmp = re.search( r'sqLevel=(\S+)', ' '.join(argv) )
 
             if tmp:
                 forceLevel = tmp.group(1)
@@ -100,7 +100,7 @@ def _parseSqArgs( cr, argv ):
                 raise ValueError( msg )
 
         elif arg.startswith( 'group=' ):
-            tmp = re.search( 'group=(\S+)', ' '.join(argv) )
+            tmp = re.search( r'group=(\S+)', ' '.join(argv) )
 
             if tmp:
                 forceGroups = tmp.group(1)

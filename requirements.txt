@@ -5,6 +5,7 @@ Markdown
 psutil
 pylint
 PyQt5
+PyQtWebEngine
 pytest
 termcolor
 terminaltables

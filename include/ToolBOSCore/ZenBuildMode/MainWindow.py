@@ -453,13 +453,15 @@ class MainWindow( QObject, object ):
         self.mainLayout.addWidget( self.taskButtons,   1, 1 )
         self.mainWidget.setLayout( self.mainLayout )
 
-        screen = QDesktopWidget().availableGeometry()
+        screen       = QDesktopWidget().availableGeometry()
+        windowWidth  = int( screen.width()  * 0.75 )
+        windowHeight = int( screen.height() * 0.75 )
 
         self.window.setWindowIcon( IconProvider.getIcon( 'ToolBOS' ) )
         self.window.setWindowTitle( 'BST.py (zen build mode)' )
         self.window.setMenuBar( self.menuBar )
         self.window.setCentralWidget( self.mainWidget )
-        self.window.resize( screen.width() / 5 * 4, screen.height() / 5 * 4 )
+        self.window.resize( windowWidth, windowHeight )
         self.window.move( screen.center() - self.window.rect().center() )
         self.window.show()
 

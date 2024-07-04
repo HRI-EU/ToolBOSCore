@@ -135,7 +135,7 @@ Japanese output on screen.'''
                 filePath.encode( 'ascii' )
                 passed += 1
             except UnicodeEncodeError as e:
-                # PyCharm linter fails to recognize the start property
+                # PyCharm linter fails to recognize the start property,
                 # so we silence the warning.
                 # noinspection PyUnresolvedReferences
                 logging.info( 'GEN01: %s - Non-ASCII character in filename',
@@ -288,7 +288,7 @@ characters per line.'''
                 if length > maxWidth:       # long line found
                     longLines += 1
 
-                if length > maxLen:         # found an ever-longer line
+                if length > maxLen:         # found an even-longer line
                     maxLen   = length       # than known so far
 
             logging.debug( '%s: longLines=%d, maxLen=%d',
@@ -3140,7 +3140,7 @@ def findNonAsciiCharacters( filePath, rule ):
             line.encode( 'ascii' )
             passed += 1
         except UnicodeEncodeError as e:
-            # PyCharm linter fails to recognize the start property
+            # PyCharm linter fails to recognize the start property,
             # so we silence the warning.
             # noinspection PyUnresolvedReferences
             logging.info( '%s: %s:%d - Non-ASCII character found at position %d',

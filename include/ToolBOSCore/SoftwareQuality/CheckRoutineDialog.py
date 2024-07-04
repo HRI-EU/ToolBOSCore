@@ -299,9 +299,8 @@ class CheckRoutineDialog( QDialog, object ):
 
         # noinspection PyArgumentList
         screen       = QApplication.desktop().screenGeometry()
-
-        dialogWidth  = screen.width() / 4 * 3
-        dialogHeight = screen.height() / 4 * 3
+        dialogWidth  = int( screen.width()  * 0.75 )
+        dialogHeight = int( screen.height() * 0.75 )
 
         self.setLayout( self._layout )
         self.setWindowIcon( IconProvider.getIcon( 'QualityGuideline' ) )
@@ -615,7 +614,7 @@ class CheckRoutineDialog( QDialog, object ):
 
         # extract ruleID from URL/filename
         try:
-            ruleID = re.search( '^.+-(.+)\.html', fileName ).group(1)
+            ruleID = re.search( r'^.+-(.+)\.html', fileName ).group(1)
         except AttributeError:                 # no match, e.g. external link
             return
 

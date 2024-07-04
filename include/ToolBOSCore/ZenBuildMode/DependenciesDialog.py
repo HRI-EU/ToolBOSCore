@@ -189,9 +189,8 @@ class DependenciesDialog( QWidget, object ):
 
         # noinspection PyArgumentList
         screen       = QApplication.desktop().screenGeometry()
-
-        dialogWidth  = screen.width()  * 0.5
-        dialogHeight = screen.height() * 0.75
+        dialogWidth  = int( screen.width()  * 0.50 )
+        dialogHeight = int( screen.height() * 0.75 )
 
         self.setLayout( mainLayout )
         self.setWindowTitle( 'Dependencies of %s' % self._canonicalPath )

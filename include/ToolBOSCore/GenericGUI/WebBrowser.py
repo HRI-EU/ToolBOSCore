@@ -56,7 +56,9 @@ class WebBrowser( QDialog ):
     def __init__( self, windowTitle, parent=None ):
         super( WebBrowser, self ).__init__( parent=parent )
 
-        screen = QApplication.desktop().screenGeometry()
+        screen       = QApplication.desktop().screenGeometry()
+        windowWidth  = int( screen.width()  * 0.75 )
+        windowHeight = int( screen.height() * 0.75 )
 
         self._setupProxy()
 
@@ -64,9 +66,7 @@ class WebBrowser( QDialog ):
 
         self._browser = QWebEngineView( parent=self )
         self._browser.setPage( self._page )
-        self._browser.resize( screen.width( ) / 4 * 3,
-                              screen.height() / 4 * 3 )
-
+        self._browser.resize( windowWidth, windowHeight )
         self._browser.setWindowTitle( windowTitle )
 
 

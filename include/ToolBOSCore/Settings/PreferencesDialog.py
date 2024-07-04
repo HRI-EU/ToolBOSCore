@@ -38,11 +38,6 @@
 import functools
 import logging
 
-import sip
-
-sip.setapi( 'QString', 2 )
-sip.setapi( 'QVariant', 2 )
-
 from PyQt5.QtCore    import QSize
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
@@ -176,8 +171,8 @@ class PreferencesDialog( QDialog, object ):
         #       with name we assume to get a small widget only --> auto-geometry
         if appName is None:
             screen       = QApplication.desktop().screenGeometry()
-            dialogWidth  = screen.width()  / 5 * 3
-            dialogHeight = screen.height() / 5 * 3
+            dialogWidth  = int( screen.width()  * 0.6 )
+            dialogHeight = int( screen.height() * 0.6 )
 
             self.resize( dialogWidth, dialogHeight )
             self.move( screen.center() - self.rect().center() )  # center

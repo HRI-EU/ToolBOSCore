@@ -120,7 +120,8 @@ class AboutDialog( QDialog ):
         layout.addWidget( self._standardButtons, i, 1 )
 
         # noinspection PyArgumentList
-        dialogWidth = QApplication.desktop().screenGeometry().width() / 3 * 2
+        screenWidth = QApplication.desktop().screenGeometry().width()
+        dialogWidth = int( screenWidth * 2/3 )
 
         self.setLayout( layout )
         self.setMinimumWidth( dialogWidth )
