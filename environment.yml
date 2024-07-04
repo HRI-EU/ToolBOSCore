@@ -1,6 +1,3 @@
-#!/bin/bash
-#
-#  Make use of Python environment
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,22 +31,26 @@
 #
 
 
-PKG_NAME=$(basename "${PWD}")
+name:
+  ToolBOSCore
 
-if [[ -d "/hri/localdisk" ]]
-then
-    ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
-else
-    ENV_ROOT="./venv"
-fi
+channels:
+  - https://package-cache.honda-ri.de/repository/conda-proxy/main
+  - https://package-cache.honda-ri.de/repository/conda-forge-proxy
 
-if [[ -d "${ENV_ROOT}" ]]
-then
-    source "${ENV_ROOT}/bin/activate"
-else
-    echo -e "\n${ENV_ROOT}: Python environment not yet set up.\n"
-    echo -e "Please run \033[1m./setup-venv.sh\033[0m first!\n"
-fi
+dependencies:
+  - conda
+  - dill
+  - lxml
+  - mako
+  - Markdown
+  - psutil
+  - pyqt
+  - pylint
+  - pytest
+  - termcolor
+  - terminaltables
+  - urllib3
 
 
 # EOF

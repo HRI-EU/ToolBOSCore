@@ -41,14 +41,12 @@ export REQUESTS_CA_BUNDLE="/usr/local/share/ca-certificates/HRI-CA_cert_2020.crt
 
 PKG_NAME=$(basename "${PWD}")
 
-
 if [[ -d "/hri/localdisk" ]]
 then
     ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
 else
     ENV_ROOT="./venv"
 fi
-
 
 rm -rf "${ENV_ROOT}"
 

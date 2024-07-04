@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Make use of Python environment
+#  GitLab CI/CD operations
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,22 +34,11 @@
 #
 
 
-PKG_NAME=$(basename "${PWD}")
+set -eo pipefail
 
-if [[ -d "/hri/localdisk" ]]
-then
-    ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
-else
-    ENV_ROOT="./venv"
-fi
-
-if [[ -d "${ENV_ROOT}" ]]
-then
-    source "${ENV_ROOT}/bin/activate"
-else
-    echo -e "\n${ENV_ROOT}: Python environment not yet set up.\n"
-    echo -e "Please run \033[1m./setup-venv.sh\033[0m first!\n"
-fi
+./setup-conda.sh
+./activate-conda.sh
+./ci-test.sh
 
 
 # EOF

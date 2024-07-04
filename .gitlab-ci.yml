@@ -42,20 +42,14 @@ default:
   interruptible: true
 
 
-setup-venv:
-  stage: test
+all-conda:
   script:
-    - ./setup-venv.sh
-  artifacts:
-    paths:
-      - venv
+    - ./ci-all-conda.sh
 
 
-test:
-  stage: test
-  needs: ["setup-venv"]
+all-venv:
   script:
-    - ./ci-test.sh
+    - ./ci-all-venv.sh
 
 
 include:

@@ -34,10 +34,21 @@
 #
 
 
-set -euxo pipefail
+set -exo pipefail
 
 source ./useFromHere.sh
-source ./activate-venv.sh
+
+if [[ -d "./venv" ]]
+then
+    source ./activate-venv.sh
+elif [[ -d "./conda" ]]
+then
+    source ./activate-conda.sh
+else
+    echo "Using locally installed Python interpreter"
+fi
+
+which python
 
 BST.py --test
 

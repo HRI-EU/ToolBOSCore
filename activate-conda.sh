@@ -34,21 +34,26 @@
 #
 
 
+source "/hri/sit/latest/External/anaconda/conda/2024.02/etc/profile.d/conda.sh"
+
 PKG_NAME=$(basename "${PWD}")
 
 if [[ -d "/hri/localdisk" ]]
 then
-    ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
+    ENV_ROOT="/hri/localdisk/${USER}/conda"
 else
-    ENV_ROOT="./venv"
+    ENV_ROOT="./conda"
 fi
 
 if [[ -d "${ENV_ROOT}" ]]
 then
-    source "${ENV_ROOT}/bin/activate"
+    export CONDA_ENVS_PATH="${ENV_ROOT}"
+    export CONDA_PKGS_DIRS="/tmp/${USER}/conda-pkg"
+
+    conda activate "${PKG_NAME}"
 else
     echo -e "\n${ENV_ROOT}: Python environment not yet set up.\n"
-    echo -e "Please run \033[1m./setup-venv.sh\033[0m first!\n"
+    echo -e "Please run \033[1m./setup-conda.sh\033[0m first!\n"
 fi
 
 

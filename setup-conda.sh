@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Make use of Python environment
+#  Setup Python environment
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -34,22 +34,29 @@
 #
 
 
-PKG_NAME=$(basename "${PWD}")
+set -eo pipefail
+
+source "/hri/sit/latest/External/anaconda/conda/2024.02/etc/profile.d/conda.sh"
+
+#if [[ ! -z "$(conda config --get channels)" ]]
+#then
+    conda config --remove channels defaults
+#fi
 
 if [[ -d "/hri/localdisk" ]]
 then
-    ENV_ROOT="/hri/localdisk/${USER}/venvs/${PKG_NAME}"
+    ENV_ROOT="/hri/localdisk/${USER}/conda"
 else
-    ENV_ROOT="./venv"
+    ENV_ROOT="./conda"
 fi
 
-if [[ -d "${ENV_ROOT}" ]]
-then
-    source "${ENV_ROOT}/bin/activate"
-else
-    echo -e "\n${ENV_ROOT}: Python environment not yet set up.\n"
-    echo -e "Please run \033[1m./setup-venv.sh\033[0m first!\n"
-fi
+export CONDA_ENVS_PATH="${ENV_ROOT}"
+export CONDA_PKGS_DIRS="/tmp/${USER}/conda-pkg"
+
+rm -rf "${ENV_ROOT}"
+
+conda env create -f environment.yml --insecure
+conda activate "${ENV_LABEL}"
 
 
 # EOF
