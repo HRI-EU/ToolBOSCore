@@ -88,7 +88,7 @@ def requireOptional( dummy ):
 
 def isNotNone( obj ):
     """
-        Returns a boolean whether or not 'obj' references 'None'.
+        Returns a boolean whether 'obj' references 'None'.
     """
     return obj is not None
 
@@ -105,7 +105,7 @@ def requireIsNotNone( obj, msg=None ):
 
 def isBool( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'bool'.
+        Returns a boolean whether 'obj' is of type 'bool'.
     """
     return isinstance( obj, bool )
 
@@ -120,7 +120,7 @@ def requireIsBool( obj ):
 
 def isInt( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'int'.
+        Returns a boolean whether 'obj' is of type 'int'.
     """
     return isinstance( obj, int )
 
@@ -135,7 +135,7 @@ def requireIsInt( obj ):
 
 def isIntNotZero( obj ):
     """
-        Returns a boolean whether or not 'obj' of type 'int' and is not zero.
+        Returns a boolean whether 'obj' of type 'int' and is not zero.
     """
     return isInt( obj ) and obj != 0
 
@@ -151,7 +151,7 @@ def requireIsIntNotZero( obj ):
 
 def isInRange( obj, minimum, maximum ):
     """
-        Returns a boolean whether or not 'obj' is a number and between
+        Returns a boolean whether 'obj' is a number and between
         min and max (including min/max limits).
     """
     requireMsg( isInt( obj ) or isFloat( obj ), "%s: Not a number" % obj )
@@ -174,7 +174,7 @@ def requireIsInRange( obj, minimum, maximum ):
 
 def isFloat( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'float'.
+        Returns a boolean whether 'obj' is of type 'float'.
     """
     return isinstance( obj, float )
 
@@ -197,7 +197,7 @@ def requireIsString( obj ):
 
 def isString( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'str'.
+        Returns a boolean whether 'obj' is of type 'str'.
     """
     return isinstance( obj, str )
 
@@ -231,7 +231,7 @@ def requireIsTextNonEmpty( obj ):
 
 def isList( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'list'.
+        Returns a boolean whether 'obj' is of type 'list'.
     """
     return isinstance( obj, list )
 
@@ -246,7 +246,7 @@ def requireIsList( obj ):
 
 def isListNonEmpty( obj ):
     """
-        Returns a boolean whether or not 'obj' contains elements.
+        Returns a boolean whether 'obj' contains elements.
     """
     return isList( obj ) and len( obj ) > 0
 
@@ -263,7 +263,7 @@ def requireIsListNonEmpty( obj ):
 
 def isDict( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'dict'.
+        Returns a boolean whether 'obj' is of type 'dict'.
     """
     return isinstance( obj, dict )
 
@@ -278,7 +278,7 @@ def requireIsDict( obj ):
 
 def isDictNonEmpty( obj ):
     """
-        Returns a boolean whether or not 'dict' is a list and contains
+        Returns a boolean whether 'dict' is a list and contains
         elements.
     """
     return isDict( obj ) and len( obj ) > 0
@@ -296,7 +296,7 @@ def requireIsDictNonEmpty( obj ):
 
 def isTuple( obj ):
     """
-        Returns a boolean whether or not 'obj' is of type 'tuple'.
+        Returns a boolean whether 'obj' is of type 'tuple'.
     """
     return isinstance( obj, tuple )
 
@@ -311,7 +311,7 @@ def requireIsTuple( obj ):
 
 def isIterable( obj ):
     """
-        Returns a boolean whether or not 'obj' is iterable, e.g. is a collection,
+        Returns a boolean whether 'obj' is iterable, e.g. is a collection,
         a collection view, a string, a generator, etc.
     """
     try:
@@ -333,7 +333,7 @@ def requireIsIterable( obj ):
 
 def isSet( obj ):
     """
-        Returns a boolean whether or not 'obj' is of either type 'set' or
+        Returns a boolean whether 'obj' is of either type 'set' or
         'frozenset'.
     """
     return isinstance( obj, set ) or isinstance( obj, frozenset )
@@ -350,7 +350,7 @@ def requireIsSet( obj, msg=None ):
 
 def isIn( obj, container ):
     """
-        Returns a boolean whether or not 'obj' is present in 'container'.
+        Returns a boolean whether 'obj' is present in 'container'.
     """
     return obj in container
 
@@ -367,14 +367,14 @@ def requireIsIn( obj, container, msg=None ):
 
 def isFileHandle( handle ):
     """
-        Returns a boolean whether or not 'handle' points to an open file handle.
+        Returns a boolean whether 'handle' points to an open file handle.
     """
     return isinstance( handle, _FILE_TYPES )
 
 def isFile( path ):
 
     """
-        Returns a boolean whether or not 'path' points to a regular file.
+        Returns a boolean whether 'path' points to a regular file.
     """
     return os.path.isfile( path )
 
@@ -393,7 +393,7 @@ def requireIsFile( path ):
 
 def isEmptyFile( path ):
     """
-        Returns a boolean whether or not 'path' points to a regular file.
+        Returns a boolean whether 'path' points to a regular file.
 
         Additionally, the size of the file must be zero.
     """
@@ -403,7 +403,7 @@ def isEmptyFile( path ):
 
 def isFileNonEmpty( path ):
     """
-        Returns a boolean whether or not 'path' points to a regular file.
+        Returns a boolean whether 'path' points to a regular file.
 
         Additionally, the size of the file must be greater than zero.
     """
@@ -423,7 +423,7 @@ def requireIsFileNonEmpty( path ):
 
 def isDir( path ):
     """
-        Returns a boolean whether or not 'path' points to a directory.
+        Returns a boolean whether 'path' points to a directory.
     """
     requireIsTextNonEmpty( path )
     return os.path.isdir( path )
@@ -441,10 +441,7 @@ def requireIsDir( path ):
 
 def isEmptyDir( path ):
     """
-        Returns a boolean whether or not 'path' points to an empty directory.
-
-        There must not be any files or directories beside the '.' and
-        '..' hardlinks.
+        Returns a boolean whether 'path' points to an empty directory.
     """
     requireIsTextNonEmpty( path )
     return glob( path + '/*' ) == []
@@ -453,9 +450,6 @@ def isEmptyDir( path ):
 def requireIsEmptyDir( path ):
     """
         Throws an AssertionError if 'path' points to an empty directory.
-
-        There must not be any files or directories beside the '.' and
-        '..' hardlinks.
     """
     requireIsTextNonEmpty( path )
     requireIsDir( path )
@@ -464,10 +458,7 @@ def requireIsEmptyDir( path ):
 
 def isDirNonEmpty( path ):
     """
-        Returns a boolean whether or not 'path' points to a directory.
-
-        Additionally, the directory must contain at least one entry beside
-        the '.' and '..' hardlinks.
+        Returns a boolean whether 'path' points to a directory.
     """
     requireIsTextNonEmpty( path )
     return glob( path + '/*' ) != []
@@ -479,9 +470,6 @@ isNonEmptyDir = isDirNonEmpty
 def requireIsDirNonEmpty( path ):
     """
         Throws an AssertionError if 'path' does not point to a directory.
-
-        Additionally, the directory must contain at least one entry beside
-        the '.' and '..' hardlinks.
     """
     requireIsTextNonEmpty( path )
     requireIsDir( path )
@@ -493,7 +481,7 @@ requireIsNonEmptyDir = requireIsDirNonEmpty
 
 def isSymlink( path ):
     """
-        Returns a boolean whether or not 'path' points to a symlink.
+        Returns a boolean whether 'path' points to a symlink.
     """
     return os.path.islink( path )
 
@@ -508,7 +496,7 @@ def requireIsSymlink( path ):
 
 def isExisting( path ):
     """
-        Returns a boolean whether or not 'path' exists.
+        Returns a boolean whether 'path' exists.
     """
     return os.path.exists( path )
 
@@ -531,7 +519,7 @@ def requireIsNotExisting( path ):
 
 def isMatching( string, pattern ):
     """
-        Returns a boolean whether or not 'string' matches the given
+        Returns a boolean whether 'string' matches the given
         regular expression.
 
         Example:
@@ -567,7 +555,7 @@ def requireIsMatching( string, pattern ):
 
 def isCallable( obj ):
     """
-        Returns a boolean whether or not 'obj' is callable (read as function
+        Returns a boolean whether 'obj' is callable (read as function
         or method).
     """
     return callable( obj )
@@ -589,7 +577,7 @@ def requireIsCallable( obj ):
 
 def isInstance( obj, classType ):
     """
-        Returns a boolean whether or not 'obj' is an instance of class
+        Returns a boolean whether 'obj' is an instance of class
         'classType' (not as string, pass as real class!).
     """
     return isinstance( obj, classType )
@@ -615,7 +603,7 @@ def requireIsInstance( obj, classType, msg=None ):
 
 def isInstanceOrNone( obj, classType ):
     """
-        Returns a boolean whether or not 'obj' is instance of class
+        Returns a boolean whether 'obj' is instance of class
         'classType' (not as string, pass as real class!), or None.
 
         This function can be used for checking parameters that must be of a
@@ -641,7 +629,7 @@ def requireIsInstanceOrNone( obj, classType, msg=None ):
 
 def isWritableDir( path ):
     """
-        Returns a boolean whether or not 'path' is a writable directory.
+        Returns a boolean whether 'path' is a writable directory.
     """
     return os.access( path, os.W_OK )
 
@@ -737,7 +725,7 @@ def setDebugLevel( level ):
             Any.setDebugLevel( 0 )
             Any.setDebugLevel( logging.CRITICAL )
 
-        Also regular progress info:
+        Additionally regular progress info:
             Any.setDebugLevel( 3 )
             Any.setDebugLevel( logging.INFO )
 
