@@ -45,7 +45,6 @@ import re
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ToolBOSConf
 from ToolBOSCore.Util      import FastScript
-from ToolBOSCore.Util      import Any
 
 
 #----------------------------------------------------------------------------
@@ -63,7 +62,7 @@ def switchEnvironment( toPlatform ):
         function. When you are done, you can then reset the whole environment
         by calling "FastScript.setEnv( origMap )".
     """
-    Any.requireIsTextNonEmpty( toPlatform )
+    FastScript.requireIsTextNonEmpty( toPlatform )
 
     fromPlatform = Platforms.getHostPlatform()
     src          = fromPlatform.replace( '-', '' )
@@ -104,7 +103,7 @@ def getSwitchEnvironmentList( fromPlatform=None ):
         return result
 
 
-    Any.requireIsTextNonEmpty( fromPlatform )
+    FastScript.requireIsTextNonEmpty( fromPlatform )
 
     if fromPlatform not in Platforms.getPlatformNames():
         raise ValueError( '%s: unsupported platform name' % fromPlatform )
@@ -126,7 +125,7 @@ def getSwitchEnvironmentList( fromPlatform=None ):
 
         if tmp is not None:
             targetPlatform = tmp.group(1)
-            Any.requireIsTextNonEmpty( targetPlatform )
+            FastScript.requireIsTextNonEmpty( targetPlatform )
 
             # Windows-platforms are named e.g. 'windows-amd64-vs2017'.
             # However, names with dashes can't be used as function names
@@ -181,7 +180,7 @@ def getNativeCompileHost( platform ):
         Such values are site-specific and hence need to be configured via
         ToolBOS.conf.
     """
-    Any.requireIsTextNonEmpty( platform )
+    FastScript.requireIsTextNonEmpty( platform )
 
 
     hosts = ToolBOSConf.getConfigOption( 'BST_userCompileHosts' )
@@ -209,7 +208,7 @@ def getCrossCompileHost( platform ):
         Such values are site-specific and hence need to be configured via
         ToolBOS.conf.
     """
-    Any.requireIsTextNonEmpty( platform )
+    FastScript.requireIsTextNonEmpty( platform )
 
     hosts = ToolBOSConf.getConfigOption( 'BST_userCrossCompileHosts' )
 
@@ -251,11 +250,11 @@ def _switchEnv_linuxToWindows( targetPlatform ):
     from ToolBOSCore.Settings import UserSetup
     from ToolBOSCore.Settings import ToolBOSConf
 
-    Any.requireIsTextNonEmpty( targetPlatform )
+    FastScript.requireIsTextNonEmpty( targetPlatform )
 
     def _set_msvc_2017_conf():
         UserSetup.ensureMSVCSetup( sdk, postfix = '.' + targetPlatform )
-        Any.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
+        FastScript.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
 
         msvcBasePath          = r'c:\BuildTools\VC'
         msvcToolsBasePath     = r'{}\Tools\MSVC\14.13.26128'.format( msvcBasePath )
@@ -309,7 +308,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
             pdkVersion    = 'v7.1'
 
         UserSetup.ensureMSVCSetup( sdk, postfix = '.' + targetPlatform )
-        Any.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
+        FastScript.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
 
         basePath          = '''c:\\msvc-sdk\\''' + compilerSuite + '''\\'''
         compilerBasePath  = basePath + '''VC\\'''
@@ -344,16 +343,16 @@ def _switchEnv_linuxToWindows( targetPlatform ):
     targetArch = tmp.group(2)
     sdk        = int(tmp.group(3))
 
-    Any.requireIsTextNonEmpty( targetArch )
-    Any.requireIsIntNotZero( sdk )
+    FastScript.requireIsTextNonEmpty( targetArch )
+    FastScript.requireIsIntNotZero( sdk )
 
     # source "ToolBOSPluginWindows" if not already done
 
     bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
-    Any.requireIsDictNonEmpty( bspMap )
+    FastScript.requireIsDictNonEmpty( bspMap )
 
     neededBSP  = bspMap[ targetPlatform ]
-    Any.requireIsTextNonEmpty( neededBSP )
+    FastScript.requireIsTextNonEmpty( neededBSP )
     ProcessEnv.source( neededBSP )
 
     logging.debug( 'using wine from: %s', ProcessEnv.which( 'wine' ) )
@@ -372,7 +371,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                              'include/CMake/Platform/Linux-MSVC.cmake' )
-    Any.requireIsFileNonEmpty( fileName )
+    FastScript.requireIsFileNonEmpty( fileName )
 
     oldOptions = FastScript.getEnv( 'BST_CMAKE_OPTIONS' )
 

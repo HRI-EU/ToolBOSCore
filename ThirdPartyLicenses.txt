@@ -1,5 +1,5 @@
 ToolBOSCore uses third-party libraries and other resources falling under licenses
-different than the ToolBOSCore software:
+different from the ToolBOSCore software:
 
 - CMake (a build system) is released under the BSD 3-clause License
   https://cmake.org

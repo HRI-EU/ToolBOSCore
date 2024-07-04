@@ -42,9 +42,6 @@ from PyQt5.QtNetwork          import QNetworkReply, QNetworkProxy
 from PyQt5.QtWidgets          import QApplication, QWidget, QLabel, QDialog
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
 
-from ToolBOSCore.Settings import ToolBOSConf
-from ToolBOSCore.Util     import Any
-
 
 class WebPage( QWebEnginePage ):
 

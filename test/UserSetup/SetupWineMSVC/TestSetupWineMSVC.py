@@ -40,9 +40,8 @@ import os
 import tempfile
 import unittest
 
-from ToolBOSCore.Settings           import UserSetup
-from ToolBOSCore.Util               import FastScript
-from ToolBOSCore.Util               import Any
+from ToolBOSCore.Settings import UserSetup
+from ToolBOSCore.Util     import FastScript
 
 
 class TestSetupWineMSVC( unittest.TestCase ):
@@ -51,30 +50,28 @@ class TestSetupWineMSVC( unittest.TestCase ):
 
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( 1 )
+            FastScript.setDebugLevel( 1 )
 
 
     def test_setupMSVC_withWine( self ):
         configDir = tempfile.mkdtemp( prefix='test-' )
-        output    = io.StringIO() if Any.getDebugLevel() <= 3 else None
-
+        output    = io.StringIO() if FastScript.getDebugLevel() <= 3 else None
 
         # setup Wine
         UserSetup.setupWineDotNet( configDir, stdout=output, stderr=output, msvc=self._msvc )
         UserSetup.setupMSVC( configDir, self._msvc )
 
-
         # check result
-        Any.requireIsDirNonEmpty( configDir )
-        Any.requireIsFileNonEmpty( os.path.join( configDir, 'user.reg' ) )
-        Any.requireIsFileNonEmpty( os.path.join( configDir, 'system.reg' ) )
-        Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'c:' ) )
-        Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'z:' ) )
+        FastScript.requireIsDirNonEmpty( configDir )
+        FastScript.requireIsFileNonEmpty( os.path.join( configDir, 'user.reg' ) )
+        FastScript.requireIsFileNonEmpty( os.path.join( configDir, 'system.reg' ) )
+        FastScript.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'c:' ) )
+        FastScript.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'z:' ) )
 
         msvcLink   = os.path.join( configDir, 'drive_c', 'BuildTools' )
-        Any.requireIsSymlink( msvcLink )
+        FastScript.requireIsSymlink( msvcLink )
         msvcTarget = os.path.realpath( msvcLink )
-        Any.requireIsDirNonEmpty( msvcTarget )
+        FastScript.requireIsDirNonEmpty( msvcTarget )
         self.assertTrue( msvcTarget.find( 'Data/wine.net/1.1' ) > 0 )
 
 
@@ -85,24 +82,21 @@ class TestSetupWineMSVC( unittest.TestCase ):
     def test_setupMSVC_withoutWine( self ):
         configDir = tempfile.mkdtemp( prefix='test-' )
 
-
         # setup MSVC (implcitely setting up Wine if not present)
         UserSetup.setupMSVC( configDir, self._msvc )
 
-
         # check result
-        Any.requireIsDirNonEmpty( configDir )
-        Any.requireIsFileNonEmpty( os.path.join( configDir, 'user.reg' ) )
-        Any.requireIsFileNonEmpty( os.path.join( configDir, 'system.reg' ) )
-        Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'c:' ) )
-        Any.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'z:' ) )
+        FastScript.requireIsDirNonEmpty( configDir )
+        FastScript.requireIsFileNonEmpty( os.path.join( configDir, 'user.reg' ) )
+        FastScript.requireIsFileNonEmpty( os.path.join( configDir, 'system.reg' ) )
+        FastScript.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'c:' ) )
+        FastScript.requireIsSymlink( os.path.join( configDir, 'dosdevices', 'z:' ) )
 
         msvcLink   = os.path.join( configDir, 'drive_c', 'BuildTools' )
-        Any.requireIsSymlink( msvcLink )
+        FastScript.requireIsSymlink( msvcLink )
         msvcTarget = os.path.realpath( msvcLink )
-        Any.requireIsDirNonEmpty( msvcTarget )
+        FastScript.requireIsDirNonEmpty( msvcTarget )
         self.assertTrue( msvcTarget.find( 'Data/wine.net/1.1' ) > 0 )
-
 
         # clean-up
         FastScript.remove( configDir )

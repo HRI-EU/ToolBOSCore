@@ -45,7 +45,7 @@ from ToolBOSCore.Storage                    import SIT
 from ToolBOSCore.Storage.BashSrc            import BashSrcWriter
 from ToolBOSCore.Storage.PackageVar         import PackageVarCmakeWriter
 from ToolBOSCore.Storage.PkgInfoWriter      import PkgInfoWriter
-from ToolBOSCore.Util                       import Any, FastScript
+from ToolBOSCore.Util                       import FastScript
 
 
 def makeShellfiles( projectRoot ):
@@ -60,7 +60,7 @@ def makeShellfiles( projectRoot ):
         (including the version, e.g. "/home/foo/mycode/Spam/42.0")
 
     """
-    Any.requireIsDir( projectRoot )
+    FastScript.requireIsDir( projectRoot )
 
     oldcwd = os.getcwd()
     FastScript.changeDirectory( projectRoot )
@@ -118,12 +118,12 @@ def uninstall( canonicalPath, cleanGlobalInstallation, dryRun=False ):
 
     requireIsCanonicalPath( canonicalPath )
 
-    Any.requireIsBool( dryRun )
+    FastScript.requireIsBool( dryRun )
 
     sitProxyPath       = SIT.getPath()
     sitRootPath        = SIT.getRootPath()
-    Any.requireIsTextNonEmpty( sitProxyPath )
-    Any.requireIsTextNonEmpty( sitRootPath )
+    FastScript.requireIsTextNonEmpty( sitProxyPath )
+    FastScript.requireIsTextNonEmpty( sitRootPath )
 
     installRoot_proxy  = os.path.join( sitProxyPath, canonicalPath )
     installRoot_root   = os.path.join( sitRootPath, canonicalPath )
@@ -168,8 +168,8 @@ def randomizeValidityFlags():
     validStr   = "{0:#0{1}x}UL".format( valid,   10 )
     invalidStr = "{0:#0{1}x}UL".format( invalid, 10 )
 
-    Any.requireIsTextNonEmpty( validStr )
-    Any.requireIsTextNonEmpty( invalidStr )
+    FastScript.requireIsTextNonEmpty( validStr )
+    FastScript.requireIsTextNonEmpty( invalidStr )
 
     return validStr, invalidStr
 

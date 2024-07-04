@@ -34,7 +34,7 @@
 #
 
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 
 def getHostPlatform():
@@ -54,7 +54,7 @@ def getHostPlatform():
         from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
         hostPlatform = getConfigOption( 'hostPlatform' )
 
-    Any.requireIsTextNonEmpty( hostPlatform )
+    FastScript.requireIsTextNonEmpty( hostPlatform )
 
     return hostPlatform
 
@@ -70,7 +70,7 @@ def getHostArch():
     # check configfile
     try:
         hostArch = getConfigOption( 'hostArch' )
-        Any.requireIsTextNonEmpty( hostArch )
+        FastScript.requireIsTextNonEmpty( hostArch )
         return hostArch
 
     except ( IOError, KeyError ):
@@ -102,7 +102,7 @@ def getHostOS():
     try:
         from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
         hostOS = getConfigOption( 'hostOS' )
-        Any.requireIsTextNonEmpty( hostOS )
+        FastScript.requireIsTextNonEmpty( hostOS )
 
         return hostOS
 
@@ -155,8 +155,8 @@ def getFullPlatformString( platformName ):
           'Ubuntu 20.04 LTS (64 bit)'
 
     """
-    Any.requireIsTextNonEmpty( platformName )
-    Any.requireIsIn( platformName, getPlatformNames() )
+    FastScript.requireIsTextNonEmpty( platformName )
+    FastScript.requireIsIn( platformName, getPlatformNames() )
 
 
     for platform in getPlatformList():

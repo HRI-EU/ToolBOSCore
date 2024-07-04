@@ -37,7 +37,6 @@
 import os
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import Any
 from ToolBOSCore.Util    import FastScript
 
 
@@ -61,12 +60,12 @@ def getPkgInfoContent( project = None, dirName = None, filename = None ):
             requireIsCanonicalPath( project )
             filename = os.path.join( SIT.getPath(), project, 'pkgInfo.py' )
         elif dirName:
-            Any.requireIsDir( dirName )
+            FastScript.requireIsDir( dirName )
             filename = os.path.join( dirName, 'pkgInfo.py' )
         else:
             filename = 'pkgInfo.py'
 
-    Any.requireIsFile( filename )
+    FastScript.requireIsFile( filename )
 
     try:
         content = FastScript.execFile( filename )

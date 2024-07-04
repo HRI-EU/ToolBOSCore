@@ -41,14 +41,14 @@ import unittest
 from ToolBOSCore.Packages import ProjectProperties
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Storage  import SIT
-from ToolBOSCore.Util     import Any, FastScript
+from ToolBOSCore.Util     import FastScript
 
 
 class TestBootstrap( unittest.TestCase ):
 
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( 1 )
+            FastScript.setDebugLevel( 1 )
 
 
     def test_isDeprecated( self ):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Qt-style mode for BST packages
@@ -47,7 +46,7 @@ from PyQt5.QtCore import pyqtSignal, QByteArray, QObject, QThread
 from ToolBOSCore.GenericGUI      import ProcessExecutor, UnicodeSupport
 from ToolBOSCore.Packages        import BSTPackage
 from ToolBOSCore.SoftwareQuality import CheckRoutine
-from ToolBOSCore.Util            import Any, FastScript
+from ToolBOSCore.Util            import FastScript
 
 
 class BSTPackageModel( QObject, object ):
@@ -82,7 +81,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def open( self, topLevelDir ):
-        Any.requireIsDir( topLevelDir )
+        FastScript.requireIsDir( topLevelDir )
 
         self._sqPreparationDone = False
 
@@ -154,10 +153,10 @@ class BSTPackageModel( QObject, object ):
 
     def getSQLevelIndex( self ):
         name  = self.getSQLevelName()
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         index = CheckRoutine.sqLevelNames.index( name )
-        Any.requireIsInt( index )
+        FastScript.requireIsInt( index )
 
         return index
 
@@ -237,7 +236,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def setSQLevel( self, level ):
-        Any.requireIsTextNonEmpty( level )
+        FastScript.requireIsTextNonEmpty( level )
 
         if level == CheckRoutine.sqLevelDefault:
             self._bstpkg_src.pkgInfo_remove('sqLevel')
@@ -246,7 +245,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def setSQOptInRules( self, value ):
-        Any.requireIsList( value )
+        FastScript.requireIsList( value )
 
         if value:
             self._bstpkg_src.pkgInfo_set('sqOptInRules', value)
@@ -255,7 +254,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def setSQOptOutRules( self, value ):
-        Any.requireIsList( value )
+        FastScript.requireIsList( value )
 
         if value:
             self._bstpkg_src.pkgInfo_set('sqOptOutRules', value)
@@ -264,7 +263,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def setSQComments( self, value ):
-        Any.requireIsDict( value )
+        FastScript.requireIsDict( value )
 
         if value:
             self._bstpkg_src.pkgInfo_set('sqComments', value)
@@ -277,7 +276,7 @@ class BSTPackageModel( QObject, object ):
         self._bstpkg_src.detector.retrieveMakefileInfo()
 
         canonicalPath = self.getCanonicalPath()
-        Any.requireIsTextNonEmpty( canonicalPath )
+        FastScript.requireIsTextNonEmpty( canonicalPath )
 
         bstpkg_proxy = BSTPackage.BSTProxyInstalledPackage()
 
@@ -314,7 +313,7 @@ class BSTPackageModel( QObject, object ):
 
         exe = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                             'include/ZenBuildMode/DependencyDetector.py' )
-        Any.requireIsFileNonEmpty( exe )
+        FastScript.requireIsFileNonEmpty( exe )
 
         cmd = '%s --quiet %s %s' % ( exe,
                                      self._bstpkg_src.detector.topLevelDir,
@@ -355,7 +354,7 @@ class BSTPackageModel( QObject, object ):
             logging.debug( 'no dependency data received' )
             return
 
-        if not Any.isInstance( base64payload, bytes ):
+        if not FastScript.isInstance( base64payload, bytes ):
             logging.debug( 'received dependency data of unexpected type' )
             logging.debug( '(this could come from a ~/.bashrc which prints text)' )
             return
@@ -368,14 +367,14 @@ class BSTPackageModel( QObject, object ):
         logging.debug( 'dillPayload size: %d', dillPayloadSize )
 
         data = dill.loads( dillPayload )
-        Any.requireIsDictNonEmpty( data )
+        FastScript.requireIsDictNonEmpty( data )
 
-        Any.requireIsInstance( data['bstpkg_src'],    BSTPackage.BSTSourcePackage )
-        Any.requireIsInstance( data['bstpkg_global'], BSTPackage.BSTGloballyInstalledPackage )
-        Any.requireIsDict( data['installStatus'] )
-        Any.requireIsDict( data['installStatusLocal'] )
-        Any.requireIsDict( data['installStatusProxy'] )
-        Any.requireIsDict( data['installStatusGlobal'] )
+        FastScript.requireIsInstance( data['bstpkg_src'],    BSTPackage.BSTSourcePackage )
+        FastScript.requireIsInstance( data['bstpkg_global'], BSTPackage.BSTGloballyInstalledPackage )
+        FastScript.requireIsDict( data['installStatus'] )
+        FastScript.requireIsDict( data['installStatusLocal'] )
+        FastScript.requireIsDict( data['installStatusProxy'] )
+        FastScript.requireIsDict( data['installStatusGlobal'] )
 
         self._bstpkg_src.depSet   = data['bstpkg_src'].depSet
         self._bstpkg_src.depTree  = data['bstpkg_src'].depTree
@@ -401,8 +400,8 @@ class BSTPackageModel( QObject, object ):
         # retrieving direct dependencies should work, consider an error if not
 
         try:
-            Any.requireIsSet( self._bstpkg_src.depSet )
-            Any.requireIsList( self._bstpkg_src.depTree )
+            FastScript.requireIsSet( self._bstpkg_src.depSet )
+            FastScript.requireIsList( self._bstpkg_src.depTree )
         except AssertionError:
             self.depsDetected.emit( False )
             logging.error( 'unable to retrieve dependencies' )
@@ -412,8 +411,8 @@ class BSTPackageModel( QObject, object ):
 
         if self._bstpkg_global.isInstalled():
             try:
-                Any.requireIsSet( self._bstpkg_global.revDepSet )
-                Any.requireIsList( self._bstpkg_global.revDepTree )
+                FastScript.requireIsSet( self._bstpkg_global.revDepSet )
+                FastScript.requireIsList( self._bstpkg_global.revDepTree )
             except AssertionError:
                 logging.error( 'unable to retrieve reverse dependencies' )
         else:
@@ -423,7 +422,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def _onDepDetectorError( self, data ):
-        Any.requireIsInstance( data, QByteArray )
+        FastScript.requireIsInstance( data, QByteArray )
 
         text = UnicodeSupport.convertQByteArray( data )
 
@@ -431,7 +430,7 @@ class BSTPackageModel( QObject, object ):
 
 
     def _onDepDetectorOutput( self, data ):
-        Any.requireIsInstance( data, QByteArray )
+        FastScript.requireIsInstance( data, QByteArray )
 
         text = UnicodeSupport.convertQByteArray( data )
 
@@ -439,11 +438,11 @@ class BSTPackageModel( QObject, object ):
 
 
     def _onSQPreparerFinished( self ):
-        Any.requireIsNotNone( self._bstpkg_src.sqChecker )
-        Any.requireIsInstance( self._bstpkg_src.sqChecker,
+        FastScript.requireIsNotNone( self._bstpkg_src.sqChecker )
+        FastScript.requireIsInstance( self._bstpkg_src.sqChecker,
                                CheckRoutine.CheckRoutine )
 
-        Any.requireIsDict( self._bstpkg_src.sqChecker.filesByType )
+        FastScript.requireIsDict( self._bstpkg_src.sqChecker.filesByType )
 
         self._sqPreparationDone = True
         self.sqCheckPrepared.emit()

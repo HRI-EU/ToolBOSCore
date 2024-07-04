@@ -43,7 +43,7 @@ import subprocess
 import unittest
 
 from ToolBOSCore.Platforms import Platforms
-from ToolBOSCore.Util      import Any, FastScript
+from ToolBOSCore.Util      import FastScript
 
 
 def normalizeOutput( string ):
@@ -61,7 +61,7 @@ class TestHelpTextConsistency( unittest.TestCase ):
 
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( 1 )
+            FastScript.setDebugLevel( 1 )
 
 
     def test_helpText( self ):
@@ -69,7 +69,7 @@ class TestHelpTextConsistency( unittest.TestCase ):
         hostPlatform = Platforms.getHostPlatform()
         binDirNoArch = os.path.join( tcRoot, 'bin' )
 
-        Any.requireIsDirNonEmpty( binDirNoArch )
+        FastScript.requireIsDirNonEmpty( binDirNoArch )
 
         pyScripts    = glob.glob( os.path.join( binDirNoArch, '*.py' ) )
         shScripts    = glob.glob( os.path.join( binDirNoArch, '*.sh' ) )
@@ -85,7 +85,7 @@ class TestHelpTextConsistency( unittest.TestCase ):
         for program in sorted( pyScripts + shScripts + executables ):
 
             basename = os.path.basename( program )
-            Any.requireIsTextNonEmpty( basename )
+            FastScript.requireIsTextNonEmpty( basename )
 
             logging.info( 'processing %s', basename )
 
@@ -93,8 +93,8 @@ class TestHelpTextConsistency( unittest.TestCase ):
             cmd      = '%s --help' % program
             fileName = os.path.join( 'ReferenceData', '%s.txt' % basename )
 
-            Any.requireIsTextNonEmpty( cmd )
-            Any.requireIsTextNonEmpty( fileName )
+            FastScript.requireIsTextNonEmpty( cmd )
+            FastScript.requireIsTextNonEmpty( fileName )
 
             try:
                 FastScript.execProgram( cmd, stdout=output, stderr=output )
@@ -105,8 +105,8 @@ class TestHelpTextConsistency( unittest.TestCase ):
             expected = FastScript.getFileContent( fileName )
             result   = normalizeOutput( output.getvalue() )
 
-            Any.isTextNonEmpty( expected )
-            Any.isTextNonEmpty( result )
+            FastScript.isTextNonEmpty( expected )
+            FastScript.isTextNonEmpty( result )
 
             # To support the backward compatability with Python 3.9,
             # ignore the 'optional arguments' string which is part of help text.

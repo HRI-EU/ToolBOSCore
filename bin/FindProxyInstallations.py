@@ -42,11 +42,9 @@
 
 
 import logging
-import os
 import sys
 
 from ToolBOSCore.Storage import ProxyDir
-from ToolBOSCore.Storage import SIT
 from ToolBOSCore.Util    import ArgsManagerV2
 
 

@@ -47,7 +47,7 @@ from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
 from ToolBOSCore.Storage                  import PkgInfo, SIT
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Util                     import FastScript
 
 
 class BuildSystemTools( object ):
@@ -165,7 +165,7 @@ class BuildSystemTools( object ):
             return False
 
 
-        if Any.getDebugLevel() <= 3:
+        if FastScript.getDebugLevel() <= 3:
             # capture output so that it's not printed
             output = io.StringIO()
         else:
@@ -256,8 +256,8 @@ class BuildSystemTools( object ):
 
 
     def setSourceAndBinaryTree( self, sourceTree, binaryTree ):
-        Any.requireIsDirNonEmpty( sourceTree )
-        Any.requireIsDir( binaryTree )
+        FastScript.requireIsDirNonEmpty( sourceTree )
+        FastScript.requireIsDir( binaryTree )
 
         self._sourceTree = sourceTree
         self._binaryTree = binaryTree
@@ -269,7 +269,7 @@ class BuildSystemTools( object ):
 
 
     def setParallelJobs( self, number ):
-        Any.requireIsIntNotZero( number )
+        FastScript.requireIsIntNotZero( number )
         self._parallelJobs = number
         self._detectBuildCommand()
 
@@ -279,18 +279,18 @@ class BuildSystemTools( object ):
 
 
     def setBuildType( self, buildType ):
-        Any.requireIsTextNonEmpty( buildType )
+        FastScript.requireIsTextNonEmpty( buildType )
 
-        Any.requireMsg( buildType in ( 'Release', 'Debug' ),
+        FastScript.requireMsg( buildType in ( 'Release', 'Debug' ),
                         'invalid build type' )
 
         self._buildType = buildType
 
 
     def setTargetPlatform( self, platform ):
-        Any.requireIsTextNonEmpty( platform )
+        FastScript.requireIsTextNonEmpty( platform )
 
-        Any.requireMsg( platform in Platforms.getPlatformNames(),
+        FastScript.requireMsg( platform in Platforms.getPlatformNames(),
                         "Unknown platform: %s" % platform )
 
         if platform != self._hostPlatform:
@@ -327,14 +327,14 @@ class BuildSystemTools( object ):
 
 
     def _assembleScriptCmd( self, name, forceFilePath=None ):
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         filename = '%s.sh' % name
 
         if forceFilePath:
             filename = forceFilePath
 
-        if Any.getDebugLevel() > 3:
+        if FastScript.getDebugLevel() > 3:
             cmd = 'bash -x ./%s' % filename
         else:
             cmd = './' + filename
@@ -478,7 +478,7 @@ class BuildSystemTools( object ):
             cmakeModPath = os.path.abspath( os.path.join( self._sourceTree, cmakeModPath ) )
 
         try:
-            Any.requireIsDirNonEmpty( cmakeModPath )
+            FastScript.requireIsDirNonEmpty( cmakeModPath )
         except AssertionError as details:
             logging.error( 'invalid setting of BST_modulePath in ToolBOS.conf' )
             logging.error( details )
@@ -488,8 +488,8 @@ class BuildSystemTools( object ):
 
 
     def _execTask( self, name, corefunc ):
-        Any.requireIsTextNonEmpty( name )
-        Any.requireIsCallable( corefunc )
+        FastScript.requireIsTextNonEmpty( name )
+        FastScript.requireIsCallable( corefunc )
 
         logging.debug( 'Build System Tools: "%s" step started', name )
 
@@ -502,7 +502,7 @@ class BuildSystemTools( object ):
 
             if name in self._detector.scripts:
                 filePath = self._detector.scripts[ name ]
-                Any.requireIsFileNonEmpty( filePath )
+                FastScript.requireIsFileNonEmpty( filePath )
                 status = self._runScript( name, filePath=filePath )
 
             elif os.path.exists( coreScript ):
@@ -584,7 +584,7 @@ class BuildSystemTools( object ):
 
 
     def _runScript( self, name, filePath=None ):
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         ( filename, cmd ) = self._assembleScriptCmd( name, forceFilePath=filePath )
         status = True
@@ -795,7 +795,7 @@ def requireTopLevelDir( path='.' ):
     if path == '.' or not path:
         path = os.getcwd()
 
-    Any.requireMsg( isTopLevelDir( path ),
+    FastScript.requireMsg( isTopLevelDir( path ),
                     '%s: not a top-level directory of a source package' % path )
 
 
@@ -869,8 +869,8 @@ def _removeList( pathList, verbose, dryRun ):
 
 
 def _cleanDir( path, patternList, verbose, dryRun ):
-    Any.requireIsText( path )
-    Any.requireIsIterable( patternList )
+    FastScript.requireIsText( path )
+    FastScript.requireIsIterable( patternList )
 
     for pattern in patternList:
         patternFullPath = os.path.join( path, pattern )

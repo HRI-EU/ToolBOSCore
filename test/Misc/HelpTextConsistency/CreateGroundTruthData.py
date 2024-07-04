@@ -45,17 +45,16 @@ import io
 import logging
 import os
 
-from ToolBOSCore.Platforms          import Platforms
-from ToolBOSCore.Util               import Any
-from ToolBOSCore.Util               import FastScript
+from ToolBOSCore.Platforms import Platforms
+from ToolBOSCore.Util      import FastScript
 
 
 verbose = FastScript.getEnv( 'VERBOSE' ) == 'TRUE'
 
 if verbose:
-    Any.setDebugLevel( logging.DEBUG )
+    FastScript.setDebugLevel( logging.DEBUG )
 else:
-    Any.setDebugLevel( logging.INFO )
+    FastScript.setDebugLevel( logging.INFO )
 
 
 #----------------------------------------------------------------------------
@@ -83,7 +82,7 @@ tcRoot       = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
 hostPlatform = Platforms.getHostPlatform()
 binDirNoArch = os.path.join( tcRoot, 'bin' )
 
-Any.requireIsDirNonEmpty( binDirNoArch )
+FastScript.requireIsDirNonEmpty( binDirNoArch )
 
 # unset VERBOSE and BST_BUILD_JOBS make output comparable
 origEnv      = FastScript.getEnv()
@@ -100,7 +99,7 @@ FastScript.remove( 'ReferenceData' )
 for program in pyScripts + shScripts + executables:
 
     basename = os.path.basename( program )
-    Any.requireIsTextNonEmpty( basename )
+    FastScript.requireIsTextNonEmpty( basename )
 
     logging.info( 'processing %s', basename )
 
@@ -108,15 +107,15 @@ for program in pyScripts + shScripts + executables:
     cmd      = '%s --help' % program
     fileName = os.path.join( 'ReferenceData', '%s.txt' % basename )
 
-    Any.requireIsTextNonEmpty( cmd )
-    Any.requireIsTextNonEmpty( fileName )
+    FastScript.requireIsTextNonEmpty( cmd )
+    FastScript.requireIsTextNonEmpty( fileName )
     FastScript.execProgram( cmd, stdout=output, stderr=output )
 
     content  = normalizeOutput( output.getvalue() )
-    Any.requireIsTextNonEmpty( content )
+    FastScript.requireIsTextNonEmpty( content )
 
     FastScript.setFileContent( fileName, content )
-    Any.requireIsFileNonEmpty( fileName )
+    FastScript.requireIsFileNonEmpty( fileName )
 
 
 # EOF

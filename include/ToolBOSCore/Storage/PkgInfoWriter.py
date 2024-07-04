@@ -38,12 +38,12 @@ import io
 import os
 import pprint
 
-from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Storage.AbstractWriter   import AbstractWriter
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Packages import PackageDetector
+from ToolBOSCore.Storage  import AbstractWriter
+from ToolBOSCore.Util     import FastScript
 
 
-class PkgInfoWriter( AbstractWriter ):
+class PkgInfoWriter( AbstractWriter.AbstractWriter ):
 
     _indentation     = 16   # reference width
     _indentationIter = _indentation + len( ' = [' )
@@ -61,7 +61,7 @@ class PkgInfoWriter( AbstractWriter ):
             if it should go into the source tree of the package.
             The stored fields vary depending on the target destination.
         """
-        Any.require( isinstance( details, PackageDetector ) )
+        FastScript.require( isinstance( details, PackageDetector.PackageDetector ) )
 
         super( PkgInfoWriter, self ).__init__( details )
 
@@ -73,8 +73,8 @@ class PkgInfoWriter( AbstractWriter ):
 
     def formatValue( self, value ):
 
-        if Any.isTuple( value ) or Any.isList( value ) or \
-             Any.isDict( value ):
+        if FastScript.isTuple( value ) or FastScript.isList( value ) or \
+             FastScript.isDict( value ):
             return self.formatIterable( value )
 
         else:
@@ -82,8 +82,8 @@ class PkgInfoWriter( AbstractWriter ):
 
 
     def formatIterable( self, value ):
-        Any.requireMsg( Any.isList( value ) or Any.isTuple( value ) or
-                        Any.isDict( value ),
+        FastScript.requireMsg( FastScript.isList( value ) or FastScript.isTuple( value ) or
+                        FastScript.isDict( value ),
                         'unexpected datatype, value: %s' % str(value) )
 
         # use pprint module for formatting, however we do some further rework
@@ -276,27 +276,27 @@ class PkgInfoWriter( AbstractWriter ):
             Allows setting content from original file, in order to evolve an
             existing pkgInfo.py over time.
         """
-        Any.requireIsFileNonEmpty( filePath )
+        FastScript.requireIsFileNonEmpty( filePath )
         self.content = FastScript.getFileContent( filePath )
 
 
     def setUsePatchlevelSystem( self, boolean ):
-        Any.requireIsBool( boolean )
+        FastScript.requireIsBool( boolean )
         self.content += self.writeTable( { 'usePatchlevels': boolean } )
 
 
     def setInstallUmask( self, umask ):
-        Any.requireIsIntNotZero( umask )
+        FastScript.requireIsIntNotZero( umask )
         self.content += self.writeTable( { 'installUmask': umask } )
 
 
     def setInstall( self, patternList ):
-        Any.requireIsListNonEmpty( patternList )
+        FastScript.requireIsListNonEmpty( patternList )
         self.content += self.writeTable( { 'install': patternList } )
 
 
     def setInstallMatching( self, patternList ):
-        Any.requireIsListNonEmpty( patternList )
+        FastScript.requireIsListNonEmpty( patternList )
         self.content += self.writeTable( { 'installMatching': patternList } )
 
 

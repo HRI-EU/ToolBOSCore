@@ -57,11 +57,10 @@ if sys.stdout.isatty():
 else:
 
     # In case stdout is being redirected to a file, just return the
-    # provided string. Otherwise we would find shell escape sequences
+    # provided string. Otherwise, we would find Bash escape sequences
     # in the output.
 
-    dummy = lambda s: s
-
+    dummy      = lambda s: s
     emphasized = dummy
     error      = dummy
 

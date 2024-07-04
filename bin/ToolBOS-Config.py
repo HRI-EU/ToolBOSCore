@@ -44,7 +44,7 @@ import logging
 import pprint
 
 from ToolBOSCore.Settings import ToolBOSConf
-from ToolBOSCore.Util     import Any, ArgsManagerV2
+from ToolBOSCore.Util     import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ elif printVar:
     print( value )
 
 elif removeVar:
-    Any.setDebugLevel( logging.DEBUG )
+    FastScript.setDebugLevel( logging.DEBUG )
     tconf.delUserConfigOption( removeVar  )
 
 elif setVar:
@@ -133,7 +133,7 @@ elif setVar:
     key        = key.strip()
     value      = value.strip()
 
-    Any.setDebugLevel( logging.DEBUG )
+    FastScript.setDebugLevel( logging.DEBUG )
     tconf.setUserConfigOption( key, eval( value ) )
 
 elif zen:

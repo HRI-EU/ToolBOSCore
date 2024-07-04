@@ -37,7 +37,7 @@
 import json
 import shlex
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 
 class CMakeCompileCommands:
@@ -48,7 +48,7 @@ class CMakeCompileCommands:
             compile commands file, e.g. in case of BST.py found under
             'build/<platformName>/compile_commands.json'.
         """
-        Any.requireIsFileNonEmpty( filePath )
+        FastScript.requireIsFileNonEmpty( filePath )
         self._filePath = filePath
 
         self._data = None
@@ -64,7 +64,7 @@ class CMakeCompileCommands:
             The sourceFile must be provided as absolute path.
             If no information to this file are found, a ValueError is raised.
         """
-        Any.requireIsFileNonEmpty( sourceFile )
+        FastScript.requireIsFileNonEmpty( sourceFile )
 
         for item in self._data:
             # Each item in self._data is a JSON-encoded dictionary with 3 entries:
@@ -92,7 +92,7 @@ class CMakeCompileCommands:
             The sourceFile must be provided as absolute path.
             If no information to this file are found, a ValueError is raised.
         """
-        Any.requireIsFileNonEmpty( sourceFile )
+        FastScript.requireIsFileNonEmpty( sourceFile )
 
         command = self.getCompilerCommand( sourceFile )
         result  = ''
@@ -118,7 +118,7 @@ class CMakeCompileCommands:
 
             If no additional paths are set, an empty string will be returned.
         """
-        Any.requireIsFileNonEmpty( sourceFile )
+        FastScript.requireIsFileNonEmpty( sourceFile )
 
         command = self.getCompilerCommand( sourceFile )
         result  = ''
@@ -135,10 +135,10 @@ class CMakeCompileCommands:
             Reads the JSON file and stores the data into a member variable.
         """
         content    = FastScript.getFileContent( self._filePath )
-        Any.requireIsTextNonEmpty( content )
+        FastScript.requireIsTextNonEmpty( content )
 
         self._data = json.loads( content )
-        Any.requireIsListNonEmpty( self._data )
+        FastScript.requireIsListNonEmpty( self._data )
 
 
 # EOF

@@ -39,7 +39,6 @@
 #----------------------------------------------------------------------------
 
 
-import glob
 import logging
 import os
 import os.path
@@ -47,7 +46,7 @@ import re
 import stat
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import Any, FastScript, ThreadPool
+from ToolBOSCore.Util    import FastScript, ThreadPool
 
 
 #----------------------------------------------------------------------------
@@ -89,8 +88,8 @@ def findProxyInstallations( checkLinks = False ):
     excludePattern = re.compile( r'^(parentTree|\d+\.\d+.*)$' )
     criteria       = re.compile( r"^(\d+)\.(\d+)(.*)" )
 
-    Any.requireIsDir( sit )
-    Any.requireIsDir( sitParent )
+    FastScript.requireIsDir( sit )
+    FastScript.requireIsDir( sitParent )
     requireIsProxyDir( sit )
 
     # find all entries within the proxy that seem to be a version number
@@ -170,16 +169,16 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     sitProxyPkgList = []
     pluginsEnabled  = []
 
-    Any.requireIsBool( removeBrokenSymlinks     )
-    Any.requireIsBool( removeEmptyCategories    )
-    Any.requireIsBool( linkNewPackagesIntoProxy )
-    Any.requireIsBool( checkProxyLinkTarget     )
-    Any.requireIsBool( checkProxyLinkedVersion  )
-    Any.requireIsBool( removeProxyInstallations )
-    Any.requireIsBool( cleanHomeDirectory       )
-    Any.requireIsBool( dryRun )
+    FastScript.requireIsBool( removeBrokenSymlinks     )
+    FastScript.requireIsBool( removeEmptyCategories    )
+    FastScript.requireIsBool( linkNewPackagesIntoProxy )
+    FastScript.requireIsBool( checkProxyLinkTarget     )
+    FastScript.requireIsBool( checkProxyLinkedVersion  )
+    FastScript.requireIsBool( removeProxyInstallations )
+    FastScript.requireIsBool( cleanHomeDirectory       )
+    FastScript.requireIsBool( dryRun )
 
-    Any.requireMsg( sitRoot != sitProxy,
+    FastScript.requireMsg( sitRoot != sitProxy,
                        '%s: Is not a proxy directory' % sitProxy )
 
 
@@ -253,7 +252,7 @@ def _removeProxyInstallations( sitRootPkgList, sitProxyPkgList,
     requireIsProxyDir( sitProxy )
 
     toDelete = findProxyInstallations()  # list of absolute paths into proxy
-    Any.requireIsList( toDelete )
+    FastScript.requireIsList( toDelete )
 
     if len(toDelete) == 0:
         logging.info( 'no proxy installations to be deleted' )
@@ -353,10 +352,10 @@ def _linkNewPackagesIntoProxy( sitRootPkgList, sitProxyPkgList,
         Creates a symlink in the proxy for each newly globally installed
         package.
     """
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
+    FastScript.requireIsListNonEmpty( sitRootPkgList )
+    FastScript.requireIsListNonEmpty( sitProxyPkgList )
+    FastScript.requireIsDir( sitRoot )
+    FastScript.requireIsDir( sitProxy )
 
     proxyChanged = False
     diffList     = _getTreeDifferences( sitRootPkgList, sitProxyPkgList )
@@ -390,10 +389,10 @@ def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
         'projectList' must be a list containing canonical path names such
         as ['Libraries/Example/3.0'].
     """
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
+    FastScript.requireIsListNonEmpty( sitRootPkgList )
+    FastScript.requireIsListNonEmpty( sitProxyPkgList )
+    FastScript.requireIsDir( sitRoot )
+    FastScript.requireIsDir( sitProxy )
 
     for project in sitProxyPkgList:
         pkgProxyPath = os.path.join( sitProxy, project )
@@ -416,19 +415,19 @@ def _checkProxyLinkedVersion( sitRootPkgList, sitProxyPkgList,
                               sitRoot, sitProxy, dryRun ):
     """
         Checks if the two-digit version in the proxy points to the most
-        recent version. Otherwise this can happen:
+        recent version. Otherwise, this can happen:
 
-          * Developer A installs "Example/3.0.100" into his proxy, the
+          * Developer A installs "Example/3.0.100" into their proxy, the
             2-digit link "3.0" points into the proxy to version 3.0.100.
 
           * Developer B installs "Example/3.0.101" globally.
 
           * Now the 3.0-symlink of developer A is outdated.
     """
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
+    FastScript.requireIsListNonEmpty( sitRootPkgList )
+    FastScript.requireIsListNonEmpty( sitProxyPkgList )
+    FastScript.requireIsDir( sitRoot )
+    FastScript.requireIsDir( sitProxy )
 
     proxyChanged = False
 
@@ -455,7 +454,7 @@ def _checkProxyLinkedVersion( sitRootPkgList, sitProxyPkgList,
 def _cleanHomeDirectory( sitRootPkgList, sitProxyPkgList,
                          sitRoot, sitProxy, dryRun ):
     """
-        Clean-up really old / unused files under ~/.HRI
+        Clean-up old / unused files under ~/.HRI
     """
     configDir = os.path.expanduser( '~/.HRI' )
 

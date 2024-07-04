@@ -36,14 +36,12 @@
 
 import logging
 import os
-import re
 import subprocess
 
 from ToolBOSCore.Packages        import ProjectProperties
 from ToolBOSCore.Platforms       import Platforms
 from ToolBOSCore.Storage         import CMakeLists
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
-from ToolBOSCore.Util            import Any
 from ToolBOSCore.Util            import FastScript
 
 
@@ -67,10 +65,10 @@ class PackageDetector( object ) :
         if not projectRoot:
             raise AssertionError( 'unknown project root location' )
 
-        Any.requireIsDir( projectRoot )
+        FastScript.requireIsDir( projectRoot )
 
         if pkgInfoContent is not None:
-            Any.requireIsDict( pkgInfoContent )
+            FastScript.requireIsDict( pkgInfoContent )
 
 
         # general meta-info
@@ -160,13 +158,13 @@ class PackageDetector( object ) :
         self.packageVersionRaw = ProjectProperties.getPackageVersion( self.topLevelDir, True )
         self.versionTokens     = ProjectProperties.splitVersion( self.packageVersionRaw )
 
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.packageName )
+        FastScript.requireIsTextNonEmpty( self.packageVersion )
 
 
         # compute typical directory names (may not be present!)
         hostPlatform           = Platforms.getHostPlatform()
-        Any.requireIsTextNonEmpty( hostPlatform )
+        FastScript.requireIsTextNonEmpty( hostPlatform )
 
         self.binDir            = os.path.join( self.topLevelDir, 'bin' )
         self.binDirArch        = os.path.join( self.topLevelDir, 'bin', hostPlatform )
@@ -209,14 +207,14 @@ class PackageDetector( object ) :
 
         self._retrieveCurrentUser()
 
-        # Any.requireIsTextNonEmpty( self.maintainerAccount ) # might be empty
-        # Any.requireIsTextNonEmpty( self.maintainerName )    # might be empty
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageVersion )
-        Any.requireIsTextNonEmpty( self.packageVersionRaw )
-        Any.requireIsTextNonEmpty( self.topLevelDir )
-        Any.requireIsTextNonEmpty( self.userAccount )
-        Any.requireIsTextNonEmpty( self.userName )
+        # FastScript.requireIsTextNonEmpty( self.maintainerAccount ) # might be empty
+        # FastScript.requireIsTextNonEmpty( self.maintainerName )    # might be empty
+        FastScript.requireIsTextNonEmpty( self.packageName )
+        FastScript.requireIsTextNonEmpty( self.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.packageVersionRaw )
+        FastScript.requireIsTextNonEmpty( self.topLevelDir )
+        FastScript.requireIsTextNonEmpty( self.userAccount )
+        FastScript.requireIsTextNonEmpty( self.userName )
 
 
     #------------------------------------------------------------------------
@@ -229,7 +227,7 @@ class PackageDetector( object ) :
             Returns 'True' if the package is an open source or commercial
             external software which has not been developed at HRI-EU.
         """
-        Any.requireIsTextNonEmpty( self.packageCategory )
+        FastScript.requireIsTextNonEmpty( self.packageCategory )
 
         if self.packageCategory == 'External' or self._exists( 'src/sources.tar.bz2' ):
             return True
@@ -252,7 +250,7 @@ class PackageDetector( object ) :
         """
         dirs = ( self.binDir, self.examplesDir, self.testDir )
 
-        if Any.isIterable( files ):
+        if FastScript.isIterable( files ):
 
             for filePath in files:
                 filePath = os.path.abspath( filePath )
@@ -298,13 +296,13 @@ class PackageDetector( object ) :
             filelist or anywhere within the package, excluding pkgInfo.py.
 
             The exception of pkgInfo.py is made in order that a package
-            containing C/C++ sources accompanied with a pkgInfo.py settings
+            containing C/C++ sources accompanied by a pkgInfo.py settings
             file isn't considered a Python module.
         """
         if files is None:
             files = FastScript.getFilesInDirRecursive( '.' )
 
-        Any.requireIsIterable( files )
+        FastScript.requireIsIterable( files )
 
         for filePath in files:
             fileName = os.path.basename( filePath )
@@ -358,9 +356,9 @@ class PackageDetector( object ) :
             self.vcsURL      = self.gitOrigin
             self.vcsRoot     = self.gitOrigin
 
-            Any.requireIsTextNonEmpty( self.vcsURL )
-            Any.requireIsTextNonEmpty( self.vcsRevision )
-            Any.isOptional( self.vcsRelPath )
+            FastScript.requireIsTextNonEmpty( self.vcsURL )
+            FastScript.requireIsTextNonEmpty( self.vcsRevision )
+            FastScript.isOptional( self.vcsRelPath )
 
         if not self.vcsURL:
             logging.debug( 'no Git repository information found' )
@@ -417,9 +415,9 @@ class PackageDetector( object ) :
         """
             replace placeholders in pkgInfo.py strings
         """
-        Any.requireIsTextNonEmpty( self.packageCategory )
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.packageCategory )
+        FastScript.requireIsTextNonEmpty( self.packageName )
+        FastScript.requireIsTextNonEmpty( self.packageVersion )
 
         installRoot = '${SIT}/%s/%s/%s' % ( self.packageCategory,
                                             self.packageName,
@@ -553,7 +551,7 @@ class PackageDetector( object ) :
         if self.gitCommitIdLong:
             self.gitCommitIdShort = self.gitCommitIdLong[0:7]
 
-        Any.requireIsIn( self.installMode, ( 'clean', 'incremental' ),
+        FastScript.requireIsIn( self.installMode, ( 'clean', 'incremental' ),
                          'invalid value of "installMode" in pkgInfo.py' )
 
 
@@ -582,7 +580,7 @@ class PackageDetector( object ) :
             self.maintainerName    = data[1]
 
         else:
-            Any.requireIsTextNonEmpty( data )
+            FastScript.requireIsTextNonEmpty( data )
             self.maintainerAccount = data
             self.maintainerName    = data
 

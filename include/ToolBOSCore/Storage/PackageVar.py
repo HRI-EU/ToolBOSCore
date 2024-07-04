@@ -36,11 +36,10 @@
 
 import os
 
-from ToolBOSCore.Storage.AbstractWriter import AbstractWriter
-from ToolBOSCore.Storage.SIT            import strip
+from ToolBOSCore.Storage import AbstractWriter, SIT
 
 
-class PackageVarCmakeWriter( AbstractWriter ):
+class PackageVarCmakeWriter( AbstractWriter.AbstractWriter ):
 
     def addLeadIn( self ):
         return '''#
@@ -74,7 +73,7 @@ class PackageVarCmakeWriter( AbstractWriter ):
 '''
         for dep in self.details.dependencies:
             if dep.startswith( 'sit://' ):
-                canonicalPath = strip( dep )
+                canonicalPath = SIT.strip( dep )
                 result += 'bst_find_package(%s)\n' % canonicalPath
 
         return result + '\n'

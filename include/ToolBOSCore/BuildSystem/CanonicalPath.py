@@ -39,11 +39,11 @@
 import logging
 
 from ToolBOSCore.Packages import PackageDetector
-from ToolBOSCore.Util     import Any, FastScript
+from ToolBOSCore.Util     import FastScript
 
 
 if FastScript.getEnv( 'VERBOSE' ) != 'TRUE':
-    Any.setDebugLevel( 0 )
+    FastScript.setDebugLevel( 0 )
 
 p = PackageDetector.PackageDetector()
 

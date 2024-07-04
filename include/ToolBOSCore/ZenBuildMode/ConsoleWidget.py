@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Operator console widget
@@ -41,7 +40,7 @@ from PyQt5.QtCore    import QEvent, Qt, pyqtSignal
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui     import *
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class ConsoleWidget( QGroupBox, object ):
@@ -142,7 +141,7 @@ class Console( QLineEdit, object ):
 
 
     def addCommandToHistory( self, command ):
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
 
         self.cmdHistory.append( command )
         self.cmdHistoryIdx = len( self.cmdHistory )    # last elem = total number

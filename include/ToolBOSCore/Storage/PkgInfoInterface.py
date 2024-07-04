@@ -40,11 +40,9 @@ import logging
 import re
 import os
 
-from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Storage.PkgInfo          import getPkgInfoContent
-from ToolBOSCore.Storage.PkgInfoWriter    import PkgInfoWriter
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Packages import PackageDetector
+from ToolBOSCore.Storage  import PkgInfo, PkgInfoWriter
+from ToolBOSCore.Util     import FastScript
 
 
 class PkgInfoInterface( object ):
@@ -61,18 +59,18 @@ class PkgInfoInterface( object ):
             unless another PackageDetector class is provided.
         """
         if details is not None:
-            Any.requireIsInstance( details, PackageDetector )
+            FastScript.requireIsInstance( details, PackageDetector )
             self._details = details
         else:
-            self._details = PackageDetector()
+            self._details = PackageDetector.PackageDetector()
 
         self._filePath = os.path.join( self._details.topLevelDir, 'pkgInfo.py' )
-        self._worker   = PkgInfoWriter( self._details, sourceTree=True )
+        self._worker   = PkgInfoWriter.PkgInfoWriter( self._details, sourceTree=True )
 
         try:
             self._content  = FastScript.getFileContent( self._filePath )
             self.checkSyntax()
-            self._data     = getPkgInfoContent( dirName=self._details.topLevelDir )
+            self._data     = PkgInfo.getPkgInfoContent( dirName=self._details.topLevelDir )
 
         except IOError:
             self._content  = self._worker.addLeadIn()
@@ -95,7 +93,7 @@ class PkgInfoInterface( object ):
         else:
             toCheck = content
 
-        Any.requireIsTextNonEmpty( toCheck )
+        FastScript.requireIsTextNonEmpty( toCheck )
 
         try:
             ast.parse( toCheck )
@@ -125,7 +123,7 @@ class PkgInfoInterface( object ):
 
             If 'key' already exists it will be overwritten with the new value.
         """
-        Any.requireIsTextNonEmpty( key )
+        FastScript.requireIsTextNonEmpty( key )
         # value might be anything, can't check for it
 
         newContent = io.StringIO()
@@ -192,7 +190,7 @@ class PkgInfoInterface( object ):
                        starting with 'key' and all following lines which do
                        not start at the beginning of the line.
         """
-        Any.requireIsTextNonEmpty( key )
+        FastScript.requireIsTextNonEmpty( key )
 
         # first remove '# EOF' and any trailing whitespaces
         self._removeLeadOut()

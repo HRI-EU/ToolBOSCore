@@ -39,7 +39,7 @@ import os
 import logging
 
 from ToolBOSCore.Packages import ProjectProperties
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util     import FastScript
 
 
 def getCategory( fileContent ):
@@ -52,7 +52,7 @@ def getCategory( fileContent ):
 
         Returns 'None' if assignment was not found.
     """
-    Any.requireIsTextNonEmpty( fileContent )
+    FastScript.requireIsTextNonEmpty( fileContent )
 
     pattern = r'BST_INSTALL_CATEGORY\s*?(\S+)\)'
 
@@ -67,7 +67,7 @@ def getDependencies( fileContent ):
         Extracts the list of direct dependencies/inclusions from the
         provided string (= CMakeLists.txt file content).
     """
-    Any.requireIsTextNonEmpty( fileContent )
+    FastScript.requireIsTextNonEmpty( fileContent )
 
     depList = []
     regexp  = re.compile( r"^\s*bst_find_package\s*\((.*)\)\s*$" )
@@ -92,7 +92,7 @@ def ensureHasDependency( content, package ):
         Ensures if the direct dependencies/inclusions are present
         or not in the provided string (= CMakeLists.txt file content).
     """
-    Any.requireIsTextNonEmpty( content )
+    FastScript.requireIsTextNonEmpty( content )
     ProjectProperties.requireIsCanonicalPath( package )
 
     logging.debug( 'Validating CMakeLists.txt' )
@@ -120,7 +120,7 @@ def insertDependency( content, package ):
         Inserts the direct dependencies/inclusions if not found
         in the provided string (= CMakeLists.txt file content).
     """
-    Any.requireIsTextNonEmpty( content )
+    FastScript.requireIsTextNonEmpty( content )
     ProjectProperties.requireIsCanonicalPath( package )
 
     # insert after last occurrence of bst_find_package

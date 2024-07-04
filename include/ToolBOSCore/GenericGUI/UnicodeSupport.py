@@ -37,7 +37,7 @@
 
 from PyQt5.QtCore import QByteArray
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 def convert( x ):
@@ -69,7 +69,7 @@ def convertBytes( b ):
     """
         Converts a string of Python's 'byte' type to 'str'.
     """
-    Any.requireIsInstance( b, bytes )
+    FastScript.requireIsInstance( b, bytes )
 
     return b.decode( 'utf8' )
 
@@ -78,10 +78,10 @@ def convertQByteArray( qba ):
     """
         Converts a string of PyQt's 'QByteArray' type to 'str':
     """
-    Any.requireIsInstance( qba, QByteArray )
+    FastScript.requireIsInstance( qba, QByteArray )
 
     data = qba.data()
-    Any.requireIsInstance( data, bytes )
+    FastScript.requireIsInstance( data, bytes )
 
     return convertBytes( data )
 

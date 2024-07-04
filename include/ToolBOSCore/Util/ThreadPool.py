@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Run multiple threads at once
@@ -36,7 +35,7 @@
 
 import threading
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class ThreadPool( object ):
@@ -60,7 +59,7 @@ class ThreadPool( object ):
         """
             Add new tasks as threads to the ThreadPool.
         """
-        Any.requireIsCallable( task )
+        FastScript.requireIsCallable( task )
 
         _thread = threading.Thread( target=task, args=args, kwargs=kwargs )
         self._threads.add( _thread )
@@ -68,7 +67,7 @@ class ThreadPool( object ):
 
     def run( self ):
         """
-            Starts all threads of the ThreadPool and joins them afterwards,
+            Starts all threads of the ThreadPool and joins them afterward,
             meaning this function will run until all threads are finished.
         """
         for thread in self._threads:

@@ -37,16 +37,14 @@
 
 import unittest
 
-from ToolBOSCore.Util                     import Any
-from ToolBOSCore.Util                     import ArgsManagerV2
-from ToolBOSCore.Util                     import FastScript
+from ToolBOSCore.Util import ArgsManagerV2, FastScript
 
 
 class TestArgManagerV2( unittest.TestCase ):
 
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( 1 )
+            FastScript.setDebugLevel( 1 )
 
 
     def test_API(self):

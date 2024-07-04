@@ -46,7 +46,7 @@ import sys
 
 from ToolBOSCore.BuildSystem         import BuildSystemTools
 from ToolBOSCore.Platforms.Platforms import getHostPlatform
-from ToolBOSCore.Util                import Any, ArgsManagerV2, FastScript
+from ToolBOSCore.Util                import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -59,8 +59,8 @@ def _parseSqArgs( cr, argv ):
 
     from ToolBOSCore.SoftwareQuality import CheckRoutine, Common, Rules
 
-    Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
-    Any.requireIsList( argv )
+    FastScript.requireIsInstance( cr, CheckRoutine.CheckRoutine )
+    FastScript.requireIsList( argv )
 
     try:
         # ensure that script-name does not appear in this list
@@ -326,7 +326,7 @@ try:
         from ToolBOSCore.Platforms.CrossCompilation import getSwitchEnvironmentList
 
         candidates = getSwitchEnvironmentList( hostPlatform )
-        Any.requireIsList( candidates )
+        FastScript.requireIsList( candidates )
 
         if not candidates:
             logging.info( 'No cross-compilation from %s hosts implemented :-(', hostPlatform )
@@ -357,7 +357,7 @@ try:
         cwd       = os.getcwd()
 
         # check that unhandled[-1] is not by chance the script itself
-        if candidate != sys.argv and Any.isDir( candidate ):
+        if candidate != sys.argv and FastScript.isDir( candidate ):
             sourceTree = os.path.abspath( candidate )
             binaryTree = os.path.abspath( os.getcwd() )
 
@@ -583,7 +583,7 @@ except ( AssertionError, EnvironmentError, RuntimeError, SyntaxError,
     logging.error( f'{details.__class__.__name__}: {details}' )
 
     # show stacktrace in verbose mode
-    if Any.getDebugLevel() >= 5:
+    if FastScript.getDebugLevel() >= 5:
         raise
 
     sys.exit( -1 )

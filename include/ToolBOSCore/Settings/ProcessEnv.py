@@ -47,7 +47,6 @@ import sys
 from ToolBOSCore.Packages        import PackageDetector, ProjectProperties
 from ToolBOSCore.Storage         import SIT
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
-from ToolBOSCore.Util            import Any
 from ToolBOSCore.Util            import FastScript
 
 
@@ -62,11 +61,11 @@ def checkAvailable( command:str, package:str ) -> None:
 
         If not, attempts to source the given SIT package to make it available.
 
-        If afterwards 'command' is still not found in $PATH, an
+        If afterward 'command' is still not found in $PATH, an
         EnvironmentError is raised.
     """
-    Any.requireIsTextNonEmpty( command )
-    Any.requireIsTextNonEmpty( package )
+    FastScript.requireIsTextNonEmpty( command )
+    FastScript.requireIsTextNonEmpty( package )
 
     if not which( command ):
         source( package )
@@ -84,7 +83,7 @@ def source( package ):
     ProjectProperties.requireIsCanonicalPath( package )
 
     sourced = FastScript.getEnv( 'TOOLBOSCORE_SOURCED' )
-    Any.requireMsg( sourced, '$TOOLBOSCORE_SOURCED must not be empty' )
+    FastScript.requireMsg( sourced, '$TOOLBOSCORE_SOURCED must not be empty' )
 
     # avoid double-sourcing
     if package in sourced:
@@ -147,7 +146,7 @@ def source( package ):
 
 def sourceFromHere():
     """
-        Python equivalent of "source BashSrc" for package in source tree, in order to setup
+        Python equivalent of "source BashSrc" for package in source tree, in order to set up
         PATH, LD_LIBRARY_PATH,... within the Python process.
 
         @anchor ProcessEnv_source
@@ -169,7 +168,7 @@ def which( command ):
         Python equivalent of the shell command "which <command>".
     """
     path = FastScript.getEnv( 'PATH' )
-    Any.requireIsTextNonEmpty( path )
+    FastScript.requireIsTextNonEmpty( path )
 
     for item in path.split( ':' ):
         candidate = os.path.join( item, command )
@@ -184,7 +183,7 @@ def requireCommand( command:str ) -> None:
     """
         Throws an EnvironmentError if 'command' is not installed.
     """
-    Any.requireIsTextNonEmpty( command )
+    FastScript.requireIsTextNonEmpty( command )
 
     if not which( command ):
         raise EnvironmentError( f'{command}: command not found' )

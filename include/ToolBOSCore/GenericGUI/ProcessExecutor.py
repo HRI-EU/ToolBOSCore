@@ -41,7 +41,7 @@ import socket
 from PyQt5.QtCore import pyqtSignal, QByteArray, QObject, QProcess,\
                          QProcessEnvironment
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class ProcessExecutor( QObject, object ):
@@ -79,7 +79,7 @@ class ProcessExecutor( QObject, object ):
 
     def setCommand( self, cmd ):
         cmd = cmd.strip()
-        Any.requireIsTextNonEmpty( cmd )
+        FastScript.requireIsTextNonEmpty( cmd )
 
         self._origCmd = cmd
 
@@ -90,15 +90,15 @@ class ProcessExecutor( QObject, object ):
             current process terminates, effectively turning the executed
             process into a daemon.
         """
-        Any.requireIsBool( detached )
+        FastScript.requireIsBool( detached )
 
         self._detached = detached
 
 
     def setEnv( self, name, value ):
-        Any.requireIsTextNonEmpty( name )
-        Any.requireIsTextNonEmpty( value )
-        Any.requireIsInstance( self._env, QProcessEnvironment )
+        FastScript.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( value )
+        FastScript.requireIsInstance( self._env, QProcessEnvironment )
 
         logging.debug( 'export %s=%s', name, value )
         self._env.insert( name, value )
@@ -106,13 +106,13 @@ class ProcessExecutor( QObject, object ):
 
     def setHostname( self, hostname ):
         hostname = hostname.strip()
-        Any.requireIsTextNonEmpty( hostname )
+        FastScript.requireIsTextNonEmpty( hostname )
 
         self._hostname = hostname
 
 
     def setWorkingDirectory( self, workingDir ):
-        Any.requireIsTextNonEmpty( workingDir )
+        FastScript.requireIsTextNonEmpty( workingDir )
 
         self._workingDir = workingDir
 
@@ -122,7 +122,7 @@ class ProcessExecutor( QObject, object ):
             Use SSH's X11 forwarding when executing commands on remote
             hosts?
         """
-        Any.requireIsBool( withX11 )
+        FastScript.requireIsBool( withX11 )
 
         self._withX11 = withX11
 
@@ -142,8 +142,8 @@ class ProcessExecutor( QObject, object ):
 
 
     def unsetEnv( self, name ):
-        Any.requireIsTextNonEmpty( name )
-        Any.requireIsInstance( self._env, QProcessEnvironment )
+        FastScript.requireIsTextNonEmpty( name )
+        FastScript.requireIsInstance( self._env, QProcessEnvironment )
 
         self._env.remove( name )
 
@@ -157,7 +157,7 @@ class ProcessExecutor( QObject, object ):
 
 
     def _assembleCommandLine( self ):
-        Any.requireIsTextNonEmpty( self._origCmd )
+        FastScript.requireIsTextNonEmpty( self._origCmd )
 
         if self._hostname in ( self._localHost, 'localhost', '127.0.0.1', '::1' ):
             tokens          = shlex.split( self._origCmd )
@@ -198,8 +198,8 @@ class ProcessExecutor( QObject, object ):
 
             self._finalArgs.append( remoteCmd )
 
-        Any.requireIsTextNonEmpty( self._finalExe )
-        Any.requireIsList( self._finalArgs )
+        FastScript.requireIsTextNonEmpty( self._finalExe )
+        FastScript.requireIsList( self._finalArgs )
 
 
     def _start( self ):
@@ -229,7 +229,7 @@ class ProcessExecutor( QObject, object ):
 
 def runXterm( hostname='localhost', path=None ):
     if path:
-        Any.requireIsTextNonEmpty( path )
+        FastScript.requireIsTextNonEmpty( path )
         cmd = 'xterm -geometry 150x40 -e "cd %s && /bin/bash"' % path
     else:
         cmd = 'xterm -geometry 150x40'
@@ -240,7 +240,7 @@ def runXterm( hostname='localhost', path=None ):
     process.setWithX11Tunnel( True )
 
     if hostname:
-        Any.requireIsTextNonEmpty( hostname )
+        FastScript.requireIsTextNonEmpty( hostname )
         process.setHostname( hostname )
 
     process.start()

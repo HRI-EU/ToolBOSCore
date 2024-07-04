@@ -35,17 +35,17 @@
 
 
 from ToolBOSCore.Packages import BSTPackage, PackageDetector
-from ToolBOSCore.Util     import Any
+from ToolBOSCore.Util     import FastScript
 
 
 def getAppVersion( projectRoot:str ) -> str:
-    Any.requireIsTextNonEmpty( projectRoot )
+    FastScript.requireIsTextNonEmpty( projectRoot )
 
     bstpkg      = BSTPackage.BSTPackage()
     bstpkg.open( projectRoot )
 
     detector    = bstpkg.detector
-    Any.requireIsInstance( detector, PackageDetector.PackageDetector )
+    FastScript.requireIsInstance( detector, PackageDetector.PackageDetector )
 
     name        = detector.packageName
     version     = detector.packageVersion

@@ -45,7 +45,7 @@ import sys
 import tempfile
 
 from ToolBOSCore.Tools import Klocwork
-from ToolBOSCore.Util  import Any, ArgsManagerV2, FastScript
+from ToolBOSCore.Util  import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -71,8 +71,8 @@ dataDir = args['dataDir']
 if dataDir:
     deleteDir     = False
     klocworkDir   = dataDir
-    Any.requireIsTextNonEmpty( klocworkDir )
-    Any.requireMsg( klocworkDir not in ( '.', '..' ), "invalid path names!" )
+    FastScript.requireIsTextNonEmpty( klocworkDir )
+    FastScript.requireMsg( klocworkDir not in ( '.', '..' ), "invalid path names!" )
 
 else:
     deleteDir     = True

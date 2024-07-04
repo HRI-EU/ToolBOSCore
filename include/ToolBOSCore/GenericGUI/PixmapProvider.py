@@ -42,7 +42,7 @@ import sys
 from PyQt5.QtGui import QPixmap
 
 from ToolBOSCore.Packages import ProjectProperties
-from ToolBOSCore.Util     import Any
+from ToolBOSCore.Util     import FastScript
 
 
 _pixmapCache = {}
@@ -54,7 +54,7 @@ def getPixmap( name ):
         Returns a QPixmap for the provided 'name', which used to be
         the short form of a filename (without path and file extension).
     """
-    Any.requireIsTextNonEmpty( name )
+    FastScript.requireIsTextNonEmpty( name )
 
     global _pixmapCache
     global _pixmapDir
@@ -71,10 +71,10 @@ def getPixmap( name ):
             topLevelDir = ProjectProperties.detectTopLevelDir( scriptDir )
 
             _pixmapDir    = os.path.join( topLevelDir, 'share/pixmaps' )
-            Any.requireIsDir( _pixmapDir )
+            FastScript.requireIsDir( _pixmapDir )
 
         filePath = os.path.join( _pixmapDir, name + '.png' )
-        Any.requireIsFile( filePath )
+        FastScript.requireIsFile( filePath )
         logging.debug( 'using pixmap: %s', filePath )
 
         # load pixmap and put in cache

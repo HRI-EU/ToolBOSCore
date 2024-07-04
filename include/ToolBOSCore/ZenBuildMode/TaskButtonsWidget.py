@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Main task buttons (build, clean, install, exit,...)
@@ -41,8 +40,8 @@ from PyQt5.QtCore    import pyqtSignal
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.Storage      import ProxyDir, SIT
-from ToolBOSCore.Util         import Any
+from ToolBOSCore.Storage import ProxyDir, SIT
+from ToolBOSCore.Util    import FastScript
 
 
 class TaskButtonsWidget( QGroupBox, object ):
@@ -110,8 +109,8 @@ class TaskButtonsWidget( QGroupBox, object ):
 
 
     def setEnabled( self, status, button='all' ):
-        Any.requireIsBool( status )
-        Any.requireIsTextNonEmpty( button )
+        FastScript.requireIsBool( status )
+        FastScript.requireIsTextNonEmpty( button )
 
         if button == 'all':
             self._buildButton.setEnabled( status )

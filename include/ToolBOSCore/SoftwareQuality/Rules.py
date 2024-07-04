@@ -48,7 +48,6 @@ import sys
 import tempfile
 
 from ToolBOSCore.BuildSystem                      import BuildSystemTools
-from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.BSTPackage              import BSTSourcePackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Settings                         import ProcessEnv
@@ -57,7 +56,7 @@ from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import Klocwork,\
                                                          Valgrind, Shellcheck
-from ToolBOSCore.Util                             import Any, FastScript
+from ToolBOSCore.Util                             import FastScript
 
 
 FILE_EXTENSIONS_TO_EXCLUDE  = { 'GEN03': [ 'ipynb' ] }
@@ -208,7 +207,7 @@ dialog.'''
 
     def _checkFile( self, filePath ):
         # empty files will pass
-        if Any.isEmptyFile( filePath ):
+        if FastScript.isEmptyFile( filePath ):
             logging.debug( '%s: file is empty', filePath )
             return True
         else:
@@ -481,35 +480,35 @@ copyright       =
             If no information have been provided we assume the common
             copyright header as returned from Packages.getCopyrightHeader().
         """
-        Any.requireIsTextNonEmpty( filePath )
+        FastScript.requireIsTextNonEmpty( filePath )
 
         if copyrightData is None:
             # logging.debug( 'no copyright info by author, assuming defaults' )
 
             lines = self._defaultCopyrightHeader
 
-        elif Any.isText( copyrightData ):
+        elif FastScript.isText( copyrightData ):
             # logging.info( 'single copyright line by author, use this for all project files' )
             # logging.info( 'copyright info: %s', copyrightData )
 
             msg = 'copyright data in pkgInfo.py too short (min. 10 chars required)'
-            Any.requireIsTextNonEmpty( copyrightData )
-            Any.requireMsg( len(copyrightData) > 10, msg )
+            FastScript.requireIsTextNonEmpty( copyrightData )
+            FastScript.requireMsg( len(copyrightData) > 10, msg )
             lines = [ copyrightData ]
 
-        elif Any.isList( copyrightData ):
+        elif FastScript.isList( copyrightData ):
             #logging.debug( 'multiple copyright lines by author, using them for all project files' )
             #logging.debug( '<copyrightInfo>' )
             #logging.debug( copyrightData )
             #logging.debug( '</copyrightInfo>' )
 
-            Any.requireIsListNonEmpty( copyrightData )
+            FastScript.requireIsListNonEmpty( copyrightData )
             lines = copyrightData
 
-        elif Any.isDict( copyrightData ):
+        elif FastScript.isDict( copyrightData ):
             #logging.debug( 'dict with copyright info provided by author' )
 
-            Any.requireIsDictNonEmpty( copyrightData )
+            FastScript.requireIsDictNonEmpty( copyrightData )
             lines = self._getCopyrightFromDict( filePath, copyrightData )
 
         else:
@@ -536,8 +535,8 @@ copyright       =
             This function attempts to find the longest matching key in
             the dict matching 'filePath', and returns the associated value.
         """
-        Any.requireIsTextNonEmpty( filePath )
-        Any.requireIsDictNonEmpty( copyrightData )
+        FastScript.requireIsTextNonEmpty( filePath )
+        FastScript.requireIsDictNonEmpty( copyrightData )
 
         bestLen     = 0
         bestPattern = None
@@ -552,14 +551,14 @@ copyright       =
                     bestLen     = patternLen
                     bestPattern = pattern
 
-                    if Any.isText( lines ):
+                    if FastScript.isText( lines ):
                         msg = 'copyright data in pkgInfo.py too short (min. 10 chars required)'
-                        Any.requireIsTextNonEmpty( lines )
-                        Any.requireMsg( len(lines) > 10, msg )
+                        FastScript.requireIsTextNonEmpty( lines )
+                        FastScript.requireMsg( len(lines) > 10, msg )
                         bestLines = [ lines ]
 
-                    elif Any.isList( lines ):
-                        Any.requireIsListNonEmpty( lines )
+                    elif FastScript.isList( lines ):
+                        FastScript.requireIsListNonEmpty( lines )
                         bestLines = lines
 
                     else:
@@ -698,7 +697,7 @@ scripts          = { 'unittest': 'myScript.sh' }
         """
             Checks if the package provides unittests.
         """
-        Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
+        FastScript.requireIsNotNone( details.packageCategory, 'Package category not specified. '
                                                        'Please check pkginfo.py '
                                                        'for category information.' )
 
@@ -727,7 +726,7 @@ class Rule_GEN08( AbstractRule ):
 
     name        = 'compliance: 3rd-party material'
 
-    brief       = '''Any 3rd-party-code must be clearly separated to avoid
+    brief       = '''FastScript.3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
 if needed.'''
 
@@ -1197,7 +1196,7 @@ HRI-EU libraries, it is highly recommended to stick with it for consistency
 reasons. And consistency is a soft skill for good quality software.'''
 
     goodExample = '''
-    #include <Any.h>
+    #include <FastScript.h>
 
     ANY_LOG( 0, "Hello, World!", ANY_LOG_INFO );
     ANY_TRACE( 0, "%d", x );
@@ -1273,7 +1272,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         logging.debug( "check if package can be built using BST.py" )
 
         oldcwd = os.getcwd()
-        output = io.StringIO() if Any.getDebugLevel() <= 3 else None
+        output = io.StringIO() if FastScript.getDebugLevel() <= 3 else None
 
         FastScript.changeDirectory( details.topLevelDir )
 
@@ -1341,7 +1340,7 @@ once in a while inspect your code using Klocwork.'''
 
             output = output.getvalue()
 
-            if Any.getDebugLevel() > 3:
+            if FastScript.getDebugLevel() > 3:
                 logging.info( 'output:\n%s', output )
 
             if output:
@@ -1436,7 +1435,7 @@ Specify an empty list if really nothing has to be executed.'''
         # get SQ-settings from pkgInfo.py
         sqSettings = self._getSQSettings( details )
         logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s", sqSettings )
-        Any.requireIsIterable( sqSettings )
+        FastScript.requireIsIterable( sqSettings )
 
         if not sqSettings:
             logging.warning( "C/C++ source code found, but no executables listed in pkgInfo.py" )
@@ -1490,12 +1489,12 @@ Specify an empty list if really nothing has to be executed.'''
 
 
     def _getSQSettings( self, details ):
-        Any.requireIsInstance( details, PackageDetector )
+        FastScript.requireIsInstance( details, PackageDetector )
 
         try:
             sqSettingsTmp = details.sqCheckExe
-            Any.requireIsNotNone( sqSettingsTmp )
-            Any.requireIsList( sqSettingsTmp )
+            FastScript.requireIsNotNone( sqSettingsTmp )
+            FastScript.requireIsList( sqSettingsTmp )
 
             sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
 
@@ -1509,13 +1508,13 @@ Specify an empty list if really nothing has to be executed.'''
 
         except AssertionError:
             ruleId = self.getRuleID()
-            Any.requireIsTextNonEmpty( ruleId )
+            FastScript.requireIsTextNonEmpty( ruleId )
 
             return None
 
 
     def _validityCheck( self, commandLines ):
-        Any.requireIsList( commandLines )
+        FastScript.requireIsList( commandLines )
 
         commands = []
 
@@ -1549,7 +1548,7 @@ Specify an empty list if really nothing has to be executed.'''
 
             logging.info( "%s: checking '%s'", ruleID,command )
 
-            if Any.getDebugLevel() <= 3:
+            if FastScript.getDebugLevel() <= 3:
                 stdout = io.StringIO()
                 stderr = io.StringIO()
             else:
@@ -1774,7 +1773,7 @@ class Rule_PY03( AbstractRule ):
     name        = 'consistency: logging'
 
     brief       = '''Logging should be done using Python's native `logging`
-module, evtl. supported by helpers from `Any.py.`'''
+module, evtl. supported by helpers from `FastScript.py.`'''
 
     description = '''Logging is essential for tracing progress and information,
 and often also for debugging.
@@ -1802,14 +1801,14 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     logging.info( 'x=%d', x )
 
 
-    # possibility B (Any.h-equivalent)
+    # possibility B (FastScript.h-equivalent)
 
     import ToolBOSCore.Util.Any
 
-    Any.setDebugLevel( 3 )
-    Any.log( 3, "Hello, World!" )
-    Any.requireMsg( x == 123, "Oops..." )
-    Any.requireIsDir( '/tmp' )
+    FastScript.setDebugLevel( 3 )
+    FastScript.log( 3, "Hello, World!" )
+    FastScript.requireMsg( x == 123, "Oops..." )
+    FastScript.requireIsDir( '/tmp' )
 '''
 
     sqLevel     = frozenset()
@@ -2142,7 +2141,7 @@ pkgInfo.py file.
             logging.debug( 'looking for documentation in: %s', filePath )
 
             if os.path.exists( filePath ):
-                if Any.isFileNonEmpty( filePath ):
+                if FastScript.isFileNonEmpty( filePath ):
                     found = True
                     logging.info( 'DOC01: found: %s', filePath )
                 else:
@@ -2213,7 +2212,7 @@ provide small, easy-to-understand example programs / showcases.
             Test passes if there are any files within the
             "examples" subdirectory.
         """
-        Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
+        FastScript.requireIsNotNone( details.packageCategory, 'Package category not specified. '
                                                        'Please check pkginfo.py '
                                                        'or CMakeLists.txt for category information.' )
 
@@ -2272,7 +2271,7 @@ valid pointers, reasonable value ranges etc. catch a lot of typical root
 causes for later errors.'''
 
     goodExample = '''
-    #include <Any.h>
+    #include <FastScript.h>
 
     [...]
 
@@ -2441,10 +2440,10 @@ must be specified. Traditional functions like `strlen()` which search for the
 terminating `\\0` must not be used.'''
 
     goodExample = '''
-    Any_strnlen()
-    Any_snprintf()
-    Any_strncmp()
-    Any_strncat()
+    FastScript.strnlen()
+    FastScript.snprintf()
+    FastScript.strncmp()
+    FastScript.strncat()
     [...]
 '''
 
@@ -2592,7 +2591,7 @@ systems.
 At least it pro-actively eases a possible future porting to either of such
 platforms, without any sideeffects.
 
-The ToolBOSCore library defines `Any_strcmp()`, `Any_memset()` and friends for
+The ToolBOSCore library defines `FastScript.strcmp()`, `Any_memset()` and friends for
 such purpose. They map to the underlying O.S.-specific functions with no cost
 (resolved at compile-time).'''
 
@@ -3181,7 +3180,7 @@ def getRules():
 
             try:
                 func = ctors[ 'Rule_%s' % ruleID ]
-                Any.requireIsCallable( func )
+                FastScript.requireIsCallable( func )
                 instance = func()
                 result.append( ( ruleID, instance ) )
             except KeyError:
@@ -3196,10 +3195,10 @@ def getRuleIDs():
         Software Quality Guideline.
     """
     ruleTuples = getRules()
-    Any.requireIsListNonEmpty( ruleTuples )
+    FastScript.requireIsListNonEmpty( ruleTuples )
 
     result = [ rule[0] for rule in ruleTuples ]
-    Any.requireIsListNonEmpty( result )
+    FastScript.requireIsListNonEmpty( result )
 
     return result
 

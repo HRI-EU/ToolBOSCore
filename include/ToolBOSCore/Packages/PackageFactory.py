@@ -39,13 +39,13 @@ import logging
 from ToolBOSCore.Packages.AbstractPackage import AbstractPackage
 from ToolBOSCore.Packages.BSTPackage      import BSTGloballyInstalledPackage
 from ToolBOSCore.Packages.DebianPackage   import DebianPackage
-from ToolBOSCore.Util                     import Any
+from ToolBOSCore.Util                     import FastScript
 
 
 class PackageFactory( AbstractPackage ):
 
     def create( self, packageURL ):
-        Any.requireIsTextNonEmpty( packageURL )
+        FastScript.requireIsTextNonEmpty( packageURL )
         self.url = packageURL
 
         if packageURL.startswith( 'sit://' ):

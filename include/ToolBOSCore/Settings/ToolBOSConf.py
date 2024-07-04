@@ -37,8 +37,8 @@
 import logging
 import os
 
-from ToolBOSCore.Util import Any, FastScript
 from ToolBOSCore.Settings import AppConfig
+from ToolBOSCore.Util     import FastScript
 
 
 # global singleton for easy use
@@ -47,7 +47,6 @@ _cache = None
 packageName    = 'ToolBOSCore'
 packageVersion = '5.0'
 canonicalPath  = 'DevelopmentTools/ToolBOSCore/5.0'
-
 settingsFile   = 'ToolBOS.conf'
 
 
@@ -66,7 +65,7 @@ class ToolBOSConf( AppConfig.AppConfig ):
         toolBOSConfPaths = FastScript.getEnv( 'TOOLBOSCONF_PATH' )
 
         if toolBOSConfPaths:
-            Any.requireIsText( toolBOSConfPaths )
+            FastScript.requireIsText( toolBOSConfPaths )
             toolBOSConfDirs = toolBOSConfPaths.split( ':' )
 
             for path in toolBOSConfDirs:
@@ -99,8 +98,8 @@ def getGlobalToolBOSConf():
 def getConfigOption( name ):
     cache = getGlobalToolBOSConf()
 
-    Any.requireIsTextNonEmpty( name )
-    Any.requireIsInstance( cache, ToolBOSConf )
+    FastScript.requireIsTextNonEmpty( name )
+    FastScript.requireIsInstance( cache, ToolBOSConf )
 
     return cache.getConfigOption( name )
 

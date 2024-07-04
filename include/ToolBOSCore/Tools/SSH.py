@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Utiltiy functions for Secure Shell (SSH)
@@ -37,7 +36,7 @@
 
 import os
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 def guessRemoteAccessIsPossible():
@@ -47,7 +46,7 @@ def guessRemoteAccessIsPossible():
     """
     authorizedKeysFile = os.path.expanduser( '~/.ssh/authorized_keys' )
 
-    return Any.isFileNonEmpty( authorizedKeysFile )
+    return FastScript.isFileNonEmpty( authorizedKeysFile )
 
 
 # EOF

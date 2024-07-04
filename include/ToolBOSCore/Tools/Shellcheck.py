@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  run shellcheck on project
@@ -54,7 +53,7 @@ def checkScript( scriptPath, codes, enable=None ):
     reportedIssues = []
 
 
-    # We use the gcc-style error-reporting of shellcheck, since it is compact
+    # We use the gcc-style error-reporting of shellcheck, since it is compact,
     # and we do not need to really parse the output.
     # We always know which codes have been checked, because we pass them with
     # --include.

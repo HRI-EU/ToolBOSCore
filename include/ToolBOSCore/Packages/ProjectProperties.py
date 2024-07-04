@@ -44,7 +44,7 @@ import re
 import os
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import Any, FastScript
+from ToolBOSCore.Util    import FastScript
 
 
 #----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ def isCanonicalPath( path ):
         'Libraries/Spam/42.0' which contains neither the precise SIT
         location nor any placeholder such as ${SIT} etc.).
     """
-    Any.requireIsTextNonEmpty( path )
+    FastScript.requireIsTextNonEmpty( path )
 
     global _regExpCanonicalPathUnix
     global _regExpCanonicalPathWin
@@ -95,7 +95,7 @@ def requireIsCanonicalPath( path ):
         'Libraries/Spam/42.0' which contains neither the precise SIT
         location nor any placeholder such as ${SIT} etc.
     """
-    Any.requireMsg( isCanonicalPath( path ),
+    FastScript.requireMsg( isCanonicalPath( path ),
                     '%s: is not a canonical path ("packageCategory/pkgName/pkgVersion")'
                     % path )
 
@@ -108,7 +108,7 @@ def toCanonicalPath( string ):
            '/hri/sit/latest/DevelopmentTools/ToolBOSCore/3.0/'
            --> 'DevelopmentTools/ToolBOSCore/3.0'
     """
-    Any.requireIsTextNonEmpty( string )
+    FastScript.requireIsTextNonEmpty( string )
 
     canonicalPath = SIT.strip( string )
 
@@ -124,7 +124,7 @@ def isURL( string ):
         Returns a boolean if 'string' is a package URL, f.i. should start
         with 'sit://' or 'deb://'.
     """
-    Any.requireIsText( string )
+    FastScript.requireIsText( string )
 
     return string.startswith( 'sit://' ) or string.startswith( 'deb://' )
 
@@ -133,7 +133,7 @@ def requireIsURL( string ):
     """
         Throws an AssertionError if 'string' is not a package URL.
     """
-    Any.requireMsg( isURL( string ),
+    FastScript.requireMsg( isURL( string ),
                     '%s: is not a BST package URL' % string )
 
 
@@ -182,7 +182,7 @@ def getPackageCategoryFromPath( projectRootDir ):
 
         return both 'Food'.
     """
-    Any.requireIsTextNonEmpty( projectRootDir )
+    FastScript.requireIsTextNonEmpty( projectRootDir )
 
     tmp = projectRootDir
 
@@ -212,15 +212,15 @@ def getPackageName( projectRootDir ):
 
         If projectRootDir does not exist, an OSError will be thrown.
     """
-    Any.requireIsTextNonEmpty( projectRootDir )
+    FastScript.requireIsTextNonEmpty( projectRootDir )
 
     absPath     = os.path.abspath( projectRootDir )  # resolve links,...
-    Any.requireIsTextNonEmpty( absPath )
+    FastScript.requireIsTextNonEmpty( absPath )
 
     # do not check for directory existence, so we can call the function
     # even on non-existing path names (for doing some path computations)
     #
-    # Any.requireIsDir( absPath )
+    # FastScript.requireIsDir( absPath )
 
     dirName     = os.path.dirname( absPath )         # cut trailing version
     packageName = os.path.basename( dirName )        # keep only last token
@@ -243,7 +243,7 @@ def getPackageVersion( projectRootDir, verbatim = False ):
               verbatim version string (e.g. to compute path names), please
               set the 'verbatim' parameter to 'True'.
     """
-    Any.requireIsTextNonEmpty( projectRootDir )
+    FastScript.requireIsTextNonEmpty( projectRootDir )
 
     dirName = os.path.basename( os.path.abspath( projectRootDir ) )
 
@@ -265,7 +265,7 @@ def getPackageVersions( project, includePatchlevelVersions = False ):
         Setting 'includePatchlevelVersions=True' will return all, e.g.
         those in the form "Major.Minor.Patchlevel" or "Major.Minor-ExtraTag".
     """
-    Any.requireIsDir( project )
+    FastScript.requireIsDir( project )
 
     allVersionsList = FastScript.getDirsInDir( project )
     resultList      = []
@@ -287,7 +287,7 @@ def splitPath( projectRootDir ):
         - the project name, e.g. 'UltimaTest' and
         - the project version, e.g. '2.2'
     """
-    Any.requireIsTextNonEmpty( projectRootDir )
+    FastScript.requireIsTextNonEmpty( projectRootDir )
 
     projectCategory = getPackageCategoryFromPath( projectRootDir )
     packageName     = getPackageName( projectRootDir )
@@ -297,7 +297,7 @@ def splitPath( projectRootDir ):
 
 
 def splitURL( packageURL ):
-    Any.requireIsTextNonEmpty( packageURL )
+    FastScript.requireIsTextNonEmpty( packageURL )
 
     try:
         result = packageURL.split( '://' )
@@ -329,8 +329,8 @@ def areAllDependenciesInstalled( project, dependencyList = None ):
         always 'True' will be returned.
 
     """
-    Any.requireIsTextNonEmpty( project )
-    #Any.requireIsList( dependencyList )
+    FastScript.requireIsTextNonEmpty( project )
+    #FastScript.requireIsList( dependencyList )
 
     if( isinstance( dependencyList, list ) ) and len( dependencyList ) == 0:
         return True
@@ -367,7 +367,7 @@ def isInstalled( url, sitPath=None ):
     """
     from ToolBOSCore.Platforms import Debian
 
-    Any.requireIsTextNonEmpty( url )
+    FastScript.requireIsTextNonEmpty( url )
 
 
     if ':' not in url:
@@ -403,8 +403,8 @@ def isInstalled_sitPackage( package, sitPath ):
     """
     global _sitPkgCache
 
-    Any.requireIsTextNonEmpty( package )
-    Any.requireIsTextNonEmpty( sitPath )
+    FastScript.requireIsTextNonEmpty( package )
+    FastScript.requireIsTextNonEmpty( sitPath )
 
     if not _sitPkgCache:
         _sitPkgCache = {}
@@ -431,7 +431,7 @@ def requireIsInstalled( url ):
         msg = '%s: Package not installed' % url
 
 
-    Any.requireMsg( isInstalled( url ), msg )
+    FastScript.requireMsg( isInstalled( url ), msg )
 
 
 #----------------------------------------------------------------------------
@@ -608,7 +608,7 @@ def getBuildDependencies( project, recursive = False ):
     """
     from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
 
-    Any.requireIsTextNonEmpty( project )
+    FastScript.requireIsTextNonEmpty( project )
 
     try:
         resultList = getPkgInfoContent( project )['buildDepends']
@@ -646,8 +646,8 @@ def getBuildRequirements( projectURL, recursive=False, cache=None, ignoreErrors=
         semantics. In recursive mode, we need to follow those paths and
         need to resolve 'sit://' etc.
     """
-    Any.requireIsTextNonEmpty( projectURL )
-    Any.requireMsg( projectURL.startswith( 'sit://' ) == True,
+    FastScript.requireIsTextNonEmpty( projectURL )
+    FastScript.requireMsg( projectURL.startswith( 'sit://' ) == True,
                        "'project' parameter needs to start with sit:// " + \
                        "'(you passed: %s)" % projectURL )
 
@@ -692,21 +692,21 @@ def getDependenciesFromCurrentPackage( recursive=False, systemPackages=False ):
     from ToolBOSCore.Storage         import CMakeLists
     from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
 
-    Any.requireIsBool( recursive )
-    Any.requireIsBool( systemPackages )
+    FastScript.requireIsBool( recursive )
+    FastScript.requireIsBool( systemPackages )
 
     fileName    = 'CMakeLists.txt'
-    Any.requireIsFileNonEmpty( fileName )
+    FastScript.requireIsFileNonEmpty( fileName )
 
     fileContent = FastScript.getFileContent( fileName )
-    Any.requireIsTextNonEmpty( fileContent )
+    FastScript.requireIsTextNonEmpty( fileContent )
 
     try:
         depList = getPkgInfoContent( dirName='.' )['depends']
     except ( AssertionError, IOError, KeyError ):
         depList = CMakeLists.getDependencies( fileContent )
 
-    Any.requireIsList( depList )
+    FastScript.requireIsList( depList )
 
     if recursive:
         result = []
@@ -736,9 +736,9 @@ def getFlatDependencies( canonicalPaths, cache=None, sitPath=None ):
     cache   = {}            if cache   is None else cache
     sitPath = SIT.getPath() if sitPath is None else sitPath
 
-    Any.requireIsIterable( canonicalPaths )
-    Any.requireIsDict( cache )
-    Any.requireIsTextNonEmpty( sitPath )
+    FastScript.requireIsIterable( canonicalPaths )
+    FastScript.requireIsDict( cache )
+    FastScript.requireIsTextNonEmpty( sitPath )
 
 
     result = set()
@@ -798,7 +798,7 @@ def setDeprecated( canonicalPath, allVersions=False, message='' ):
         deprecated.  message will be written into deprecated.txt.
     """
     requireIsCanonicalPath( canonicalPath )
-    Any.requireIsText( message )
+    FastScript.requireIsText( message )
 
     if message:
         reason = message + '\n'

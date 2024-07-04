@@ -39,7 +39,6 @@ import logging
 import os
 
 from ToolBOSCore.Platforms import Platforms
-from ToolBOSCore.Util      import Any
 from ToolBOSCore.Util      import FastScript
 
 
@@ -48,8 +47,8 @@ def computeLibName( name, version='' ):
         Returns the proper name of a shared library, depending on the
         platform, f.i. with '.so' or '.dll' extension and the like.
     """
-    Any.requireIsTextNonEmpty( name )
-    Any.requireIsText( version )
+    FastScript.requireIsTextNonEmpty( name )
+    FastScript.requireIsText( version )
 
     if version:
         postfix = '.' + version
@@ -69,7 +68,7 @@ def locate( libName ):
 
         If not found raises an EnvironmentError.
     """
-    Any.requireIsTextNonEmpty( libName )
+    FastScript.requireIsTextNonEmpty( libName )
 
 
     if Platforms.getSystemType() == 'win':
@@ -78,7 +77,7 @@ def locate( libName ):
         envName = 'LD_LIBRARY_PATH'
 
     searchPath = FastScript.getEnv( envName )
-    Any.requireIsTextNonEmpty( searchPath )
+    FastScript.requireIsTextNonEmpty( searchPath )
 
 
     for path in searchPath.split( ':' ):
@@ -100,7 +99,7 @@ def loadLibrary( name, version='' ):
     """
         Returns a handle to the given library.
     """
-    Any.requireIsTextNonEmpty( name )
+    FastScript.requireIsTextNonEmpty( name )
 
 
     # if neither '.so' nor '.dll' in the name, assume it is the inner part
@@ -140,20 +139,20 @@ def _setDebugLevel( libHandle ):
         If the library makes use of ToolBOS's ANY_LOG framework, set the
         debug level appropriately according to the debugLevel used in Python.
     """
-    Any.requireIsInstance( libHandle, ctypes.CDLL )
+    FastScript.requireIsInstance( libHandle, ctypes.CDLL )
 
 
     try:
-        debugLevel = Any.getDebugLevel()
+        debugLevel = FastScript.getDebugLevel()
 
-        # Any.py logs at maximum level 5 while the Any.c logs up to infinity.
+        # FastScript.py logs at maximum level 5 while the FastScript.c logs up to infinity.
         # therefore we generally suppress setting the loglevel if above 5.
 
         if debugLevel < 5:
-            libHandle.Any_setDebugLevel( Any.getDebugLevel() )
+            libHandle.FastScript.setDebugLevel( FastScript.getDebugLevel() )
 
 
-        libHandle.Any_setShortLogFormat()
+        libHandle.FastScript.setShortLogFormat()
 
     except AttributeError:
         # likely does not link against ToolBOSCore library
@@ -166,14 +165,14 @@ def _setAssertHandler( libHandle ):
         (ANY_REQUIRE and friends), change the default implementation
         (= quit process) to raising of an exception instead.
     """
-    Any.requireIsInstance( libHandle, ctypes.CDLL )
+    FastScript.requireIsInstance( libHandle, ctypes.CDLL )
 
     ANYEXITCALLBACK = ctypes.CFUNCTYPE( None, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p )
     pythonCallBack  = ANYEXITCALLBACK( _pythonicToolBOSExit )
 
     try:
-        libHandle.AnyExit_setCallBack.restype = None
-        libHandle.AnyExit_setCallBack( pythonCallBack, 0, 0 )
+        libHandle.FastScript.xit_setCallBack.restype = None
+        libHandle.FastScript.xit_setCallBack( pythonCallBack, 0, 0 )
 
     except AttributeError:
         # likely does not link against ToolBOSCore library

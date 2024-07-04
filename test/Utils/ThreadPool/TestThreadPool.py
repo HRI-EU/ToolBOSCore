@@ -38,14 +38,14 @@
 import logging
 import unittest
 
-from ToolBOSCore.Util import Any, FastScript, ThreadPool
+from ToolBOSCore.Util import FastScript, ThreadPool
 
 
 class TestThreadPool( unittest.TestCase ):
 
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( 1 )
+            FastScript.setDebugLevel( 1 )
 
 
     def test_main(self):

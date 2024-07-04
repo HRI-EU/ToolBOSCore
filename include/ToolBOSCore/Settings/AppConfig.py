@@ -37,7 +37,7 @@
 import logging
 import os
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 
 class AppConfig( object ):
@@ -45,15 +45,15 @@ class AppConfig( object ):
     def __init__( self, appName, defaultDir, userDir, machineDir='/etc',
                   addFiles=None ):
 
-        Any.requireIsDirNonEmpty( defaultDir )
-        Any.requireIsTextNonEmpty( machineDir )
-        Any.requireIsTextNonEmpty( userDir )
+        FastScript.requireIsDirNonEmpty( defaultDir )
+        FastScript.requireIsTextNonEmpty( machineDir )
+        FastScript.requireIsTextNonEmpty( userDir )
 
         if addFiles is not None:
-            Any.requireIsListNonEmpty( addFiles )
+            FastScript.requireIsListNonEmpty( addFiles )
 
             for filePath in addFiles:
-                Any.requireIsText( filePath )   # check for existence later
+                FastScript.requireIsText( filePath )   # check for existence later
 
         fileName              = appName + '.conf'
 
@@ -63,7 +63,7 @@ class AppConfig( object ):
         self._cwdFile         = os.path.join( os.getcwd(), fileName )
         self._addFiles        = addFiles if addFiles is not None else []
 
-        Any.requireIsFileNonEmpty( self._defaultFile )
+        FastScript.requireIsFileNonEmpty( self._defaultFile )
 
         self._defaultSettings = {}
         self._machineSettings = {}
@@ -80,7 +80,7 @@ class AppConfig( object ):
             This function searches for a variable 'name' within all merged
             settings.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         try:
             return self._allSettings[ name ]
@@ -100,7 +100,7 @@ class AppConfig( object ):
             Returns the default value of the given config option as
             specified in the default (fallback) file.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         return self._defaultSettings[ name ]
 
@@ -115,7 +115,7 @@ class AppConfig( object ):
 
             Note that these are not the same as the default values.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         try:
             return self._machineSettings[ name ]
@@ -135,7 +135,7 @@ class AppConfig( object ):
             If the user has no such file or the specified variable is not
             set, a key error will be thrown.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         return self._userSettings[ name ]
 
@@ -159,8 +159,8 @@ class AppConfig( object ):
 
             Use delUserConfigOption() to remove a setting.
         """
-        Any.requireIsTextNonEmpty( name )
-        Any.requireMsg( name[0].isalpha(),
+        FastScript.requireIsTextNonEmpty( name )
+        FastScript.requireMsg( name[0].isalpha(),
                         'name parameter must start with a letter' )
 
         # update setting
@@ -174,7 +174,7 @@ class AppConfig( object ):
         """
             Removes a certain config option from the user's configfile.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         try:
             del self._userSettings[ name ]
@@ -226,7 +226,7 @@ class AppConfig( object ):
             First element: Highest priority (user's home dir.)
             Last element:  Lowest priority (default shipped with application)
         """
-        Any.requireIsList( self._addFiles )
+        FastScript.requireIsList( self._addFiles )
 
         resultList = []
 
@@ -267,7 +267,7 @@ class AppConfig( object ):
 
                     # remove Python modules, callables etc. from dict
                     for key, value in allSymbols.items():
-                        if Any.isTextNonEmpty( key ):
+                        if FastScript.isTextNonEmpty( key ):
                             result[ key ] = value
 
                 except( AssertionError, IOError, OSError ) as e:
@@ -300,7 +300,7 @@ class AppConfig( object ):
 
         for filePath in order:
             fileSettings = self._readFile( filePath )
-            Any.requireIsDict( fileSettings )
+            FastScript.requireIsDict( fileSettings )
 
 
             # merge settings into overall dict
@@ -327,13 +327,13 @@ class AppConfig( object ):
                 logging.warning( 'unexpected config file: %s', filePath )
 
 
-        Any.requireIsDictNonEmpty( self._allSettings )
+        FastScript.requireIsDictNonEmpty( self._allSettings )
 
 
 class AppConfigFactory( AppConfig ):
 
     def __init__( self, appName:str ):
-        Any.requireIsTextNonEmpty( appName )
+        FastScript.requireIsTextNonEmpty( appName )
 
         envName    = appName.upper() + '_ROOT'
         pkgRoot    = FastScript.getEnv( envName )

@@ -34,8 +34,6 @@
 #
 
 
-import collections
-import glob
 import grp
 import io
 import logging
@@ -49,8 +47,7 @@ from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings                 import ToolBOSConf
-from ToolBOSCore.Tools                    import Git
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Util                     import FastScript
 
 
 class InstallProcedure( object ):
@@ -147,7 +144,7 @@ class InstallProcedure( object ):
             # forcing SIT root path with user-provided directory for
             # testing (TBCORE-1104)
 
-            Any.requireIsTextNonEmpty( env )
+            FastScript.requireIsTextNonEmpty( env )
             self.sitRootPath = env
             FastScript.mkdir( self.sitRootPath )
 
@@ -166,7 +163,7 @@ class InstallProcedure( object ):
         logging.info( 'global SIT:       %s', self.sitRootPath             )
         logging.info( 'platform:         %s', self.hostPlatform            )
 
-        Any.requireMsg( not os.path.isabs( self.details.packageCategory ),
+        FastScript.requireMsg( not os.path.isabs( self.details.packageCategory ),
                         'invalid package category "%s" (must be relative path)' % self.details.packageCategory )
 
         self._setUmask()
@@ -194,7 +191,7 @@ class InstallProcedure( object ):
             return False
 
 
-        if Any.getDebugLevel() > 3:
+        if FastScript.getDebugLevel() > 3:
             output = None
         else:
             output = io.StringIO()
@@ -276,7 +273,7 @@ class InstallProcedure( object ):
             with the '-y|--yes' option.
         """
         logging.info( 'ready for installation' )
-        Any.logVerbatim( 3, '' )
+        FastScript.logVerbatim( 3, '' )
 
         if FastScript.getEnv( 'MAKEFILE_FASTINSTALL' ) == 'FALSE' or \
            ToolBOSConf.getConfigOption( 'BST_confirmInstall' ) is True:
@@ -291,7 +288,7 @@ class InstallProcedure( object ):
             if answer != '' and answer != 'y' and answer != 'Y':
                 raise KeyboardInterrupt( 'operation aborted by user' )
             else:
-                Any.logVerbatim( 3, '' )   # an additional newline after the prompt
+                FastScript.logVerbatim( 3, '' )   # an additional newline after the prompt
 
 
     def preInstall( self ):
@@ -341,7 +338,7 @@ class InstallProcedure( object ):
             Shows some closing notes after the Install Procedure finished.
         """
         logging.info( 'Thank you for using ToolBOS!' )
-        Any.logVerbatim( 3, '\n' + '-' * 78 + '\n\n' )
+        FastScript.logVerbatim( 3, '\n' + '-' * 78 + '\n\n' )
 
 
     #------------------------------------------------------------------------
@@ -427,8 +424,8 @@ class InstallProcedure( object ):
                   can install files for multiple platforms in one shot
                   (see TBCORE-2148).
         """
-        Any.requireIsTextNonEmpty( srcPath )
-        Any.requireIsTextNonEmpty( self.startPath )
+        FastScript.requireIsTextNonEmpty( srcPath )
+        FastScript.requireIsTextNonEmpty( self.startPath )
 
 
         # TBCORE-2148  Check if strings contain MAKEFILE_PLATFORM and
@@ -467,7 +464,7 @@ class InstallProcedure( object ):
         if not dstPath:
             dstPath = srcPath
         else:
-            Any.requireIsTextNonEmpty( dstPath )
+            FastScript.requireIsTextNonEmpty( dstPath )
 
         if srcPath == dstPath:
             logging.info( 'adding %s', dstPath )
@@ -544,9 +541,9 @@ class InstallProcedure( object ):
             Returns the number of files scheduled for installation
             (= number of files matching the regular expression).
         """
-        Any.requireIsText( srcDir )
-        Any.requireIsTextNonEmpty( srcPattern )
-        # Any.requireIsText( dstDir )   # might be None
+        FastScript.requireIsText( srcDir )
+        FastScript.requireIsTextNonEmpty( srcPattern )
+        # FastScript.requireIsText( dstDir )   # might be None
 
         srcDir = FastScript.expandVars( srcDir )
 
@@ -556,7 +553,7 @@ class InstallProcedure( object ):
         if srcDir == '':     # for convenience we allow empty srcDir
             srcDir = '.'
 
-        if Any.isDir( srcDir ):
+        if FastScript.isDir( srcDir ):
             logging.debug( 'searching for subDir="%s"...', srcDir )
         else:
             logging.debug( 'searching for subDir="%s"... Not found', srcDir )
@@ -600,15 +597,15 @@ class InstallProcedure( object ):
             Returns the number of files scheduled for installation
             (= number of files matching the regular expression).
         """
-        Any.requireIsDir( srcDir )
-        Any.requireIsTextNonEmpty( srcPattern )
-        Any.requireIsTextNonEmpty( self.startPath )
+        FastScript.requireIsDir( srcDir )
+        FastScript.requireIsTextNonEmpty( srcPattern )
+        FastScript.requireIsTextNonEmpty( self.startPath )
 
         # we are not about file copying here, so do not check for real dir.
         # here (e.g. consider case when a tarball is created)
         #
-        # Any.requireIsTextNonEmpty( dstDir )
-        Any.requireIsText( dstDir )      # can be empty
+        # FastScript.requireIsTextNonEmpty( dstDir )
+        FastScript.requireIsText( dstDir )      # can be empty
 
         fileList = os.listdir( srcDir )
         try:
@@ -624,7 +621,7 @@ class InstallProcedure( object ):
         logging.debug( '%d items(s) in "%s", %d match expression',
                        len(fileList), srcDir, len(matching) )
 
-        Any.requireIsList( matching )
+        FastScript.requireIsList( matching )
 
         for entry in matching:
             src = os.path.join( srcDir, entry )
@@ -728,9 +725,9 @@ class InstallProcedure( object ):
             Note: Environment variables can be specified in both 'link'
                   and 'target', e.g. "config/${MAKEFILE_PLATFORM}".
         """
-        Any.requireIsTextNonEmpty( target )
-        Any.requireIsTextNonEmpty( link )
-        Any.requireIsTextNonEmpty( self.startPath )
+        FastScript.requireIsTextNonEmpty( target )
+        FastScript.requireIsTextNonEmpty( link )
+        FastScript.requireIsTextNonEmpty( self.startPath )
 
         target = FastScript.expandVars( target )
         link   = FastScript.expandVars( link )
@@ -800,9 +797,9 @@ class InstallProcedure( object ):
             # single string: srcDir
             # tuple:         ( srcDir, dstDir )
 
-            if Any.isText( item ):
+            if FastScript.isText( item ):
                 workItem = ( item, item )  # dstDir=srcDir
-            elif Any.isTuple(item) and len(item) == 2:
+            elif FastScript.isTuple(item) and len(item) == 2:
                 workItem = item
             else:
                 raise ValueError( 'unexpected object in section "install"' )
@@ -874,8 +871,8 @@ class InstallProcedure( object ):
             majorVersion = int( splitVersion( self.details.packageVersion )[0] )
             minorVersion = int( splitVersion( self.details.packageVersion )[1] )
 
-            Any.requireIsTextNonEmpty( sitPath )
-            Any.requireIsTextNonEmpty( self.details.canonicalPath )
+            FastScript.requireIsTextNonEmpty( sitPath )
+            FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
             installRoot  = os.path.join( sitPath, self.details.canonicalPath )
             basedir      = os.path.dirname( installRoot )
@@ -910,7 +907,7 @@ class InstallProcedure( object ):
             # fallback to zero as last resort
             self.details.patchlevel = 0
 
-        Any.requireIsInt( self.details.patchlevel )
+        FastScript.requireIsInt( self.details.patchlevel )
 
 
     def _exclude( self ) -> None:
@@ -928,7 +925,7 @@ class InstallProcedure( object ):
         toSkip = set()
 
         for pair in self.index:
-            Any.requireIsTuple( pair )
+            FastScript.requireIsTuple( pair )
 
             src = pair[0]
 
@@ -949,7 +946,7 @@ class InstallProcedure( object ):
             Additionally a script "Install_<name>.sh" is searched.
             If present it will be executed.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         try:
             f = self.details.installHooks[ name ]
@@ -976,8 +973,8 @@ class InstallProcedure( object ):
         """
             Copies all files from self.index() relative to <rootDir>.
         """
-        Any.requireIsTextNonEmpty( rootDir )
-        Any.requireIsDir( self.details.topLevelDir )
+        FastScript.requireIsTextNonEmpty( rootDir )
+        FastScript.requireIsDir( self.details.topLevelDir )
 
         for entry in self.index:
             key   = entry[0]
@@ -998,11 +995,11 @@ class InstallProcedure( object ):
 
 
     def _patchlevel_changeInstallRoot( self, sitPath ):
-        Any.requireIsTextNonEmpty( sitPath )
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
+        FastScript.requireIsTextNonEmpty( sitPath )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
         if self.details.usePatchlevels:
-            Any.requireIsInt( self.details.patchlevel )
+            FastScript.requireIsInt( self.details.patchlevel )
             self.startPath = '%s.%d' % ( self.details.canonicalPath,
                                          self.details.patchlevel )
         else:
@@ -1086,11 +1083,11 @@ class InstallProcedure( object ):
                 pass                        # variable not set by user
 
         if groupName is not None:
-            Any.requireIsTextNonEmpty( groupName )
+            FastScript.requireIsTextNonEmpty( groupName )
 
             try:
                 groupID = grp.getgrnam( groupName ).gr_gid
-                Any.requireIsIntNotZero( groupID )
+                FastScript.requireIsIntNotZero( groupID )
                 logging.info( 'setting group=%s (uid=%d)', groupName, groupID )
 
             except ( AssertionError, KeyError ):
@@ -1117,8 +1114,8 @@ class InstallProcedure( object ):
             groups and/or access modes then a warning will be displayed but
             the installation procedure can continue.
         """
-        Any.requireIsDirNonEmpty( installRoot )
-        Any.requireIsDir( sitRootPath )     # might be first proxy install.
+        FastScript.requireIsDirNonEmpty( installRoot )
+        FastScript.requireIsDir( sitRootPath )     # might be first proxy install.
 
         # set group and/or permissions
         groupID        = self._installGroupID
@@ -1261,17 +1258,17 @@ class InstallProcedure( object ):
         """
             Show application name / headline at start-up.
         """
-        Any.requireIsTextNonEmpty( text )
+        FastScript.requireIsTextNonEmpty( text )
 
         version = ToolBOSConf.packageVersion
-        Any.requireIsTextNonEmpty( version )
+        FastScript.requireIsTextNonEmpty( version )
 
         display = 'TOOLBOS %s - %s' % ( version, text )
 
-        Any.logVerbatim( 3, ''       )
-        Any.logVerbatim( 3, 78 * '=' )
-        Any.logVerbatim( 3, display  )
-        Any.logVerbatim( 3, 78 * '=' )
+        FastScript.logVerbatim( 3, ''       )
+        FastScript.logVerbatim( 3, 78 * '=' )
+        FastScript.logVerbatim( 3, display  )
+        FastScript.logVerbatim( 3, 78 * '=' )
 
 
     @staticmethod
@@ -1280,8 +1277,8 @@ class InstallProcedure( object ):
             Makes a visible break between the continuous loglines,
             to emphasize the installation stage transition.
         """
-        Any.logVerbatim( 3, '\n' + '-' * 78 + '\n' )
-        Any.logVerbatim( 3, title + '\n' )
+        FastScript.logVerbatim( 3, '\n' + '-' * 78 + '\n' )
+        FastScript.logVerbatim( 3, title + '\n' )
 
 
 class GlobalInstallProcedure( InstallProcedure ):
@@ -1295,8 +1292,8 @@ class GlobalInstallProcedure( InstallProcedure ):
 
 
     def postCollectMetaInfo( self ):
-        Any.requireIsDir( self.sitRootPath )
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
+        FastScript.requireIsDir( self.sitRootPath )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
         self._patchlevel_changeInstallRoot( self.sitRootPath )
 
@@ -1311,8 +1308,8 @@ class GlobalInstallProcedure( InstallProcedure ):
             Performs the actual file operation, f.i. copying the previously
             selected files and/or directories into the global SIT.
         """
-        Any.requireIsDir( self.sitRootPath )
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
+        FastScript.requireIsDir( self.sitRootPath )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
         logging.info( 'installing package... (this may take some time)' )
 
@@ -1365,7 +1362,7 @@ class GlobalInstallProcedure( InstallProcedure ):
                 else:
                     updateLink = False
 
-                Any.logVerbatim( 0, '' )   # an additional newline after the prompt
+                FastScript.logVerbatim( 0, '' )   # an additional newline after the prompt
 
 
             if updateLink:
@@ -1435,7 +1432,7 @@ class ProxyInstallProcedure( InstallProcedure ):
             raise EnvironmentError( msg )
 
 
-        Any.requireIsDir( self.sitProxyPath )
+        FastScript.requireIsDir( self.sitProxyPath )
         self._patchlevel_changeInstallRoot( self.sitProxyPath )
 
 
@@ -1522,15 +1519,15 @@ class TarExportProcedure( InstallProcedure ):
             Assemble the tarball's filename, in the form
             '<projectName>-<packageVersion>.tar.bz2
         """
-        Any.requireIsTextNonEmpty( self.details.packageName )
-        Any.requireIsTextNonEmpty( self.details.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.details.packageName )
+        FastScript.requireIsTextNonEmpty( self.details.packageVersion )
 
 
         self.installRoot = self.details.canonicalPath
 
         # when using patchlevels: modify installRoot + provide symlink
         if self.details.usePatchlevels:
-            Any.requireIsInt( self.details.patchlevel )
+            FastScript.requireIsInt( self.details.patchlevel )
             self.startPath = '%s.%d' % ( self.details.canonicalPath,
                                          self.details.patchlevel )
 
@@ -1567,7 +1564,7 @@ class TarExportProcedure( InstallProcedure ):
             selected files and/or directories into a temporary directory
             and create a tarball (*.tar.bz2) out of it.
         """
-        Any.requireIsDir( self._tmpDir )
+        FastScript.requireIsDir( self._tmpDir )
 
         self._installWorker( self._tmpDir )
 

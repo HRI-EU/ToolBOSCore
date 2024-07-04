@@ -40,7 +40,7 @@ import os
 import re
 import urllib.parse
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 
 class LocalGitRepository:
@@ -60,7 +60,7 @@ class LocalGitRepository:
             If 'output' is a StringIO object, the command's output will be
             redirected there (otherwise printed on screen).
         """
-        if not Any.isIterable( fileList ):
+        if not FastScript.isIterable( fileList ):
             fileList = [ fileList ]
 
         for item in fileList:
@@ -78,9 +78,9 @@ class LocalGitRepository:
 
             If 'fileList' is a list of files and/or directories, only they
             will get committed (so they will be passed as argument to
-            "git commit"). By default all modified files will be committed.
+            "git commit"). By default, all modified files will be committed.
         """
-        Any.requireIsTextNonEmpty( message )
+        FastScript.requireIsTextNonEmpty( message )
 
         cmd = 'git ci -m "%s"' % message
 
@@ -118,7 +118,7 @@ class LocalGitRepository:
         FastScript.execProgram( cmd, stdout=tmp )
 
         output = tmp.getvalue()
-        Any.requireIsText( output )
+        FastScript.requireIsText( output )
 
         modifiedFiles = set()
 
@@ -188,7 +188,7 @@ class LocalGitRepository:
             Returns ID of last commit as string, or raises error if not a Git
             repository.
         """
-        Any.requireIsBool( short )
+        FastScript.requireIsBool( short )
 
         output = io.StringIO()
 
@@ -213,7 +213,7 @@ class LocalGitRepository:
 
         FastScript.execProgram( 'git remote -v', stdout=tmp )
         output = tmp.getvalue()
-        # Any.requireIsTextNonEmpty( output )  # repo may not have any remote
+        # FastScript.requireIsTextNonEmpty( output )  # repo may not have any remote
 
         if output:
             for line in output.splitlines():
@@ -237,7 +237,7 @@ class LocalGitRepository:
         if not path:
             path = os.getcwd()
 
-        Any.requireIsDir( path )
+        FastScript.requireIsDir( path )
 
         gitDirPath = os.path.join( path, '.git' )
 
@@ -262,17 +262,17 @@ class LocalGitRepository:
         if not path:
             path = os.getcwd()
 
-        Any.requireIsDir( path )
+        FastScript.requireIsDir( path )
 
         repoRoot = self.detectRepositoryRoot()
 
         if repoRoot is None:
             raise ValueError( 'unable to detect repository root' )
         else:
-            Any.requireIsDir( repoRoot )
+            FastScript.requireIsDir( repoRoot )
 
         relPath = path.replace( repoRoot, '' )
-        Any.requireIsText( relPath )
+        FastScript.requireIsText( relPath )
 
         # remove leading slash (untypical for relative paths)
         if relPath.startswith( '/' ):
@@ -297,7 +297,7 @@ class LocalGitRepository:
             If 'output' is a StringIO object, the command's output will be
             redirected there (otherwise printed on screen).
         """
-        if not Any.isIterable( fileList ):
+        if not FastScript.isIterable( fileList ):
             fileList = [ fileList ]
 
         for item in fileList:
@@ -310,7 +310,7 @@ class LocalGitRepository:
             If 'dryRun' is True, nothing will actually happen but the command
             is just printed (for debugging purposes).
         """
-        Any.requireIsBool( boolean )
+        FastScript.requireIsBool( boolean )
 
         self._dryRun = boolean
 
@@ -323,7 +323,7 @@ class LocalGitRepository:
 
             Hint: Better use WorkingTree.switchToBranch()
         """
-        Any.requireIsTextNonEmpty( branch )
+        FastScript.requireIsTextNonEmpty( branch )
 
         cmd = 'git symbolic-ref HEAD refs/heads/' + branch
 
@@ -333,7 +333,7 @@ class LocalGitRepository:
 class RemoteGitRepository:
 
     def __init__( self, url ):
-        Any.requireIsTextNonEmpty( url )
+        FastScript.requireIsTextNonEmpty( url )
 
         self.url       = url
         self._hostName = self.getHostName()
@@ -380,7 +380,7 @@ class RemoteGitRepository:
             Returns the hostname / FQDN / IP address as specified in the
             URL.
         """
-        Any.requireIsTextNonEmpty( self.url )
+        FastScript.requireIsTextNonEmpty( self.url )
 
         if self.url.startswith( 'http' ):
             hostName = self._getHostName_HTTP()
@@ -403,13 +403,13 @@ class RemoteGitRepository:
 
             returns: "Example"
         """
-        Any.requireIsTextNonEmpty( self.url )
+        FastScript.requireIsTextNonEmpty( self.url )
 
         tmp      = os.path.basename( self.url )
-        Any.requireIsTextNonEmpty( tmp )
+        FastScript.requireIsTextNonEmpty( tmp )
 
         repoName = tmp.replace( '.git', '' )
-        Any.requireIsTextNonEmpty( repoName )
+        FastScript.requireIsTextNonEmpty( repoName )
 
         return repoName
 
@@ -419,8 +419,8 @@ class RemoteGitRepository:
 
 
     def getSourceCodeCommand( self, asSubModule=False ):
-        Any.requireIsBool( asSubModule )
-        Any.requireIsTextNonEmpty( self.url )
+        FastScript.requireIsBool( asSubModule )
+        FastScript.requireIsTextNonEmpty( self.url )
 
         if asSubModule:
             cmd = 'git submodule add %s' % self.url
@@ -439,13 +439,13 @@ class RemoteGitRepository:
             Note: The function works with other protocols such as "http://"
                   as well, e.g. as used by Git.
         """
-        Any.requireIsTextNonEmpty( url )
+        FastScript.requireIsTextNonEmpty( url )
 
         urlData    = list( urllib.parse.urlsplit( url )[ : ] )
         urlData[1] = '%s@%s' % ( username, urlData[1] )
 
         result     = urllib.parse.urlunsplit( urlData )
-        Any.requireIsTextNonEmpty( result )
+        FastScript.requireIsTextNonEmpty( result )
 
         return result
 
@@ -461,16 +461,16 @@ class RemoteGitRepository:
 
 
     def _getHostName_HTTP( self ):
-        Any.requireIsTextNonEmpty( self.url )
+        FastScript.requireIsTextNonEmpty( self.url )
 
         netloc = urllib.parse.urlsplit( self.url ).netloc
-        Any.requireIsTextNonEmpty( netloc )
+        FastScript.requireIsTextNonEmpty( netloc )
 
         # remove leading 'username@' if present
         if '@' in netloc:
             tmp      = re.search( '@(.+)', netloc )
             hostName = tmp.group(1)
-            Any.requireIsTextNonEmpty( hostName )
+            FastScript.requireIsTextNonEmpty( hostName )
 
         else:
             hostName = netloc
@@ -479,7 +479,7 @@ class RemoteGitRepository:
 
 
     def _getHostName_SSH( self ):
-        Any.requireIsTextNonEmpty( self.url )
+        FastScript.requireIsTextNonEmpty( self.url )
 
         pattern = '^git@(.+):.+$'
         tmp     = re.match( pattern, self.url )
@@ -490,7 +490,7 @@ class RemoteGitRepository:
 
         else:
             hostName = tmp.group( 1 )
-            Any.requireIsTextNonEmpty( hostName )
+            FastScript.requireIsTextNonEmpty( hostName )
 
             return hostName
 
@@ -505,7 +505,7 @@ class WorkingTree:
         """
             Switches to the given branch.
         """
-        Any.requireIsTextNonEmpty( branch )
+        FastScript.requireIsTextNonEmpty( branch )
 
         cmd = 'git checkout %s' % branch
 
@@ -523,7 +523,7 @@ def git2https( gitURL:str ) -> str:
         In all cases (incl. URL started with 'https://') the function
         ensures that the returned HTTPS URL contains a trailing '.git'.
     """
-    Any.requireIsTextNonEmpty( gitURL )
+    FastScript.requireIsTextNonEmpty( gitURL )
 
     if gitURL.startswith( 'https://' ):
         httpsURL = gitURL
@@ -535,7 +535,7 @@ def git2https( gitURL:str ) -> str:
         else:
             tmp1 = gitURL
 
-        Any.requireIsMatching( tmp1, '^git@.+' )
+        FastScript.requireIsMatching( tmp1, '^git@.+' )
 
         # replace the ':' by '/'
         tmp2 = tmp1.replace( ':', '/' )

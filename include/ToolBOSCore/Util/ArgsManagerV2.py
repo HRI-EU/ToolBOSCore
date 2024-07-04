@@ -40,7 +40,7 @@ import sys
 import textwrap
 
 from ToolBOSCore.Settings import AppConfig, ToolBOSConf
-from ToolBOSCore.Util     import Any, FastScript
+from ToolBOSCore.Util     import FastScript
 
 
 class ArgsManager( argparse.ArgumentParser ):
@@ -57,7 +57,7 @@ class ArgsManager( argparse.ArgumentParser ):
           * show bugtracker URL at the end of the help message
     """
     def __init__( self, description ):
-        Any.requireIsTextNonEmpty( description )
+        FastScript.requireIsTextNonEmpty( description )
 
         wrappedDescr = '\n'.join( textwrap.wrap( description ) )
 
@@ -78,13 +78,13 @@ class ArgsManager( argparse.ArgumentParser ):
 
 
     def addExample( self, example ):
-        Any.requireIsTextNonEmpty( example )
+        FastScript.requireIsTextNonEmpty( example )
 
         self._examples.append( example )
 
 
     def getUnhandledArguments( self ):
-        Any.requireMsg( self._allowUnknown,
+        FastScript.requireMsg( self._allowUnknown,
                         'Please first call setAllowUnknownArgs(True)!' )
 
         return self._unhandled
@@ -109,11 +109,11 @@ class ArgsManager( argparse.ArgumentParser ):
 
     def setAllowUnknownArgs( self, boolean ):
         """
-            By default an error message will be displayed when an unknown
+            By default, an error message will be displayed when an unknown
             option is passed. With setAllowUnknownArgs( True ) you allow
             such options, e.g. for later passing to another program.
         """
-        Any.requireIsBool( boolean )
+        FastScript.requireIsBool( boolean )
 
         self._allowUnknown = boolean
 
@@ -125,7 +125,7 @@ class ArgsManager( argparse.ArgumentParser ):
 
             If omitted, the global ToolBOSCore AppConfig-instance is used.
         """
-        Any.requireIsInstance( config, AppConfig.AppConfig )
+        FastScript.requireIsInstance( config, AppConfig.AppConfig )
 
         self._config = config
 
@@ -168,7 +168,7 @@ class ArgsManager( argparse.ArgumentParser ):
         except AttributeError:
             # This happens within ToolBOS-Setup.py: In a brand-new user
             # environment TOOLBOSCORE_ROOT is not defined, yet.
-            # Hence we are not able to determine the location of the
+            # Hence, we are not able to determine the location of the
             # fallback ToolBOS.conf.
             #
             # In such case do not show the bugtrackURL.
@@ -187,10 +187,10 @@ class ArgsManager( argparse.ArgumentParser ):
             child processes (incl. CMake) operate in verbose mode.
         """
         if self._result.verbose or FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( logging.DEBUG )
+            FastScript.setDebugLevel( logging.DEBUG )
             FastScript.setEnv( 'VERBOSE', 'TRUE' )
         else:
-            Any.setDebugLevel( logging.INFO )
+            FastScript.setDebugLevel( logging.INFO )
 
 
     def _setEpilog( self ):
@@ -218,15 +218,15 @@ class ArgsManager( argparse.ArgumentParser ):
             top-level-directory, and makes use of PackageDetector to get
             version numbers, patchlevels, and Git commit IDs (if possible).
 
-            Then these information are displayed on the console.
+            Then this information is displayed on the console.
         """
         from ToolBOSCore.Packages import AppDetector, ProjectProperties
 
         scriptPath  = sys.argv[0]
-        Any.requireIsTextNonEmpty( scriptPath )
+        FastScript.requireIsTextNonEmpty( scriptPath )
 
         projectRoot = ProjectProperties.detectTopLevelDir( scriptPath )
-        Any.requireIsDirNonEmpty( projectRoot )
+        FastScript.requireIsDirNonEmpty( projectRoot )
 
         print( AppDetector.getAppVersion( projectRoot ) )
 

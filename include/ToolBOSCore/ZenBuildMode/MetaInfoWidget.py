@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Shows package meta-info such as name, revision,...
@@ -38,8 +37,7 @@
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.ZenBuildMode import DependenciesDialog, QtPackageModel
-from ToolBOSCore.GenericGUI   import BusyWaitDialog
-from ToolBOSCore.Util         import Any
+from ToolBOSCore.Util         import FastScript
 
 
 class MetaInfoWidget( QGroupBox, object ):
@@ -47,7 +45,7 @@ class MetaInfoWidget( QGroupBox, object ):
     def __init__( self, model, parent=None ):
         super( QGroupBox, self ).__init__( 'package meta-info' )
 
-        Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+        FastScript.requireIsInstance( model, QtPackageModel.BSTPackageModel )
 
         self._model         = model
 

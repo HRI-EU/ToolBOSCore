@@ -39,13 +39,13 @@ import logging
 
 from PyQt5.QtWidgets import QProgressDialog
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class BusyWaitDialog( QProgressDialog ):
 
     def __init__( self, text ):
-        Any.requireIsTextNonEmpty( text )
+        FastScript.requireIsTextNonEmpty( text )
         super( BusyWaitDialog, self ).__init__()
 
         # both min/max are zero: visualized as infinite wait

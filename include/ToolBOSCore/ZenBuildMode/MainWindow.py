@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
@@ -53,7 +52,7 @@ from ToolBOSCore.Packages     import ProjectProperties
 from ToolBOSCore.Platforms    import CrossCompilation, Platforms
 from ToolBOSCore.Settings     import ToolBOSConf
 from ToolBOSCore.Tools        import SSH
-from ToolBOSCore.Util         import Any, FastScript
+from ToolBOSCore.Util         import FastScript
 
 
 class MainWindow( QObject, object ):
@@ -180,7 +179,7 @@ class MainWindow( QObject, object ):
     def globalInstall( self ):
         # Potentially this could be more generalized, f.i. into
         # PackageDetector / pkgInfo.py --> "Does pkg. need seq. install"?
-        Any.requireIsTextNonEmpty( self.projectRoot )
+        FastScript.requireIsTextNonEmpty( self.projectRoot )
         installHook  = os.path.join( self.projectRoot, 'installHook.sh' )
         doSeqInstall = os.path.exists( installHook )
 
@@ -251,7 +250,7 @@ class MainWindow( QObject, object ):
         crossCompileHosts  = self._toolBOSConf.getConfigOption( 'BST_crossCompileHosts' )
 
 
-        Any.requireIsDictNonEmpty( crossCompileHosts )
+        FastScript.requireIsDictNonEmpty( crossCompileHosts )
 
         for platformName, compileHost in crossCompileHosts.items():
             if compileHost:
@@ -436,7 +435,7 @@ class MainWindow( QObject, object ):
 
 
         try:
-            Any.requireIsDir( self.projectRoot )
+            FastScript.requireIsDir( self.projectRoot )
             FastScript.changeDirectory( self.projectRoot  )
             BuildSystemTools.requireTopLevelDir()
             self.openPackage( self.projectRoot )
@@ -480,7 +479,7 @@ class MainWindow( QObject, object ):
         oldcwd      = os.getcwd()
 
         try:
-            Any.requireIsTextNonEmpty( topLevelDir )
+            FastScript.requireIsTextNonEmpty( topLevelDir )
             FastScript.changeDirectory( topLevelDir )
             BuildSystemTools.requireTopLevelDir()
         except ( AssertionError, OSError, RuntimeError ) as details:
@@ -563,7 +562,7 @@ class MainWindow( QObject, object ):
 
 
     def _execProgram( self, terminal, command, showCmd=None ):
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
 
         self.console.clear()
 
@@ -586,7 +585,7 @@ class MainWindow( QObject, object ):
         """
             Launches the given command in parallel in each terminal.
         """
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
 
         self.console.clear()
 
@@ -619,7 +618,7 @@ class MainWindow( QObject, object ):
             total execution time = command execution time *
                                    number of enabled platforms
         """
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
         self.console.clear()
 
         if not showCmd:
@@ -634,13 +633,13 @@ class MainWindow( QObject, object ):
         # of iterating over self.terminals
 
         for terminal in self.multiTermWidget.getTerminals():
-            Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+            FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
 
             platform = None
 
             for candPlatform, candTerminal in self.terminals.items():
-                Any.requireIsTextNonEmpty( candPlatform )
-                Any.requireIsInstance( candTerminal, TerminalWidget.TerminalWidget )
+                FastScript.requireIsTextNonEmpty( candPlatform )
+                FastScript.requireIsInstance( candTerminal, TerminalWidget.TerminalWidget )
 
                 if terminal == candTerminal:
                     platform = candPlatform
@@ -649,7 +648,7 @@ class MainWindow( QObject, object ):
                     platform = platform.replace( 'xcomp_', '' )
                     platform = platform.replace( 'nativ_', '' )
 
-            Any.requireIsTextNonEmpty( platform )
+            FastScript.requireIsTextNonEmpty( platform )
 
             finalCommand = command.replace( '<MAKEFILE_PLATFORM>', platform )
             finalShowCmd = showCmd.replace( '<MAKEFILE_PLATFORM>', platform )
@@ -679,8 +678,8 @@ class MainWindow( QObject, object ):
 
 
     def _onDependencyCheckFinished( self, terminal, output ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsInstance( output, QByteArray )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsInstance( output, QByteArray )
 
         missingDeps = []
         utf8Output  = output.data()
@@ -702,8 +701,8 @@ class MainWindow( QObject, object ):
 
 
     def _onHostChange( self, terminal, hostname ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsText( hostname )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsText( hostname )
 
         logging.debug( 'terminal %s: changed to host "%s"', terminal, hostname )
 
@@ -793,8 +792,8 @@ class MainWindow( QObject, object ):
 
 
     def _onProblemIndicatorPressed( self, hostname, missingDeps ):
-        Any.requireIsTextNonEmpty( hostname )
-        Any.requireIsListNonEmpty( missingDeps )
+        FastScript.requireIsTextNonEmpty( hostname )
+        FastScript.requireIsListNonEmpty( missingDeps )
 
         title = 'Missing dependencies'
         msg   = "The following packages are missing on host '" + \
@@ -864,9 +863,9 @@ class MainWindow( QObject, object ):
 
         terminal, command, showCmd = self._seqTasks.pop( 0 )
 
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsTextNonEmpty( command )
-        Any.requireIsTextNonEmpty( showCmd )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( showCmd )
 
         procExecutor = self._execProgram( terminal, command, showCmd )
         procExecutor.finished.connect( self._onSeqTasksRun )
@@ -902,8 +901,8 @@ class MainWindow( QObject, object ):
 
 
     def _reportMissingDependencies( self, terminal, missingDeps ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsList( missingDeps )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsList( missingDeps )
 
         count = len( missingDeps )
 
@@ -937,7 +936,7 @@ class MainWindow( QObject, object ):
 
 
     def _runDependencyCheck( self, terminal ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
 
         host = terminal.hostname
         path = terminal.path

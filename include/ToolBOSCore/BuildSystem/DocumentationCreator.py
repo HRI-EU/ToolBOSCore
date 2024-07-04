@@ -38,11 +38,9 @@ import logging
 import os
 
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Platforms.Platforms      import getHostPlatform
 from ToolBOSCore.Settings                 import ProcessEnv
-from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
 from ToolBOSCore.Storage                  import SIT
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Util                     import FastScript
 
 
 class DocumentationCreator( object ):
@@ -58,7 +56,7 @@ class DocumentationCreator( object ):
     def __init__( self, projectRoot, sitPath=None, stdout=None,
                   stderr=None, details=None ):
 
-        Any.requireIsDir( projectRoot )
+        FastScript.requireIsDir( projectRoot )
 
         self.projectRoot = projectRoot
         logging.debug( 'topLevelDir=%s', projectRoot )
@@ -72,7 +70,7 @@ class DocumentationCreator( object ):
                 logging.warning( e )                    # e.g. $SIT not defined in environment
 
         else:
-            Any.requireIsInstance( details, PackageDetector)
+            FastScript.requireIsInstance( details, PackageDetector)
 
         if sitPath is None:
             sitPath = SIT.getPath()
@@ -109,7 +107,7 @@ class DocumentationCreator( object ):
 class AbstractBackend( object ):
 
     def __init__( self, details, sitPath, stdout=None, stderr=None ):
-        Any.requireIsInstance( details, PackageDetector)
+        FastScript.requireIsInstance( details, PackageDetector)
 
         self.details = details
         self.sitPath = sitPath
@@ -117,7 +115,7 @@ class AbstractBackend( object ):
         self.stdout  = stdout
         self.stderr  = stderr
 
-        Any.requireIsDir( self.details.topLevelDir )
+        FastScript.requireIsDir( self.details.topLevelDir )
 
 
     def setup( self ):
@@ -200,7 +198,7 @@ class DoxygenBackend( AbstractBackend ):
         content  = ''
         template = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                                  'etc', fileName )
-        Any.requireIsFileNonEmpty( template )
+        FastScript.requireIsFileNonEmpty( template )
 
         if os.path.isdir( os.path.join( self.details.topLevelDir, 'examples' ) ):
             logging.debug( 'doxygen: indexing examples' )

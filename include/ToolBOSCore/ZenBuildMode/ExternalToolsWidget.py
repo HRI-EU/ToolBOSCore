@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Launchers for external tools (IDEs etc.)
@@ -40,12 +39,12 @@ import logging
 from PyQt5.QtCore    import QSize, Qt
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.ZenBuildMode import QtPackageModel, SettingsDialog
+from ToolBOSCore.ZenBuildMode    import QtPackageModel, SettingsDialog
 from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
-from ToolBOSCore.GenericGUI   import BusyWaitDialog, \
-                                     IconProvider, PixmapProvider, \
-                                     ProcessExecutor
-from ToolBOSCore.Util         import Any
+from ToolBOSCore.GenericGUI      import BusyWaitDialog, \
+                                        IconProvider, PixmapProvider, \
+                                        ProcessExecutor
+from ToolBOSCore.Util            import FastScript
 
 
 class ExternalToolsWidget( QWidget, object ):
@@ -53,7 +52,7 @@ class ExternalToolsWidget( QWidget, object ):
     def __init__( self, model, parent=None ):
         super( QWidget, self ).__init__()
 
-        Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+        FastScript.requireIsInstance( model, QtPackageModel.BSTPackageModel )
 
         self.parent          = parent
         self.model           = model
@@ -119,8 +118,8 @@ class ExternalToolsWidget( QWidget, object ):
 
 
     def _runProcess( self, cmd, description ):
-        Any.requireIsTextNonEmpty( cmd )
-        Any.requireIsTextNonEmpty( description )
+        FastScript.requireIsTextNonEmpty( cmd )
+        FastScript.requireIsTextNonEmpty( description )
 
         logging.info( 'launching %s', description )
 

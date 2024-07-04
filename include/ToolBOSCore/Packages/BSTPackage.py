@@ -46,7 +46,7 @@ from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms.Platforms      import getHostPlatform
 from ToolBOSCore.Storage                  import SIT
 from ToolBOSCore.Storage.PkgInfoInterface import PkgInfoInterface
-from ToolBOSCore.Util                     import Any
+from ToolBOSCore.Util                     import FastScript
 
 
 class BSTPackage( AbstractPackage ):
@@ -67,7 +67,7 @@ class BSTPackage( AbstractPackage ):
         """
         from ToolBOSCore.Platforms import Debian
 
-        Any.requireIsSet( self.depSet, 'Please call .retrieveDependencies() first' )
+        FastScript.requireIsSet( self.depSet, 'Please call .retrieveDependencies() first' )
 
         if self.depSet:
             deps = list( self.depSet )
@@ -86,12 +86,12 @@ class BSTPackage( AbstractPackage ):
     def retrieveDependencies( self, recursive,
                               normalDeps=True, buildDeps=False,
                               recommendations=False, suggestions=False ):
-        Any.requireIsNotNone( self.detector, 'Please call .open() first' )
-        Any.requireIsBool( recursive )
-        Any.requireIsBool( normalDeps )
-        Any.requireIsBool( buildDeps )
-        Any.requireIsBool( recommendations )
-        Any.requireIsBool( suggestions )
+        FastScript.requireIsNotNone( self.detector, 'Please call .open() first' )
+        FastScript.requireIsBool( recursive )
+        FastScript.requireIsBool( normalDeps )
+        FastScript.requireIsBool( buildDeps )
+        FastScript.requireIsBool( recommendations )
+        FastScript.requireIsBool( suggestions )
 
         self.detector.retrieveMakefileInfo()
 
@@ -196,7 +196,7 @@ class BSTSourcePackage( BSTPackage ):
     def setSQLevel( self, level ):
         from ToolBOSCore.SoftwareQuality import CheckRoutine
 
-        Any.requireIsTextNonEmpty( level )
+        FastScript.requireIsTextNonEmpty( level )
 
         if level == CheckRoutine.sqLevelDefault:
             self.pkgInfo_remove( 'sqLevel' )     # no need to store
@@ -205,7 +205,7 @@ class BSTSourcePackage( BSTPackage ):
 
 
     def pkgInfo_remove( self, key ):
-        Any.requireIsTextNonEmpty( key )
+        FastScript.requireIsTextNonEmpty( key )
 
         try:
             pkgInfo = PkgInfoInterface( self.detector )
@@ -220,7 +220,7 @@ class BSTSourcePackage( BSTPackage ):
 
 
     def pkgInfo_set( self, key, value ):
-        Any.requireIsTextNonEmpty( key )
+        FastScript.requireIsTextNonEmpty( key )
 
         try:
             pkgInfo = PkgInfoInterface( self.detector )
@@ -260,8 +260,8 @@ class BSTInstalledPackage( BSTPackage ):
         if self.detector is None:
             return False
 
-        Any.requireIsTextNonEmpty( self.detector.topLevelDir )
-        Any.requireIsTextNonEmpty( self._sitPath )
+        FastScript.requireIsTextNonEmpty( self.detector.topLevelDir )
+        FastScript.requireIsTextNonEmpty( self._sitPath )
 
         return os.path.exists( os.path.join( self._sitPath,
                                              self.detector.topLevelDir ) )
@@ -299,7 +299,7 @@ class BSTInstalledPackage( BSTPackage ):
 
 
     def setMetaInfoCache( self, metaInfoCache ):
-        Any.requireIsInstance( metaInfoCache, MetaInfoCache )
+        FastScript.requireIsInstance( metaInfoCache, MetaInfoCache )
 
         BSTInstalledPackage._metaInfoCache = metaInfoCache
 

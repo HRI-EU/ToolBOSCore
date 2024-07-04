@@ -45,8 +45,7 @@ import sys
 
 from ToolBOSCore.Settings import UserSetup
 from ToolBOSCore.Storage  import ProxyDir
-from ToolBOSCore.Util     import Any
-from ToolBOSCore.Util     import ArgsManagerV2
+from ToolBOSCore.Util     import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -135,7 +134,7 @@ else:
 
     except ( AssertionError, OSError, ValueError ) as details:
         # show stacktrace in verbose mode
-        if Any.getDebugLevel() >= 5:
+        if FastScript.getDebugLevel() >= 5:
             raise
         else:
             logging.error( details )

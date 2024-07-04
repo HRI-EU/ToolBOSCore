@@ -38,7 +38,7 @@ import logging
 import os
 import re
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 parentLink = 'parentTree'
 
@@ -241,7 +241,7 @@ def getProjects( path, keepPath = True, onError = None ):
         e.g. permission denied. This function needs to take a single
         path parameter. If omitted, an OSError will be raised upon errors.
     """
-    Any.requireIsDir( path )
+    FastScript.requireIsDir( path )
 
     path           = os.path.normpath( path )
     projectList    = []
@@ -271,15 +271,15 @@ def getProjectsWithErrorHandling( path, resultList ):
         The data will be appended to the provided resultList instead of
         using a return value. This allows using this function in a thread.
     """
-    Any.requireIsDir( path )
-    Any.requireIsList( resultList )
+    FastScript.requireIsDir( path )
+    FastScript.requireIsList( resultList )
 
     logging.info( 'scanning %s...', path )
 
     resultList.extend( getProjects( path, keepPath=False,
                                     onError=FastScript.printPermissionDenied ) )
 
-    Any.requireIsListNonEmpty( resultList )
+    FastScript.requireIsListNonEmpty( resultList )
 
 
 def getCanonicalPaths( sitPath ):
@@ -289,7 +289,7 @@ def getCanonicalPaths( sitPath ):
     """
     from ToolBOSCore.Packages.ProjectProperties import isCanonicalPath
 
-    Any.requireIsDir( sitPath )
+    FastScript.requireIsDir( sitPath )
 
     sitPackages = []
     getProjectsWithErrorHandling( sitPath, sitPackages )

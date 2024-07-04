@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Settings dialog
@@ -44,7 +43,7 @@ from PyQt5.QtWidgets import *
 from ToolBOSCore.Platforms import CrossCompilation
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ToolBOSConf
-from ToolBOSCore.Util      import Any
+from ToolBOSCore.Util      import FastScript
 
 
 class SettingsDialog( QWidget, object ):
@@ -254,10 +253,10 @@ class SettingsDialog( QWidget, object ):
 
 
             hostnameField   = self._hostnameFields_nat[ platform ]
-            Any.requireIsInstance( hostnameField, QLineEdit )
+            FastScript.requireIsInstance( hostnameField, QLineEdit )
 
             enteredHostname = str( hostnameField.text() )
-            Any.requireIsText( enteredHostname )                           # might be empty
+            FastScript.requireIsText( enteredHostname )                           # might be empty
 
 
             try:
@@ -284,10 +283,10 @@ class SettingsDialog( QWidget, object ):
                 enabledPlatforms_xcmp.append( platform )
 
             hostnameField   = self._hostnameFields_xcmp[ platform ]
-            Any.requireIsInstance( hostnameField, QLineEdit )
+            FastScript.requireIsInstance( hostnameField, QLineEdit )
 
             enteredHostname = str( hostnameField.text() )
-            Any.requireIsText( enteredHostname )                           # might be empty
+            FastScript.requireIsText( enteredHostname )                           # might be empty
 
 
             try:
