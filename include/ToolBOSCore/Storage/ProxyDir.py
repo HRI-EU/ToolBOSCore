@@ -39,6 +39,7 @@
 #----------------------------------------------------------------------------
 
 
+import concurrent.futures
 import logging
 import os
 import os.path
@@ -46,7 +47,7 @@ import re
 import stat
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import FastScript, ThreadPool
+from ToolBOSCore.Util    import FastScript
 
 
 #----------------------------------------------------------------------------
@@ -208,10 +209,9 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     if not pluginsEnabled:
         raise ValueError( 'Nothing to do. Please check your parameters.' )
 
-    tp = ThreadPool.ThreadPool()
-    tp.add( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
-    tp.add( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
-    tp.run()
+    with concurrent.futures.ThreadPoolExecutor() as tp:
+        tp.submit( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
+        tp.submit( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
 
     if removeProxyInstallations:
         changed = _removeProxyInstallations( sitRootPkgList, sitProxyPkgList,
