@@ -47,7 +47,6 @@ dependencies:
   - psutil
   - pyqt
   - pylint
-  - pyqtwebengine
   - pytest
   - termcolor
   - terminaltables
