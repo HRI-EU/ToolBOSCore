@@ -1,0 +1,11 @@
+WHAT TO DO WHEN INTRODUCING NEW PLATFORMS:
+==========================================
+
+  * Platforms.getPlatformList()
+
+  * extend BST_DefaultSettings.cmake
+
+  * ToolBOS.conf: compile host assignment for Zen Build Mode, or None
+
+
+# EOF

@@ -44,9 +44,7 @@ from PyQt5.QtCore    import pyqtSignal, QThread, Qt
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.GenericGUI               import PixmapProvider
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Packages.CopyrightHeader import getCopyright
 from ToolBOSCore.Util                     import FastScript
 
 
@@ -58,19 +56,7 @@ class AboutDialog( QDialog ):
     def __init__( self, parent=None ):
         super( AboutDialog, self ).__init__( parent )
 
-        logo = QLabel()
-        logo.setPixmap( PixmapProvider.getPixmap( 'ToolBOS-Logo-small' ) )
-        logo.setAlignment( Qt.AlignCenter )
-
-        copyrightInfo = QPlainTextEdit()
-        copyrightInfo.setFont( self._font )
-        copyrightInfo.setPlainText( getCopyright() )
-        copyrightInfo.setReadOnly( True )
-
-        layout = QGridLayout()
-        layout.addWidget( logo,          0, 0 )
-        layout.addWidget( copyrightInfo, 0, 1 )
-
+        layout     = QGridLayout()
         tcRoot     = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
         tcDetector = PackageDetector( tcRoot )
         tcDetector.retrieveMakefileInfo()
@@ -78,19 +64,8 @@ class AboutDialog( QDialog ):
         tcVersion += '.%d' % tcDetector.patchlevel if tcDetector.patchlevel else ''
         tcInfo     = '%s (Version: %s)' % ( tcRoot, tcVersion )
 
-        mwRoot     = FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' )
-        if mwRoot:
-            mwDetector = PackageDetector( mwRoot )
-            mwDetector.retrieveMakefileInfo()
-            mwVersion  = mwDetector.packageVersion
-            mwVersion += '.%d' % mwDetector.patchlevel if mwDetector.patchlevel else ''
-            mwInfo     = '%s (Version: %s)' % ( mwRoot, mwVersion )
-        else:
-            mwInfo     = 'not available'
-
         #          label text (key)       value                                     lines to display
         info = [ ( 'ToolBOS Core',        tcInfo,                                   1 ),
-                 ( 'ToolBOS Middleware',  mwInfo,                                   1 ),
                  ( '$SIT',                FastScript.getEnv( 'SIT'               ), 1 ),
                  ( '$MAKEFILE_PLATFORM',  FastScript.getEnv( 'MAKEFILE_PLATFORM' ), 1 ),
                  ( '$PATH',               FastScript.getEnv( 'PATH'              ), 3 ),
@@ -131,7 +106,8 @@ class AboutDialog( QDialog ):
         layout.addWidget( self._standardButtons, i, 1 )
 
         # noinspection PyArgumentList
-        dialogWidth = QApplication.desktop().screenGeometry().width() / 3 * 2
+        screenWidth = QApplication.desktop().screenGeometry().width()
+        dialogWidth = int( screenWidth * 2/3 )
 
         self.setLayout( layout )
         self.setMinimumWidth( dialogWidth )

@@ -38,15 +38,14 @@
 import logging
 import os
 
-from ToolBOSCore.Util import Any
 from ToolBOSCore.Util import FastScript
 
 
 class ConfigOptions( object ):
 
     def __init__( self, appName , appRoot ):
-        Any.requireIsTextNonEmpty( appName )
-        Any.requireIsDir( appRoot )
+        FastScript.requireIsTextNonEmpty( appName )
+        FastScript.requireIsDir( appRoot )
 
         self._addPaths        = []
         self._appName         = appName
@@ -65,7 +64,7 @@ class ConfigOptions( object ):
 
 
     def addPath( self, path ):
-        Any.requireIsTextNonEmpty( path )
+        FastScript.requireIsTextNonEmpty( path )
 
         filePath = os.path.join( path, self._settingsFile )
         logging.debug( 'registering add. config file: %s', filePath )
@@ -101,7 +100,7 @@ class ConfigOptions( object ):
 
         result = {}
         for key, value in allSymbols.items():
-            if Any.isTextNonEmpty( key ) and not Any.isCallable( value ):
+            if FastScript.isTextNonEmpty( key ) and not FastScript.isCallable( value ):
                 result[ key ] = value
 
         return result
@@ -126,7 +125,7 @@ class ConfigOptions( object ):
             If none of the files contains the specified variable,
             a key error will be thrown.
         """
-        Any.requireIsTextNonEmpty( varName )
+        FastScript.requireIsTextNonEmpty( varName )
 
         for fileName in self._getEvalOrder( ):
             try:
@@ -145,7 +144,7 @@ class ConfigOptions( object ):
         """
             Returns a dict with the settings from the user's configfile (if any).
 
-            Unlike getConfigOptions() it does not look-up all the other files
+            Unlike getConfigOptions() it does not look up all the other files
             like in the current working directory or the system-wide or default
             configs.
         """
@@ -167,8 +166,8 @@ class ConfigOptions( object ):
 
             Use delConfigOption() to remove a setting.
         """
-        Any.requireIsTextNonEmpty( varName )
-        Any.requireMsg( varName[0].isalpha(),
+        FastScript.requireIsTextNonEmpty( varName )
+        FastScript.requireMsg( varName[0].isalpha(),
                         'varName parameter must start with a letter' )
 
         # update setting
@@ -183,7 +182,7 @@ class ConfigOptions( object ):
         """
             Removes a certain config option from the user's configfile.
         """
-        Any.requireIsTextNonEmpty( varName )
+        FastScript.requireIsTextNonEmpty( varName )
 
         # read current settings (if any)
         config = self.getUserConfigOptions()
@@ -211,8 +210,8 @@ class ConfigOptions( object ):
             This function attempts to find a variable 'varName' defined in
             the file 'fileName'.
         """
-        Any.requireIsTextNonEmpty( varName )
-        Any.requireIsFileNonEmpty( fileName )
+        FastScript.requireIsTextNonEmpty( varName )
+        FastScript.requireIsFileNonEmpty( fileName )
 
         value = FastScript.execFile( fileName )[varName]
 
@@ -256,12 +255,12 @@ class ConfigOptions( object ):
         """
         from ToolBOSCore.Packages.CopyrightHeader import getCopyrightHeader
 
-        Any.requireIsDict( config )
+        FastScript.requireIsDict( config )
 
         content = getCopyrightHeader( 'python', 'User-preferences for ToolBOS SDK' )
 
         for key, value in config.items():
-            if Any.isText( value ):
+            if FastScript.isText( value ):
                 value = "'%s'" % value      # write Python string, not just value
 
             content += '%s = %s\n\n' % ( key, str( value ) )

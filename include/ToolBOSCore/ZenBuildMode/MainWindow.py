@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
@@ -40,26 +39,20 @@ import shlex
 import socket
 import threading
 
-import sip
-
-sip.setapi( 'QString', 2 )
-sip.setapi( 'QVariant', 2 )
-
 from PyQt5.QtCore    import pyqtSignal, QObject, QByteArray
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.BuildSystem  import BuildSystemTools
 from ToolBOSCore.ZenBuildMode import BuildOptionsWidget, ConsoleWidget,\
                                      DependencyChecker, ExternalToolsWidget,\
-                                     InstallDialog, MenuBar, MetaInfoWidget,\
+                                     MenuBar, MetaInfoWidget,\
                                      QtPackageModel, TaskButtonsWidget
 from ToolBOSCore.GenericGUI   import IconProvider, TerminalWidget
 from ToolBOSCore.Packages     import ProjectProperties
 from ToolBOSCore.Platforms    import CrossCompilation, Platforms
 from ToolBOSCore.Settings     import ToolBOSConf
-from ToolBOSCore.Storage      import VersionControl
 from ToolBOSCore.Tools        import SSH
-from ToolBOSCore.Util         import Any, FastScript
+from ToolBOSCore.Util         import FastScript
 
 
 class MainWindow( QObject, object ):
@@ -184,72 +177,16 @@ class MainWindow( QObject, object ):
 
 
     def globalInstall( self ):
-        force = self._toolBOSConf.getConfigOption( 'BST_svnCheck' ) == False
-
-        if force or self.globalInstall_vcsCheck():
-            self.globalInstall_askReason()
-
-
-    def globalInstall_vcsCheck( self ):
-        try:
-            vcs    = VersionControl.auto()
-            errors = vcs.consistencyCheck()
-
-        except EnvironmentError:
-
-            errors = [ 'No VCS revision information.',
-                       'Unable to find ".svn" or ".git" directories.',
-                       'Please make sure to install from a SVN working '
-                       'copy or Git repository.' ]
-
-
-        if errors:
-            title = errors[0]
-            msg   = 'Attention: ' + errors[1] + '\n\n' + errors[2]
-
-            dialog = QMessageBox()
-            dialog.critical( self.window, title, msg, QMessageBox.Cancel )
-            dialog.show()
-
-            return False
-        else:
-            return True
-
-
-    def globalInstall_askReason( self ):
-        self.globalInstDialog = InstallDialog.GlobalInstallDialog()
-        self.globalInstDialog.cancelled.connect( self._enableButtons )
-        self.globalInstDialog.ready.connect( self.globalInstall_exec )
-        self.globalInstDialog.show()
-
-
-    def globalInstall_exec(self, changeType, reason):
-        Any.requireIsTextNonEmpty( changeType )
-        Any.requireIsTextNonEmpty( reason )
-
-        # escape any doublequotes to not confuse the shlex used later on
-        # (TBCORE-1323)
-        reason     = reason.replace( '"', '\\"' )
-        logging.debug( 'reason: %s', reason )
-
-
         # Potentially this could be more generalized, f.i. into
         # PackageDetector / pkgInfo.py --> "Does pkg. need seq. install"?
-        Any.requireIsTextNonEmpty( self.projectRoot )
+        FastScript.requireIsTextNonEmpty( self.projectRoot )
         installHook  = os.path.join( self.projectRoot, 'installHook.sh' )
         doSeqInstall = os.path.exists( installHook )
 
-
-        if doSeqInstall:
-            msg = '%s: %s (<MAKEFILE_PLATFORM>)' % ( changeType, reason )
-        else:
-            msg = '%s: %s' % ( changeType, reason )
-
-
         if self.optionsWidget.getVerboseValue():
-            command = 'BST.py -ivy -M "%s"' % msg
+            command = 'BST.py -ivy'
         else:
-            command = 'BST.py -iy -M "%s"' % msg
+            command = 'BST.py -iy'
 
 
         # If the package has a installHook.sh (like in most "External" pkg.)
@@ -313,7 +250,7 @@ class MainWindow( QObject, object ):
         crossCompileHosts  = self._toolBOSConf.getConfigOption( 'BST_crossCompileHosts' )
 
 
-        Any.requireIsDictNonEmpty( crossCompileHosts )
+        FastScript.requireIsDictNonEmpty( crossCompileHosts )
 
         for platformName, compileHost in crossCompileHosts.items():
             if compileHost:
@@ -463,8 +400,6 @@ class MainWindow( QObject, object ):
 
         self.externalTools = ExternalToolsWidget.ExternalToolsWidget( self.model, self.window )
 
-        self.model.updatesAvailable.connect( self.externalTools.showUpdateIndicator )
-
         # build options in right pane
         self.rightPaneLayout.setContentsMargins( 0, 0, 0, 0 )
         self.platformCBs_natWidget.setLayout( self.platformCBs_natLayout )
@@ -474,7 +409,6 @@ class MainWindow( QObject, object ):
         self.rightPaneLayout.addWidget( self.platformCBs_natWidget )
         self.rightPaneLayout.addWidget( self.platformCBs_xcmpWidget )
         self.rightPaneLayout.addWidget( self.optionsWidget )
-
 
         self.console.localCommand.connect( self._onLocalShellInput )
         self.console.remoteCommand.connect( self._onRemoteShellInput )
@@ -501,7 +435,7 @@ class MainWindow( QObject, object ):
 
 
         try:
-            Any.requireIsDir( self.projectRoot )
+            FastScript.requireIsDir( self.projectRoot )
             FastScript.changeDirectory( self.projectRoot  )
             BuildSystemTools.requireTopLevelDir()
             self.openPackage( self.projectRoot )
@@ -519,13 +453,15 @@ class MainWindow( QObject, object ):
         self.mainLayout.addWidget( self.taskButtons,   1, 1 )
         self.mainWidget.setLayout( self.mainLayout )
 
-        screen = QDesktopWidget().availableGeometry()
+        screen       = QDesktopWidget().availableGeometry()
+        windowWidth  = int( screen.width()  * 0.75 )
+        windowHeight = int( screen.height() * 0.75 )
 
         self.window.setWindowIcon( IconProvider.getIcon( 'ToolBOS' ) )
         self.window.setWindowTitle( 'BST.py (zen build mode)' )
         self.window.setMenuBar( self.menuBar )
         self.window.setCentralWidget( self.mainWidget )
-        self.window.resize( screen.width() / 5 * 4, screen.height() / 5 * 4 )
+        self.window.resize( windowWidth, windowHeight )
         self.window.move( screen.center() - self.window.rect().center() )
         self.window.show()
 
@@ -545,7 +481,7 @@ class MainWindow( QObject, object ):
         oldcwd      = os.getcwd()
 
         try:
-            Any.requireIsTextNonEmpty( topLevelDir )
+            FastScript.requireIsTextNonEmpty( topLevelDir )
             FastScript.changeDirectory( topLevelDir )
             BuildSystemTools.requireTopLevelDir()
         except ( AssertionError, OSError, RuntimeError ) as details:
@@ -628,7 +564,7 @@ class MainWindow( QObject, object ):
 
 
     def _execProgram( self, terminal, command, showCmd=None ):
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
 
         self.console.clear()
 
@@ -651,7 +587,7 @@ class MainWindow( QObject, object ):
         """
             Launches the given command in parallel in each terminal.
         """
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
 
         self.console.clear()
 
@@ -684,7 +620,7 @@ class MainWindow( QObject, object ):
             total execution time = command execution time *
                                    number of enabled platforms
         """
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
         self.console.clear()
 
         if not showCmd:
@@ -699,13 +635,13 @@ class MainWindow( QObject, object ):
         # of iterating over self.terminals
 
         for terminal in self.multiTermWidget.getTerminals():
-            Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+            FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
 
             platform = None
 
             for candPlatform, candTerminal in self.terminals.items():
-                Any.requireIsTextNonEmpty( candPlatform )
-                Any.requireIsInstance( candTerminal, TerminalWidget.TerminalWidget )
+                FastScript.requireIsTextNonEmpty( candPlatform )
+                FastScript.requireIsInstance( candTerminal, TerminalWidget.TerminalWidget )
 
                 if terminal == candTerminal:
                     platform = candPlatform
@@ -714,7 +650,7 @@ class MainWindow( QObject, object ):
                     platform = platform.replace( 'xcomp_', '' )
                     platform = platform.replace( 'nativ_', '' )
 
-            Any.requireIsTextNonEmpty( platform )
+            FastScript.requireIsTextNonEmpty( platform )
 
             finalCommand = command.replace( '<MAKEFILE_PLATFORM>', platform )
             finalShowCmd = showCmd.replace( '<MAKEFILE_PLATFORM>', platform )
@@ -744,8 +680,8 @@ class MainWindow( QObject, object ):
 
 
     def _onDependencyCheckFinished( self, terminal, output ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsInstance( output, QByteArray )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsInstance( output, QByteArray )
 
         missingDeps = []
         utf8Output  = output.data()
@@ -767,8 +703,8 @@ class MainWindow( QObject, object ):
 
 
     def _onHostChange( self, terminal, hostname ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsText( hostname )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsText( hostname )
 
         logging.debug( 'terminal %s: changed to host "%s"', terminal, hostname )
 
@@ -858,8 +794,8 @@ class MainWindow( QObject, object ):
 
 
     def _onProblemIndicatorPressed( self, hostname, missingDeps ):
-        Any.requireIsTextNonEmpty( hostname )
-        Any.requireIsListNonEmpty( missingDeps )
+        FastScript.requireIsTextNonEmpty( hostname )
+        FastScript.requireIsListNonEmpty( missingDeps )
 
         title = 'Missing dependencies'
         msg   = "The following packages are missing on host '" + \
@@ -929,9 +865,9 @@ class MainWindow( QObject, object ):
 
         terminal, command, showCmd = self._seqTasks.pop( 0 )
 
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsTextNonEmpty( command )
-        Any.requireIsTextNonEmpty( showCmd )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( showCmd )
 
         procExecutor = self._execProgram( terminal, command, showCmd )
         procExecutor.finished.connect( self._onSeqTasksRun )
@@ -939,10 +875,6 @@ class MainWindow( QObject, object ):
 
     def _onSeqTasksFinished( self ):
         logging.debug( 'processing sequential tasks finished' )
-
-
-    def _onUpdatesAvailable( self ):
-        self._extTools.showUpdateIndicator()
 
 
     def _programCounter_increment( self, ):
@@ -971,8 +903,8 @@ class MainWindow( QObject, object ):
 
 
     def _reportMissingDependencies( self, terminal, missingDeps ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
-        Any.requireIsList( missingDeps )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsList( missingDeps )
 
         count = len( missingDeps )
 
@@ -1006,7 +938,7 @@ class MainWindow( QObject, object ):
 
 
     def _runDependencyCheck( self, terminal ):
-        Any.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
+        FastScript.requireIsInstance( terminal, TerminalWidget.TerminalWidget )
 
         host = terminal.hostname
         path = terminal.path

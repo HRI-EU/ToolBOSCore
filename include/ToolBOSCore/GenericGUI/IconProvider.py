@@ -43,7 +43,7 @@ from PyQt5.QtGui import QIcon
 
 from ToolBOSCore.Packages import ProjectProperties
 from ToolBOSCore.Settings import ToolBOSConf
-from ToolBOSCore.Util     import Any
+from ToolBOSCore.Util     import FastScript
 
 
 _iconCache     = {}
@@ -56,7 +56,7 @@ def getIcon( name ):
         Returns a QIcon for the provided 'name', which used to be an action,
         extern program identifier, or other kind of operation.
     """
-    Any.requireIsTextNonEmpty( name )
+    FastScript.requireIsTextNonEmpty( name )
 
     icon = None
 
@@ -79,7 +79,7 @@ def _getFreeDesktopIcon( name ):
     """
         Get an icon from the desktop environment's icon theme
     """
-    Any.requireIsTextNonEmpty( name )
+    FastScript.requireIsTextNonEmpty( name )
 
     if QIcon.hasThemeIcon( name ):
         logging.debug( 'using freedesktop icon: %s', name )
@@ -97,7 +97,7 @@ def _getBundledIcon( name ):
     global _iconCache
     global _iconDir
 
-    Any.requireIsTextNonEmpty( name )
+    FastScript.requireIsTextNonEmpty( name )
 
     try:
         # lookup cache
@@ -111,7 +111,7 @@ def _getBundledIcon( name ):
 
             _iconDir    = os.path.join( topLevelDir, 'share/icons' )
             logging.debug( 'application icon dir: %s', _iconDir )
-            Any.requireIsDir( _iconDir )
+            FastScript.requireIsDir( _iconDir )
 
 
         # Even though the SVG would scale better, prefer the PNG version
@@ -131,7 +131,7 @@ def _getBundledIcon( name ):
             # provide empty fallback icon to prevent crashes
             return QIcon()
 
-        Any.requireIsFile( filePath )
+        FastScript.requireIsFile( filePath )
         logging.debug( 'using bundled icon: %s', filePath )
 
         # load icon and put in cache

@@ -34,7 +34,7 @@
 #
 
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class AbstractPackage( object ):
@@ -44,7 +44,7 @@ class AbstractPackage( object ):
     def __init__( self, url=None ):
 
         if url is not None:
-            Any.requireIsTextNonEmpty( url )
+            FastScript.requireIsTextNonEmpty( url )
 
         self.depSet  = None
         self.depTree = None

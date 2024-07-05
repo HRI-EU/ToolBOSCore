@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  List of (reverse) package dependencies
@@ -36,7 +35,6 @@
 
 
 import logging
-import os
 
 from PyQt5.QtCore    import Qt
 from PyQt5.QtWidgets import *
@@ -47,7 +45,7 @@ from ToolBOSCore.Packages                     import BSTPackage, ProjectProperti
 from ToolBOSCore.Packages.DebianPackage       import DebianPackage
 from ToolBOSCore.Packages.PackageFactory      import PackageFactory
 from ToolBOSCore.Storage                      import ProxyDir, SIT
-from ToolBOSCore.Util                         import Any
+from ToolBOSCore.Util                         import FastScript
 
 
 class DependenciesDialog( QWidget, object ):
@@ -55,7 +53,7 @@ class DependenciesDialog( QWidget, object ):
     def __init__( self, model ):
         super( DependenciesDialog, self ).__init__()
 
-        Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+        FastScript.requireIsInstance( model, QtPackageModel.BSTPackageModel )
 
         numColumns          = 4
 
@@ -191,9 +189,8 @@ class DependenciesDialog( QWidget, object ):
 
         # noinspection PyArgumentList
         screen       = QApplication.desktop().screenGeometry()
-
-        dialogWidth  = screen.width()  * 0.5
-        dialogHeight = screen.height() * 0.75
+        dialogWidth  = int( screen.width()  * 0.50 )
+        dialogHeight = int( screen.height() * 0.75 )
 
         self.setLayout( mainLayout )
         self.setWindowTitle( 'Dependencies of %s' % self._canonicalPath )
@@ -250,18 +247,18 @@ class DependenciesDialog( QWidget, object ):
 
 
     def _createTreeWidgetFromList( self, package, reverseMode ):
-        Any.requireMsg( Any.isInstance( package, BSTPackage.BSTPackage ) or \
-                        Any.isInstance( package, DebianPackage ),
+        FastScript.requireMsg( FastScript.isInstance( package, BSTPackage.BSTPackage ) or \
+                        FastScript.isInstance( package, DebianPackage ),
                         'unexpected datatype: %s' % type(package) )
-        Any.requireIsBool( reverseMode )
+        FastScript.requireIsBool( reverseMode )
 
-        Any.requireIsTextNonEmpty( package.url )
+        FastScript.requireIsTextNonEmpty( package.url )
         result = self._createCellWidget( package )
 
         treeData = package.revDepTree if reverseMode else package.depTree
 
         if treeData:
-            Any.requireIsList( treeData )
+            FastScript.requireIsList( treeData )
 
             for dep in treeData:
                 child = self._createTreeWidgetFromList( dep, reverseMode )
@@ -271,17 +268,17 @@ class DependenciesDialog( QWidget, object ):
 
 
     def _createTreeWidgetFromSet( self, package, reverseMode ):
-        Any.requireMsg( Any.isInstance( package, BSTPackage.BSTPackage ) or \
-                        Any.isInstance( package, DebianPackage ),
+        FastScript.requireMsg( FastScript.isInstance( package, BSTPackage.BSTPackage ) or \
+                        FastScript.isInstance( package, DebianPackage ),
                         'unexpected datatype: %s' % type(package) )
-        Any.requireIsBool( reverseMode )
+        FastScript.requireIsBool( reverseMode )
 
         treeData = list(package.revDepSet) if reverseMode else list(package.depSet)
-        Any.requireIsList( treeData )
+        FastScript.requireIsList( treeData )
 
         treeData.sort()
 
-        Any.requireIsTextNonEmpty( package.url )
+        FastScript.requireIsTextNonEmpty( package.url )
         result = self._createCellWidget( package )
 
         factory = PackageFactory()
@@ -295,11 +292,11 @@ class DependenciesDialog( QWidget, object ):
 
 
     def _createCellWidget( self, package ):
-        Any.requireMsg( Any.isInstance( package, BSTPackage.BSTPackage ) or \
-                        Any.isInstance( package, DebianPackage ),
+        FastScript.requireMsg( FastScript.isInstance( package, BSTPackage.BSTPackage ) or \
+                        FastScript.isInstance( package, DebianPackage ),
                         'unexpected datatype: %s' % type(package) )
 
-        Any.requireIsTextNonEmpty( package.url )
+        FastScript.requireIsTextNonEmpty( package.url )
 
         cell     = QTreeWidgetItem( [ package.url ] )
         inSystem = self._model.isInstalled_locally
@@ -327,8 +324,8 @@ class DependenciesDialog( QWidget, object ):
 
 
     def _setCellColorCode( self, child, column, status ):
-        Any.requireIsInstance( child, QTreeWidgetItem )
-        Any.requireIsInt( column )
+        FastScript.requireIsInstance( child, QTreeWidgetItem )
+        FastScript.requireIsInt( column )
 
         if status is None:
             color = self._grey

@@ -43,14 +43,13 @@ from ToolBOSCore.Packages                import PackageDetector
 from ToolBOSCore.Packages.PackageCreator import makeShellfiles
 from ToolBOSCore.Settings                import ToolBOSConf
 from ToolBOSCore.Util                    import FastScript
-from ToolBOSCore.Util                    import Any
 
 
 class TestMakeShellfiles( unittest.TestCase ):
 
     def setUp( self ):
         if not FastScript.getEnv( 'VERBOSE' ) == 'TRUE':
-            Any.setDebugLevel( 1 )
+            FastScript.setDebugLevel( 1 )
 
     def test_makeShellfiles( self ):
         detector       = PackageDetector.PackageDetector()
@@ -64,7 +63,7 @@ class TestMakeShellfiles( unittest.TestCase ):
         makeShellfiles( projectRoot )
 
         # check result
-        for fileName in ( 'pkgInfo.py', 'BashSrc', 'CmdSrc.bat' ):
+        for fileName in ( 'pkgInfo.py', 'BashSrc' ):
             expectedFile = fileNamePrefix + fileName
             resultFile   = os.path.join( installDir, fileName )
 

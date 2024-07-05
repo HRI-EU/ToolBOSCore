@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Build options such as verbosity or parallelization
@@ -39,7 +38,7 @@ from PyQt5.QtCore    import Qt
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui     import *
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 
 class BuildOptionsWidget( QGroupBox, object ):
@@ -48,7 +47,7 @@ class BuildOptionsWidget( QGroupBox, object ):
         super( QGroupBox, self ).__init__( 'options', parent )
 
         self._verboseOption   = QCheckBox( '&verbose' )
-        self._verboseOption.setChecked( Any.getDebugLevel() > 3 )
+        self._verboseOption.setChecked( FastScript.getDebugLevel() > 3 )
         self._verboseOption.setToolTip( 'show debug messages?' )
 
         self._parallelOption  = QCheckBox( 'parallel jobs:' )

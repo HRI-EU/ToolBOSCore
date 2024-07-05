@@ -36,14 +36,12 @@
 
 import logging
 import os
-import re
 import subprocess
 
 from ToolBOSCore.Packages        import ProjectProperties
 from ToolBOSCore.Platforms       import Platforms
 from ToolBOSCore.Storage         import CMakeLists
 from ToolBOSCore.Storage.PkgInfo import getPkgInfoContent
-from ToolBOSCore.Util            import Any
 from ToolBOSCore.Util            import FastScript
 
 
@@ -51,16 +49,6 @@ class PackageDetector( object ) :
     """
         Retrieves advanced properties of a package, such as used programming
         languages etc.
-
-        It is also quite common to call a package like "Python package",
-        "Matlab package" or "C++ shared library package". However, be aware
-        that we do verification of properties instead of falsification.
-
-        If a package contains mixed Python (.py) and Matlab (.m) files,
-        both checks isPythonPackage() and isMatlabPackage() will return True.
-
-        It can be only known to the context what to do with this info,
-        and which other properties to falsify to come to some conclusions.
 
         To avoid repetitive reads of the pkgInfo.py file, you may cache
         its values in a dict and provide it as parameter. This may improve
@@ -77,10 +65,10 @@ class PackageDetector( object ) :
         if not projectRoot:
             raise AssertionError( 'unknown project root location' )
 
-        Any.requireIsDir( projectRoot )
+        FastScript.requireIsDir( projectRoot )
 
         if pkgInfoContent is not None:
-            Any.requireIsDict( pkgInfoContent )
+            FastScript.requireIsDict( pkgInfoContent )
 
 
         # general meta-info
@@ -93,7 +81,7 @@ class PackageDetector( object ) :
         self.packageName       = None
         self.packageVersion    = None   # e.g. "2.0"
         self.packageVersionRaw = None   # e.g. "2.0-rc3" (corresponds to dir.name)
-        self.patchlevel        = None   # e.g. 42, may correspond to SVN rev.
+        self.patchlevel        = None   # e.g. 42
         self.topLevelDir       = None
         self.versionTokens     = None   # e.g. ( "2", "0", "123" )
 
@@ -106,7 +94,7 @@ class PackageDetector( object ) :
         self.recommendations   = []
         self.suggestions       = []
 
-        # values extracted from install/user{Install,Src}.php / pkgInfo.py
+        # general pkgInfo.py settings
         self.pkgInfoContent    = pkgInfoContent
         self.copyright         = None
         self.docFiles          = None
@@ -119,7 +107,6 @@ class PackageDetector( object ) :
         self.installGroup      = None
         self.installUmask      = None
         self.installMode       = 'incremental'
-        self.linkAllLibraries  = False
         self.pylintConf        = pylintConf
         self.usePatchlevels    = False
         self.userSrcContent    = None
@@ -136,24 +123,15 @@ class PackageDetector( object ) :
         self.sqOptOutFiles     = []
         self.sqCheckExe        = []
         self.sqComments        = {}
-        self.useClang          = None
 
         # revision control system
         self.gitBranch         = None
-        self.gitBranchForCIA   = None
         self.gitFound          = None
         self.gitCommitIdLong   = None
         self.gitCommitIdShort  = None
         self.gitOrigin         = None
-        self.gitOriginForCIA   = None
         self.gitRelPath        = None
         self.gitRepositoryRoot = None
-        self.svnFound          = None
-        self.svnRelPath        = None
-        self.svnRevision       = None
-        self.svnRepositoryURL  = None
-        self.svnRepositoryRoot = None
-        self.svnRevisionForCIA = None
         self.vcsBranch         = None
         self.vcsFound          = None
         self.vcsURL            = None
@@ -180,13 +158,13 @@ class PackageDetector( object ) :
         self.packageVersionRaw = ProjectProperties.getPackageVersion( self.topLevelDir, True )
         self.versionTokens     = ProjectProperties.splitVersion( self.packageVersionRaw )
 
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.packageName )
+        FastScript.requireIsTextNonEmpty( self.packageVersion )
 
 
         # compute typical directory names (may not be present!)
         hostPlatform           = Platforms.getHostPlatform()
-        Any.requireIsTextNonEmpty( hostPlatform )
+        FastScript.requireIsTextNonEmpty( hostPlatform )
 
         self.binDir            = os.path.join( self.topLevelDir, 'bin' )
         self.binDirArch        = os.path.join( self.topLevelDir, 'bin', hostPlatform )
@@ -229,14 +207,14 @@ class PackageDetector( object ) :
 
         self._retrieveCurrentUser()
 
-        # Any.requireIsTextNonEmpty( self.maintainerAccount ) # might be empty
-        # Any.requireIsTextNonEmpty( self.maintainerName )    # might be empty
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageVersion )
-        Any.requireIsTextNonEmpty( self.packageVersionRaw )
-        Any.requireIsTextNonEmpty( self.topLevelDir )
-        Any.requireIsTextNonEmpty( self.userAccount )
-        Any.requireIsTextNonEmpty( self.userName )
+        # FastScript.requireIsTextNonEmpty( self.maintainerAccount ) # might be empty
+        # FastScript.requireIsTextNonEmpty( self.maintainerName )    # might be empty
+        FastScript.requireIsTextNonEmpty( self.packageName )
+        FastScript.requireIsTextNonEmpty( self.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.packageVersionRaw )
+        FastScript.requireIsTextNonEmpty( self.topLevelDir )
+        FastScript.requireIsTextNonEmpty( self.userAccount )
+        FastScript.requireIsTextNonEmpty( self.userName )
 
 
     #------------------------------------------------------------------------
@@ -249,7 +227,7 @@ class PackageDetector( object ) :
             Returns 'True' if the package is an open source or commercial
             external software which has not been developed at HRI-EU.
         """
-        Any.requireIsTextNonEmpty( self.packageCategory )
+        FastScript.requireIsTextNonEmpty( self.packageCategory )
 
         if self.packageCategory == 'External' or self._exists( 'src/sources.tar.bz2' ):
             return True
@@ -272,7 +250,7 @@ class PackageDetector( object ) :
         """
         dirs = ( self.binDir, self.examplesDir, self.testDir )
 
-        if Any.isIterable( files ):
+        if FastScript.isIterable( files ):
 
             for filePath in files:
                 filePath = os.path.abspath( filePath )
@@ -312,23 +290,19 @@ class PackageDetector( object ) :
         return self._hasSourceFiles( '.cpp' )
 
 
-    def isMatlabPackage( self ):
-        return self._hasSourceFiles( '.m' )
-
-
     def isPythonPackage( self, files=None ):
         """
             Returns True if it finds any *.py file in the optionally provided
             filelist or anywhere within the package, excluding pkgInfo.py.
 
             The exception of pkgInfo.py is made in order that a package
-            containing C/C++ sources accompanied with a pkgInfo.py settings
+            containing C/C++ sources accompanied by a pkgInfo.py settings
             file isn't considered a Python module.
         """
         if files is None:
             files = FastScript.getFilesInDirRecursive( '.' )
 
-        Any.requireIsIterable( files )
+        FastScript.requireIsIterable( files )
 
         for filePath in files:
             fileName = os.path.basename( filePath )
@@ -344,108 +318,6 @@ class PackageDetector( object ) :
             package.
         """
         return self._search( self.topLevelDir, '__init__.py' )
-
-
-    def isOldBBCM( self ):
-        """
-            Returns True if package is a BBCM based upon template 2.5.
-        """
-        from glob import glob
-
-        if glob( 'src/*_onFatalError.inc' ):
-            return True
-        else:
-            return False
-
-
-    def isNewBBCM( self ):
-        """
-            Returns True if package is a BBCM based upon template 2.7
-            (or higher).
-        """
-        from glob import glob
-
-        if glob( 'src/*_info.c' ) or glob( 'src/*_info.cpp' ):
-            return True
-        else:
-            return False
-
-
-    def isBBCM( self ):
-        """
-            Returns True if package is a regular BBCM, but not a
-            Virtual Module.
-        """
-        return self.isOldBBCM() or self.isNewBBCM()
-
-
-    def isBBDM( self ):
-        """
-            Returns True if package is a BBDM component.
-
-            The specific "BBDMAll" collector-package is explicitly
-            blacklisted because is not a real component by itself.
-        """
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageCategory )
-
-        isBBDMAll      = self.packageName == 'BBDMAll'
-        isBBDMName     = self.packageName.startswith( 'BBDM' )
-        isBBDMCategory = self.packageCategory == 'Modules/BBDM'
-        result         = ( not isBBDMAll ) & isBBDMName & isBBDMCategory
-
-        return result
-
-
-    def isComponent( self ):
-        """
-            Returns True if package is installed under "Modules" category,
-            but is not a library containing the implementation of a module.
-
-            The specific "BBDMAll" collector-package is explicitly
-            blacklisted because is not a real component by itself.
-        """
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageCategory )
-
-        isBBDMAll        = self.packageName == 'BBDMAll'
-        isModuleCategory = self.packageCategory.startswith( 'Modules/BB' ) or \
-                           self.packageCategory.startswith( 'Modules/ROS' ) or \
-                           self.packageCategory.startswith( 'Modules/RTMaps' )
-        result           = ( not isBBDMAll ) & isModuleCategory
-
-        return result
-
-
-    def isROSComponent( self ):
-        """
-            Returns True if the install category is 'Modules/ROS'.
-        """
-        return self.packageCategory == 'Modules/ROS'
-
-
-    def isVirtualModule( self ):
-        """
-            Returns True if the following files exist:
-              * src/<packageName.[xml,bbml]
-              * src/I<packageName.[xml,bbml]
-        """
-        return ( os.path.exists( 'src/%s.xml' % self.packageName ) and
-                 os.path.exists( 'src/I%s.xml' % self.packageName ) ) or (
-                     os.path.exists( 'src/%s.bbml' % self.packageName ) and
-                     os.path.exists( 'src/I%s.bbml' % self.packageName ) )
-
-
-    def isRTMapsPackage( self ):
-        """
-            Returns True if the package is intended for usage within the
-            RTMaps framework of Intempora, f.i. if the following file exists:
-               * src/maps_*.cpp
-        """
-        expr  = re.compile( r'^maps_.*\.cpp' )
-        found = FastScript.findFiles( 'src', regexp=expr )
-
-        return bool( found )            # True if at least one file found
 
 
     #------------------------------------------------------------------------
@@ -484,29 +356,12 @@ class PackageDetector( object ) :
             self.vcsURL      = self.gitOrigin
             self.vcsRoot     = self.gitOrigin
 
-            Any.requireIsTextNonEmpty( self.vcsURL )
-            Any.requireIsTextNonEmpty( self.vcsRevision )
-            Any.isOptional( self.vcsRelPath )
-
-        elif self.svnRepositoryURL and self.svnRevision:
-            self.vcsURL      = self.svnRepositoryURL
-            self.vcsRevision = self.svnRevision
-            self.vcsRelPath  = self.svnRelPath
-            self.vcsRoot     = self.svnRepositoryRoot
-
-            # svnRelPath is not present in pkgInfo.py but solely computed
-            # from the svnRepositoryURL and svnRepositoryRoot
-            self.svnRelPath  = os.path.relpath( self.svnRepositoryURL,
-                                                self.svnRepositoryRoot )
-            self.vcsRelPath  = self.svnRelPath
-
-            Any.requireIsTextNonEmpty( self.vcsURL )
-            Any.requireIsTextNonEmpty( self.vcsRoot )
-            Any.requireIsIntNotZero( self.vcsRevision )
-            Any.isOptional( self.vcsRelPath )
+            FastScript.requireIsTextNonEmpty( self.vcsURL )
+            FastScript.requireIsTextNonEmpty( self.vcsRevision )
+            FastScript.isOptional( self.vcsRelPath )
 
         if not self.vcsURL:
-            logging.debug( 'neither SVN nor Git repository information found' )
+            logging.debug( 'no Git repository information found' )
 
         self.isDeprecated = ProjectProperties.isDeprecated( self.canonicalPath )
 
@@ -514,7 +369,7 @@ class PackageDetector( object ) :
     def retrieveVCSInfo( self ):
         """
             Helper function which retrieves all relevant information from
-            underlying revision control system (Subversion or Git).
+            underlying revision control system (Git).
 
             This function needs to be called before accessing the
             corresponding member fields.
@@ -526,20 +381,8 @@ class PackageDetector( object ) :
             self.vcsRevision = self.gitCommitIdLong
             self.vcsURL      = self.gitOrigin
 
-        else:
-            try:
-                self._retrieveSVNInfo()
-            except AttributeError:
-                msg = 'unable to parse SVN output, please check if "svn info" works'
-                logging.debug( msg )
-
-            if self.svnFound:
-                self.vcsFound    = True
-                self.vcsRevision = self.svnRevision
-                self.vcsURL      = self.svnRepositoryURL
-
         if not self.vcsURL:
-            logging.debug( 'neither SVN nor Git repository information found' )
+            logging.debug( 'no Git repository information found' )
 
 
     #------------------------------------------------------------------------
@@ -572,9 +415,9 @@ class PackageDetector( object ) :
         """
             replace placeholders in pkgInfo.py strings
         """
-        Any.requireIsTextNonEmpty( self.packageCategory )
-        Any.requireIsTextNonEmpty( self.packageName )
-        Any.requireIsTextNonEmpty( self.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.packageCategory )
+        FastScript.requireIsTextNonEmpty( self.packageName )
+        FastScript.requireIsTextNonEmpty( self.packageVersion )
 
         installRoot = '${SIT}/%s/%s/%s' % ( self.packageCategory,
                                             self.packageName,
@@ -640,7 +483,6 @@ class PackageDetector( object ) :
 
         # supposed to be used:
         self.userSrcAlias      = getValue( 'aliases',          self.userSrcAlias )
-        self.useClang          = getValue( 'BST_useClang',     self.useClang )
         self.buildCommand      = getValue( 'buildCommand',     'BST.py -sb' )
         self.buildDependencies = getValue( 'buildDepends',     self.buildDependencies )
         self.buildDependsArch  = getValue( 'buildDependsArch', self.buildDependsArch )
@@ -650,12 +492,9 @@ class PackageDetector( object ) :
         self.dependsArch       = getValue( 'dependsArch',      self.dependsArch )
         self.userSrcEnv        = getValue( 'envVars',          self.userSrcEnv )
         self.userSrcBashCode   = getValue( 'bashCode',         self.userSrcBashCode )
-        self.userSrcCmdCode    = getValue( 'cmdCode',          self.userSrcCmdCode )
         self.gitBranch         = getValue( 'gitBranch',        self.gitBranch )
-        self.gitBranchForCIA   = getValue( 'gitBranchForCIA',  self.gitBranchForCIA )
         self.gitCommitIdLong   = getValue( 'gitCommitID',      self.gitCommitIdLong )
         self.gitOrigin         = getValue( 'gitOrigin',        self.gitOrigin )
-        self.gitOriginForCIA   = getValue( 'gitOriginForCIA',  self.gitOriginForCIA )
         self.gitRelPath        = getValue( 'gitRelPath',       self.gitRelPath )
         self.docFiles          = getValue( 'docFiles',         self.docFiles )
         self.docTool           = getValue( 'docTool',          self.docTool )
@@ -679,15 +518,10 @@ class PackageDetector( object ) :
         self.installMode       = getValue( 'installMode',      self.installMode  )
         self.installSymlinks   = getValue( 'installSymlinks',  self.installSymlinks )
         self.installUmask      = getValue( 'installUmask',     self.installUmask )
-        self.linkAllLibraries  = getValue( 'linkAllLibraries', self.linkAllLibraries )
         self.packageName       = getValue( 'name',             self.packageName )
         self.patchlevel        = getValue( 'patchlevel',       self.patchlevel )
         self.pylintConf        = getValue( 'pylintConf',       self.pylintConf )
         self.recommendations   = getValue( 'recommends',       self.recommendations )
-        self.svnRepositoryRoot = getValue( 'repositoryRoot',   self.svnRepositoryRoot )
-        self.svnRepositoryURL  = getValue( 'repositoryUrl',    self.svnRepositoryURL )
-        self.svnRevision       = getValue( 'revision',         self.svnRevision )
-        self.svnRevisionForCIA = getValue( 'revisionForCIA',   self.svnRevisionForCIA )
         self.scripts           = getValue( 'scripts',          self.scripts )
         self.sqComments        = getValue( 'sqComments',       self.sqComments )
         self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )
@@ -717,7 +551,7 @@ class PackageDetector( object ) :
         if self.gitCommitIdLong:
             self.gitCommitIdShort = self.gitCommitIdLong[0:7]
 
-        Any.requireIsIn( self.installMode, ( 'clean', 'incremental' ),
+        FastScript.requireIsIn( self.installMode, ( 'clean', 'incremental' ),
                          'invalid value of "installMode" in pkgInfo.py' )
 
 
@@ -746,7 +580,7 @@ class PackageDetector( object ) :
             self.maintainerName    = data[1]
 
         else:
-            Any.requireIsTextNonEmpty( data )
+            FastScript.requireIsTextNonEmpty( data )
             self.maintainerAccount = data
             self.maintainerName    = data
 
@@ -778,28 +612,6 @@ class PackageDetector( object ) :
         except ValueError as details:  # e.g. has no 'origin'
             logging.warning( details )
             self.gitFound = False
-
-
-    def _retrieveSVNInfo( self ):
-        from ToolBOSCore.Tools import SVN
-
-        try:
-            wc = SVN.WorkingCopy()
-
-            self.svnRevision       = wc.getRevision()
-            self.svnRepositoryURL  = wc.getRepositoryURL()
-            self.svnRepositoryRoot = wc.getRepositoryRoot()
-            self.svnRelPath        = os.path.relpath( self.svnRepositoryURL,
-                                                      self.svnRepositoryRoot )
-            self.svnFound          = True
-
-        except ( subprocess.CalledProcessError, OSError ):
-            logging.debug( 'this is not an SVN working copy' )
-
-            self.svnRevision       = -1
-            self.svnRepositoryURL  = ''
-            self.svnRepositoryRoot = ''
-            self.svnFound          = False
 
 
     def _getInheritedProjects( self ):

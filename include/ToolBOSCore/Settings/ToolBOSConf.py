@@ -37,17 +37,16 @@
 import logging
 import os
 
-from ToolBOSCore.Util import Any, FastScript
 from ToolBOSCore.Settings import AppConfig
+from ToolBOSCore.Util     import FastScript
 
 
 # global singleton for easy use
 _cache = None
 
 packageName    = 'ToolBOSCore'
-packageVersion = '4.3'
-canonicalPath  = 'DevelopmentTools/ToolBOSCore/4.3'
-
+packageVersion = '5.0'
+canonicalPath  = 'DevelopmentTools/ToolBOSCore/5.0'
 settingsFile   = 'ToolBOS.conf'
 
 
@@ -61,22 +60,12 @@ class ToolBOSConf( AppConfig.AppConfig ):
         userDir    = os.path.join( os.path.expanduser( '~' ), '.HRI', appName )
         addFiles   = []
 
-
         # integrate settings from other ToolBOS and user specified packages, if present
 
-        mwRoot           = FastScript.getEnv( 'TOOLBOSMIDDLEWARE_ROOT' )
         toolBOSConfPaths = FastScript.getEnv( 'TOOLBOSCONF_PATH' )
 
-        if mwRoot:
-            Any.requireIsDirNonEmpty( mwRoot )
-            mwFile = os.path.join( mwRoot, 'etc', 'ToolBOS-Middleware.conf' )
-
-            if os.path.exists( mwFile ):
-                logging.debug( 'found ToolBOS Middleware in %s', mwRoot )
-                addFiles.append( mwFile )
-
         if toolBOSConfPaths:
-            Any.requireIsText( toolBOSConfPaths )
+            FastScript.requireIsText( toolBOSConfPaths )
             toolBOSConfDirs = toolBOSConfPaths.split( ':' )
 
             for path in toolBOSConfDirs:
@@ -109,8 +98,8 @@ def getGlobalToolBOSConf():
 def getConfigOption( name ):
     cache = getGlobalToolBOSConf()
 
-    Any.requireIsTextNonEmpty( name )
-    Any.requireIsInstance( cache, ToolBOSConf )
+    FastScript.requireIsTextNonEmpty( name )
+    FastScript.requireIsInstance( cache, ToolBOSConf )
 
     return cache.getConfigOption( name )
 

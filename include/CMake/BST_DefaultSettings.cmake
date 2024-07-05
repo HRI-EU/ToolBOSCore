@@ -60,57 +60,8 @@ set(BST_BUILD_SHARED_LIBRARIES TRUE)
 
 
 if(UNIX AND "${CMAKE_CROSSCOMPILING}" STREQUAL "FALSE")
-
-    set(ICECC_ROOT /usr/lib/icecc/bin)
-
-
-    if("$ENV{BST_USE_CLANG}" STREQUAL "TRUE")
-
-        set(CMAKE_C_COMPILER              clang)
-        set(CMAKE_CXX_COMPILER            clang++)
-        set(BST_USE_CLANG                 TRUE)
-        set(BST_USE_ICECC                 FALSE)
-        set(BST_USE_GCC                   FALSE)
-
-        message( "Clang/LLVM enabled:     yes" )
-        message( "IceCC enabled:          no" )
-
-    elseif(NOT "$ENV{BST_USE_ICECC}" STREQUAL "FALSE")
-
-        if(EXISTS "${ICECC_ROOT}")
-
-            set(CMAKE_C_COMPILER              ${ICECC_ROOT}/gcc)
-            set(CMAKE_CXX_COMPILER            ${ICECC_ROOT}/g++)
-            set(BST_USE_CLANG                 FALSE)
-            set(BST_USE_ICECC                 TRUE)
-            set(BST_USE_GCC                   TRUE)
-
-            message( "Clang/LLVM enabled:     no" )
-            message( "IceCC enabled:          yes" )
-
-        else()
-
-            set(BST_USE_CLANG                 FALSE)
-            set(BST_USE_ICECC                 FALSE)
-            set(BST_USE_GCC                   TRUE)
-
-            message( "Clang/LLVM enabled:     no" )
-            message( "IceCC enabled:          no (not installed)" )
-
-        endif()
-
-    else()
-        set(CMAKE_C_COMPILER              gcc)
-        set(CMAKE_CXX_COMPILER            g++)
-        set(BST_USE_CLANG                 FALSE)
-        set(BST_USE_ICECC                 FALSE)
-        set(BST_USE_GCC                   TRUE)
-
-        message( "Clang/LLVM enabled:     no" )
-        message( "IceCC enabled:          no" )
-
-    endif()
-
+    set(CMAKE_C_COMPILER              gcc)
+    set(CMAKE_CXX_COMPILER            g++)
 endif()
 
 
@@ -125,13 +76,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #----------------------------------------------------------------------------
 
 
-if(BST_USE_CLANG)
-    set(BST_DEFAULT_FLAGS_LINUX "-ggdb -Wall -Wextra -pedantic -fPIC -Wno-long-long -Wno-variadic-macros -Wfloat-equal")
-else()
-    set(BST_DEFAULT_FLAGS_LINUX "-ggdb -Wall -Wextra -pedantic -fPIC -rdynamic -Wno-long-long -Wno-variadic-macros -Wfloat-equal")
-endif()
-
-
+set(BST_DEFAULT_FLAGS_LINUX "-ggdb -Wall -Wextra -pedantic -fPIC -rdynamic -Wno-long-long -Wno-variadic-macros -Wfloat-equal")
 set(BST_DEFAULT_FLAGS_WINDOWS "/GF /MD /GS- /Gd /Gy /Oi")
 
 
@@ -139,8 +84,7 @@ if("$ENV{MAKEFILE_PLATFORM}" STREQUAL "")
 
     message(FATAL_ERROR "Please set the MAKEFILE_PLATFORM environment variable.")
 
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal64"  OR
+elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal64"  OR
        "$ENV{MAKEFILE_PLATFORM}" STREQUAL "jammy64")
 
     set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -m64 -std=c99")
@@ -148,36 +92,7 @@ elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic64" OR
     set(BST_DEFAULT_DEFINES     "-D__64BIT__ -D__linux__")
     add_definitions(${BST_DEFAULT_DEFINES})
 
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "bionic32armv7" OR
-       "$ENV{MAKEFILE_PLATFORM}" STREQUAL "focal32armv7")
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -march=armv7-a -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -march=armv7-a")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__linux__ -D__arm__ -D__armv7__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "peakcan")
-
-    set(PEAKCAN_RUN_MODE "ROM_RUN")
-    set(PEAKCAN_MCU "arm7tdmi-s")
-    set(PEAKCAN_SUBMDL "Flash")
-    set(PEAKCAN_FORMAT "ihex")
-
-    set(PEAKCAN_DEFAULT_CFLAGS "-O2 -Wall -Wcast-align -Wcast-qual -Wimplicit -Wpointer-arith -Wswitch -Wredundant-decls -Wreturn-type -Wshadow -Wunused -Wno-long-long -Wno-variadic-macros -Wfloat-equal -Wstrict-prototypes -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -gdwarf-2 -mcpu=${PEAKCAN_MCU}")
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${PEAKCAN_DEFAULT_CFLAGS} -std=c99")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${PEAKCAN_DEFAULT_CFLAGS}")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__peakcan__ -D__arm__ -D__armv7tdmi__")
-    set(CMAKE_EXE_LINKER_FLAGS  "-nostartfiles -lc -lgcc -T$ENV{TOOLBOSCORE_ROOT}/include/CMake/Platform/Peakcan_${PEAKCAN_SUBMDL}.ld")
-    add_definitions(${BST_DEFAULT_DEFINES} "-D${PEAKCAN_RUN_MODE}")
-
-elseif("$ENV{MAKEFILE_PLATFORM}" STREQUAL "phyboardwega")
-
-    set(CMAKE_C_FLAGS           "${CMAKE_C_FLAGS} ${BST_DEFAULT_FLAGS_LINUX} -std=c99 -mfpu=neon -mfloat-abi=hard")
-    set(CMAKE_CXX_FLAGS         "${CMAKE_CXX_FLAGS} ${BST_DEFAULT_FLAGS_LINUX}")
-    set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__linux__ -D__arm__")
-    add_definitions(${BST_DEFAULT_DEFINES})
-
-elseif(WIN32) # AND CMAKE_CL_64 EQUAL 0)
+elseif(WIN32)
 
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG     "/DEBUG /NODEFAULTLIB:MSVCRT")
     set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "/DEBUG")
@@ -192,7 +107,7 @@ elseif(WIN32) # AND CMAKE_CL_64 EQUAL 0)
     set(BST_DEFAULT_DEFINES     "-D__32BIT__ -D__win32__ -D__windows__ -D__MSVC__ -D__msvc__ -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE")
     add_definitions(${BST_DEFAULT_DEFINES})
 
-elseif(WIN64) # AND CMAKE_CL_64)
+elseif(WIN64)
 
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG     "/DEBUG /NODEFAULTLIB:MSVCRT")
     set(CMAKE_MODULE_LINKER_FLAGS_DEBUG "/DEBUG")

@@ -57,12 +57,11 @@ sqLevels          = { 'cleanLab': 'clean-lab standard (essentials only)',
 
 sqLevelDefault    = 'basic'
 
-sectionKeys       = [ 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE', 'SPEC', 'BASH' ]
+sectionKeys       = [ 'GEN', 'C', 'PY', 'DOC', 'SAFE', 'SPEC', 'BASH' ]
 
 sectionNames      = { 'GEN' : 'General',
                       'C'   : 'C and C++',
                       'PY'  : 'Python',
-                      'MAT' : 'Matlab',
                       'DOC' : 'Documentation',
                       'SAFE': 'Safety-critical applications',
                       'SPEC': 'Specific requirements',
@@ -71,7 +70,6 @@ sectionNames      = { 'GEN' : 'General',
 sectionObjectives = { 'GEN' : 'Maintainability, compatibility',
                       'C'   : 'Maintainability, compatibility',
                       'PY'  : 'Maintainability, compatibility',
-                      'MAT' : 'Maintainability',
                       'DOC' : 'User experience',
                       'SAFE': 'Safety',
                       'SPEC': 'Safety, portability',

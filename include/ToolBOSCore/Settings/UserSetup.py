@@ -41,10 +41,8 @@ import shutil
 import subprocess
 
 from ToolBOSCore.Packages import ProjectProperties
-from ToolBOSCore.Settings import ProcessEnv
-from ToolBOSCore.Settings import ToolBOSConf
+from ToolBOSCore.Settings import ProcessEnv, ToolBOSConf
 from ToolBOSCore.Util     import FastScript
-from ToolBOSCore.Util     import Any
 
 
 def silentUpgrade():
@@ -54,11 +52,8 @@ def silentUpgrade():
     """
     dirName = os.path.expandvars( '${HOME}/.HRI' )
 
-
     # clean-up no longer needed files / directories
-    FastScript.remove( os.path.join( dirName, 'DTBOS' ) )
     FastScript.remove( os.path.join( dirName, 'ToolBOSCore' ) )
-
 
     # move settings file to new location
     oldFile = os.path.join( dirName, 'LocalSettings.py' )
@@ -92,40 +87,6 @@ fi
     FastScript.setFileContent( fileName, content )
 
 
-def setupProxy( sitRootPath=None, sitProxyPath=None ):
-    """
-        Convenience-wrapper to create a default proxy directory.
-
-        WARNING: If a proxy already exists, it will be DELETED !
-
-        You may specify the absolute paths for the SIT root- and/or
-        proxy directories. If omitted, typical defaults will be used.
-    """
-    from ToolBOSCore.Storage import ProxyDir
-    from ToolBOSCore.Storage import SIT
-
-    if not sitRootPath:
-        sitRootPath  = SIT.getDefaultRootPath()
-
-    if not sitProxyPath:
-        sitProxyPath = SIT.getDefaultProxyPath()
-
-    Any.requireIsTextNonEmpty( sitRootPath )
-    Any.requireIsTextNonEmpty( sitProxyPath )
-    Any.requireIsDir( sitRootPath )
-
-
-    # delete existing proxy if it exists, it might be screwed up
-    if os.path.exists( sitProxyPath ):
-        logging.info( 'cleaning existing proxy in %s', sitProxyPath )
-        FastScript.remove( sitProxyPath )
-
-    logging.info( 'creating proxy directory... (this may take some time)' )
-    logging.info( 'SIT Root:  %s', sitRootPath )
-    logging.info( 'SIT Proxy: %s', sitProxyPath )
-    ProxyDir.createProxyDir( sitRootPath, sitProxyPath, verbose=False )
-
-
 def getWineConfigDir( postfix='' ):
     configDir = FastScript.getEnv( 'WINEPREFIX' )
 
@@ -137,11 +98,6 @@ def getWineConfigDir( postfix='' ):
 def baseSetupWine( configDir, msvc, stdout, stderr, postfix ):
     if not configDir:
         configDir = getWineConfigDir( postfix )
-
-    # safety check: exit if we are within CIA and configdir points to
-    # home directories!
-    if FastScript.getEnv( 'CIA' ) == 'TRUE' and configDir.startswith( '/home' ):
-        raise SystemExit( 'SAFETY GUARD: Do not touch home directory within CIA!' )
 
     sourceWindowsBSP( msvc )
     ProcessEnv.requireCommand( 'winecfg' )
@@ -186,7 +142,7 @@ def setupLegacyMSVC( configDir ):
 
     for item in ( 'Program Files', 'windows' ):
         path = os.path.join( configDir, 'drive_c', item )
-        Any.requireIsDir( path )
+        FastScript.requireIsDir( path )
         FastScript.remove( path )
 
         target = os.path.join( handmadeDir, 'drive_c', item )
@@ -195,7 +151,7 @@ def setupLegacyMSVC( configDir ):
 
     # copy all the handmade *.reg files
     regFiles = glob.glob( "%s/*.reg" % handmadeDir )
-    Any.requireIsListNonEmpty( regFiles )
+    FastScript.requireIsListNonEmpty( regFiles )
 
     for srcFilePath in regFiles:
         fileName    = os.path.basename( srcFilePath )
@@ -203,7 +159,7 @@ def setupLegacyMSVC( configDir ):
 
         logging.debug( 'cp %s %s', srcFilePath, dstFilePath )
         shutil.copyfile( srcFilePath, dstFilePath )
-        Any.requireIsFileNonEmpty( dstFilePath )
+        FastScript.requireIsFileNonEmpty( dstFilePath )
 
         # replace occurrences of 'roberto' by username
         oldContent = FastScript.getFileContent( dstFilePath )
@@ -230,7 +186,7 @@ def setupWineDotNet( configDir=None, stdout=None, stderr=None, postfix='', msvc=
 
 
 def setupMSVC( configDir, sdk ):
-    Any.requireMsg( sdk in ( 2008, 2010, 2012, 2017 ),
+    FastScript.requireMsg( sdk in ( 2008, 2010, 2012, 2017 ),
                     'SDK version must be "2008", "2010", "2012" or "2017" (not "%s")' % sdk )
 
     logging.debug( 'SDK=%s', sdk )
@@ -261,7 +217,7 @@ def setupMSVC2017( configDir ):
     if not os.path.exists( os.path.join( configDir, 'user.reg' ) ):
         setupWineDotNet( configDir, msvc=2017 )
 
-    Any.requireIsDir( configDir )
+    FastScript.requireIsDir( configDir )
 
     logging.info( 'Setting up Visual Studio...' )
 
@@ -299,7 +255,7 @@ def setupMSVC2012( configDir ):
     if not os.path.exists( os.path.join( configDir, 'user.reg' ) ):
         setupWineDotNet( configDir )
 
-    Any.requireIsDir( configDir )
+    FastScript.requireIsDir( configDir )
 
     if not os.path.exists( os.path.join( configDir, 'dosdevices' ) ):
         setupWineDotNet( configDir )
@@ -351,7 +307,7 @@ def setupMSVC2012( configDir ):
     # force wine to use the MSVC native library
     userReg = os.path.join( configDir, 'user.reg' )
 
-    Any.requireIsFileNonEmpty( userReg )
+    FastScript.requireIsFileNonEmpty( userReg )
     content = FastScript.getFileContent( userReg )
 
     if content.find( '1413877490' ) == -1:
@@ -373,7 +329,7 @@ def sourceWindowsBSP(msvc):
         will be found in PATH etc.
     """
     allBSPs       = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
-    Any.requireIsDictNonEmpty( allBSPs )
+    FastScript.requireIsDictNonEmpty( allBSPs )
 
     if msvc in (2010, 2012):
         canonicalPath = allBSPs[ 'windows-amd64-vs2012' ]
@@ -411,7 +367,7 @@ def ensureMSVCSetup( sdk, postfix='' ):
 
         # sometimes it happens that the registry gets screwed up
         userReg = os.path.join( configDir, 'user.reg' )
-        Any.requireIsFileNonEmpty( userReg )
+        FastScript.requireIsFileNonEmpty( userReg )
         content = FastScript.getFileContent( userReg )
 
         if content.find( '1413877490' ) == -1:

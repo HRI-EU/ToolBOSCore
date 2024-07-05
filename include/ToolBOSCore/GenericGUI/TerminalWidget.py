@@ -42,7 +42,7 @@ from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.GenericGUI import IconProvider, ProcessExecutor, UnicodeSupport
-from ToolBOSCore.Util       import Any
+from ToolBOSCore.Util       import FastScript
 
 
 lightBlue   = QColor( 210, 230, 255 )
@@ -70,13 +70,13 @@ class TerminalWidget( QWidget, object ):
                   exitFailureColor=lightRed, warningHighlightColor=lightOrange,
                   errorHighlightColor=solidRed, parent=None ):
 
-        Any.requireIsBool( readonly )
-        Any.requireIsInstance( inactiveColor,         QColor )
-        Any.requireIsInstance( runColor,              QColor )
-        Any.requireIsInstance( exitSuccessColor,      QColor )
-        Any.requireIsInstance( exitFailureColor,      QColor )
-        Any.requireIsInstance( warningHighlightColor, QColor )
-        Any.requireIsInstance( errorHighlightColor,   QColor )
+        FastScript.requireIsBool( readonly )
+        FastScript.requireIsInstance( inactiveColor,         QColor )
+        FastScript.requireIsInstance( runColor,              QColor )
+        FastScript.requireIsInstance( exitSuccessColor,      QColor )
+        FastScript.requireIsInstance( exitFailureColor,      QColor )
+        FastScript.requireIsInstance( warningHighlightColor, QColor )
+        FastScript.requireIsInstance( errorHighlightColor,   QColor )
 
         super( QWidget, self ).__init__()
 
@@ -202,7 +202,7 @@ class TerminalWidget( QWidget, object ):
 
 
     def searchBarVisibility( self, state ):
-        Any.requireIsBool( state )
+        FastScript.requireIsBool( state )
         self.footerWidget.setHidden( not state )
 
 
@@ -249,7 +249,7 @@ class TerminalWidget( QWidget, object ):
 
 
     def setColor( self, color ):
-        Any.requireIsInstance( color, QColor )
+        FastScript.requireIsInstance( color, QColor )
 
         self.textField.setColor( color )
 
@@ -261,7 +261,7 @@ class TerminalWidget( QWidget, object ):
 
             You may specify an alternative 'showCommand'.
         """
-        Any.requireIsTextNonEmpty( command )
+        FastScript.requireIsTextNonEmpty( command )
 
         self.command = command
 
@@ -309,13 +309,13 @@ class TerminalWidget( QWidget, object ):
 
 
     def setHaveTerminateAll( self, status ):
-        Any.requireIsBool( status )
+        FastScript.requireIsBool( status )
 
         self.textField.setHaveTerminateAll( status )
 
 
     def setHostname( self, hostname ):
-        Any.requireIsTextNonEmpty( hostname )
+        FastScript.requireIsTextNonEmpty( hostname )
 
         self.hostname = hostname
         logging.debug( "changed hostname to '%s'", self.hostname )
@@ -371,19 +371,19 @@ class TerminalWidget( QWidget, object ):
             Use None to disable output filtering (= display original output).
         """
         if func is not None:
-            Any.requireIsCallable( func )
+            FastScript.requireIsCallable( func )
 
         self._outputFilter = func
 
 
     def setTerminateAll( self, status ):
-        Any.requireIsBool( status )
+        FastScript.requireIsBool( status )
 
         self._haveTerminateAll = status
 
 
     def setToolTip( self, toolTipText ):
-        Any.requireIsTextNonEmpty( toolTipText )
+        FastScript.requireIsTextNonEmpty( toolTipText )
 
         self.textField.setToolTip( toolTipText )
 
@@ -393,7 +393,7 @@ class TerminalWidget( QWidget, object ):
             Use SSH's X11 forwarding when executing commands on remote
             hosts?
         """
-        Any.requireIsBool( withX11 )
+        FastScript.requireIsBool( withX11 )
 
         self.withX11Tunnel = withX11
 
@@ -643,8 +643,8 @@ class TerminalWidget( QWidget, object ):
         def __init__( self, warningColor=lightOrange,
                       errorColor=solidRed, parent=None ):
 
-            Any.requireIsInstance( warningColor, QColor )
-            Any.requireIsInstance( errorColor, QColor )
+            FastScript.requireIsInstance( warningColor, QColor )
+            FastScript.requireIsInstance( errorColor, QColor )
 
             super( QTextEdit, self ).__init__( parent )
 
@@ -700,7 +700,7 @@ class TerminalWidget( QWidget, object ):
 
 
         def setColor( self, color ):
-            Any.requireIsInstance( color, QColor )
+            FastScript.requireIsInstance( color, QColor )
 
             palette = self.palette()
             palette.setColor( QPalette.Base, color )
@@ -709,13 +709,13 @@ class TerminalWidget( QWidget, object ):
 
 
         def setHaveTerminateAll( self, status ):
-            Any.requireIsBool( status )
+            FastScript.requireIsBool( status )
 
             self._haveTerminateAllAction = status
 
 
         def setStandalone( self, boolean ):
-            Any.requireIsBool( boolean )
+            FastScript.requireIsBool( boolean )
             self._standalone = boolean
 
 
@@ -770,10 +770,10 @@ class TerminalWidget( QWidget, object ):
                 cursor.setPosition( begin, QTextCursor.MoveAnchor )
                 cursor.setPosition( end, QTextCursor.KeepAnchor )
 
-                Any.requireIsInstance( highlightChar, QTextCharFormat )
+                FastScript.requireIsInstance( highlightChar, QTextCharFormat )
                 cursor.setCharFormat( highlightChar )
 
-                Any.requireIsInstance( highlightBlock, QTextBlockFormat )
+                FastScript.requireIsInstance( highlightBlock, QTextBlockFormat )
                 cursor.setBlockFormat( highlightBlock )
 
                 self._cursorToEnd()
@@ -807,7 +807,7 @@ class TerminalWidget( QWidget, object ):
 
 
         def findAndHighlightAll( self, text ):
-            Any.requireIsText( text )
+            FastScript.requireIsText( text )
 
             # Disable the highlighting
             self._searchHighlighter.setDocument( None )
@@ -1004,7 +1004,7 @@ class MultiTermWidget( QGroupBox, object ):
         return self._terminals
 
     def setHaveTerminateAll( self, status ):
-        Any.requireIsBool( status )
+        FastScript.requireIsBool( status )
 
         for terminal in self._terminals:
             terminal.setHaveTerminateAll( status )
@@ -1022,7 +1022,7 @@ class MultiTermWidget( QGroupBox, object ):
             Use None to disable output filtering (= display original output).
         """
         if func is not None:
-            Any.requireIsCallable( func )
+            FastScript.requireIsCallable( func )
 
         for terminal in self._terminals:
             terminal.setOutputFilter( func )

@@ -1,0 +1,26 @@
+usage: UpdateProxyDir.py [-h] [-b] [-c] [-d] [-e] [-f] [-n] [-r] [-s] [-u]
+                         [-v] [-V]
+
+Update your Software Installation Tree (SIT) sandbox and ToolBOS
+settings (if necessary).
+
+options:
+  -h, --help         show this help message and exit
+  -b, --keep-broken  do not remove broken symlinks
+  -c, --no-check     ignore symlinks not pointing into global SIT
+  -d, --dry-run      do not actually do anything
+  -e, --keep-empty   ignore empty categories and leftovers from packages
+  -f, --find         find proxy installations
+  -n, --no-new       do not add links to new packages
+  -r, --remove       remove proxy-installations + link into global SIT
+  -s, --skip         skip clean-up of unused files in ~/.HRI
+  -u, --no-upgrade   do not upgrade patchlevel-version symlinks
+  -v, --verbose      show debug messages
+  -V, --version      show version info and exit
+
+examples:
+  UpdateProxyDir.py
+  UpdateProxyDir.py --no-check --verbose
+  UpdateProxyDir.py -r                          # ATTENTION!
+
+Please report bugs on GitLab (https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues).

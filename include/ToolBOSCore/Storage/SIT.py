@@ -37,10 +37,8 @@
 import logging
 import os
 import re
-import shutil
 
 from ToolBOSCore.Util import FastScript
-from ToolBOSCore.Util import Any
 
 parentLink = 'parentTree'
 
@@ -53,261 +51,11 @@ def getDefaultRootBaseDir():
     return '/hri/sit'
 
 
-def getDefaultLTSPath():
-    """
-        Default location of the Long-term stable/supported SIT part.
-    """
-    return os.path.join( getDefaultRootBaseDir(), 'LTS' )
-
-
 def getDefaultProxyBaseDir():
     """
         Default location where all the Proxy-SIT's are located.
     """
     return os.path.expanduser( '~/.HRI/sit' )
-
-
-#----------------------------------------------------------------------------
-# Bootstrapping a new software installation tree
-#----------------------------------------------------------------------------
-
-
-def getMinRequirements():
-    """
-        Returns a list of essential packages needed for a minimalistic
-        software installation tree (SIT).
-
-        Opposed to getBuildRequirements() this only contains the minimal
-        requirements for executing / distributing software.
-    """
-    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
-
-    result = getConfigOption( 'SIT_bootstrapMin' )
-
-    Any.requireIsListNonEmpty( result )
-    return result
-
-
-def getBuildRequirements():
-    """
-        Returns a list of essential packages needed for a minimalistic
-        software installation tree (SIT).
-
-        Opposed to getMinRequirements() this contains everything needed to
-        build software packages.
-    """
-    from ToolBOSCore.Settings.ToolBOSConf import getConfigOption
-
-    result = getConfigOption( 'SIT_bootstrapFull' )
-
-    Any.requireIsListNonEmpty( result )
-    return result
-
-
-def copyBasePackages( srcRoot, dstRoot, packageList, verbose = True,
-                      ignore = None, resolveLTS = False, cacheDir = None ):
-    """
-        Copies all packages in the 'packageList' from the current srcRoot
-        into dstRoot.
-
-        Use the 'verbose' parameter to see/suppress a little progress
-        information.
-
-        'ignore' might be a callable that will be given to shutil.copytree()
-        for filtering-out undesired content.
-
-        'resolveLTS' indicates whether symlinks to LTS packages
-        shall be resolved:
-            True  = copy content of LTS packages (resolve symlinks)
-            False = keep LTS symlinks as they are
-
-        If 'cacheDir' points to a SIT-like directory, packages aren't
-        copied but instead linked there to speed-up, e.g. while debugging.
-    """
-    Any.requireIsDir( srcRoot )
-    Any.requireIsDir( dstRoot )
-    Any.requireIsBool( verbose )
-    Any.requireIsBool( resolveLTS )
-
-    if ignore is not None:
-        Any.requireIsCallable( ignore )
-
-    if cacheDir is not None:
-        Any.requireIsDirNonEmpty( cacheDir )
-
-    for package in packageList:
-
-        if cacheDir:
-            symlink = os.path.join( dstRoot, package )
-            target  = os.path.join( cacheDir, package )
-
-            FastScript.link( target, symlink )
-
-        else:
-            src = os.path.join( srcRoot, package )
-            dst = os.path.join( dstRoot, package )
-
-            try:
-                _copyBasePackage( src, dst, verbose, ignore, resolveLTS )
-            except FileNotFoundError as e:
-                logging.error( e )
-                logging.error( f'Error copying package {package}' )
-
-
-def _copyBasePackage( src, dst, verbose, ignore = None, resolveLTS = None ):
-    """
-        Worker function which copies a particular package, passing the
-        'ignore'-callback to the underlying shutil.copytree() function.
-    """
-    if verbose:
-        logging.info( 'copying %s', strip( src ) )
-
-    if os.path.islink( src ):
-
-        # make packageName directory
-        try:
-            FastScript.mkdir( os.path.dirname( dst ) )
-        except OSError:     # may happen upon multi-thread race condition
-            pass
-
-        # distinguish if the link points to a patchlevel or into LTS
-        target = os.readlink( src )
-
-        if target.find( os.sep + 'LTS' + os.sep ) > 0:
-            _copyBasePackage_linkToLTS( src, dst, ignore, resolveLTS )
-        else:
-            _copyBasePackage_linkToPatchlevel( src, dst, ignore )
-
-    elif os.path.isdir( src ):
-        # don't follow symlinks, keep them as they are
-        shutil.copytree( src, dst, True, ignore )
-    else:
-        shutil.copy( src, dst )
-
-
-def _copyBasePackage_linkToLTS( src, dst, ignore, resolveLTS ):
-    target = os.readlink( src )
-
-    if resolveLTS:
-        shutil.copytree( target, dst, True, ignore )
-    else:
-        # copy just the link
-        linkname = dst
-
-        try:
-            os.symlink( target, linkname )
-        except OSError as details:
-            if details.errno != 17:         # 17 == "File exists" --> ignore
-                raise
-
-
-def _copyBasePackage_linkToPatchlevel( src, dst, ignore ):
-    # first copy the link
-    target   = os.readlink( src )
-    linkname = dst
-
-    try:
-        os.symlink( target, linkname )
-    except OSError as details:
-        if details.errno != 17:         # 17 == "File exists" --> ignore
-            raise
-
-    # then copy the linked content
-    realSrc = os.path.realpath( src )
-    realDst = os.path.join( os.path.dirname( dst ), os.path.basename( realSrc ) )
-
-    try:
-        # don't follow symlinks, keep them as they are
-        shutil.copytree( realSrc, realDst, True, ignore )
-    except OSError as details:
-        if details.errno != 17:         # 17 == "File exists" --> ignore
-            logging.warning( details )
-
-
-def copyModuleIndex( srcRoot, dstRoot ):
-    """
-        Copies all <srcDIT>/Modules/Index/*.def and <srcDIT>/Modules/Index/*.py files to
-                   <dstSIT>/Modules/Index/
-    """
-    Any.requireIsDir( srcRoot )
-    Any.requireIsDir( dstRoot )
-
-    srcDir = os.path.join( srcRoot, 'Modules', 'Index' )
-    dstDir = os.path.join( dstRoot, 'Modules', 'Index' )
-
-    # For the case that srcRoot is an SIT proxy: Some people do not have
-    # any files in their Index directory, furthermore the directory could
-    # be entirely missing if never a BBCM had been installed into the
-    # user's proxy
-    #
-    # Any.requireIsDirNonEmpty( srcDir )
-    FastScript.mkdir( dstDir )
-
-    for srcFile in FastScript.getFilesInDir( srcDir ):
-        if srcFile.endswith( ".def" ) or srcFile.endswith( ".py" ):
-
-            fileName = os.path.basename( srcFile )
-            srcPath  = os.path.join( srcDir, fileName )
-            dstPath  = os.path.join( dstDir, fileName )
-
-            FastScript.copy( srcPath, dstPath )
-
-
-def bootstrap( dstPath, buildSDK = False, verbose = True, ignore = None,
-               resolveLTS = False, cacheDir = None ):
-    """
-        Creates a new software installation tree by copying the most basic
-        packages from the current tree. This will be sufficient to execute
-        ToolBOS applications.
-
-        If 'buildSDK' is set to True, also packages for compiling / building
-        software will be copied into the dstPath.
-
-        'ignore' might be a callable that will be given to shutil.copytree()
-        for filtering-out undesired content.
-
-        'resolveLTS' indicates whether symlinks to LTS packages
-        shall be resolved:
-            True  = copy content of LTS packages (resolve symlinks)
-            False = keep LTS symlinks as they are
-    """
-    Any.requireIsTextNonEmpty( dstPath )
-    Any.requireIsBool( buildSDK )
-    Any.requireIsBool( verbose )
-    Any.requireIsBool( resolveLTS )
-
-    if ignore is not None:
-        Any.requireIsCallable( ignore )
-
-    if cacheDir is not None:
-        Any.requireIsDirNonEmpty( cacheDir )
-
-    srcRoot = getRootPath()
-    dstRoot = dstPath
-
-    # Any.RequireIsDir( srcRoot )  # not useful error reporting
-    if not os.path.isdir( srcRoot ):
-        msg = "%s: Source SIT path does not exist (can't bootstrap from there)" % srcRoot
-        raise RuntimeError( msg )
-
-    FastScript.mkdir( dstRoot )       # create if it does not exist, yet
-
-    if buildSDK:
-        packageList = getBuildRequirements()
-    else:
-        packageList = getMinRequirements()
-
-    Any.requireIsListNonEmpty( packageList )
-    copyBasePackages( srcRoot, dstRoot, packageList, verbose, ignore,
-                      resolveLTS, cacheDir )
-
-    # make directory for component description files (*.def)
-    modulesDir = os.path.join( dstRoot, 'Modules' )
-    indexDir   = os.path.join( dstRoot, 'Modules', 'Index' )
-    FastScript.mkdir( indexDir )  # will implicitely create the modulesDir
-
-    os.chmod( modulesDir, 0o0777 )
-    os.chmod( indexDir,   0o0777 )
 
 
 def switch( dstPath ):
@@ -420,42 +168,6 @@ def getRootPath( sitPath = '' ):
         return sitPath
 
 
-def getBaseDir( sitRootPath = '' ):
-    """
-        Returns the location where all the Software Installation Trees
-        are located.
-
-        If you pass an existing SIT root path, its dirname will be returned,
-        otherwise the default SIT location.
-    """
-    if sitRootPath == '':
-        sitRootPath = getRootPath()
-
-    return os.path.dirname( sitRootPath )
-
-
-def getIdentifier( sitRootPath = getDefaultRootPath() ):
-    """
-        Returns the SIT build identifier in the form 'YYYY-MM-DD_HH-MM-SS'
-        which corresponds to the last part of the resolved SIT path, e.g.:
-
-          getIdentifier( '/hri/sit/latest' )
-
-        at the time of this writing returned '2012-01-05_16-06-39'.
-    """
-    Any.requireIsTextNonEmpty( sitRootPath )
-
-    return os.path.basename( os.path.realpath( sitRootPath ) )
-
-
-def expandSIT( string ):
-    """
-        Tries to replace all known SIT placeholders with the actual SIT path.
-    """
-    string = string.replace( 'sit://', getPath() + '/' )
-    return FastScript.expandVar( string, 'SIT' )
-
-
 def collapseSIT( string ):
     """
         Returns all computable values of SIT with an ${SIT} placeholder.
@@ -521,19 +233,19 @@ def getProjects( path, keepPath = True, onError = None ):
              getProjects( '/hri/sit/latest' )
 
              True:
-                   [ '/hri/sit/latest/Libraries/Serialize/3.0', ... ]
+                   [ '/hri/sit/latest/Libraries/Example/3.0', ... ]
              False:
-                   [ 'Libraries/Serialize/3.0', ... ]
+                   [ 'Libraries/Example/3.0', ... ]
 
         You may pass a function callback that will be called upon errors,
         e.g. permission denied. This function needs to take a single
         path parameter. If omitted, an OSError will be raised upon errors.
     """
-    Any.requireIsDir( path )
+    FastScript.requireIsDir( path )
 
     path           = os.path.normpath( path )
     projectList    = []
-    excludePattern = re.compile( r"(parentTree|^\d+\.\d+)|.svn" )
+    excludePattern = re.compile( r"(parentTree|^\d+\.\d+)" )
     criteria       = re.compile( r"^(\d+)\.(\d+)(.*)" )
 
     for directory in FastScript.getDirsInDirRecursive( path, excludePattern,
@@ -559,15 +271,15 @@ def getProjectsWithErrorHandling( path, resultList ):
         The data will be appended to the provided resultList instead of
         using a return value. This allows using this function in a thread.
     """
-    Any.requireIsDir( path )
-    Any.requireIsList( resultList )
+    FastScript.requireIsDir( path )
+    FastScript.requireIsList( resultList )
 
     logging.info( 'scanning %s...', path )
 
     resultList.extend( getProjects( path, keepPath=False,
                                     onError=FastScript.printPermissionDenied ) )
 
-    Any.requireIsListNonEmpty( resultList )
+    FastScript.requireIsListNonEmpty( resultList )
 
 
 def getCanonicalPaths( sitPath ):
@@ -577,7 +289,7 @@ def getCanonicalPaths( sitPath ):
     """
     from ToolBOSCore.Packages.ProjectProperties import isCanonicalPath
 
-    Any.requireIsDir( sitPath )
+    FastScript.requireIsDir( sitPath )
 
     sitPackages = []
     getProjectsWithErrorHandling( sitPath, sitPackages )
@@ -590,8 +302,8 @@ def getCanonicalPaths( sitPath ):
 
 def getActiveRevision( sitPath, project ):
     """
-        This function returns the currently installed patchlevel (SVN
-        revision) of a project, by resolving the 2-digit symlinks.
+        This function returns the currently installed patchlevel
+        of a project, by resolving the 2-digit symlinks.
 
             in root SIT:
             2.2 --> 2.2.500
@@ -617,85 +329,6 @@ def getActiveRevision( sitPath, project ):
 
     if tmp:
         return int( tmp.group( 3 ) )
-
-
-#----------------------------------------------------------------------------
-# Misc functions
-#----------------------------------------------------------------------------
-
-
-def makeCategoryWriteable( sitPath, project, groupName='hriall', mode=0o0775 ):
-    """
-        Changes the group and permissions of all directories between
-        'sitPath' up to the project version. The project's main directory
-        will also be group-writeable so that different developers could
-        install different versions.
-
-        Mind to provide an octal number 'mode'!
-    """
-    from ToolBOSCore.Packages import ProjectProperties
-
-    Any.requireIsDir( sitPath )
-    Any.requireIsTextNonEmpty( project )
-    Any.requireIsTextNonEmpty( groupName )
-    Any.requireIsIntNotZero( mode )  # <mode> must be an octal number
-    ProjectProperties.requireIsCanonicalPath( project )
-
-
-    # The current HRI-EU install procedure is implemented in a way that it always
-    # attempts to change ownership of the category INCLUDING the SIT root
-    # directory. Instead of fixing this there (time-consuming, error-prone) we
-    # always set it here as a shortcut.
-    FastScript.setGroupPermission( sitPath, groupName, mode )
-
-
-    # cut off the project version
-    tmp     = ProjectProperties.splitPath( project )
-    mainDir = os.path.join( tmp[0], tmp[1] )
-    tokens  = mainDir.split( os.sep )
-
-    # the current path we are operating on with chmod+chgrp, starting from
-    # sitPath
-    curPath = sitPath
-
-    # for each token in category do a chmod+chgrp
-    for token in tokens:
-        curPath = os.path.join( curPath, token )
-        FastScript.setGroupPermission( curPath, groupName, mode )
-
-
-def showStatistics():
-    """
-        Shows few numbers on current SIT such as number of packages.
-    """
-    from ToolBOSCore.Packages import ProjectProperties
-
-    path        = getRootPath()
-    total       = []
-    pkgRoots    = []
-    pkgVersions = 0
-    regexp      = re.compile( r"^(\d+)\.(\d+)$" )
-
-    Any.requireMsg( regexp, 'internal script error: empty regexp' )
-
-    getProjectsWithErrorHandling( path, total )
-
-    for package in total:
-        pkgRoot = os.path.dirname( package )
-        version = ProjectProperties.getPackageVersion( package, True )
-
-        if pkgRoot not in pkgRoots:
-            pkgRoots.append( pkgRoot )
-
-        # if this package is one with a 2-digit version, add it to the
-        # number of 2-digit-packages
-        if regexp.match( version ):
-            pkgVersions += 1
-
-    logging.info( 'path:                                  %s', path )
-    logging.info( 'number of distinct packages:           %d', len(pkgRoots) )
-    logging.info( 'number of 2-digit-versions:            %d', pkgVersions )
-    logging.info( 'number of 3-digit-versions (= total):  %d', len(total) )
 
 
 # EOF

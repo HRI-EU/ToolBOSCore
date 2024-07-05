@@ -40,9 +40,7 @@ import os
 
 from ToolBOSCore.BuildSystem.BuildSystemTools import requireTopLevelDir
 from ToolBOSCore.Packages.AbstractPackage     import AbstractPackage
-from ToolBOSCore.Packages                     import BSTPackage
-from ToolBOSCore.Packages                     import ProjectProperties
-from ToolBOSCore.Util                         import Any
+from ToolBOSCore.Packages                     import BSTPackage, ProjectProperties
 from ToolBOSCore.Util                         import FastScript
 
 
@@ -109,17 +107,17 @@ def _showAsList( package, reverse, missingOnly ):
     """
         Direcyly print list of [reverse] dependencies onto console.
     """
-    Any.requireIsInstance( package, BSTPackage.BSTPackage )
-    Any.requireIsBool( reverse )
+    FastScript.requireIsInstance( package, BSTPackage.BSTPackage )
+    FastScript.requireIsBool( reverse )
 
     data = package.revDepSet if reverse else package.depSet
-    Any.requireIsSet( data )
+    FastScript.requireIsSet( data )
 
     packageURLs = list( data )
     packageURLs.sort()
 
     for packageURL in packageURLs:
-        Any.requireIsTextNonEmpty( packageURL )
+        FastScript.requireIsTextNonEmpty( packageURL )
 
         if missingOnly:
             try:
@@ -139,33 +137,33 @@ def _showAsTree( package, reverse, recursive, showDuplicates ):
         Convert BSTPackage-tree representation to traditional
         FastScript-tree format, to re-use existing code.
     """
-    Any.requireIsInstance( package, AbstractPackage )
-    Any.requireIsBool( reverse )
-    Any.requireIsBool( recursive )
-    Any.requireIsBool( showDuplicates )
+    FastScript.requireIsInstance( package, AbstractPackage )
+    FastScript.requireIsBool( reverse )
+    FastScript.requireIsBool( recursive )
+    FastScript.requireIsBool( showDuplicates )
 
     treeData = _convertToTree( package, reverse, recursive,
                                showDuplicates, set() )
-    Any.requireIsList( treeData )
+    FastScript.requireIsList( treeData )
 
     treeText = FastScript.getTreeView( treeData )
-    Any.requireIsText( treeText)
+    FastScript.requireIsText( treeText)
 
     print( treeText.strip() )
 
 
 def _convertToTree( package, reverse, recursive, showDuplicates, duplicateData ):
-    Any.requireIsInstance( package, AbstractPackage )
-    Any.requireIsBool( reverse )
-    Any.requireIsBool( recursive )
-    Any.requireIsBool( showDuplicates )
+    FastScript.requireIsInstance( package, AbstractPackage )
+    FastScript.requireIsBool( reverse )
+    FastScript.requireIsBool( recursive )
+    FastScript.requireIsBool( showDuplicates )
 
     treeData = []
     origData = package.revDepTree if reverse else package.depTree
-    Any.requireIsList( origData )
+    FastScript.requireIsList( origData )
 
     for depPackage in origData:
-        Any.requireIsInstance( depPackage, AbstractPackage )
+        FastScript.requireIsInstance( depPackage, AbstractPackage )
 
         if showDuplicates or depPackage.url not in duplicateData:
             treeData.append( depPackage.url )

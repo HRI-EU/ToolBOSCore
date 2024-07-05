@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
@@ -35,7 +34,7 @@
 
 from collections import OrderedDict
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class IndexableOrderedDict(OrderedDict):
@@ -68,13 +67,13 @@ def merge(orig, toMerge, position):
     `position` is the position where toMerge will be inserted in orig. Original
     ordering for both dicts is preserved.
 
-    :param orig: Original dict
-    :param toMerge: Dict whose contents are to be merged in 'orig'
+    :param orig: Original dictionary
+    :param toMerge: Dictionary whose contents are to be merged in 'orig'
     :param position: Position where the merge should be performed
     """
 
-    Any.requireIsDict( orig )
-    Any.requireIsDict( toMerge )
+    FastScript.requireIsDict( orig )
+    FastScript.requireIsDict( toMerge )
 
     keys   = list(orig.keys())[:position] + list(toMerge.keys()) + list(orig.keys())[position:]
     values = list(orig.values())[:position] + list(toMerge.values()) + list(orig.values())[position:]

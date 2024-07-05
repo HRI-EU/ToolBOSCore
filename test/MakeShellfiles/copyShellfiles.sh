@@ -41,7 +41,6 @@ BST.py --shellfiles
 
 grep -v commitID install/pkgInfo.py > "${OUTPUT_DIR}/ToolBOSCore-pkgInfo.py"
 grep -v commitID install/BashSrc    > "${OUTPUT_DIR}/ToolBOSCore-BashSrc"
-grep -v commitID install/CmdSrc.bat > "${OUTPUT_DIR}/ToolBOSCore-CmdSrc.bat"
 
 
 # EOF

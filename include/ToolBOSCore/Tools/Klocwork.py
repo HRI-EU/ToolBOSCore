@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  run Klocwork tool on this project
@@ -42,17 +41,16 @@ import shlex
 import subprocess
 import tempfile
 
-from ToolBOSCore.Packages  import PackageCreator, PackageDetector
+from ToolBOSCore.Packages  import PackageDetector
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ProcessEnv
 from ToolBOSCore.Settings  import ToolBOSConf
-from ToolBOSCore.Util      import FastScript
-from ToolBOSCore.Util      import Any
+from ToolBOSCore.Util      import FastScript, TemplateEngine
 
 
 def isWithinTmpDir():
     """
-        Returns whether or not the current working directory is within
+        Returns whether the current working directory is within
         the location for temporary files, f.i. "/tmp" on Linux.
 
         Background: Klocwork ignores sources files in such directories,
@@ -69,7 +67,7 @@ def requireOutsideTmpDir():
         Decorator for isWithinTmpDir() which throws an AssertionError
         if the result is True.
     """
-    Any.requireMsg( not isWithinTmpDir(),
+    FastScript.requireMsg( not isWithinTmpDir(),
                     'Klocwork can not be run within %s' % tempfile.gettempdir() )
 
 
@@ -81,7 +79,7 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
         Throws an RuntimeError in case of problems.
     """
-    Any.requireIsTextNonEmpty( klocworkDir )
+    FastScript.requireIsTextNonEmpty( klocworkDir )
 
     requireOutsideTmpDir()
 
@@ -93,8 +91,8 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
     licenseServerHost = ToolBOSConf.getConfigOption( 'kwLicenseServerHost' )
     licenseServerPort = ToolBOSConf.getConfigOption( 'kwLicenseServerPort' )
 
-    Any.requireIsTextNonEmpty( kwPackage )
-    Any.requireIsTextNonEmpty( hostPlatform )
+    FastScript.requireIsTextNonEmpty( kwPackage )
+    FastScript.requireIsTextNonEmpty( hostPlatform )
 
     ProcessEnv.source( kwPackage )
     FastScript.mkdir( klocworkDir )         # ensure this exists
@@ -109,14 +107,14 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
     # check for build command settings in pkgInfo.py, otherwise fallback to default
     detector          = PackageDetector.PackageDetector()
     detector.retrieveMakefileInfo()
-    Any.requireIsTextNonEmpty( detector.buildCommand )
+    FastScript.requireIsTextNonEmpty( detector.buildCommand )
 
     logging.info( 'running build inspection (kwinject)' )
 
     # inspect the build process to capture source files, defines, flags,...
     cmd = 'kwinject -o %s %s' % ( buildSpec, detector.buildCommand )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
-    Any.requireIsFileNonEmpty( buildSpec )
+    FastScript.requireIsFileNonEmpty( buildSpec )
 
     logging.info( 'running project configuration (kwcheck)' )
 
@@ -124,27 +122,14 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
     cmd = 'kwcheck create --license-host %s --license-port %d -pd %s -sd %s %s' % \
           ( licenseServerHost, licenseServerPort, kwlpDir, kwpsDir, buildSpec )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
-    Any.requireIsDir( kwlpDir )
-    Any.requireIsDir( kwpsDir )
+    FastScript.requireIsDir( kwlpDir )
+    FastScript.requireIsDir( kwpsDir )
 
     logging.info( 'running project setup (kwimport)' )
 
     # import the build specification into project directory
     cmd = 'kwcheck import -pd %s %s' % ( kwlpDir, buildSpec )
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
-
-
-    # install the HIS-Subset taxonomy so that the user may select it
-    tcRoot   = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
-    fileName = 'HIS_Subset_MISRA_C_1.0.2.tconf'
-    srcFile  = os.path.join( tcRoot, 'external/emenda.com', fileName )
-    dstDir   = os.path.join( kwpsDir, 'servercache' )
-    dstFile  = os.path.join( dstDir, fileName )
-
-    Any.requireIsFileNonEmpty( srcFile )
-    FastScript.mkdir( dstDir )
-    FastScript.copy( srcFile, dstFile )
-
 
     # auto-detect source code directories (exclude some blacklisted ones)
     dirList = []
@@ -156,13 +141,12 @@ def createLocalProject( klocworkDir='klocwork', stdout=None, stderr=None ):
 
 
     # create workingset
-    values  = { 'dirList': dirList }
-    creator = PackageCreator.PackageCreator( 'dummy', '1.0', values )
-    srcDir  = os.path.join( creator.templateDir, 'KlocworkProject' )
-    dstDir  = kwlpDir
+    tcRoot = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
+    values = { 'dirList': dirList }
 
-    creator.templatize( os.path.join( srcDir, 'workingsets.xml' ),
-                        os.path.join( dstDir, 'workingsets.xml' ) )
+    TemplateEngine.run( os.path.join( tcRoot, 'etc/Klocwork/workingsets.xml' ),
+                        os.path.join( kwlpDir, 'workingsets.xml' ),
+                        values )
 
 
 def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None, logToConsole=False ):
@@ -174,14 +158,14 @@ def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None, logToConsole=Fa
 
         'stderr' is obsolete and shall no longer be used.
     """
-    Any.requireIsDirNonEmpty( klocworkDir )
+    FastScript.requireIsDirNonEmpty( klocworkDir )
 
     requireOutsideTmpDir()
 
     ProcessEnv.source( ToolBOSConf.getConfigOption( 'package_klocwork' ) )
 
     kwlpDir = os.path.join( klocworkDir, '.kwlp' )
-    Any.requireIsDirNonEmpty( kwlpDir )
+    FastScript.requireIsDirNonEmpty( kwlpDir )
 
     logging.info( 'running source-code analysis (kwcheck)' )
 
@@ -189,7 +173,7 @@ def codeCheck( klocworkDir='klocwork', stdout=None, stderr=None, logToConsole=Fa
 
     # TBCORE-2244 Klocwork may take some time. If we don't print out any
     # progress information the user may think the tool crashed or hangs.
-    # And if it really hangs we have no idea why. Therefore we always
+    # And if it really hangs we have no idea why. Therefore, we always
     # print the output to console, optionally capture it into the logfile.
 
     pipe = subprocess.Popen( shlex.split( cmd ),
@@ -230,18 +214,7 @@ def parseCodeCheckResult( output ):
         @return: List of tuples of form ( filename, lineNo,
                                           issue description, kwRuleID )
     """
-    Any.requireIsTextNonEmpty( output )
-
-    #Any.requireMsg( output.find( 'Build contains errors' ) == -1,
-                    #'Klocwork analysis failed (build contained errors)' )
-
-
-    # Alternatively kwcheck can produce XML output which could be more robust
-    # to parse. Consider this when working again on this topic.
-    #
-    # Example:
-    #   $ kwcheck run -pd ... -F xml --report
-
+    FastScript.requireIsTextNonEmpty( output )
 
     resultList = []
     regexp     = re.compile( r'^\d+\s\([A-Za-z]+\)\s(.*?):(\d+)\s(.+?)\s' )
@@ -260,9 +233,9 @@ def parseCodeCheckResult( output ):
             kwRule   = tmp.group(3)
             desc     = lines[ i + 1 ]
 
-            Any.requireIsTextNonEmpty( fileName )
-            Any.requireIsTextNonEmpty( lineNo )
-            Any.requireIsTextNonEmpty( desc )
+            FastScript.requireIsTextNonEmpty( fileName )
+            FastScript.requireIsTextNonEmpty( lineNo )
+            FastScript.requireIsTextNonEmpty( desc )
 
             resultList.append( ( fileName, lineNo, desc, kwRule ) )
 

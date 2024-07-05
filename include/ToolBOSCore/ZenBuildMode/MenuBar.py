@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Menu bar
@@ -42,7 +41,7 @@ from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.ZenBuildMode import SettingsDialog
-from ToolBOSCore.GenericGUI   import AboutDialog, WebBrowser
+from ToolBOSCore.GenericGUI   import AboutDialog
 
 
 class MenuBar( QMenuBar, object ):
@@ -63,7 +62,6 @@ class MenuBar( QMenuBar, object ):
         self.parent          = parent
 
         self._aboutDialog    = None
-        self._webBrowser     = None
         self._settingsDialog = None
         self._sqDialog       = None
 
@@ -93,12 +91,6 @@ class MenuBar( QMenuBar, object ):
 
         self.helpMenu = QMenu( "&Help", parent )
         self.helpMenu.addAction( "&About", self.helpAbout )
-
-        self.helpDocuAction = QAction( '&Online documentation', parent )
-        self.helpDocuAction.setShortcut( 'F1' )
-        self.helpDocuAction.triggered.connect( self.helpOnlineDocumentation )
-
-        self.helpMenu.addAction( self.helpDocuAction )
 
 
         # "Run" section
@@ -148,11 +140,6 @@ class MenuBar( QMenuBar, object ):
     def helpAbout( self ):
         self._aboutDialog = AboutDialog.AboutDialog( self.parent )
         self._aboutDialog.show()
-
-
-    def helpOnlineDocumentation( self ):
-        WebBrowser.openToolBOSDocumentation( 'ToolBOS_Util_BuildSystemTools_ZenBuildMode',
-                                             self )
 
 
 # EOF

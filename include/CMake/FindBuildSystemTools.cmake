@@ -52,7 +52,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/BST_DefaultSettings.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/BST_DependencyInclusion.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/BST_BuildLibraries.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/BST_BuildExecutables.cmake)
-include(${CMAKE_CURRENT_LIST_DIR}/BST_BuildJar.cmake)
 
 
 macro(bst_printvar)

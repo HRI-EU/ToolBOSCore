@@ -46,9 +46,7 @@ from ToolBOSCore.Packages                 import ProjectProperties
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
-from ToolBOSCore.Storage                  import SIT
-from ToolBOSCore.Storage                  import PkgInfo
-from ToolBOSCore.Util                     import Any
+from ToolBOSCore.Storage                  import PkgInfo, SIT
 from ToolBOSCore.Util                     import FastScript
 
 
@@ -167,7 +165,7 @@ class BuildSystemTools( object ):
             return False
 
 
-        if Any.getDebugLevel() <= 3:
+        if FastScript.getDebugLevel() <= 3:
             # capture output so that it's not printed
             output = io.StringIO()
         else:
@@ -258,8 +256,8 @@ class BuildSystemTools( object ):
 
 
     def setSourceAndBinaryTree( self, sourceTree, binaryTree ):
-        Any.requireIsDirNonEmpty( sourceTree )
-        Any.requireIsDir( binaryTree )
+        FastScript.requireIsDirNonEmpty( sourceTree )
+        FastScript.requireIsDir( binaryTree )
 
         self._sourceTree = sourceTree
         self._binaryTree = binaryTree
@@ -271,7 +269,7 @@ class BuildSystemTools( object ):
 
 
     def setParallelJobs( self, number ):
-        Any.requireIsIntNotZero( number )
+        FastScript.requireIsIntNotZero( number )
         self._parallelJobs = number
         self._detectBuildCommand()
 
@@ -281,18 +279,18 @@ class BuildSystemTools( object ):
 
 
     def setBuildType( self, buildType ):
-        Any.requireIsTextNonEmpty( buildType )
+        FastScript.requireIsTextNonEmpty( buildType )
 
-        Any.requireMsg( buildType in ( 'Release', 'Debug' ),
+        FastScript.requireMsg( buildType in ( 'Release', 'Debug' ),
                         'invalid build type' )
 
         self._buildType = buildType
 
 
     def setTargetPlatform( self, platform ):
-        Any.requireIsTextNonEmpty( platform )
+        FastScript.requireIsTextNonEmpty( platform )
 
-        Any.requireMsg( platform in Platforms.getPlatformNames(),
+        FastScript.requireMsg( platform in Platforms.getPlatformNames(),
                         "Unknown platform: %s" % platform )
 
         if platform != self._hostPlatform:
@@ -319,13 +317,6 @@ class BuildSystemTools( object ):
             return False
 
 
-    def upgrade( self ):
-        from ToolBOSCore.CIA.PatchSystem import PatchSystem
-
-        patcher = PatchSystem()
-        patcher.run()
-
-
     def getCanonicalPath( self ):
         p = PackageDetector( self._sourceTree )
         p.retrieveMakefileInfo()
@@ -336,31 +327,17 @@ class BuildSystemTools( object ):
 
 
     def _assembleScriptCmd( self, name, forceFilePath=None ):
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
-        # When compiling natively, under Linux the *.sh and on Windows the
-        # *.bat needs to be executed.
-        #
-        # But also when cross-compiling we need to execute the script for
-        # the host platform, f.i. a Windows *.bat script won't work on
-        # Linux.
-        #
-        # Hence there is no need to check for the targetPlatform at all,
-        # see TBCORE-1217.
+        filename = '%s.sh' % name
 
-        if self._hostPlatform.startswith( 'windows' ):
-            filename = '%s.bat' % name
-            cmd      = filename
+        if forceFilePath:
+            filename = forceFilePath
+
+        if FastScript.getDebugLevel() > 3:
+            cmd = 'bash -x ./%s' % filename
         else:
-            filename = '%s.sh' % name
-
-            if forceFilePath:
-                filename = forceFilePath
-
-            if Any.getDebugLevel() > 3:
-                cmd = 'bash -x ./%s' % filename
-            else:
-                cmd = './' + filename
+            cmd = './' + filename
 
         return filename, cmd
 
@@ -501,7 +478,7 @@ class BuildSystemTools( object ):
             cmakeModPath = os.path.abspath( os.path.join( self._sourceTree, cmakeModPath ) )
 
         try:
-            Any.requireIsDirNonEmpty( cmakeModPath )
+            FastScript.requireIsDirNonEmpty( cmakeModPath )
         except AssertionError as details:
             logging.error( 'invalid setting of BST_modulePath in ToolBOS.conf' )
             logging.error( details )
@@ -511,8 +488,8 @@ class BuildSystemTools( object ):
 
 
     def _execTask( self, name, corefunc ):
-        Any.requireIsTextNonEmpty( name )
-        Any.requireIsCallable( corefunc )
+        FastScript.requireIsTextNonEmpty( name )
+        FastScript.requireIsCallable( corefunc )
 
         logging.debug( 'Build System Tools: "%s" step started', name )
 
@@ -525,7 +502,7 @@ class BuildSystemTools( object ):
 
             if name in self._detector.scripts:
                 filePath = self._detector.scripts[ name ]
-                Any.requireIsFileNonEmpty( filePath )
+                FastScript.requireIsFileNonEmpty( filePath )
                 status = self._runScript( name, filePath=filePath )
 
             elif os.path.exists( coreScript ):
@@ -578,12 +555,9 @@ class BuildSystemTools( object ):
 
 
     def _distclean_inTree( self ):
-        from ToolBOSCore.Storage import VersionControl
-
         requireTopLevelDir( os.getcwd() )
 
-        excludeSVN = re.compile( '.svn' )
-        subDirList = FastScript.getDirsInDirRecursive( excludePattern=excludeSVN )
+        subDirList = FastScript.getDirsInDirRecursive()
         subDirList.append( '.' )
 
         # do not cache those variables as their change would not be reflected
@@ -598,31 +572,19 @@ class BuildSystemTools( object ):
             _cleanDir( subDir, patternList, verbose, dryRun )
 
 
-        # specifically check for empty directories (mind the ".svn"):
+        # specifically check for empty directories
         for candidate in ( 'doc', 'install', 'lib', 'obj' ):
             if os.path.isdir( candidate ):
                 content = os.listdir( candidate )
 
-                if not content:
-                    FastScript.remove( candidate )  # does not contain ".svn"
-                elif content == [ '.svn' ]:
-
-                    # With recent versions of SVN there are no more ".svn"
-                    # directories in all the various paths, instead of a
-                    # single one in top-level directory. Therefore most
-                    # likely this code is dead.
-
-                    try:
-                        vcs = VersionControl.auto()
-                        vcs.remove( candidate )
-                    except subprocess.CalledProcessError:
-                        pass                        # keep it (safety first)
+                if not content:                      # is empty dir.
+                    FastScript.remove( candidate )
 
         return True
 
 
     def _runScript( self, name, filePath=None ):
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         ( filename, cmd ) = self._assembleScriptCmd( name, forceFilePath=filePath )
         status = True
@@ -651,24 +613,7 @@ class BuildSystemTools( object ):
         hostArch = Platforms.getHostArch()
         hostOS   = Platforms.getHostOS()
 
-        clangEnv = FastScript.getEnv( 'BST_USE_CLANG' )
-
-        if clangEnv is None:
-            try:
-                useClang = PkgInfo.getPkgInfoContent()['BST_useClang']
-            except ( AssertionError, KeyError ):
-                useClang = getConfigOption( 'BST_useClang' )
-
-            clangEnv = 'TRUE' if useClang else 'FALSE'
-
-        else:
-            useClang = True if clangEnv == 'TRUE' else False
-
-
-        logging.debug( 'use Clang/LLVM: %s', useClang )
-
-        envSettings  = { 'BST_USE_CLANG': clangEnv,
-                         'HOSTARCH':      hostArch,
+        envSettings  = { 'HOSTARCH':      hostArch,
                          'HOSTOS':        hostOS,
                          'TARGETARCH':    hostArch,
                          'TARGETOS':      hostOS }
@@ -756,29 +701,25 @@ def getDefaultDistcleanPatterns():
                   'sources', 'build', '.tmp-install*', 'precompiled/package',
 
                   # compilation files
-                  'makeDepend', 'ui_*h', 'qrc_*.cpp', 'moc_*.cpp', 'qt/*.h',
-                  'qt/*.cpp', 'qt/moc_*cpp', '.*ui.md5', 'wrapper/*.mex*',
+                  'ui_*h', 'qrc_*.cpp', 'moc_*.cpp', 'qt/*.h',
+                  'qt/*.cpp', 'qt/moc_*cpp', '.*ui.md5',
 
                   # editor backup files
                   '*~', '*.bak',
 
                   # temp. files left from previous program executions
-                  '*.pyc', '*.backup.zip', 'LibIndex',
+                  '*.pyc', '*.backup.zip',
 
                   # pylint log files
                   '*_pylint.log',
 
                   # install procedure files
                   'install/??shSrc', 'bin/??shSrc',
-                  'examples/??shSrc', 'test/??shSrc', 'install/CmdSrc.bat',
+                  'examples/??shSrc', 'test/??shSrc',
                   'doc/autoDoxyfile', 'doc/doxygen*', 'doc/*.tag',
-                  'doc/html', 'matdoc.log', 'install/LinkAllLibraries',
-                  'install/MD5SUMS', 'install/*.tar.gz', 'install/*.deb',
+                  'doc/html',
                   'install/*.tar.bz2', 'install/packageVar.cmake',
-                  'install/pkgInfo.py', 'install/*.def',
-                  'install/debControl.txt',
-                  '[A-Za-z]*[A-Za-z]PHP', '[A-Za-z]*[A-Za-z]PY',
-                  'run*([^.])', 'src/.*.h.md5', 'build4all.cfg', 'run' ] )
+                  'install/pkgInfo.py' ] )
 
     return patternList
 
@@ -793,24 +734,6 @@ def setEnv():
         This function loads the pkgInfo.py of each dependency package.
         If environment settings are found there they will be loaded into
         the environment of the current Python process.
-
-        Example:
-            The pkgInfo.py of Matlab states MATLAB_ROOT, PATH and
-            LD_LIBRARY_PATH settings in its pkgInfo.py. Before compiling
-            such variables must be set.
-
-        On Linux, alternatively, this can be achieved by sourcing the
-        BashSrc files. Nevertheless this is not possible in all cases
-        (especially Matlab because multiple versions are available)
-        when used within CIA.
-
-        With some modifications this setEnv() approach conceptually
-        potentially could also work on Windows.
-
-        Attention: This function should only be called once (at least not
-                   repeatedly when compiling the same package again from
-                   within Python) to not unnecessarily increase the length
-                   of PATH, LD_LIBRARY_PATH etc.
     """
     try:
         p = PackageDetector()
@@ -872,7 +795,7 @@ def requireTopLevelDir( path='.' ):
     if path == '.' or not path:
         path = os.getcwd()
 
-    Any.requireMsg( isTopLevelDir( path ),
+    FastScript.requireMsg( isTopLevelDir( path ),
                     '%s: not a top-level directory of a source package' % path )
 
 
@@ -946,8 +869,8 @@ def _removeList( pathList, verbose, dryRun ):
 
 
 def _cleanDir( path, patternList, verbose, dryRun ):
-    Any.requireIsText( path )
-    Any.requireIsIterable( patternList )
+    FastScript.requireIsText( path )
+    FastScript.requireIsIterable( patternList )
 
     for pattern in patternList:
         patternFullPath = os.path.join( path, pattern )

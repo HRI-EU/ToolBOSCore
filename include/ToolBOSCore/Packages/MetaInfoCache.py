@@ -39,7 +39,7 @@ import os
 from ToolBOSCore.Packages                 import ProjectProperties
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Storage                  import SIT
-from ToolBOSCore.Util                     import Any
+from ToolBOSCore.Util                     import FastScript
 
 
 class MetaInfoCache( object ):
@@ -57,7 +57,7 @@ class MetaInfoCache( object ):
         """
         sitPath        = SIT.getPath()
         canonicalPaths = SIT.getCanonicalPaths( sitPath )
-        Any.requireIsListNonEmpty( canonicalPaths )
+        FastScript.requireIsListNonEmpty( canonicalPaths )
 
 
         for canonicalPath in canonicalPaths:
@@ -92,7 +92,7 @@ class MetaInfoCache( object ):
 
 
     def setCache( self, cache ):
-        Any.requireIsDict( cache )
+        FastScript.requireIsDict( cache )
 
         self._cache = cache
 

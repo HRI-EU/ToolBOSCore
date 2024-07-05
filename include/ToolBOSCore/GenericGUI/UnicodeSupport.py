@@ -35,11 +35,9 @@
 #
 
 
-import logging
-
 from PyQt5.QtCore import QByteArray
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 def convert( x ):
@@ -49,12 +47,10 @@ def convert( x ):
         accepts objects of type:
             * bytes
             * str
-            * unicode
             * QByteArray
 
         returns:
-            Py2: unicode
-            Py3: str
+            * str
     """
     if isinstance( x, QByteArray ):
         return convertQByteArray( x )
@@ -63,9 +59,6 @@ def convert( x ):
         return convertBytes( x )
 
     elif isinstance( x, str ):
-        return convertStr( x )
-
-    elif isinstance( x, unicode ):
         return x
 
     else:
@@ -76,38 +69,21 @@ def convertBytes( b ):
     """
         Converts a string of Python's 'byte' type to 'str'.
     """
-    Any.requireIsInstance( b, bytes )
+    FastScript.requireIsInstance( b, bytes )
 
     return b.decode( 'utf8' )
 
 
 def convertQByteArray( qba ):
     """
-        Converts a string of PyQt's 'QByteArray' type to:
-
-        Py2: unicode
-        Py3: str
+        Converts a string of PyQt's 'QByteArray' type to 'str':
     """
-    Any.requireIsInstance( qba, QByteArray )
+    FastScript.requireIsInstance( qba, QByteArray )
 
     data = qba.data()
-    Any.requireIsInstance( data, bytes )
+    FastScript.requireIsInstance( data, bytes )
 
     return convertBytes( data )
-
-
-def convertStr( s ):
-    """
-        Converts a string of Python's 'str' type to:
-
-        Py2: unicode
-        Py3: str (no need to do anything)
-    """
-    Any.requireIsInstance( s, str )
-
-    # no need to do anything (str-objects are unicode-ready)
-
-    return s
 
 
 # EOF

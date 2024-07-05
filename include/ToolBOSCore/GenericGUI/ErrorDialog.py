@@ -41,7 +41,7 @@ import traceback
 
 from PyQt5.QtWidgets import QMessageBox, QSizePolicy, QTextEdit
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 class QMessageBoxResizable( QMessageBox ):
@@ -73,8 +73,8 @@ class QMessageBoxResizable( QMessageBox ):
 def ErrorDialog( title, msg, printException=False, resizable=False ):
     msg = str( msg )                             # also accept exception types
 
-    Any.requireIsTextNonEmpty( title )
-    Any.requireIsTextNonEmpty( msg )
+    FastScript.requireIsTextNonEmpty( title )
+    FastScript.requireIsTextNonEmpty( msg )
 
     excType, _excValue, excTraceback = sys.exc_info()
     if excType:
@@ -85,7 +85,7 @@ def ErrorDialog( title, msg, printException=False, resizable=False ):
     else:
         description = excType = 'Error'
 
-    if printException or Any.getDebugLevel() >= 5:
+    if printException or FastScript.getDebugLevel() >= 5:
         tbs = traceback.format_tb( excTraceback )
         logging.error( '%s, %s', excType, msg )
         logging.error( ''.join( tbs ) )

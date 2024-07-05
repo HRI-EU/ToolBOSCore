@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  run Valgrind on project
@@ -40,7 +39,7 @@ import tempfile
 
 from collections import namedtuple
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 FastScript.tryImport( 'lxml' )
 from lxml import etree
@@ -81,7 +80,7 @@ def checkExecutable( executablePath, details, stdout=None, stderr=None ):
 
 
 def parseOutput( statusFile, details ):
-    Any.requireIsFileNonEmpty( statusFile )
+    FastScript.requireIsFileNonEmpty( statusFile )
 
     out = etree.parse( statusFile )
     errors = [ errorParser( error, details ) for error in out.findall( 'error' ) ]
@@ -94,8 +93,8 @@ def errorParser( errorRoot, details ):
     descriptionNode = errorRoot.find( 'xwhat' )
     stackNode       = errorRoot.find( 'stack' )
 
-    Any.requireMsg( kindNode is not None, 'Malformed Valgrind output' )
-    Any.requireMsg( descriptionNode is not None, 'Malformed Valgrind output' )
+    FastScript.requireMsg( kindNode is not None, 'Malformed Valgrind output' )
+    FastScript.requireMsg( descriptionNode is not None, 'Malformed Valgrind output' )
 
     kind        = _kindMap[ kindNode.text ]
     description = descriptionNode.find( 'text' ).text

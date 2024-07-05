@@ -18,7 +18,7 @@ name             = 'ToolBOSCore'
 
 package          = 'ToolBOSCore'
 
-version          = '4.3'
+version          = '5.0'
 
 section          = 'DevelopmentTools'
 
@@ -30,13 +30,11 @@ maintainer       = ( 'mstein', 'mstein' )
 
 gitBranch        = 'develop'
 
-gitCommitID      = '864a3dcf4d9a461fc0254212fc47ab810d975300'
+gitCommitID      = '307d5f1adb135dcb58a2e062fc80f613dd330469'
 
 gitOrigin        = 'git@dmz-gitlab.honda-ri.de:TECH_Team/ToolBOSCore.git'
 
 gitRelPath       = ''
-
-gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore.git'
 
 recommends       = [ 'deb://git',
                      'sit://External/CMake/3.4',

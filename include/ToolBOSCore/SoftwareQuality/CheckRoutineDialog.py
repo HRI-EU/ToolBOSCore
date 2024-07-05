@@ -53,12 +53,12 @@ from PyQt5.QtWidgets import *
 
 from ToolBOSCore.GenericGUI      import IconProvider
 from ToolBOSCore.SoftwareQuality import CheckRoutine, Common, Rules
-from ToolBOSCore.Util            import Any
+from ToolBOSCore.Util            import FastScript
 from ToolBOSCore.ZenBuildMode    import QtPackageModel
 
 
 def run( model ):
-    Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+    FastScript.requireIsInstance( model, QtPackageModel.BSTPackageModel )
 
     app = QApplication( [] )
 
@@ -96,7 +96,7 @@ class CheckRoutineDialog( QDialog, object ):
         self._desiredLevelCombo = QComboBox()
         self._windowTitle       = 'Software Quality settings'
 
-        Any.addStreamLogger( self._logOutput, logging.DEBUG, preamble=False )
+        FastScript.addStreamLogger( self._logOutput, logging.DEBUG, preamble=False )
 
         for level in CheckRoutine.sqLevelNames:
             text  = CheckRoutine.sqLevels[ level ]
@@ -151,16 +151,16 @@ class CheckRoutineDialog( QDialog, object ):
             # insert a table row with title and objective
 
             key = expr.match( ruleID ).group( 1 )
-            Any.requireIsTextNonEmpty( key )
+            FastScript.requireIsTextNonEmpty( key )
 
             if key != prevKey:
                 prevKey = key
 
                 sectionName = CheckRoutine.sectionNames[ key ]
-                Any.requireIsTextNonEmpty( sectionName )
+                FastScript.requireIsTextNonEmpty( sectionName )
 
                 sectionObjective = CheckRoutine.sectionObjectives[ key ]
-                Any.requireIsTextNonEmpty( sectionObjective )
+                FastScript.requireIsTextNonEmpty( sectionObjective )
 
                 text = '<h2>%s</h2><i>Objective: %s</i>' % ( sectionName,
                                                              sectionObjective )
@@ -299,9 +299,8 @@ class CheckRoutineDialog( QDialog, object ):
 
         # noinspection PyArgumentList
         screen       = QApplication.desktop().screenGeometry()
-
-        dialogWidth  = screen.width() / 4 * 3
-        dialogHeight = screen.height() / 4 * 3
+        dialogWidth  = int( screen.width()  * 0.75 )
+        dialogHeight = int( screen.height() * 0.75 )
 
         self.setLayout( self._layout )
         self.setWindowIcon( IconProvider.getIcon( 'QualityGuideline' ) )
@@ -520,11 +519,11 @@ class CheckRoutineDialog( QDialog, object ):
         logging.info( 'saving settings' )
 
         index = self._desiredLevelCombo.currentIndex()
-        Any.requireIsInt( index )
+        FastScript.requireIsInt( index )
         self._desiredLevelIndex = index
 
         name = CheckRoutine.sqLevelNames[ index ]
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
         self._desiredLevelName = name
 
         self._saveSettings_level()
@@ -596,13 +595,13 @@ class CheckRoutineDialog( QDialog, object ):
 
     def _toggleCombo( self ):
         index = self._desiredLevelCombo.currentIndex()
-        Any.requireIsInt( index )
+        FastScript.requireIsInt( index )
 
         text = self._desiredLevelCombo.currentText()
-        Any.requireIsTextNonEmpty( text )
+        FastScript.requireIsTextNonEmpty( text )
 
         sqLevel = CheckRoutine.sqLevelNames[ index ]
-        Any.requireIsTextNonEmpty( sqLevel )
+        FastScript.requireIsTextNonEmpty( sqLevel )
 
         logging.debug( 'changed desired level to level=%s ("%s")',
                        sqLevel, text )
@@ -615,11 +614,11 @@ class CheckRoutineDialog( QDialog, object ):
 
         # extract ruleID from URL/filename
         try:
-            ruleID = re.search( '^.+-(.+)\.html', fileName ).group(1)
+            ruleID = re.search( r'^.+-(.+)\.html', fileName ).group(1)
         except AttributeError:                 # no match, e.g. external link
             return
 
-        Any.requireIsTextNonEmpty( ruleID )
+        FastScript.requireIsTextNonEmpty( ruleID )
 
         logging.debug( 'toggling description for rule=%s', ruleID )
 

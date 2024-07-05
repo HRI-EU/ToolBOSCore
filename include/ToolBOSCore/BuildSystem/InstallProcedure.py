@@ -34,8 +34,6 @@
 #
 
 
-import collections
-import glob
 import grp
 import io
 import logging
@@ -49,9 +47,7 @@ from ToolBOSCore.Packages                 import PackageCreator
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
 from ToolBOSCore.Platforms                import Platforms
 from ToolBOSCore.Settings                 import ToolBOSConf
-from ToolBOSCore.Storage                  import VersionControl
-from ToolBOSCore.Tools                    import RTMaps
-from ToolBOSCore.Util                     import Any, FastScript
+from ToolBOSCore.Util                     import FastScript
 
 
 class InstallProcedure( object ):
@@ -148,7 +144,7 @@ class InstallProcedure( object ):
             # forcing SIT root path with user-provided directory for
             # testing (TBCORE-1104)
 
-            Any.requireIsTextNonEmpty( env )
+            FastScript.requireIsTextNonEmpty( env )
             self.sitRootPath = env
             FastScript.mkdir( self.sitRootPath )
 
@@ -167,7 +163,7 @@ class InstallProcedure( object ):
         logging.info( 'global SIT:       %s', self.sitRootPath             )
         logging.info( 'platform:         %s', self.hostPlatform            )
 
-        Any.requireMsg( not os.path.isabs( self.details.packageCategory ),
+        FastScript.requireMsg( not os.path.isabs( self.details.packageCategory ),
                         'invalid package category "%s" (must be relative path)' % self.details.packageCategory )
 
         self._setUmask()
@@ -195,7 +191,7 @@ class InstallProcedure( object ):
             return False
 
 
-        if Any.getDebugLevel() > 3:
+        if FastScript.getDebugLevel() > 3:
             output = None
         else:
             output = io.StringIO()
@@ -252,12 +248,7 @@ class InstallProcedure( object ):
             fields (see the documentation) to customize what gets
             installed and where.
         """
-        self._extractVM()
-
         self._collectEssentials()
-
-        self._registerComponent_ToolBOS()
-
         self._collectDefault()
         self._collectCustom()
 
@@ -282,7 +273,7 @@ class InstallProcedure( object ):
             with the '-y|--yes' option.
         """
         logging.info( 'ready for installation' )
-        Any.logVerbatim( 3, '' )
+        FastScript.logVerbatim( 3, '' )
 
         if FastScript.getEnv( 'MAKEFILE_FASTINSTALL' ) == 'FALSE' or \
            ToolBOSConf.getConfigOption( 'BST_confirmInstall' ) is True:
@@ -297,7 +288,7 @@ class InstallProcedure( object ):
             if answer != '' and answer != 'y' and answer != 'Y':
                 raise KeyboardInterrupt( 'operation aborted by user' )
             else:
-                Any.logVerbatim( 3, '' )   # an additional newline after the prompt
+                FastScript.logVerbatim( 3, '' )   # an additional newline after the prompt
 
 
     def preInstall( self ):
@@ -347,7 +338,7 @@ class InstallProcedure( object ):
             Shows some closing notes after the Install Procedure finished.
         """
         logging.info( 'Thank you for using ToolBOS!' )
-        Any.logVerbatim( 3, '\n' + '-' * 78 + '\n\n' )
+        FastScript.logVerbatim( 3, '\n' + '-' * 78 + '\n\n' )
 
 
     #------------------------------------------------------------------------
@@ -433,8 +424,8 @@ class InstallProcedure( object ):
                   can install files for multiple platforms in one shot
                   (see TBCORE-2148).
         """
-        Any.requireIsTextNonEmpty( srcPath )
-        Any.requireIsTextNonEmpty( self.startPath )
+        FastScript.requireIsTextNonEmpty( srcPath )
+        FastScript.requireIsTextNonEmpty( self.startPath )
 
 
         # TBCORE-2148  Check if strings contain MAKEFILE_PLATFORM and
@@ -473,7 +464,7 @@ class InstallProcedure( object ):
         if not dstPath:
             dstPath = srcPath
         else:
-            Any.requireIsTextNonEmpty( dstPath )
+            FastScript.requireIsTextNonEmpty( dstPath )
 
         if srcPath == dstPath:
             logging.info( 'adding %s', dstPath )
@@ -490,16 +481,15 @@ class InstallProcedure( object ):
                         itemDstPath = os.path.join( root.replace( srcPath, dstPath ),
                                                     item )
 
-                    if itemDstPath.find( '.svn' ) == -1:   # do not install ".svn"
-                        if relativeToSIT:
-                            self.index.append( ( itemSrcPath, itemDstPath ) )
-                        else:
-                            self.index.append( ( itemSrcPath,
-                                                 os.path.join( self.startPath, itemDstPath ) ) )
+                    if relativeToSIT:
+                        self.index.append( ( itemSrcPath, itemDstPath ) )
+                    else:
+                        self.index.append( ( itemSrcPath,
+                                             os.path.join( self.startPath, itemDstPath ) ) )
 
                 # os.walks() puts symlinks to directories into the 'directories'
-                # list, and not into 'files', hence symlinks like "focal64" -->
-                # "bionic64" would not get installed, see JIRA ticket TBCORE-947
+                # list, and not into 'files', hence symlinks like "platformFoo" -->
+                # "platformBar" would not get installed, see JIRA ticket TBCORE-947
                 for item in dirs:
                     itemSrcPath = os.path.join( root, item )
 
@@ -551,9 +541,9 @@ class InstallProcedure( object ):
             Returns the number of files scheduled for installation
             (= number of files matching the regular expression).
         """
-        Any.requireIsText( srcDir )
-        Any.requireIsTextNonEmpty( srcPattern )
-        # Any.requireIsText( dstDir )   # might be None
+        FastScript.requireIsText( srcDir )
+        FastScript.requireIsTextNonEmpty( srcPattern )
+        # FastScript.requireIsText( dstDir )   # might be None
 
         srcDir = FastScript.expandVars( srcDir )
 
@@ -563,7 +553,7 @@ class InstallProcedure( object ):
         if srcDir == '':     # for convenience we allow empty srcDir
             srcDir = '.'
 
-        if Any.isDir( srcDir ):
+        if FastScript.isDir( srcDir ):
             logging.debug( 'searching for subDir="%s"...', srcDir )
         else:
             logging.debug( 'searching for subDir="%s"... Not found', srcDir )
@@ -607,15 +597,15 @@ class InstallProcedure( object ):
             Returns the number of files scheduled for installation
             (= number of files matching the regular expression).
         """
-        Any.requireIsDir( srcDir )
-        Any.requireIsTextNonEmpty( srcPattern )
-        Any.requireIsTextNonEmpty( self.startPath )
+        FastScript.requireIsDir( srcDir )
+        FastScript.requireIsTextNonEmpty( srcPattern )
+        FastScript.requireIsTextNonEmpty( self.startPath )
 
         # we are not about file copying here, so do not check for real dir.
         # here (e.g. consider case when a tarball is created)
         #
-        # Any.requireIsTextNonEmpty( dstDir )
-        Any.requireIsText( dstDir )      # can be empty
+        # FastScript.requireIsTextNonEmpty( dstDir )
+        FastScript.requireIsText( dstDir )      # can be empty
 
         fileList = os.listdir( srcDir )
         try:
@@ -631,7 +621,7 @@ class InstallProcedure( object ):
         logging.debug( '%d items(s) in "%s", %d match expression',
                        len(fileList), srcDir, len(matching) )
 
-        Any.requireIsList( matching )
+        FastScript.requireIsList( matching )
 
         for entry in matching:
             src = os.path.join( srcDir, entry )
@@ -735,9 +725,9 @@ class InstallProcedure( object ):
             Note: Environment variables can be specified in both 'link'
                   and 'target', e.g. "config/${MAKEFILE_PLATFORM}".
         """
-        Any.requireIsTextNonEmpty( target )
-        Any.requireIsTextNonEmpty( link )
-        Any.requireIsTextNonEmpty( self.startPath )
+        FastScript.requireIsTextNonEmpty( target )
+        FastScript.requireIsTextNonEmpty( link )
+        FastScript.requireIsTextNonEmpty( self.startPath )
 
         target = FastScript.expandVars( target )
         link   = FastScript.expandVars( link )
@@ -770,7 +760,6 @@ class InstallProcedure( object ):
             Collect basic files used by the ToolBOS SDK itself.
         """
         self.copyMandatory( 'install/BashSrc',          'BashSrc'    )
-        self.copyMandatory( 'install/CmdSrc.bat',       'CmdSrc.bat' )
         self.copyMandatory( 'install/packageVar.cmake', 'packageVar.cmake' )
         self.copyMandatory( 'install/pkgInfo.py',       'pkgInfo.py' )
 
@@ -780,7 +769,7 @@ class InstallProcedure( object ):
             Collect scripts, executables, libraries, documentation,...
 
         """
-        self.copyMatching( 'bin', r'.*\.(m|php|py|sh)$', 'bin' )
+        self.copyMatching( 'bin', r'.*\.(py|sh)$', 'bin' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'bin', platform ), '.*' )
 
@@ -790,22 +779,12 @@ class InstallProcedure( object ):
         self.copyMatching( 'doc', r'.*\.(jpg|log|pdf|png|txt)$' )
         self.copyOptional( 'etc' )
         self.copyOptional( 'include' )
-        self.copyMatching( 'install', r'.*\.jar$', 'lib' )
 
-        self.copyMatching( 'lib', r'.*\.jar$', 'lib' )
         for platform in self.platformList:
             self.copyMatching( os.path.join( 'lib', platform ),
-                               '.*(a|def|dll|exp|lib|manifest|mex|mexa64|pck|so)' )
+                               '.*(a|def|dll|exp|lib||so)' )
 
-        if self.details.linkAllLibraries:
-            dummyFile = os.path.join( 'install/LinkAllLibraries' )
-            FastScript.setFileContent( dummyFile, '' )
-            self.copyMandatory( dummyFile, 'LinkAllLibraries' )
-
-        self.copyOptional( 'pymodules' )
-        self.copyOptional( 'sbin' )
         self.copyMatching( 'src', r'.*\.(h|hpp)$', 'include' )
-        self.copyOptional( 'web' )
 
 
     def _collectCustom( self ):
@@ -818,9 +797,9 @@ class InstallProcedure( object ):
             # single string: srcDir
             # tuple:         ( srcDir, dstDir )
 
-            if Any.isText( item ):
+            if FastScript.isText( item ):
                 workItem = ( item, item )  # dstDir=srcDir
-            elif Any.isTuple(item) and len(item) == 2:
+            elif FastScript.isTuple(item) and len(item) == 2:
                 workItem = item
             else:
                 raise ValueError( 'unexpected object in section "install"' )
@@ -868,7 +847,7 @@ class InstallProcedure( object ):
 
     def _computePatchlevel( self ):
         """
-            Attempts to set the patchlevel from SVN revision.
+            Attempts to auto-increment the patchlevel.
             If this fails tries to compute from last globally installed
             revision.
 
@@ -885,23 +864,15 @@ class InstallProcedure( object ):
             logging.info( 'found MAKEFILE_PATCHLEVELVERSION=%d', int(env) )
             self.details.patchlevel = int(env)
 
-
         if self.details.patchlevel is None:
-            # try to set patchlevel from SVN revision
-            if self.details.svnFound:
-                self.details.patchlevel = self.details.svnRevision
-
-
-        if self.details.patchlevel is None and not self.details.svnFound:
-            # when not using SVN (e.g. Git), attempt to increment number of
-            # last installation
+            # attempt to increment number of last installation
 
             sitPath      = getPath()
             majorVersion = int( splitVersion( self.details.packageVersion )[0] )
             minorVersion = int( splitVersion( self.details.packageVersion )[1] )
 
-            Any.requireIsTextNonEmpty( sitPath )
-            Any.requireIsTextNonEmpty( self.details.canonicalPath )
+            FastScript.requireIsTextNonEmpty( sitPath )
+            FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
             installRoot  = os.path.join( sitPath, self.details.canonicalPath )
             basedir      = os.path.dirname( installRoot )
@@ -936,7 +907,7 @@ class InstallProcedure( object ):
             # fallback to zero as last resort
             self.details.patchlevel = 0
 
-        Any.requireIsInt( self.details.patchlevel )
+        FastScript.requireIsInt( self.details.patchlevel )
 
 
     def _exclude( self ) -> None:
@@ -954,7 +925,7 @@ class InstallProcedure( object ):
         toSkip = set()
 
         for pair in self.index:
-            Any.requireIsTuple( pair )
+            FastScript.requireIsTuple( pair )
 
             src = pair[0]
 
@@ -975,7 +946,7 @@ class InstallProcedure( object ):
             Additionally a script "Install_<name>.sh" is searched.
             If present it will be executed.
         """
-        Any.requireIsTextNonEmpty( name )
+        FastScript.requireIsTextNonEmpty( name )
 
         try:
             f = self.details.installHooks[ name ]
@@ -991,53 +962,19 @@ class InstallProcedure( object ):
         except KeyError:
             pass            # no such setting, this is OK
 
-
-        if self.hostPlatform.startswith( 'windows' ):
-            fileName = '%s.bat' % name
-        else:
-            fileName = './%s.sh' % name
+        fileName = './%s.sh' % name
 
         if os.path.exists( fileName ):
             logging.info( 'executing hook script: %s', fileName )
             FastScript.execProgram( fileName )
 
 
-    def _extractVM( self ):
-        """
-            Attempts to run extractVM() over the package, in case it is
-            a Virtual Module package.
-        """
-        if self.details.isComponent():
-            from Middleware.BBMLv1.VirtualModules import extractVM
-
-            srcDir     = 'src/'
-            candidates = []
-            candidates.extend( glob.glob( 'test/*.xml'  ) )
-            candidates.extend( glob.glob( 'test/*.bbml' ) )
-
-            try:
-                candidates.remove( 'test/ModuleList.xml' )    # blacklisted
-            except ValueError:
-                pass   # no ModuleList.xml present
-
-            if candidates:
-                try:
-                    logging.debug( 'trying to extract VM from %s', candidates[0] )
-                    extractVM( self.details.topLevelDir, srcDir, candidates[0] )
-                    self.copyMatching( 'src', r'.*\.xml$', 'include' )
-
-                except ( AssertionError, IndexError ):    # most likely is not a VM package
-                    logging.debug( "package doesn't seem to be a VM package" )
-                except ValueError:
-                    pass
-
-
     def _installWorker( self, rootDir ):
         """
             Copies all files from self.index() relative to <rootDir>.
         """
-        Any.requireIsTextNonEmpty( rootDir )
-        Any.requireIsDir( self.details.topLevelDir )
+        FastScript.requireIsTextNonEmpty( rootDir )
+        FastScript.requireIsDir( self.details.topLevelDir )
 
         for entry in self.index:
             key   = entry[0]
@@ -1058,11 +995,11 @@ class InstallProcedure( object ):
 
 
     def _patchlevel_changeInstallRoot( self, sitPath ):
-        Any.requireIsTextNonEmpty( sitPath )
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
+        FastScript.requireIsTextNonEmpty( sitPath )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
         if self.details.usePatchlevels:
-            Any.requireIsInt( self.details.patchlevel )
+            FastScript.requireIsInt( self.details.patchlevel )
             self.startPath = '%s.%d' % ( self.details.canonicalPath,
                                          self.details.patchlevel )
         else:
@@ -1070,23 +1007,6 @@ class InstallProcedure( object ):
 
         self.installRoot = os.path.join( sitPath, self.startPath )
         logging.debug( 'installRoot=%s', self.installRoot )
-
-
-    def _registerComponent_ToolBOS( self ):
-        """
-            Add a symlink to the pkgInfo.py file into the module index.
-        """
-        if self.details.isBBCM() or self.details.isBBDM():
-
-            canonicalPath  = self.details.canonicalPath
-            packageName    = self.details.packageName
-            packageVersion = self.details.packageVersion
-
-            symlinkFile    = '%s_%s.py' % ( packageName, packageVersion )
-            symlinkRelPath = os.path.join( 'Modules', 'Index', symlinkFile )
-            target         = os.path.join( '../..', canonicalPath, 'pkgInfo.py' )
-
-            self.link( target, symlinkRelPath, True )
 
 
     def _setUmask( self ):
@@ -1163,11 +1083,11 @@ class InstallProcedure( object ):
                 pass                        # variable not set by user
 
         if groupName is not None:
-            Any.requireIsTextNonEmpty( groupName )
+            FastScript.requireIsTextNonEmpty( groupName )
 
             try:
                 groupID = grp.getgrnam( groupName ).gr_gid
-                Any.requireIsIntNotZero( groupID )
+                FastScript.requireIsIntNotZero( groupID )
                 logging.info( 'setting group=%s (uid=%d)', groupName, groupID )
 
             except ( AssertionError, KeyError ):
@@ -1194,8 +1114,8 @@ class InstallProcedure( object ):
             groups and/or access modes then a warning will be displayed but
             the installation procedure can continue.
         """
-        Any.requireIsDirNonEmpty( installRoot )
-        Any.requireIsDir( sitRootPath )     # might be first proxy install.
+        FastScript.requireIsDirNonEmpty( installRoot )
+        FastScript.requireIsDir( sitRootPath )     # might be first proxy install.
 
         # set group and/or permissions
         groupID        = self._installGroupID
@@ -1307,7 +1227,7 @@ class InstallProcedure( object ):
                     # consider executable-flag of file when applying mode
                     #
                     # in case of symlink operate on the link itself
-                    # (do not follow), CIA-1023
+                    # (do not follow)
                     if stat.S_IXUSR & os.lstat( path )[stat.ST_MODE]:
                         fileMode = 0o777 & ~umask
                     else:
@@ -1338,17 +1258,17 @@ class InstallProcedure( object ):
         """
             Show application name / headline at start-up.
         """
-        Any.requireIsTextNonEmpty( text )
+        FastScript.requireIsTextNonEmpty( text )
 
         version = ToolBOSConf.packageVersion
-        Any.requireIsTextNonEmpty( version )
+        FastScript.requireIsTextNonEmpty( version )
 
         display = 'TOOLBOS %s - %s' % ( version, text )
 
-        Any.logVerbatim( 3, ''       )
-        Any.logVerbatim( 3, 78 * '=' )
-        Any.logVerbatim( 3, display  )
-        Any.logVerbatim( 3, 78 * '=' )
+        FastScript.logVerbatim( 3, ''       )
+        FastScript.logVerbatim( 3, 78 * '=' )
+        FastScript.logVerbatim( 3, display  )
+        FastScript.logVerbatim( 3, 78 * '=' )
 
 
     @staticmethod
@@ -1357,8 +1277,8 @@ class InstallProcedure( object ):
             Makes a visible break between the continuous loglines,
             to emphasize the installation stage transition.
         """
-        Any.logVerbatim( 3, '\n' + '-' * 78 + '\n' )
-        Any.logVerbatim( 3, title + '\n' )
+        FastScript.logVerbatim( 3, '\n' + '-' * 78 + '\n' )
+        FastScript.logVerbatim( 3, title + '\n' )
 
 
 class GlobalInstallProcedure( InstallProcedure ):
@@ -1372,21 +1292,13 @@ class GlobalInstallProcedure( InstallProcedure ):
 
 
     def postCollectMetaInfo( self ):
-        Any.requireIsDir( self.sitRootPath )
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
-
-        try:
-            self._vcsConsistencyCheck()
-        except ValueError as details:
-            FastScript.prettyPrintError( str(details) )
-            raise SystemExit( details )
+        FastScript.requireIsDir( self.sitRootPath )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
         self._patchlevel_changeInstallRoot( self.sitRootPath )
 
 
     def preInstall( self ):
-        self._globalInstallReason()
-
         if self.details.installMode == 'clean':
             PackageCreator.uninstall( self.details.canonicalPath, True )
 
@@ -1396,8 +1308,8 @@ class GlobalInstallProcedure( InstallProcedure ):
             Performs the actual file operation, f.i. copying the previously
             selected files and/or directories into the global SIT.
         """
-        Any.requireIsDir( self.sitRootPath )
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
+        FastScript.requireIsDir( self.sitRootPath )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
 
         logging.info( 'installing package... (this may take some time)' )
 
@@ -1411,7 +1323,6 @@ class GlobalInstallProcedure( InstallProcedure ):
         logging.debug( '' )
 
         self._installWorker( self.sitRootPath )
-        self._ensureWorldWritableIndex()
         self._patchlevel_updateGlobalSymlink()
         self._updateProxyDir()
 
@@ -1419,161 +1330,6 @@ class GlobalInstallProcedure( InstallProcedure ):
     def setPermissions( self ):
         self._setPermissions( self.installRoot, self.sitRootPath )
 
-
-    def postInstall( self ):
-        self._registerComponent_RTMaps()
-
-
-    def _globalInstallReason( self ):
-        """
-            If the global SIT has been flagged to require a global install
-            log message, the user will be interactively asked to input such.
-
-            For batch processings, the user may also specify a message
-            using the MAKEFILE_GLOBALINSTALLREASON environment variable.
-        """
-        if ToolBOSConf.getConfigOption( 'askGlobalInstallReason' ) is False:
-            logging.debug( 'global install log disabled')
-            return
-
-
-        from ToolBOSCore.BuildSystem.GlobalInstallLog import GlobalInstallLog
-
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
-
-        try:
-            reason = self._globalInstallReason_prompt()
-        except ValueError:
-            raise
-
-        installRoot    = os.path.join( self.sitRootPath, self.details.canonicalPath )
-        isFirstInstall = not os.path.exists( installRoot )
-        msgType        = reason[:3]
-        message        = reason[5:]
-
-        g = GlobalInstallLog( self.details.canonicalPath, isFirstInstall,
-                              msgType, message )
-
-        # do not write in case MAKEFILE_CHEATCODE_42=TRUE is set
-        if FastScript.getEnv( 'MAKEFILE_CHEATCODE_42' ) != 'TRUE':
-
-            try:
-                g.writeFile( self.dryRun )
-            except ( IOError, OSError ) as details:
-                # just that file might exist, especially during Nightly Build
-                # two packages could by chance be installed simultaneously
-                logging.warning( details )
-
-
-    def _globalInstallReason_prompt(self):
-        """
-            Interactively asks the user for a global install reason.
-
-            For batch processings, the user may also specify such message
-            using the MAKEFILE_GLOBALINSTALLREASON environment variable.
-        """
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
-
-        reason = FastScript.getEnv( 'MAKEFILE_GLOBALINSTALLREASON' )
-
-        if not reason:
-            logging.info( '' )
-            logging.info( 'Please enter a reason for this global installation.' )
-            logging.info( 'Syntax:  <TYPE>: <short description>' )
-            logging.info( '' )
-            logging.info( 'examples:' )
-            logging.info( '    DOC: PDF manual updated' )
-            logging.info( '    FIX: buffer overflow in _doCompute() fixed' )
-            logging.info( '    IMP: improved performance by 20%' )
-            logging.info( '    NEW: now supports shared memory' )
-            logging.info( '' )
-            logging.info( 'This will appear on the Global Install Log.' )
-            logging.info( '' )
-
-            try:
-                prompt = '\n\t--> Reason:  '
-                reason = input( prompt )
-            except EOFError:
-                # user hit <CTRL+D>
-                raise KeyboardInterrupt( 'operation aborted by user' )
-
-            if not reason:
-                raise ValueError( 'no reason specified' )
-            else:
-                Any.logVerbatim( 0, '' )   # an additional newline after the prompt
-
-
-        # remove leading and trailing spaces (if any)
-        reason = reason.strip()
-
-        try:
-            self._globalInstallReason_verify(reason)
-        except ValueError:
-            raise
-
-        return reason
-
-
-    def _ensureWorldWritableIndex( self ):
-        # when installing components, (try to) ensure the Index-directory is
-        # world-writeable
-        if self.details.isComponent():
-            try:
-                path = os.path.join( self.sitRootPath, 'Modules/Index' )
-                logging.debug( 'chmod 0777 %s', path )
-                os.chmod( path, 0o777 )
-            except OSError as details:
-                # probably not owner --> cannot change
-                logging.debug( details )
-
-
-    @staticmethod
-    def _globalInstallReason_verify( reason ):
-        """
-            Checks if the provided input is somehow reasonable.
-
-            It's not a sophisticated verification, but at least allows
-            rejecting due to syntax errors (or too trivial messages).
-
-            Throws 'ValueError' exceptions if messages are not OK.
-            If the reason is OK it will return 'True'.
-        """
-        Any.requireIsTextNonEmpty( reason )
-
-        # check for correct syntax
-        if not re.match( '^(DOC|FIX|IMP|NEW)', reason ):
-            msg = 'invalid reason type (must be one out of: DOC, FIX, IMP, NEW)'
-            raise ValueError( msg )
-
-        # syntax errors
-        try:
-            if reason[3] != ':':
-                msg = 'invalid reason syntax (3rd character in message must be a colon (:) )'
-                raise ValueError( msg )
-
-            if reason[4] != ' ':
-                msg = 'invalid reason syntax (4th character in message must be a blank/space)'
-                raise ValueError( msg )
-        except IndexError:
-            raise ValueError( 'invalid reason (format: "TYPE: message")' )
-
-        # given the type, the colon, a space and a minimum text length of
-        # 5 characters, the overall length must at least be 10 characters
-        if len(reason) < 10:
-            msg = 'invalid reason (message too short)'
-            raise ValueError( msg )
-
-        if not re.match( r'^(DOC|FIX|IMP|NEW):\s\S+', reason ):
-            msg = 'invalid reason syntax (please see examples)'
-            raise ValueError( msg )
-
-        # check for stupid message, check if reason contains at least 4
-        # different characters
-        if FastScript.countCharacters( reason ) < 4:
-            msg = 'invalid reason (insufficient description)'
-            raise ValueError( msg )
-
-        return True
 
     def _patchlevel_updateGlobalSymlink(self):
         if self.details.usePatchlevels:
@@ -1606,7 +1362,7 @@ class GlobalInstallProcedure( InstallProcedure ):
                 else:
                     updateLink = False
 
-                Any.logVerbatim( 0, '' )   # an additional newline after the prompt
+                FastScript.logVerbatim( 0, '' )   # an additional newline after the prompt
 
 
             if updateLink:
@@ -1614,23 +1370,6 @@ class GlobalInstallProcedure( InstallProcedure ):
                 FastScript.link( target, symlink )
             else:
                 logging.info( 'keeping existing version symlink' )
-
-
-    def _registerComponent_RTMaps( self ):
-        """
-            Register RTMaps component into user's index (if applicable).
-
-            This step is skipped in case this is not an RTMaps package or
-            the user does not have a proxy directory.
-        """
-        if self.details.isRTMapsPackage():
-
-            if self.sitProxyPath:
-                logging.info( 'registering RTMaps component' )
-                RTMaps.registerNormalPackage( self.details.canonicalPath,
-                                              self.sitProxyPath )
-            else:
-                logging.info( 'skipped RTMaps component registration (no proxy SIT found)' )
 
 
     def _updateProxyDir( self ):
@@ -1660,32 +1399,6 @@ class GlobalInstallProcedure( InstallProcedure ):
                                         str(self.details.patchlevel) )
 
                 FastScript.link( target, symlink )
-
-
-    def _vcsConsistencyCheck( self ):
-        if FastScript.getEnv( 'MAKEFILE_SKIPSVNCHECK' ) == 'TRUE' or \
-           ToolBOSConf.getConfigOption( 'BST_svnCheck' ) is False:
-
-            logging.warning( 'VCS consistency check skipped' )
-            return
-
-        if not self.details.svnFound and not self.details.gitFound:
-            logging.error( 'VCS consistency check failed' )
-            msg = 'Global installation can only be done from a clean working tree.'
-            raise ValueError( msg )
-
-
-        vcs    = VersionControl.auto()
-        errors = vcs.consistencyCheck()
-
-        if errors:
-            # Not performance-critical and too complex if rewritten.
-            # pylint: disable=logging-not-lazy
-            logging.error( errors[0] + ':' )
-            logging.error( errors[1] )
-            raise ValueError( errors[2] )
-
-        logging.info( 'VCS consistency check passed' )
 
 
 class ProxyInstallProcedure( InstallProcedure ):
@@ -1719,7 +1432,7 @@ class ProxyInstallProcedure( InstallProcedure ):
             raise EnvironmentError( msg )
 
 
-        Any.requireIsDir( self.sitProxyPath )
+        FastScript.requireIsDir( self.sitProxyPath )
         self._patchlevel_changeInstallRoot( self.sitProxyPath )
 
 
@@ -1767,20 +1480,6 @@ class ProxyInstallProcedure( InstallProcedure ):
             PackageCreator.uninstall( self.details.canonicalPath, False )
 
 
-    def postInstall( self ):
-        self._registerComponent_RTMaps()
-
-
-    def _registerComponent_RTMaps( self ):
-        """
-            Register RTMaps component into user's index.
-        """
-        if self.details.isRTMapsPackage():
-            logging.info( 'registering RTMaps component' )
-            RTMaps.registerNormalPackage( self.details.canonicalPath,
-                                          self.sitProxyPath )
-
-
 class TarExportProcedure( InstallProcedure ):
 
 
@@ -1820,15 +1519,15 @@ class TarExportProcedure( InstallProcedure ):
             Assemble the tarball's filename, in the form
             '<projectName>-<packageVersion>.tar.bz2
         """
-        Any.requireIsTextNonEmpty( self.details.packageName )
-        Any.requireIsTextNonEmpty( self.details.packageVersion )
+        FastScript.requireIsTextNonEmpty( self.details.packageName )
+        FastScript.requireIsTextNonEmpty( self.details.packageVersion )
 
 
         self.installRoot = self.details.canonicalPath
 
         # when using patchlevels: modify installRoot + provide symlink
         if self.details.usePatchlevels:
-            Any.requireIsInt( self.details.patchlevel )
+            FastScript.requireIsInt( self.details.patchlevel )
             self.startPath = '%s.%d' % ( self.details.canonicalPath,
                                          self.details.patchlevel )
 
@@ -1865,7 +1564,7 @@ class TarExportProcedure( InstallProcedure ):
             selected files and/or directories into a temporary directory
             and create a tarball (*.tar.bz2) out of it.
         """
-        Any.requireIsDir( self._tmpDir )
+        FastScript.requireIsDir( self._tmpDir )
 
         self._installWorker( self._tmpDir )
 

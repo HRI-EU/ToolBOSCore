@@ -6,5 +6,6 @@ psutil
 pylint
 PyQt5
 pytest
+termcolor
 terminaltables
 urllib3

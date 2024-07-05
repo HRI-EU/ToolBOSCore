@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  run pylint on given file and get code issues
@@ -35,9 +34,7 @@
 #
 
 
-from typing import Type
-
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 FastScript.tryImport( 'pylint' )
 from pylint.lint import Run as linter
@@ -56,13 +53,16 @@ def getPylintResult( file: str, pylintConf: str ) -> linter:
         Returns:
             pylintResult: instance of pylint.lint.Run class
     """
-    Any.requireIsTextNonEmpty( file )
-    Any.requireIsTextNonEmpty( pylintConf )
+    FastScript.requireIsTextNonEmpty( file )
+    FastScript.requireIsTextNonEmpty( pylintConf )
 
-    # Somewhere between pylint 2.4 and 2.9 an 'exit'-argument was added.
+    # The 'exit'-argument specifies whether the process should be terminated
+    # when finished. Since we call from BST.py or Qt application, we don't want
+    # Pylint to terminate the process.
     #
-    # Adding this try-block for Python 2.7 (pylint 2.4.4).
-    # Without exit=False pylint terminates the Python process!
+    # This argument was added somewhere between 2.4 and 2.9.
+    # Therefore, we require 2.9 or higher.
+
     try:
         pylintResult = linter( args=[ file, '--rcfile=' + pylintConf ], exit=False )
     except TypeError:
@@ -82,7 +82,7 @@ def getTotalPylintIssues( pylintResult: linter  ) -> int:
             codeIssues: number of code issues found by pylint for a given file
     """
 
-    Any.requireIsInstance( pylintResult, linter )
+    FastScript.requireIsInstance( pylintResult, linter )
 
     pylintStats = pylintResult.linter.stats
 

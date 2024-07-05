@@ -32,9 +32,11 @@
 #
 
 
+import io
 import logging
+import subprocess
 
-from ToolBOSCore.Util import Any
+from ToolBOSCore.Util import FastScript
 
 
 def getDefaultLanguageStandard( platform ):
@@ -68,7 +70,7 @@ def _getCompilers( platform ):
 
     compilersTxtPath = 'build/{}/compilers.txt'.format( platform )
 
-    if Any.isFile( compilersTxtPath ) and Any.isFileNonEmpty( compilersTxtPath ):
+    if FastScript.isFile( compilersTxtPath ) and FastScript.isFileNonEmpty( compilersTxtPath ):
         content                = getFileContent( compilersTxtPath )
         cCompiler, cxxCompiler = content.split( '::' )
 
@@ -213,16 +215,12 @@ def _decodeCPPStd( version, strictAnsi ):
 
     return retVal
 
+
 def getIncludePaths(compiler, lang):
     """
         Get the standard include paths for the given compiler and language ('c'
         or 'c++').
     """
-    import io
-
-    from ToolBOSCore.Util.FastScript import execProgram
-    from subprocess import CalledProcessError
-
     def matchSearchPathStart(l):
         return l.strip() != '#include <...> search starts here:'
 
@@ -237,10 +235,8 @@ def getIncludePaths(compiler, lang):
     err = io.StringIO( )
 
     try:
-        execProgram( '{} -x{} -E -Wp,-v -'.format( compiler, lang ),
-                     stdin=inp,
-                     stdout=out,
-                     stderr=err )
+        FastScript.execProgram( '{} -x{} -E -Wp,-v -'.format( compiler, lang ),
+                                stdin=inp, stdout=out, stderr=err )
 
         lines = err.getvalue().split( '\n' )
 
@@ -250,7 +246,7 @@ def getIncludePaths(compiler, lang):
 
         return [ p.strip() for p in it ]
 
-    except CalledProcessError as e:
+    except subprocess.CalledProcessError as e:
         logging.error( 'Unable to run the preprocessor: %s.', e )
 
     return None

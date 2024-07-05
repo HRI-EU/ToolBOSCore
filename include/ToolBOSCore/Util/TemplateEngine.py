@@ -39,7 +39,7 @@ import os
 
 from mako.lookup import TemplateLookup
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util import FastScript
 
 
 # location of Mako templates
@@ -52,9 +52,9 @@ def run( srcFile, dstFile, values ):
         Runs the templating engine, applying the given values
         onto the template file 'srcFile', writing results into 'dstFile'.
     """
-    Any.requireIsFile( srcFile )
-    Any.requireIsText( dstFile )
-    Any.requireIsDict( values )
+    FastScript.requireIsFile( srcFile )
+    FastScript.requireIsText( dstFile )
+    FastScript.requireIsDict( values )
 
     logging.info( 'processing %s', dstFile )
 
@@ -68,11 +68,11 @@ def run( srcFile, dstFile, values ):
     template = lookup.get_template( os.path.basename( srcFile ) )
 
     dstContent = template.render( **values )
-    Any.requireIsText( dstContent )
+    FastScript.requireIsText( dstContent )
 
     FastScript.mkdir( os.path.dirname( dstFile ) )  # ensure dst dir. exists
     FastScript.setFileContent( dstFile, dstContent )
-    Any.requireIsFile( dstFile )
+    FastScript.requireIsFile( dstFile )
 
     # Mako does not set the executable-flag on the generated output file.
     if os.access( srcFile, os.X_OK ):                  # if executable

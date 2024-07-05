@@ -45,8 +45,7 @@ import sys
 
 from ToolBOSCore.Settings import UserSetup
 from ToolBOSCore.Storage  import ProxyDir
-from ToolBOSCore.Util     import Any
-from ToolBOSCore.Util     import ArgsManagerV2
+from ToolBOSCore.Util     import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -75,9 +74,6 @@ argman.addArgument( '-e', '--keep-empty', action='store_false', default=True,
 argman.addArgument( '-f', '--find', action='store_true',
                     help='find proxy installations' )
 
-argman.addArgument( '-i', '--keep-index', action='store_false', default=True,
-                    help='do not touch RTMaps *.pck index' )
-
 argman.addArgument( '-n', '--no-new', action='store_false', default=True,
                     help='do not add links to new packages' )
 
@@ -105,7 +101,6 @@ linkNewPackagesIntoProxy = args['no_new']
 removeBrokenSymlinks     = args['keep_broken']
 removeEmptyCategories    = args['keep_empty']
 removeProxyInstallations = args['remove']
-updateRTMapsIndex        = args['keep_index']
 
 
 #----------------------------------------------------------------------------
@@ -135,12 +130,11 @@ else:
                                  checkProxyLinkedVersion,
                                  removeProxyInstallations,
                                  cleanHomeDirectory,
-                                 updateRTMapsIndex,
                                  dryRun )
 
     except ( AssertionError, OSError, ValueError ) as details:
         # show stacktrace in verbose mode
-        if Any.getDebugLevel() >= 5:
+        if FastScript.getDebugLevel() >= 5:
             raise
         else:
             logging.error( details )

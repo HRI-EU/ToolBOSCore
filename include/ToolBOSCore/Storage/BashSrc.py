@@ -39,7 +39,7 @@ import os
 
 from ToolBOSCore.Packages import PackageDetector
 from ToolBOSCore.Storage  import SIT
-from ToolBOSCore.Util     import Any, TemplateEngine
+from ToolBOSCore.Util     import FastScript, TemplateEngine
 
 
 class BashSrcWriter( object ):
@@ -53,8 +53,8 @@ class BashSrcWriter( object ):
             You may provide a dict with values overriding the auto-detected
             values, mainly intended for unittesting purposes.
         """
-        Any.require( isinstance( details, PackageDetector.PackageDetector ) )
-        Any.requireIsList( details.inheritedProjects )
+        FastScript.require( isinstance( details, PackageDetector.PackageDetector ) )
+        FastScript.requireIsList( details.inheritedProjects )
         sitDependencies = '('
         first           = True
 
@@ -78,7 +78,7 @@ class BashSrcWriter( object ):
                          'sitDependencies': sitDependencies }
 
         if overrides:
-            Any.requireIsDictNonEmpty( overrides )
+            FastScript.requireIsDictNonEmpty( overrides )
             self.values.update( overrides )
 
 

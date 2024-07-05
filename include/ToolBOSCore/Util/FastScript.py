@@ -34,7 +34,10 @@
 #
 
 
+import atexit
 import getpass
+import glob
+import io
 import logging
 import os
 import platform
@@ -43,7 +46,783 @@ import shutil
 import socket
 import sys
 
-from ToolBOSCore.Util import Any
+
+#----------------------------------------------------------------------------
+# Public functions for assertion (condition checking)
+#----------------------------------------------------------------------------
+
+
+def require( condition ):
+    """
+        Throws an AssertionError if 'condition' evaluates to False.
+    """
+    assert condition
+
+
+def requireMsg( condition, msg='' ):
+    """
+        Throws an AssertionError if 'condition' evaluates to False.
+        You may pass human-readable details in 'msg'.
+    """
+    assert condition, msg
+
+
+def isOptional( dummy ):
+    """
+        Only for consistency with all the other is*() functions.
+
+        Always returns True.
+    """
+    return True
+
+
+def requireOptional( dummy ):
+    """
+        Explicitly flags a function parameter to be of no use or not
+        being necessary to check at all.
+
+        Python-equivalent of ANY_OPTIONAL() from ToolBOS library.
+    """
+    pass
+
+
+def isNotNone( obj ):
+    """
+        Returns a boolean whether 'obj' references 'None'.
+    """
+    return obj is not None
+
+
+def requireIsNotNone( obj, msg=None ):
+    """
+        Throws an AssertionError if 'obj' references 'None'.
+    """
+    if msg is None:
+        msg = "variable must not be 'None'"
+
+    requireMsg( isNotNone( obj ), msg )
+
+
+def isBool( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'bool'.
+    """
+    return isinstance( obj, bool )
+
+
+def requireIsBool( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'bool'.
+    """
+    requireMsg( isBool( obj ),
+                "variable is of type %s, expected 'bool'" % type( obj ) )
+
+
+def isInt( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'int'.
+    """
+    return isinstance( obj, int )
+
+
+def requireIsInt( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'int'.
+    """
+    requireMsg( isInt( obj ),
+                "variable is of type %s, expected 'int'" % type( obj ) )
+
+
+def isIntNotZero( obj ):
+    """
+        Returns a boolean whether 'obj' of type 'int' and is not zero.
+    """
+    return isInt( obj ) and obj != 0
+
+
+def requireIsIntNotZero( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'int' or is zero.
+    """
+    requireIsInt( obj )
+    requireMsg( isIntNotZero( obj ),
+                "variable must not be zero" )
+
+
+def isInRange( obj, minimum, maximum ):
+    """
+        Returns a boolean whether 'obj' is a number and between
+        min and max (including min/max limits).
+    """
+    requireMsg( isInt( obj ) or isFloat( obj ), "%s: Not a number" % obj )
+
+    if maximum < minimum:
+        mimumum, maximum = maximum, minimum             # swap values
+
+    return minimum <= obj <= maximum
+
+
+def requireIsInRange( obj, minimum, maximum ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'int' or is not
+        within min and max (including min/max limits).
+    """
+    requireMsg( isInRange( obj, minimum, maximum ),
+                "%s: Not within expected range (%s .. %s)" %
+                ( obj, minimum, maximum ) )
+
+
+def isFloat( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'float'.
+    """
+    return isinstance( obj, float )
+
+
+def requireIsFloat( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'float'.
+    """
+    requireMsg( isFloat( obj ),
+                "variable is not of type 'float'" )
+
+
+def requireIsString( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'string'.
+    """
+    requireMsg( isString( obj ),
+                "variable is of type '%s', expected a string" % type(obj) )
+
+
+def isString( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'str'.
+    """
+    return isinstance( obj, str )
+
+
+isText        = isString
+requireIsText = requireIsString
+
+
+def isTextNonEmpty( obj ):
+    """
+        Returns True if 'obj':
+          - is a string
+          - its length is zero and
+          - does not only contain whitespaces
+        otherwise returns False.
+    """
+    return isText( obj ) and len( obj ) > 0  and obj.strip() != ''
+
+
+def requireIsTextNonEmpty( obj ):
+    """
+        Throws an AssertionError if:
+          - 'obj' is not a string
+          - its length is zero or
+          - only contains whitespaces
+    """
+    requireIsText( obj )
+    requireMsg( isTextNonEmpty( obj ),
+                "string must not be empty" )
+
+
+def isList( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'list'.
+    """
+    return isinstance( obj, list )
+
+
+def requireIsList( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'list'.
+    """
+    requireMsg( isList( obj ),
+                "variable is of type %s, expected 'list'" % type( obj ) )
+
+
+def isListNonEmpty( obj ):
+    """
+        Returns a boolean whether 'obj' contains elements.
+    """
+    return isList( obj ) and len( obj ) > 0
+
+
+def requireIsListNonEmpty( obj ):
+    """
+        Throws an AssertionError if 'obj' is not a list or does not contain
+        elements.
+    """
+    requireIsList( obj )
+    requireMsg( isListNonEmpty( obj ),
+                'list must not be empty' )
+
+
+def isDict( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'dict'.
+    """
+    return isinstance( obj, dict )
+
+
+def requireIsDict( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'dict'.
+    """
+    requireMsg( isDict( obj ),
+                "variable is of type %s, expected 'dict'" % type( obj ) )
+
+
+def isDictNonEmpty( obj ):
+    """
+        Returns a boolean whether 'dict' is a list and contains
+        elements.
+    """
+    return isDict( obj ) and len( obj ) > 0
+
+
+def requireIsDictNonEmpty( obj ):
+    """
+        Throws an AssertionError if 'obj' is not a dict or does not contain
+        elements.
+    """
+    requireIsDict( obj )
+    requireMsg( isDictNonEmpty( obj ),
+                'dict must not be empty' )
+
+
+def isTuple( obj ):
+    """
+        Returns a boolean whether 'obj' is of type 'tuple'.
+    """
+    return isinstance( obj, tuple )
+
+
+def requireIsTuple( obj ):
+    """
+        Throws an AssertionError if 'obj' is not of type 'tuple'.
+    """
+    requireMsg( isTuple( obj ),
+                "variable is of type %s, expected 'tuple'" % type( obj ) )
+
+
+def isIterable( obj ):
+    """
+        Returns a boolean whether 'obj' is iterable, e.g. is a collection,
+        a collection view, a string, a generator, etc.
+    """
+    try:
+        iter(obj)
+    except TypeError:
+        return False
+    else:
+        return True
+
+
+def requireIsIterable( obj ):
+    """
+        Throws an AssertionError if 'obj' is not iterable, e.g. of type
+        'list' or 'tuple'.
+    """
+    requireMsg( isIterable( obj ),
+                "type %s is not iterable" % type( obj ) )
+
+
+def isSet( obj ):
+    """
+        Returns a boolean whether 'obj' is of either type 'set' or
+        'frozenset'.
+    """
+    return isinstance( obj, set ) or isinstance( obj, frozenset )
+
+
+def requireIsSet( obj, msg=None ):
+    """
+        Throws an AssertionError if 'obj' is neither of type 'set' nor
+        'frozenset'.
+    """
+    msg = msg or "variable is of type %s, expected 'set' or 'frozenset'" % type( obj )
+    requireMsg( isSet( obj ), msg )
+
+
+def isIn( obj, container ):
+    """
+        Returns a boolean whether 'obj' is present in 'container'.
+    """
+    return obj in container
+
+
+def requireIsIn( obj, container, msg=None ):
+    """
+        Throws an AssertionError if 'obj' is not present in 'container'.
+    """
+
+    msg = msg or '{}: No such object in {}'.format( obj, container )
+
+    requireMsg( isIn( obj, container ), msg )
+
+
+def isFileHandle( handle ):
+    """
+        Returns a boolean whether 'handle' points to an open file handle.
+    """
+    return isinstance( handle, io.IOBase )
+
+def isFile( path ):
+
+    """
+        Returns a boolean whether 'path' points to a regular file.
+    """
+    return os.path.isfile( path )
+
+
+def requireIsFile( path ):
+    """
+        Throws an AssertionError if 'path' does not point to a regular file.
+    """
+    requireIsTextNonEmpty( path )
+
+    requireMsg( not os.path.isdir( path ),
+                path + ": Is a directory, expected regular file" )
+
+    requireMsg( isFile( path ), path + ": No such file" )
+
+
+def isEmptyFile( path ):
+    """
+        Returns a boolean whether 'path' points to a regular file.
+
+        Additionally, the size of the file must be zero.
+    """
+    requireIsText( path )
+    return os.path.getsize( path ) == 0
+
+
+def isFileNonEmpty( path ):
+    """
+        Returns a boolean whether 'path' points to a regular file.
+
+        Additionally, the size of the file must be greater than zero.
+    """
+    requireIsText( path )
+    return isFile( path) and os.path.getsize( path ) > 0
+
+
+def requireIsFileNonEmpty( path ):
+    """
+        Throws an AssertionError if 'path' does not point to a regular file.
+
+        Additionally, the size of the file must be greater than zero.
+    """
+    requireIsFile( path )
+    requireMsg( isFileNonEmpty( path ), path + ': File is empty' )
+
+
+def isDir( path ):
+    """
+        Returns a boolean whether 'path' points to a directory.
+    """
+    requireIsTextNonEmpty( path )
+    return os.path.isdir( path )
+
+
+def requireIsDir( path ):
+    """
+        Throws an AssertionError if 'path' does not point to a directory.
+    """
+    requireIsTextNonEmpty( path )
+
+    requireMsg( os.path.exists( path ), path + ": No such directory" )
+    requireMsg( isDir( path ), path + ": Not a directory" )
+
+
+def isEmptyDir( path ):
+    """
+        Returns a boolean whether 'path' points to an empty directory.
+    """
+    requireIsTextNonEmpty( path )
+    return glob.glob( path + '/*' ) == []
+
+
+def requireIsEmptyDir( path ):
+    """
+        Throws an AssertionError if 'path' points to an empty directory.
+    """
+    requireIsTextNonEmpty( path )
+    requireIsDir( path )
+    requireMsg( isEmptyDir( path ), path + ": Directory is empty" )
+
+
+def isDirNonEmpty( path ):
+    """
+        Returns a boolean whether 'path' points to a directory.
+    """
+    requireIsTextNonEmpty( path )
+    return glob.glob( path + '/*' ) != []
+
+
+isNonEmptyDir = isDirNonEmpty
+
+
+def requireIsDirNonEmpty( path ):
+    """
+        Throws an AssertionError if 'path' does not point to a directory.
+    """
+    requireIsTextNonEmpty( path )
+    requireIsDir( path )
+    requireMsg( isDirNonEmpty( path ), path + ": Directory is empty" )
+
+
+requireIsNonEmptyDir = requireIsDirNonEmpty
+
+
+def isSymlink( path ):
+    """
+        Returns a boolean whether 'path' points to a symlink.
+    """
+    return os.path.islink( path )
+
+
+def requireIsSymlink( path ):
+    """
+        Throws an AssertionError if 'path' does not point to a symlink.
+    """
+    requireIsTextNonEmpty( path )
+    requireMsg( isSymlink( path ), path + ": Is not a symlink" )
+
+
+def isExisting( path ):
+    """
+        Returns a boolean whether 'path' exists.
+    """
+    return os.path.exists( path )
+
+
+def requireIsExisting( path ):
+    """
+        Throws an AssertionError if 'path' does not exist.
+    """
+    requireIsTextNonEmpty( path )
+    requireMsg( isExisting( path ), path + ": No such file or directory" )
+
+
+def requireIsNotExisting( path ):
+    """
+        Throws an AssertionError if 'path' already exists.
+    """
+    requireIsTextNonEmpty( path )
+    requireMsg( not isExisting( path ), path + ": Already exists" )
+
+
+def isMatching( string, pattern ):
+    """
+        Returns a boolean whether 'string' matches the given
+        regular expression.
+
+        Example:
+
+          requireIsMatching( 'foo', '^oo' )
+
+        will fail because 'foo' does not start with 'oo'.
+    """
+    requireIsTextNonEmpty( string )
+    requireIsTextNonEmpty( pattern )
+
+    return bool( re.match( pattern, string ) )
+
+
+def requireIsMatching( string, pattern ):
+    """
+        Throws an AssertionError if 'string' does not match the given
+        regular expression.
+
+        Example:
+
+          requireIsMatching( 'foo', '^oo' )
+
+        will fail because 'foo' does not start with 'oo'.
+    """
+    requireIsTextNonEmpty( string )
+    requireIsTextNonEmpty( pattern )
+
+    requireMsg( isMatching( string, pattern ),
+                "'%s' does not match expected regular expression '%s'" %
+                ( string, pattern ) )
+
+
+def isCallable( obj ):
+    """
+        Returns a boolean whether 'obj' is callable (read as function
+        or method).
+    """
+    return callable( obj )
+
+
+def requireIsCallable( obj ):
+    """
+        Throws an AssertionError if 'obj' is not callable (read as function
+        or method).
+
+        Example:
+          func = getattr( CMakeWrapper, taskName )
+          requireIsCallable( func )
+    """
+    requireMsg( isCallable( obj ),
+                '%s: Not a callable function or method (%s)' %
+                ( str( obj ), type( obj ) ) )
+
+
+def isInstance( obj, classType ):
+    """
+        Returns a boolean whether 'obj' is an instance of class
+        'classType' (not as string, pass as real class!).
+    """
+    return isinstance( obj, classType )
+
+
+def requireIsInstance( obj, classType, msg=None ):
+    """
+        Throws an AssertionError if 'obj' is not instance of class
+        'classType' (not as string, pass as real class!).
+
+        Example: function requires string argument
+
+          def myFunction( s ):
+            requireIsInstance( s, str )
+            [...]
+    """
+    requireIsNotNone( obj )
+
+    msg = msg or '{} ({}): Not an instance of class "{}"'.format( str( obj ), type( obj ), classType )
+
+    requireMsg( isInstance( obj, classType ), msg )
+
+
+def isInstanceOrNone( obj, classType ):
+    """
+        Returns a boolean whether 'obj' is instance of class
+        'classType' (not as string, pass as real class!), or None.
+
+        This function can be used for checking parameters that must be of a
+        certain class, or are permitted to be None to e.g. fallback to the
+        defaults.
+    """
+    return isinstance( obj, classType ) or obj is None
+
+
+def requireIsInstanceOrNone( obj, classType, msg=None ):
+    """
+        Throws an AssertionError if 'obj' is neither an instance of class
+        'classType' (not as string, pass as real class!), nor None.
+
+        This function can be used for checking parameters that must be of a
+        certain class, or are permitted to be None to e.g. fallback to the
+        defaults.
+    """
+    msg = msg or '{} ({}): Neither an instance of class "{}", nor None'.format( str( obj ), type( obj ), classType )
+
+    requireMsg( isInstanceOrNone( obj, classType ), msg )
+
+
+def isWritableDir( path ):
+    """
+        Returns a boolean whether 'path' is a writable directory.
+    """
+    return os.access( path, os.W_OK )
+
+
+def requireIsWritableDir( path ):
+    """
+        Throws an AssertionError if 'path' is not a writable directory.
+    """
+    requireIsTextNonEmpty( path )
+    requireIsDir( path )
+
+    requireMsg( isWritableDir( path ),
+                path + ": No writing permissions for this directory" )
+
+
+#----------------------------------------------------------------------------
+# Public functions for logging
+#----------------------------------------------------------------------------
+
+
+# always write messages to console
+
+consoleFormatter = logging.Formatter( "[%(filename)s:%(lineno)d %(levelname)s] %(message)s" )
+consoleHandler   = logging.StreamHandler()
+consoleHandler.setFormatter( consoleFormatter )
+
+# use same format as for writing to console
+fileFormatter = consoleFormatter
+fileHandler   = None
+
+rootLogger = logging.getLogger()
+rootLogger.addHandler( consoleHandler )
+
+# default loglevel after importing py
+#
+# Note: If set to logging.DEBUG then all other Python modules may log a lot
+#       of stuff, better keep logging.INFO here.
+rootLogger.setLevel( logging.INFO )
+
+
+# ensure flushing the streams at application exit
+atexit.register( logging.shutdown )
+
+
+def setOutputFile( filename, rotate=False, size=None, count=None ):
+    """
+        Adds another log handler which writes log lines to files.
+
+        If 'filename' is None, writing to output file will be stopped.
+        If 'rotate' is True, use `RotatingFileHandler` to rotate the log files
+        once they reach `size` bytes (default 5 MB), a maximum of `count` times
+        (default 5).
+
+    """
+    global fileHandler
+
+    rootLogger = logging.getLogger()
+
+    if filename is None:
+        requireMsg( fileHandler, 'fileHandler not assigned, yet' )
+        rootLogger.removeHandler( fileHandler )
+    else:
+        requireIsTextNonEmpty( filename )
+
+        if rotate:
+            from logging.handlers import RotatingFileHandler
+
+            size  = size or (5 * 1024 * 1024) # 5 MB
+            count = count or 5
+
+            fileHandler = RotatingFileHandler( filename, maxBytes=size, backupCount=count )
+        else:
+            fileHandler = logging.FileHandler( filename )
+
+        fileHandler.setFormatter( fileFormatter)
+        rootLogger.addHandler( fileHandler )
+
+
+def setDebugLevel( level ):
+    """
+        Set the verbosity level of the root logger.
+
+        This is a convenience function, for advanced settings please do
+        manually.
+
+        You can pass either an integer (like the ToolBOS "FastScript. library)
+        with ranges meaning 0==highest, 10==lowest, or pass a constant of
+        the 'logging' module, such as logging.DEBUG.
+
+
+        Critical messages only:
+            setDebugLevel( 0 )
+            setDebugLevel( logging.CRITICAL )
+
+        Additionally regular progress info:
+            setDebugLevel( 3 )
+            setDebugLevel( logging.INFO )
+
+        Verbose output for debugging:
+            setDebugLevel( 5 )
+            setDebugLevel( logging.DEBUG )
+    """
+    requireIsInt( level )
+
+    # we assume that levels greater than 10 are ones passed by constants
+    # such as logging.INFO
+    #
+    # levels below 10 are assumed to match the ToolBOS FastScript.library
+    # which typically is between 0 and 10
+
+    if level == 0:
+        level = logging.CRITICAL
+    elif level == 1:
+        level = logging.WARNING
+    elif level < 5:
+        level = logging.INFO
+    elif level < 10:
+        level = logging.DEBUG
+    else:
+        # assume is a constant from the 'logging' module (values 10-50)
+        pass
+
+    rootLogger = logging.getLogger()
+    rootLogger.setLevel( level )
+
+
+def getDebugLevel():
+    """
+        Get the verbosity level of the root logger.
+
+        This is a convenience function, for advanced settings please do
+        manually.
+
+        For compatibility returns values like the ToolBOS "FastScript. library
+        with ranges meaning 0==highest, 10==lowest.
+    """
+    level = logging.getLogger().level
+
+    if level <= 10:
+        return 5
+    elif level <= 20:
+        return 3
+    else:
+        return 0
+
+
+def log( level, message ):
+    """
+        This function makes using the 'logging' module similar to the
+        ToolBOS macro "ANY_LOG".
+    """
+    requireIsInt( level )
+    requireIsText( message )
+
+    if level <= 0:
+        logging.warning( message )
+    elif level < 5:
+        logging.info( message )
+    else:
+        logging.debug( message )
+
+
+def logVerbatim( level, message ):
+    """
+        This function is similar to log() except that it does not print
+        the typical logline preamble.
+
+        Use it to log verbatim.
+    """
+    if level <= getDebugLevel():
+        consoleHandler.stream.write( message + '\n' )
+
+
+def addStreamLogger( stream, debugLevel, preamble=True ):
+    """
+        By providing a file-like object the log messages of the checkers
+        can be captured. 'stream' could be a StringIO instance.
+
+        'debugLevel' should be provided as constant from the 'logging'-
+        framework, f.i. logging.INFO or logging.DEBUG
+    """
+    if preamble:
+        formatString = "[%(filename)s:%(lineno)d %(levelname)s] %(message)s"
+    else:
+        formatString = "%(message)s"
+
+
+    streamFormatter = logging.Formatter( formatString )
+    logHandler      = logging.StreamHandler( stream )
+    logHandler.setFormatter( streamFormatter )
+    logHandler.setLevel( debugLevel )
+
+    rootLogger.addHandler( logHandler )
 
 
 #----------------------------------------------------------------------------
@@ -75,7 +854,7 @@ def getDirsInDir( path = '.', excludePattern = None, onError = None ):
         be empty.
 
     """
-    Any.requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( path )
     subdirList = []
 
     if not os.path.isdir( path ):
@@ -126,7 +905,7 @@ def getDirsInDirRecursive( path = '.',
         e.g. permission denied. This function needs to take a single
         path parameter. If omitted, an OSError will be raised upon errors.
     """
-    Any.requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( path )
     result = []
 
     if not os.path.isdir( path ):
@@ -172,7 +951,7 @@ def getFilesInDir( path, excludePattern = '' ):
         This function is pretty equal to Python's glob.glob() and might be
         removed in the future.
     """
-    Any.requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( path )
     subdirList = []
 
     if not os.path.isdir( path ):
@@ -191,10 +970,10 @@ def getFilesInDirRecursive( path, excludePattern = None ):
         Returns a set of all files that can be recursively found under 'path'.
 
         'excludePattern' must be a regular expression object that will be
-        used to exclude certain directories (such as "build" and ".svn") in
+        used to exclude certain directories (such as "build" and ".git") in
         the following example:
 
-            excludePattern = re.compile( "(build|.svn)" )
+            excludePattern = re.compile( "(build|.git)" )
             fileList = getFilesInDirRecursive( "Package/1.0", excludePattern )
     """
     result  = set()
@@ -228,15 +1007,15 @@ def rename( src, dst ):
         validity of the "src" filename first, and requires that the "dst"
         file has been successfully written.
     """
-    Any.requireIsTextNonEmpty( src )
-    Any.requireIsTextNonEmpty( dst )
-    Any.requireIsFile( src )
+    requireIsTextNonEmpty( src )
+    requireIsTextNonEmpty( dst )
+    requireIsFile( src )
 
     dstDir = os.path.dirname( dst )
     mkdir( dstDir )
 
     os.rename( src, dst )
-    Any.requireIsFile( dst )
+    requireIsFile( dst )
 
 
 def remove( path, dryRun=False, ignoreErrors=False ):
@@ -286,10 +1065,10 @@ def copyWithRetry( src, dst, maxAttempts=3, waitSeconds=2 ):
     """
     import time
 
-    Any.requireIsTextNonEmpty( src )
-    Any.requireIsTextNonEmpty( dst )
-    Any.requireIsInRange( maxAttempts, 1, 100 )
-    Any.requireIsInRange( waitSeconds, 1, 3600 )
+    requireIsTextNonEmpty( src )
+    requireIsTextNonEmpty( dst )
+    requireIsInRange( maxAttempts, 1, 100 )
+    requireIsInRange( waitSeconds, 1, 3600 )
 
     i = 0
 
@@ -317,9 +1096,9 @@ def link( target, symlink, dryRun=False ):
         Creates a symlink, incl. all the necessary paths to it,
         and also prints a debug message.
     """
-    Any.requireIsTextNonEmpty( symlink )
-    Any.requireIsTextNonEmpty( target )        # allow initially broken links
-    Any.requireIsBool( dryRun )
+    requireIsTextNonEmpty( symlink )
+    requireIsTextNonEmpty( target )        # allow initially broken links
+    requireIsBool( dryRun )
 
     # create destination directory (if it does not exist, yet)
     if not dryRun:
@@ -348,7 +1127,7 @@ def mkdir( path, verbose=False ):
 
         If the directory can't be created, an exception will be thrown.
     """
-    Any.requireIsText( path )
+    requireIsText( path )
 
     if not path:
         return
@@ -364,7 +1143,7 @@ def mkdir( path, verbose=False ):
 
         if details.errno == 17:                     # 17 = directory exists
             # ensure it's really a directory and not a file
-            Any.requireIsDir( path )
+            requireIsDir( path )
         else:
             raise
 
@@ -377,7 +1156,7 @@ def getFileOwner( path ):
     """
     from pwd import getpwuid
 
-    Any.requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( path )
 
     ownerID   = os.stat( path ).st_uid
     ownerName = getpwuid( ownerID ).pw_name
@@ -443,8 +1222,8 @@ def setFileContent( filename, content ):
     """
         Writes "content" (of type 'str' or 'unicode') to the specified file.
     """
-    Any.requireIsTextNonEmpty( filename )
-    Any.requireIsText( content )
+    requireIsTextNonEmpty( filename )
+    requireIsText( content )
 
     dirName = os.path.dirname( filename )
 
@@ -456,42 +1235,7 @@ def setFileContent( filename, content ):
     f.close()
 
 
-def serializeToFile( filename, obj ):
-    """
-        This function serializes 'object' into 'filename'.
-
-        Attention: If the specified file exists it will be overwritten.
-    """
-    from pickle import Pickler
-
-    from ToolBOSCore.External.atomicfile import AtomicFile
-
-
-    Any.requireIsTextNonEmpty( filename )
-
-    with AtomicFile( filename, 'wb' ) as f:          # Pickle uses binary streams
-        Pickler( f ).dump( obj )
-
-
-def deserializeFromFile( filename ):
-    """
-        Deserializes the content from 'filename' and returns it as
-        Python object.
-    """
-    from pickle import Unpickler
-    Any.requireIsTextNonEmpty( filename )
-
-    try:
-        f = open( filename, 'rb' )              # Pickle uses binary streams
-        obj = Unpickler( f ).load()
-        f.close()
-    except EOFError as details:
-        raise IOError( details )
-
-    return obj
-
-
-def findFiles( path, regexp=None, ext=None, excludeSVN=True ):
+def findFiles( path, regexp=None, ext=None ):
     """
         Returns a list with all files in 'path' whoms names match a certain
         pattern. Pattern can be:
@@ -502,8 +1246,6 @@ def findFiles( path, regexp=None, ext=None, excludeSVN=True ):
         Note that both 'regexp' and 'ext' can be scalar values as well
         as lists. In such case, any of the expression (or extension) must
         match.
-
-        If 'excludeSVN=True', files under ".svn" are skipped.
     """
     fileList = []
 
@@ -513,10 +1255,6 @@ def findFiles( path, regexp=None, ext=None, excludeSVN=True ):
         for entry in files:
             path    = os.path.join( root, entry )
             fileExt = os.path.splitext( entry )[1]
-
-            # skip SVN files (if requested)
-            if excludeSVN == True and path.find( '.svn' ) != -1:
-                continue
 
             # found a file with requested extension
             if isinstance(ext,str) and ext == fileExt:
@@ -554,7 +1292,7 @@ def execFile( filename ):
         If the code in this file declares any variables then their values
         are returned in a map.
     """
-    Any.requireIsTextNonEmpty( filename )
+    requireIsTextNonEmpty( filename )
 
     # redundant check removed for performance reasons:
     # open() itself will raise an IOError if file not present,
@@ -597,7 +1335,7 @@ def execProgram( cmd, workingDir = None, host = 'localhost',
         Returns the exit code of the program. Raises an exception if it is
         not zero.
     """
-    Any.requireIsTextNonEmpty( cmd )
+    requireIsTextNonEmpty( cmd )
 
     from shlex      import split
     from subprocess import CalledProcessError
@@ -684,13 +1422,13 @@ def getCommandLine( cmd, workingDir=None, host=None, user=None ):
         If 'host' is the current machine, the plain 'cmd' will be
         returned and the workingDir will be None.
     """
-    Any.requireIsTextNonEmpty( cmd )
+    requireIsTextNonEmpty( cmd )
 
     if host is not None:
-        Any.requireIsTextNonEmpty( host )
+        requireIsTextNonEmpty( host )
 
     if workingDir is not None:
-        Any.requireIsTextNonEmpty( workingDir )
+        requireIsTextNonEmpty( workingDir )
 
 
     localHostname = socket.gethostname()
@@ -756,13 +1494,13 @@ def getEnvChk( varName, default=None ):
         If the requested 'varName' is not found in the environment and no default
         parameter is specified, an EnvironmentError is raised.
     """
-    Any.requireIsTextNonEmpty( varName )
+    requireIsTextNonEmpty( varName )
 
     value = getEnv( varName )
 
     if value is None:
         if default is None:
-            if not Any.isTextNonEmpty( value ):
+            if not isTextNonEmpty( value ):
                 raise EnvironmentError( '%s: empty environment variable' % varName )
         else:
             return default
@@ -784,7 +1522,7 @@ def setEnv( varNameOrMap, varValue = '' ):
            variable with this name. Optionally you can specify 'varValue' of
            type 'str' to assign a value to this environment variable.
     """
-    if Any.isText( varNameOrMap ):                # set single variable
+    if isText( varNameOrMap ):                # set single variable
         logging.debug( 'export %s="%s"', varNameOrMap, varValue )
         os.environ[ varNameOrMap ] = varValue
     else:                                         # set whole map
@@ -803,19 +1541,19 @@ def setEnv_withExpansion( varName, varValue ):
 
         Example:
 
-            setEnv_withExpansion( 'MATLAB_ROOT',
-                                  '${SIT}/External/Matlab/8.4' )
+            setEnv_withExpansion( 'EXAMPLE_ROOT',
+                                  '${SIT}/External/Example/1.0' )
 
             setEnv_withExpansion( 'PATH',
-                                  '${MATLAB_ROOT}/bin:${PATH}' )
+                                  '${EXAMPLE_ROOT}/bin:${PATH}' )
 
-            will first define MATLAB_ROOT as absolute path to Matlab/8.4
+            will first define EXAMPLE_ROOT as absolute path to Example/1.0
             (replacing ${SIT} by its current environment value)
-            and in a second step prepend the absolute path to Matlab's
+            and in a second step prepend the absolute path to Example's
             "bin"-directory to the current value of ${PATH}.
     """
-    Any.requireIsTextNonEmpty( varName )
-    Any.requireIsTextNonEmpty( varValue )
+    requireIsTextNonEmpty( varName )
+    requireIsTextNonEmpty( varValue )
 
     setEnv( varName, os.path.expandvars( varValue ) )
 
@@ -857,8 +1595,8 @@ def appendEnv( varName, s ):
         Example:
               append( 'PATH', ':/path/to/foo' )
     """
-    Any.requireIsTextNonEmpty( varName )
-    Any.requireIsText( s )
+    requireIsTextNonEmpty( varName )
+    requireIsText( s )
 
     oldValue = getEnv( varName )
 
@@ -878,8 +1616,8 @@ def prependEnv( varName, s ):
         Example:
               prepend( 'PATH', '/path/to/foo:' )
     """
-    Any.requireIsTextNonEmpty( varName )
-    Any.requireIsText( s )
+    requireIsTextNonEmpty( varName )
+    requireIsText( s )
 
     oldValue = getEnv( varName )
 
@@ -906,11 +1644,11 @@ def chmodRecursive( path, dirPermission, filePermission ):
         FastScript.setPermissions( '/path', 0o775, 0o664 )
 
         ATTENTION: <dirPermission> and <filePermission> needs to be passed as octal number,
-         with a leading '0o' prefix to support Python 2 and 3.
+        with a leading '0o' prefix!
     """
-    Any.requireIsTextNonEmpty( path )
-    Any.requireIsIntNotZero( dirPermission  )
-    Any.requireIsIntNotZero( filePermission )
+    requireIsTextNonEmpty( path )
+    requireIsIntNotZero( dirPermission  )
+    requireIsIntNotZero( filePermission )
 
     for dirpath, dirs, files in os.walk( path ):
         for item in dirs:
@@ -928,7 +1666,7 @@ def readOnlyChmod( path ):
     """
         Set read only permissions to the given path recursively.
     """
-    Any.requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( path )
 
     dirPerms  = 0o555
     filePerms = 0o444
@@ -940,7 +1678,7 @@ def readWriteChmod( path ):
     """
         Set read-write permissions to the given path recursively.
     """
-    Any.requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( path )
 
     dirPerms  = 0o775
     filePerms = 0o664
@@ -969,9 +1707,9 @@ def setGroupPermission( path, groupName, mode ):
     """
     from grp import getgrnam
 
-    Any.requireIsTextNonEmpty( path )    # do not check if exists
-    Any.requireIsTextNonEmpty( groupName )
-    Any.requireIsIntNotZero( mode )
+    requireIsTextNonEmpty( path )    # do not check if exists
+    requireIsTextNonEmpty( groupName )
+    requireIsIntNotZero( mode )
 
     groupID = getgrnam( groupName ).gr_gid
 
@@ -997,8 +1735,8 @@ def chgrpRecursive( path, groupName ):
     """
     from grp import getgrnam
 
-    Any.requireIsTextNonEmpty( path )
-    Any.requireIsTextNonEmpty( groupName )
+    requireIsTextNonEmpty( path )
+    requireIsTextNonEmpty( groupName )
 
     try:
         groupid = getgrnam( groupName ).gr_gid
@@ -1080,8 +1818,8 @@ def expandVar( string, varName ):
 
         "path" will then be e.g. "/hri/sit/latest/DevelopmentTools/ToolBOSCore"
     """
-    Any.requireIsTextNonEmpty( string )
-    Any.requireIsTextNonEmpty( varName )
+    requireIsTextNonEmpty( string )
+    requireIsTextNonEmpty( varName )
     value = getEnv( varName )
 
     if not value:
@@ -1101,7 +1839,7 @@ def expandVars( string ):
 
         "path" will then be e.g. "/hri/sit/latest/users/torvalds".
     """
-    Any.requireIsText( string )                 # might be empty
+    requireIsText( string )                 # might be empty
 
     if len(string) == 0:
         return string
@@ -1123,8 +1861,8 @@ def collapseVar( string, envName ):
 
         "result" will then be '${SIT}/DevelopmentTools/ToolBOSCore'
     """
-    Any.requireIsTextNonEmpty( string )
-    Any.requireIsTextNonEmpty( envName )
+    requireIsTextNonEmpty( string )
+    requireIsTextNonEmpty( envName )
     envValue = getEnv( envName )
 
     # logging.info( envValue )
@@ -1141,10 +1879,8 @@ def countCharacters( string ):
         Returns the number of different characters within given string.
 
         Example:  countCharacters( 'abcabc' ) would return 3.
-
-        This is a re-implementation of PHP's count_chars() function.
     """
-    Any.requireIsText( string )
+    requireIsText( string )
 
     tmp = {}
 
@@ -1166,20 +1902,16 @@ def flattenList( nestedList ):
     """
         Flattens a nested list into a one-dimensional list.
     """
-    from ToolBOSCore.External.Flatten import flatten
-
-    Any.requireIsList( nestedList )
-    return flatten( nestedList )
+    requireIsList( nestedList )
+    return [ i for j in nestedList for i in j ]
 
 
 def removeDuplicates( aList ):
     """
         Removes all duplicate elements from a list.
     """
-    from ToolBOSCore.External.f5 import f5
-
-    Any.requireIsList( aList )
-    return f5( aList )
+    requireIsList( aList )
+    return list( dict.fromkeys( aList ) )
 
 
 def reduceList( nestedList ):
@@ -1187,7 +1919,7 @@ def reduceList( nestedList ):
         Flattens a nested list into a one-dimensional list and removes
         all duplicate elements.
     """
-    Any.requireIsList( nestedList )
+    requireIsList( nestedList )
     resultList = flattenList( nestedList )
     resultList = removeDuplicates( resultList )
 
@@ -1202,17 +1934,17 @@ def getTreeView( nestedList, level = 0, levelPadding = '' ):
         The parameters 'level' and 'levelPadding' are only internally used
         for recursion and should not be set by the user.
     """
-    Any.requireIsList( nestedList )
+    requireIsList( nestedList )
     result = ''
 
     if level > 20:              # loop guard
         raise ValueError
 
     for i, entry in enumerate( nestedList ):
-        if Any.isText( entry ):
+        if isText( entry ):
             entryPadding = levelPadding + '%c---' % _getTreeChar( nestedList, i )
             result += "%s%s\n" % ( entryPadding, entry )
-        elif Any.isList( entry ):
+        elif isList( entry ):
             entryPadding = levelPadding + '%c   ' % _getTreeChar( nestedList, i )
             result += getTreeView( entry, level + 1, entryPadding )
         else:
@@ -1267,7 +1999,7 @@ def stopTiming( startTime ):
     """
     import datetime
 
-    Any.requireIsInstance( startTime, datetime.datetime )
+    requireIsInstance( startTime, datetime.datetime )
 
     stopTime = now()
     logging.debug( 'elapsed time: %s', stopTime - startTime )
@@ -1285,7 +2017,7 @@ def prettyPrintError( msg ):
     """
     from textwrap import wrap
 
-    Any.requireIsTextNonEmpty( msg )
+    requireIsTextNonEmpty( msg )
 
     lines = wrap( msg )
     finalMsg = '\n\t' + '\n\t'.join( lines ) + '\n'
@@ -1300,15 +2032,15 @@ def tryImport( modules ):
     """
     import importlib
 
-    if Any.isText( modules ):
+    if isText( modules ):
         modules = [ modules ]
 
-    Any.requireIsIterable( modules )
+    requireIsIterable( modules )
 
     notFound = set()
 
     for moduleName in modules:
-        Any.requireIsTextNonEmpty( moduleName )
+        requireIsTextNonEmpty( moduleName )
 
         try:
             importlib.import_module( moduleName )
@@ -1327,7 +2059,7 @@ def tryImport( modules ):
 
 
 def _getTreeChar( searchList, index ):
-    Any.requireIsList( searchList )
+    requireIsList( searchList )
     lastStringIndex = _getLastStringInList( searchList )
 
     if index < lastStringIndex:
@@ -1341,7 +2073,7 @@ def _getTreeChar( searchList, index ):
 
 
 def _getLastStringInList( searchList ):
-    Any.requireIsList( searchList )
+    requireIsList( searchList )
     index = 0
 
     for i in range( 0, len(searchList) ):

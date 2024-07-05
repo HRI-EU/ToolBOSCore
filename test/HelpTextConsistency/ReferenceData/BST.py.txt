@@ -1,0 +1,61 @@
+usage: BST.py [-h] [-a] [-B BUILD_TYPE] [-b] [-d] [--deprecate]
+              [--deprecate-all] [-f] [--flat] [-i] [-j JOBS] [-k] [-l]
+              [-M MESSAGE] [-m] [-p PLATFORM] [-q] [-r] [-s] [-t] [-U] [-x]
+              [-y] [-z] [-v] [-V]
+
+The Build System Tools (BST.py) are used for various tasks dealing
+with compiling, installing and maintaining software packages. They are
+used as an abstraction layer to the underlying build system and
+utilities.
+
+options:
+  -h, --help            show this help message and exit
+  -a, --all             same as distclean, setup, build and test
+  -B BUILD_TYPE, --build-type BUILD_TYPE
+                        build type: Release|Debug (default: Release)
+  -b, --build           compile package
+  -d, --distclean       remove all buildsystem-related files
+  --deprecate           mark a version of a package as deprecated
+  --deprecate-all       mark a whole package as deprecated
+  -f, --shellfiles      generate install/{BashSrc,pkgInfo.py} etc.
+  --flat                create new-style (flat) package structures
+  -i, --install         install package into global SIT
+  -j JOBS, --jobs JOBS  run number of compile jobs in parallel (default: 1)
+  -k, --codecheck       static source code analysis
+  -l, --list            list all used env. variables + build settings
+  -M MESSAGE, --message MESSAGE
+                        message for deprecation
+  -m, --doc             make API documentation (HTML)
+  -p PLATFORM, --platform PLATFORM
+                        cross-compile for specified target platform ("-p help"
+                        to list supported platforms)
+  -q, --quality         run software quality checks
+  -r, --release         create release tarball
+  -s, --setup           setup/configure the package for being built
+  -t, --test            run the unittest suite of the package
+  -U, --uninstall       remove package from SIT
+  -x, --proxy           install package into SIT-Proxy (sandbox)
+  -y, --yes             reply "yes" to all prompts, f.i. run non-interactively
+  -z, --zen             zen build mode (GUI)
+  -v, --verbose         show debug messages
+  -V, --version         show version info and exit
+
+examples:
+  BST.py                             # build (setup once + compile)
+  BST.py -avx                        # all + install into proxy (verbose)
+  BST.py -ai                         # all + install globally
+  BST.py -bv                         # build in verbose mode
+  BST.py /path/to/sourcetree         # out-of-tree build
+  BST.py -p help                     # show cross-compile platforms
+  BST.py -p ${MAKEFILE_PLATFORM}     # cross-compile for Windows
+  BST.py -q                          # run quality checks (configured for this package)
+  BST.py -q --all                    # run all quality checks
+  BST.py -q src C01 C02 C03          # run specified checks on "src" only
+  BST.py -q sqLevel=advanced         # check with specified quality level
+  BST.py -q group=GEN,PY             # check only rules for GEN & PY group
+  BST.py -u                          # check for updates / apply patches
+  BST.py --uninstall                 # remove package from SIT
+  BST.py --deprecate                 # deprecate this package
+  BST.py --deprecate Foo/Bar/1.0     # deprecate specified package
+
+Please report bugs on GitLab (https://dmz-gitlab.honda-ri.de/TECH_Team/ToolBOSCore/-/issues).

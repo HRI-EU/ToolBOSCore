@@ -33,24 +33,28 @@
 #
 
 
-variables:
-  TOOLBOSCORE_VERSION: "4.3"
-
-
 stages:
   - test
-  - check
 
 
-test:
-  image: dmz-gitlab.honda-ri.de:5050/gitlabrunner/buildcontainers/hri-eu-main:latest
+default:
+  image: dmz-gitlab.honda-ri.de:5050/tech_team/docker/ubuntu2004-hri-main:1.0
   interruptible: true
-  stage: test
-  parallel:
-    matrix:
-      - PYTHON_VERSION: [ '3.9', '3.11' ]
+
+
+all-conda:
   script:
-    - ./ci-test.sh "$TOOLBOSCORE_VERSION" "$PYTHON_VERSION"
+    - ./ci-all-conda.sh
+
+
+all-venv:
+  script:
+    - ./ci-all-venv.sh
+
+
+include:
+  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/dependency-scanning@1.0.0
+  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/secrets-detection@1.0.0
 
 
 # EOF

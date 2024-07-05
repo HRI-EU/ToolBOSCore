@@ -36,7 +36,7 @@
 
 name             = 'ToolBOSCore'
 
-version          = '4.3'
+version          = '5.0'
 
 category         = 'DevelopmentTools'
 
@@ -44,8 +44,6 @@ recommends       = [ 'deb://git',
                      'sit://External/CMake/3.4',
                      'sit://External/git/2.18',
                      'sit://External/wine/3.5' ]
-
-delete           = [ '*py.class' ]
 
 usePatchlevels   = True
 
@@ -62,8 +60,6 @@ installMatching  = [ ('', '^useFromHere.+'),
                      ('doc/HowTo', '\\.png$'),
                      ('doc/Logos', '\\.(jpg|png|svg)$'),
                      ('examples', '\\.(py|c|conf)$') ]
-
-gitOriginForCIA  = 'git@dmz-gitlab.honda-ri.de:ToolBOS/ToolBOSCore.git'
 
 sqLevel          = 'advanced'
 

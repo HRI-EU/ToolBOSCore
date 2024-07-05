@@ -56,22 +56,11 @@ function execTest()
     FILENAME=$1
     CMDLINE=$*
 
-    if [[ -z ${USE_RUNFROMSOURCETREE+x} ]]
-    then
-        export USE_RUNFROMSOURCETREE="FALSE"
-    fi
-
     if [[ -f "${FILENAME}" ]]
     then
         echo -e "Start test: ${FILENAME}"
 
-        if [[  ( "${USE_RUNFROMSOURCETREE}" == "FALSE" ) ||
-             ( ( ! -e CMakeLists.txt ) && ( ! -e pkgInfo.py ) )  ]]
-        then
-            "${CMDLINE[*]}"
-        else
-            RunFromSourceTree.sh "${CMDLINE[*]}"
-         fi
+        "${CMDLINE[*]}"
 
         # shellcheck disable=SC2181
         if [[ $? != 0 ]]
@@ -104,34 +93,6 @@ function runTests()
     do
         runTest "${FILENAME}"
     done
-}
-
-
-function runMatlabTest()
-{
-    FILENAME=$1
-    CMDLINE=$*
-
-    if [[ -f "${FILENAME}" ]]
-    then
-        if [[ ${FILENAME} == *.m ]]
-        then
-            echo -e "\nStart test: ${FILENAME}"
-            if ! matlab -nodisplay -nosplash -nodesktop -r "try,run ${FILENAME}, exit(0),catch e, disp(e.identifier), disp(e.message), clear e, exit(-1),end"
-            then
-                echo -e "Stop test:  ${FILENAME}  [\033[1;31mFAILED\033[00m]"
-                exit 1
-            else
-                echo -e "Stop test:  ${FILENAME}  [\033[1;32mOK\033[00m]"
-            fi
-        else
-            echo -e "Error: ${FILENAME}  [\033[1;31mNOT A MATLAB FILE\033[00m]"
-            exit 1
-        fi
-    else
-        echo -e "Error: ${FILENAME}  [\033[1;31mNOT FOUND\033[00m]"
-        exit 1
-    fi
 }
 
 

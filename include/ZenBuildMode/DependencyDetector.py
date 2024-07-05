@@ -49,8 +49,7 @@ from ToolBOSCore.BuildSystem        import BuildSystemTools
 from ToolBOSCore.Packages           import BSTPackage
 from ToolBOSCore.Packages           import ProjectProperties
 from ToolBOSCore.Storage            import SIT
-from ToolBOSCore.Util               import Any
-from ToolBOSCore.Util               import ArgsManagerV2
+from ToolBOSCore.Util               import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -81,7 +80,7 @@ topLevelDir   = args['topLevelDir']
 
 
 if quiet:
-    Any.setDebugLevel( logging.CRITICAL )
+    FastScript.setDebugLevel( logging.CRITICAL )
 
 
 try:
@@ -119,8 +118,8 @@ except AssertionError as details:
     bstpkg_global.revDepSet = set()
 
 
-Any.requireIsSet( bstpkg_src.depSet )
-Any.requireIsSet( bstpkg_global.revDepSet )
+FastScript.requireIsSet( bstpkg_src.depSet )
+FastScript.requireIsSet( bstpkg_global.revDepSet )
 
 fullSet             = bstpkg_src.depSet | bstpkg_global.revDepSet
 sitProxyPath        = SIT.getPath()
@@ -179,13 +178,13 @@ data = { 'bstpkg_src':          bstpkg_src,
 
 
 dillPayload   = dill.dumps( data )
-Any.requireIsInstance( dillPayload, bytes )
+FastScript.requireIsInstance( dillPayload, bytes )
 
 base64payload = base64.b64encode( dillPayload )
-Any.requireIsInstance( base64payload, bytes )
+FastScript.requireIsInstance( base64payload, bytes )
 
 strPayload = str( base64payload, 'utf-8' )
-Any.requireIsInstance( strPayload, str )
+FastScript.requireIsInstance( strPayload, str )
 
 
 print( strPayload, end='' )

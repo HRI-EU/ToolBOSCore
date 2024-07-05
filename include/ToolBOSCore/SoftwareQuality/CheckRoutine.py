@@ -44,7 +44,7 @@ from ToolBOSCore.BuildSystem              import BuildSystemTools
 from ToolBOSCore.Packages                 import AppDetector, PackageDetector
 from ToolBOSCore.SoftwareQuality          import Rules
 from ToolBOSCore.SoftwareQuality.Common   import *
-from ToolBOSCore.Util                     import Any, ColoredOutput, FastScript
+from ToolBOSCore.Util                     import ColoredOutput, FastScript
 
 
 FastScript.tryImport( 'terminaltables' )
@@ -77,10 +77,10 @@ class CheckRoutine( object ):
         self.includeFiles     = set()
         self.excludeDirs      = { '3rdParty', 'build', 'cmake-build-debug',
                                   'external', 'install', 'klocwork',
-                                  'precompiled', 'sources', '.git', '.svn' }
+                                  'precompiled', 'sources', '.git' }
         self.excludeFiles     = set()
         self.includeExts      = { '.c', '.h', '.cpp', '.hpp', '.inc', '.py',
-                                  '.java', '.m', '.bash', '.sh', '.ipynb' }
+                                  '.m', '.bash', '.sh', '.ipynb' }
         self.bashExts         = { '.bash', '.sh' }
 
         self.sqLevelToRun     = None   # level to use for this SQ check run
@@ -108,7 +108,7 @@ class CheckRoutine( object ):
 
 
     def excludeDir( self, dirPath ):
-        Any.requireIsTextNonEmpty( dirPath )
+        FastScript.requireIsTextNonEmpty( dirPath )
 
         # all files in self.files start with relative path "./", in order
         # to filter-out some we need to prepend this in the search pattern
@@ -125,7 +125,7 @@ class CheckRoutine( object ):
 
 
     def excludeFile( self, filePath ):
-        Any.requireIsTextNonEmpty( filePath )
+        FastScript.requireIsTextNonEmpty( filePath )
 
         filePath = os.path.join( '.', filePath )
 
@@ -143,7 +143,7 @@ class CheckRoutine( object ):
 
 
     def includeDir( self, dirPath ):
-        Any.requireIsTextNonEmpty( dirPath )
+        FastScript.requireIsTextNonEmpty( dirPath )
 
         # FastScript.getFilesInDirRecursive() returns:
         #    * absolute file paths if absolute dir. path provided
@@ -165,14 +165,14 @@ class CheckRoutine( object ):
 
 
     def includeFile( self, filePath ):
-        Any.requireIsTextNonEmpty( filePath )
+        FastScript.requireIsTextNonEmpty( filePath )
 
         self.files.add( filePath )
 
 
     def includeRule( self, ruleID ):
-        Any.requireIsTextNonEmpty( ruleID )
-        Any.requireIsIn( ruleID, self.ruleIDs )
+        FastScript.requireIsTextNonEmpty( ruleID )
+        FastScript.requireIsIn( ruleID, self.ruleIDs )
 
         if ruleID not in self.rulesToRun:
             self.rulesToRun.append( ruleID )
@@ -231,7 +231,7 @@ class CheckRoutine( object ):
 
             Note that filename-extensions apply.
         """
-        Any.requireIsSet( dirs )
+        FastScript.requireIsSet( dirs )
 
         self.files = set()
 
@@ -243,7 +243,7 @@ class CheckRoutine( object ):
         """
             Check the given set of files, regardless other settings.
         """
-        Any.requireIsSet( files )
+        FastScript.requireIsSet( files )
 
         self.files = files
 
@@ -255,8 +255,8 @@ class CheckRoutine( object ):
             This overrides the (optional) setting 'sqLevel' in the
             pkgInfo.py of the package to test.
         """
-        Any.requireIsTextNonEmpty( levelName )
-        Any.requireIsIn( levelName, sqLevelNames )
+        FastScript.requireIsTextNonEmpty( levelName )
+        FastScript.requireIsIn( levelName, sqLevelNames )
 
         self.sqLevelToRun = levelName
 
@@ -266,13 +266,13 @@ class CheckRoutine( object ):
             sets rules to run by checker to only the rules from the specified groups,
             instead of all.
         """
-        Any.requireIsTextNonEmpty( groups )
+        FastScript.requireIsTextNonEmpty( groups )
 
         groupList = groups.split( "," )
 
         for group in groupList:
             msg = f'{group}: No such group in {sectionKeys}'
-            Any.requireIsIn( group, sectionKeys, msg )
+            FastScript.requireIsIn( group, sectionKeys, msg )
 
         filteredRules = []
 
@@ -292,10 +292,10 @@ class CheckRoutine( object ):
             This overrides the (optional) settings 'sqOptIn' and/or
             'sqOptOut' in the pkgInfo.py of the package to test.
         """
-        Any.requireIsListNonEmpty( ruleIDs )
+        FastScript.requireIsListNonEmpty( ruleIDs )
 
         for ruleID in ruleIDs:
-            Any.requireIsIn( ruleID, self.ruleIDs )
+            FastScript.requireIsIn( ruleID, self.ruleIDs )
 
         self.rulesToRun  = ruleIDs
         self.useOptFlags = False
@@ -326,7 +326,7 @@ class CheckRoutine( object ):
         """
             Force showing (or not) a summary at the end of run().
         """
-        Any.requireIsBool( state )
+        FastScript.requireIsBool( state )
 
         self._summaryEnabled = state
 
@@ -336,7 +336,7 @@ class CheckRoutine( object ):
             Computes the success rate (in percent) for a given rule,
             based on the values returned by the corresponding checker.
         """
-        Any.requireIsTextNonEmpty( ruleID )
+        FastScript.requireIsTextNonEmpty( ruleID )
 
         ( status, passed, failed, shortText ) = self.results[ ruleID ]
 
@@ -375,7 +375,7 @@ class CheckRoutine( object ):
 
     def _populatePackage( self, projectRoot, details ):
         if details:
-            Any.requireIsInstance( details, PackageDetector.PackageDetector )
+            FastScript.requireIsInstance( details, PackageDetector.PackageDetector )
             self.details = details
 
         else:
@@ -397,14 +397,14 @@ class CheckRoutine( object ):
             get checked.
         """
         checkersAvailable = Rules.getRules()
-        Any.requireIsListNonEmpty( checkersAvailable )
+        FastScript.requireIsListNonEmpty( checkersAvailable )
 
         for elem in checkersAvailable:
-            Any.requireIsTuple( elem )
+            FastScript.requireIsTuple( elem )
 
             ( ruleID, rule ) = elem
-            Any.requireIsTextNonEmpty( ruleID )
-            Any.requireIsInstance( rule, Rules.AbstractRule )
+            FastScript.requireIsTextNonEmpty( ruleID )
+            FastScript.requireIsInstance( rule, Rules.AbstractRule )
 
             self.ruleIDs.add( ruleID )
 
@@ -425,11 +425,11 @@ class CheckRoutine( object ):
 
 
         if forceRules is not None:
-            Any.requireIsListNonEmpty( forceRules )
+            FastScript.requireIsListNonEmpty( forceRules )
 
             for ruleID in forceRules:
-                Any.requireIsTextNonEmpty( ruleID )
-                Any.requireIsIn( ruleID, self.ruleIDs )
+                FastScript.requireIsTextNonEmpty( ruleID )
+                FastScript.requireIsIn( ruleID, self.ruleIDs )
 
             self.rulesToRun = forceRules
 
@@ -441,7 +441,7 @@ class CheckRoutine( object ):
             self.filesByType: Dict[ str, List[ str ] ]
         """
 
-        self.filesByType = {}
+        self.filesByType = dict()
 
         self.filesByType[ 'all' ]        = sorted( self.files )
         self.filesByType[ 'bash' ]       = self._populateBashFiles()
@@ -458,8 +458,8 @@ class CheckRoutine( object ):
             Returns a fileList by iterating over the 'files' set
             and filtering for the given set of extensions.
         """
-        Any.requireIsSet( files )
-        Any.requireIsSet( extensions )
+        FastScript.requireIsSet( files )
+        FastScript.requireIsSet( extensions )
 
         fileList = []
 
@@ -518,10 +518,10 @@ class CheckRoutine( object ):
             Raises a KeyError upon invalid ID, and AttributeError if not
             implemented.
         """
-        Any.requireIsTextNonEmpty( ruleID )
+        FastScript.requireIsTextNonEmpty( ruleID )
 
         ruleName = self.rules[ ruleID ].name
-        Any.requireIsTextNonEmpty( ruleName )
+        FastScript.requireIsTextNonEmpty( ruleName )
 
         logging.info( 'checking rule: %s (%s)', ruleID, ruleName )
 
@@ -550,7 +550,7 @@ class CheckRoutine( object ):
 
 
     def _runCheck_worker( self, ruleID ):
-        Any.requireIsTextNonEmpty( ruleID )
+        FastScript.requireIsTextNonEmpty( ruleID )
 
         rule = self.rules[ ruleID ]
 
@@ -560,7 +560,7 @@ class CheckRoutine( object ):
         else:
             result = ( NOT_IMPLEMENTED, None, None, None )
 
-        Any.requireIsTuple( result )
+        FastScript.requireIsTuple( result )
 
         return result
 
@@ -575,7 +575,7 @@ class CheckRoutine( object ):
 
         msg = '"%s": No such quality level (allowed: %s)' % \
               ( self.sqLevelToRun, ', '.join( sqLevelNames ) )
-        Any.requireMsg( self.sqLevelToRun in sqLevelNames, msg )
+        FastScript.requireMsg( self.sqLevelToRun in sqLevelNames, msg )
 
         for ruleID, rule in self.rules.items():
             if ruleID not in self.rulesImplemented:
@@ -583,8 +583,8 @@ class CheckRoutine( object ):
 
             rule = self.rules[ ruleID ]
 
-            Any.requireIsInstance( rule, Rules.AbstractRule )
-            Any.requireIsInstance( rule.sqLevel, frozenset )
+            FastScript.requireIsInstance( rule, Rules.AbstractRule )
+            FastScript.requireIsInstance( rule.sqLevel, frozenset )
 
             if self.sqLevelToRun in rule.sqLevel:
                 self.rulesInLevel.add( ruleID )
@@ -600,7 +600,7 @@ class CheckRoutine( object ):
 
 
     def _setupOptIn( self ):
-        Any.requireIsIterable( self.details.sqOptInRules )
+        FastScript.requireIsIterable( self.details.sqOptInRules )
 
         for ruleID in self.details.sqOptInRules:
             logging.debug( '%6s: enabled (opt-in via pkgInfo.py)', ruleID )
@@ -608,7 +608,7 @@ class CheckRoutine( object ):
 
 
     def _setupOptOut( self ):
-        Any.requireIsIterable( self.details.sqOptOutRules )
+        FastScript.requireIsIterable( self.details.sqOptOutRules )
 
         for ruleID in self.details.sqOptOutRules:
             logging.debug( '%6s: disabled (opt-out via pkgInfo.py)', ruleID )
@@ -620,7 +620,7 @@ class CheckRoutine( object ):
 
 
     def _setupOptInDirs( self ):
-        Any.requireIsIterable( self.details.sqOptInDirs )
+        FastScript.requireIsIterable( self.details.sqOptInDirs )
 
         for dirname in self.details.sqOptInDirs:
             logging.debug( '%6s: explicitly included via pkgInfo.py', dirname )
@@ -628,7 +628,7 @@ class CheckRoutine( object ):
 
 
     def _setupOptOutDirs( self ):
-        Any.requireIsIterable( self.details.sqOptOutDirs )
+        FastScript.requireIsIterable( self.details.sqOptOutDirs )
 
         for dirname in self.details.sqOptOutDirs:
             logging.debug( '%6s: explicitly excluded via pkgInfo.py', dirname )
@@ -636,7 +636,7 @@ class CheckRoutine( object ):
 
 
     def _setupOptInFiles( self ):
-        Any.requireIsIterable( self.details.sqOptInFiles )
+        FastScript.requireIsIterable( self.details.sqOptInFiles )
 
         for filename in self.details.sqOptInFiles:
             logging.debug( '%6s: explicitly included via pkgInfo.py', filename )
@@ -644,7 +644,7 @@ class CheckRoutine( object ):
 
 
     def _setupOptOutFiles( self ):
-        Any.requireIsIterable( self.details.sqOptOutFiles )
+        FastScript.requireIsIterable( self.details.sqOptOutFiles )
 
         for filename in self.details.sqOptOutFiles:
             logging.debug( '%6s: explicitly excluded via pkgInfo.py', filename )
@@ -661,8 +661,8 @@ class CheckRoutine( object ):
 
 
     def _showSummaryHeadline( self ):
-        Any.requireIsTextNonEmpty( self.details.canonicalPath )
-        Any.requireIsTextNonEmpty( self.details.sqLevel )
+        FastScript.requireIsTextNonEmpty( self.details.canonicalPath )
+        FastScript.requireIsTextNonEmpty( self.details.sqLevel )
 
         tcRoot    = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
         tcVersion = AppDetector.getAppVersion( tcRoot )
@@ -673,8 +673,8 @@ class CheckRoutine( object ):
 
 
     def _showSummaryTable( self ):
-        Any.requireIsDictNonEmpty( self.results )
-        Any.requireIsListNonEmpty( self.rulesOrdered )
+        FastScript.requireIsDictNonEmpty( self.results )
+        FastScript.requireIsListNonEmpty( self.rulesOrdered )
 
         tableData = [ [ 'ID', 'objective', 'val.', 'status', 'comment' ] ]
 

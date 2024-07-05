@@ -48,7 +48,6 @@ import sys
 import tempfile
 
 from ToolBOSCore.BuildSystem                      import BuildSystemTools
-from ToolBOSCore.BuildSystem.DocumentationCreator import DocumentationCreator
 from ToolBOSCore.Packages.BSTPackage              import BSTSourcePackage
 from ToolBOSCore.Packages.PackageDetector         import PackageDetector
 from ToolBOSCore.Settings                         import ProcessEnv
@@ -57,7 +56,7 @@ from ToolBOSCore.SoftwareQuality.Common           import *
 from ToolBOSCore.Storage                          import SIT
 from ToolBOSCore.Tools                            import Klocwork,\
                                                          Valgrind, Shellcheck
-from ToolBOSCore.Util                             import Any, FastScript
+from ToolBOSCore.Util                             import FastScript
 
 
 FILE_EXTENSIONS_TO_EXCLUDE  = { 'GEN03': [ 'ipynb' ] }
@@ -136,7 +135,7 @@ Japanese output on screen.'''
                 filePath.encode( 'ascii' )
                 passed += 1
             except UnicodeEncodeError as e:
-                # PyCharm linter fails to recognize the start property
+                # PyCharm linter fails to recognize the start property,
                 # so we silence the warning.
                 # noinspection PyUnresolvedReferences
                 logging.info( 'GEN01: %s - Non-ASCII character in filename',
@@ -208,7 +207,7 @@ dialog.'''
 
     def _checkFile( self, filePath ):
         # empty files will pass
-        if Any.isEmptyFile( filePath ):
+        if FastScript.isEmptyFile( filePath ):
             logging.debug( '%s: file is empty', filePath )
             return True
         else:
@@ -289,7 +288,7 @@ characters per line.'''
                 if length > maxWidth:       # long line found
                     longLines += 1
 
-                if length > maxLen:         # found an ever-longer line
+                if length > maxLen:         # found an even-longer line
                     maxLen   = length       # than known so far
 
             logging.debug( '%s: longLines=%d, maxLen=%d',
@@ -334,7 +333,7 @@ for HRI-EU.
 This rule does not need to be applied to auto-generated files (such as doxygen
 HTML documentation or generated SWIG code).
 
-*Header for C / C++ / Java files:*
+*Header for C and C++ files:*
 
     /*
      * <description>
@@ -384,37 +383,6 @@ HTML documentation or generated SWIG code).
     # ALL RIGHTS RESERVED.
     #
     #
-
-*Header for Matlab script files:*
-
-    %
-    % <description>
-    %
-    % Copyright (C)
-    % Honda Research Institute Europe GmbH
-    % Carl-Legien-Str. 30
-    % 63073 Offenbach/Main
-    % Germany
-    %
-    % UNPUBLISHED PROPRIETARY MATERIAL.
-    % ALL RIGHTS RESERVED.
-    %
-    %
-
-*Example for Windows `.bat` scripts:*
-
-    ::
-    :: <description>
-    ::
-    :: Copyright (C)
-    :: Honda Research Institute Europe GmbH
-    :: Carl-Legien-Str. 30
-    :: 63073 Offenbach/Main
-    :: Germany
-    ::
-    :: UNPUBLISHED PROPRIETARY MATERIAL.
-    :: ALL RIGHTS RESERVED.
-    ::
 
 *Example for HTML / XML files:*
 
@@ -512,35 +480,35 @@ copyright       =
             If no information have been provided we assume the common
             copyright header as returned from Packages.getCopyrightHeader().
         """
-        Any.requireIsTextNonEmpty( filePath )
+        FastScript.requireIsTextNonEmpty( filePath )
 
         if copyrightData is None:
             # logging.debug( 'no copyright info by author, assuming defaults' )
 
             lines = self._defaultCopyrightHeader
 
-        elif Any.isText( copyrightData ):
+        elif FastScript.isText( copyrightData ):
             # logging.info( 'single copyright line by author, use this for all project files' )
             # logging.info( 'copyright info: %s', copyrightData )
 
             msg = 'copyright data in pkgInfo.py too short (min. 10 chars required)'
-            Any.requireIsTextNonEmpty( copyrightData )
-            Any.requireMsg( len(copyrightData) > 10, msg )
+            FastScript.requireIsTextNonEmpty( copyrightData )
+            FastScript.requireMsg( len(copyrightData) > 10, msg )
             lines = [ copyrightData ]
 
-        elif Any.isList( copyrightData ):
+        elif FastScript.isList( copyrightData ):
             #logging.debug( 'multiple copyright lines by author, using them for all project files' )
             #logging.debug( '<copyrightInfo>' )
             #logging.debug( copyrightData )
             #logging.debug( '</copyrightInfo>' )
 
-            Any.requireIsListNonEmpty( copyrightData )
+            FastScript.requireIsListNonEmpty( copyrightData )
             lines = copyrightData
 
-        elif Any.isDict( copyrightData ):
+        elif FastScript.isDict( copyrightData ):
             #logging.debug( 'dict with copyright info provided by author' )
 
-            Any.requireIsDictNonEmpty( copyrightData )
+            FastScript.requireIsDictNonEmpty( copyrightData )
             lines = self._getCopyrightFromDict( filePath, copyrightData )
 
         else:
@@ -567,8 +535,8 @@ copyright       =
             This function attempts to find the longest matching key in
             the dict matching 'filePath', and returns the associated value.
         """
-        Any.requireIsTextNonEmpty( filePath )
-        Any.requireIsDictNonEmpty( copyrightData )
+        FastScript.requireIsTextNonEmpty( filePath )
+        FastScript.requireIsDictNonEmpty( copyrightData )
 
         bestLen     = 0
         bestPattern = None
@@ -583,14 +551,14 @@ copyright       =
                     bestLen     = patternLen
                     bestPattern = pattern
 
-                    if Any.isText( lines ):
+                    if FastScript.isText( lines ):
                         msg = 'copyright data in pkgInfo.py too short (min. 10 chars required)'
-                        Any.requireIsTextNonEmpty( lines )
-                        Any.requireMsg( len(lines) > 10, msg )
+                        FastScript.requireIsTextNonEmpty( lines )
+                        FastScript.requireMsg( len(lines) > 10, msg )
                         bestLines = [ lines ]
 
-                    elif Any.isList( lines ):
-                        Any.requireIsListNonEmpty( lines )
+                    elif FastScript.isList( lines ):
+                        FastScript.requireIsListNonEmpty( lines )
                         bestLines = lines
 
                     else:
@@ -729,13 +697,9 @@ scripts          = { 'unittest': 'myScript.sh' }
         """
             Checks if the package provides unittests.
         """
-        Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
+        FastScript.requireIsNotNone( details.packageCategory, 'Package category not specified. '
                                                        'Please check pkginfo.py '
                                                        'for category information.' )
-
-        if details.isComponent():
-            return NOT_APPLICABLE, 0, 0, 'unittests not required for components'
-
 
         if 'unittest' in details.scripts:
             candidates = [ details.scripts[ 'unittest' ] ]
@@ -762,7 +726,7 @@ class Rule_GEN08( AbstractRule ):
 
     name        = 'compliance: 3rd-party material'
 
-    brief       = '''Any 3rd-party-code must be clearly separated to avoid
+    brief       = '''FastScript.3rd-party-code must be clearly separated to avoid
 any intellectual property conflicts. Mind to put relevant license information
 if needed.'''
 
@@ -786,19 +750,9 @@ interface with it.'''
 \t\t\t\t\t[...]
 \t\t\t\tgnome.org
 \t\t\t\t\t[...]
-\t\t\t\tmathworks.com
-\t\t\t\t\t[...]
-\t\t\t\tsubversion.apache.org
-\t\t\t\t\t[...]
 \t\t\tsrc
 \t\t\t\tMyPackage.c
 \t\t\t\tMyPackage.h'''
-
-    seeAlso     = { 'Source tree conventions':
-                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Concepts/SourceTreeConventions.md',
-
-                    'Installation conventions':
-                    'https://github.com/HRI-EU/ToolBOSCore/blob/main/doc/ToolBOSCore/Concepts/SourceTreeConventions.md' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
 
@@ -826,7 +780,7 @@ it with reasonable effort to an alternative software.'''
 
 class Rule_GEN10( AbstractRule ):
 
-    name        = 'maintainability: VCS usage'
+    name        = 'maintainability: Git usage'
 
     brief       = '''Put package under version control system (Git).'''
 
@@ -845,21 +799,15 @@ class Rule_GEN10( AbstractRule ):
 
     def run( self, details, files ):
         """
-            Checks if the package is managed via VCS.
+            Checks if the package is managed via Git version control system.
         """
-        logging.debug( 'looking for VCS repository information' )
-
+        logging.debug( 'looking for Git repository information' )
 
         if details.gitFound:
             logging.debug( 'Git found: %s', details.gitRepositoryRoot )
             result = ( OK, 1, 0, 'Git repository found' )
-
-        elif details.svnFound:
-            logging.debug( 'SVN found: %s', details.svnRepositoryURL )
-            result = ( OK, 1, 0, 'SVN repository found' )
-
         else:
-            result = ( FAILED, 0, 1, 'no VCS information found' )
+            result = ( FAILED, 0, 1, 'no Git information found' )
 
         return result
 
@@ -956,7 +904,7 @@ directly terminate the application. Prefer returning a status code indicating
 the error, or throw an exception in C++, so that the caller at least has a
 chance to appropriately handle it.
 
-Mind that the caller might be a 3rd party application such as *Matlab*.
+Mind that the caller might be a 3rd party application executing Python.
 In such case the `exit()` will terminate the whole application, potentially
 causing data loss or inconsistent states.'''
 
@@ -1248,7 +1196,7 @@ HRI-EU libraries, it is highly recommended to stick with it for consistency
 reasons. And consistency is a soft skill for good quality software.'''
 
     goodExample = '''
-    #include <Any.h>
+    #include <FastScript.h>
 
     ANY_LOG( 0, "Hello, World!", ANY_LOG_INFO );
     ANY_TRACE( 0, "%d", x );
@@ -1324,7 +1272,7 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         logging.debug( "check if package can be built using BST.py" )
 
         oldcwd = os.getcwd()
-        output = io.StringIO() if Any.getDebugLevel() <= 3 else None
+        output = io.StringIO() if FastScript.getDebugLevel() <= 3 else None
 
         FastScript.changeDirectory( details.topLevelDir )
 
@@ -1392,7 +1340,7 @@ once in a while inspect your code using Klocwork.'''
 
             output = output.getvalue()
 
-            if Any.getDebugLevel() > 3:
+            if FastScript.getDebugLevel() > 3:
                 logging.info( 'output:\n%s', output )
 
             if output:
@@ -1487,7 +1435,7 @@ Specify an empty list if really nothing has to be executed.'''
         # get SQ-settings from pkgInfo.py
         sqSettings = self._getSQSettings( details )
         logging.debug( "'sqCheckExe' settings from pkgInfo.py: %s", sqSettings )
-        Any.requireIsIterable( sqSettings )
+        FastScript.requireIsIterable( sqSettings )
 
         if not sqSettings:
             logging.warning( "C/C++ source code found, but no executables listed in pkgInfo.py" )
@@ -1541,12 +1489,12 @@ Specify an empty list if really nothing has to be executed.'''
 
 
     def _getSQSettings( self, details ):
-        Any.requireIsInstance( details, PackageDetector )
+        FastScript.requireIsInstance( details, PackageDetector )
 
         try:
             sqSettingsTmp = details.sqCheckExe
-            Any.requireIsNotNone( sqSettingsTmp )
-            Any.requireIsList( sqSettingsTmp )
+            FastScript.requireIsNotNone( sqSettingsTmp )
+            FastScript.requireIsList( sqSettingsTmp )
 
             sqSettings = list ( map( FastScript.expandVars, sqSettingsTmp ) )
 
@@ -1560,13 +1508,13 @@ Specify an empty list if really nothing has to be executed.'''
 
         except AssertionError:
             ruleId = self.getRuleID()
-            Any.requireIsTextNonEmpty( ruleId )
+            FastScript.requireIsTextNonEmpty( ruleId )
 
             return None
 
 
     def _validityCheck( self, commandLines ):
-        Any.requireIsList( commandLines )
+        FastScript.requireIsList( commandLines )
 
         commands = []
 
@@ -1600,7 +1548,7 @@ Specify an empty list if really nothing has to be executed.'''
 
             logging.info( "%s: checking '%s'", ruleID,command )
 
-            if Any.getDebugLevel() <= 3:
+            if FastScript.getDebugLevel() <= 3:
                 stdout = io.StringIO()
                 stderr = io.StringIO()
             else:
@@ -1740,7 +1688,7 @@ class Rule_PY02( AbstractRule ):
     brief       = '''Private class members and methods (name starting with
 underscore) must not be accessed from the outside.'''
 
-    description = '''Unlike C++ or Java, Python has no strong concept of
+    description = '''Unlike C++, Python has no strong concept of
 **private** methods. By convention they start with a leading underscore.
 
 Even though there is no technical protection, private methods should not be
@@ -1825,7 +1773,7 @@ class Rule_PY03( AbstractRule ):
     name        = 'consistency: logging'
 
     brief       = '''Logging should be done using Python's native `logging`
-module, evtl. supported by helpers from `Any.py.`'''
+module, evtl. supported by helpers from `FastScript.py.`'''
 
     description = '''Logging is essential for tracing progress and information,
 and often also for debugging.
@@ -1853,14 +1801,14 @@ They map the `ANY_LOG()` / `ANY_REQUIRE()` terminology and usage to Python's
     logging.info( 'x=%d', x )
 
 
-    # possibility B (Any.h-equivalent)
+    # possibility B (FastScript.h-equivalent)
 
     import ToolBOSCore.Util.Any
 
-    Any.setDebugLevel( 3 )
-    Any.log( 3, "Hello, World!" )
-    Any.requireMsg( x == 123, "Oops..." )
-    Any.requireIsDir( '/tmp' )
+    FastScript.setDebugLevel( 3 )
+    FastScript.log( 3, "Hello, World!" )
+    FastScript.requireMsg( x == 123, "Oops..." )
+    FastScript.requireIsDir( '/tmp' )
 '''
 
     sqLevel     = frozenset()
@@ -2136,9 +2084,6 @@ pkgInfo.py file.
      * \\author Steve Jobs
      * \\author Lerry Page
      */
-
-Note that Matlab-packages are documented using `matdoc` instead of `doxygen`.
-Hence a doxygen mainpage is not needed in such case.
 '''
 
     sqLevel     = frozenset( [ 'cleanLab', 'basic', 'advanced', 'safety' ] )
@@ -2146,13 +2091,6 @@ Hence a doxygen mainpage is not needed in such case.
     def run( self, details, files ):
         if details.docFiles:
             return self._searchDocFiles( details )
-
-        elif details.isMatlabPackage():
-            return self._searchMatlab( details )
-
-        elif details.isRTMapsPackage():
-            return self._searchRTMaps( details )
-
         else:
             return self._searchDoxygen( details )
 
@@ -2203,7 +2141,7 @@ Hence a doxygen mainpage is not needed in such case.
             logging.debug( 'looking for documentation in: %s', filePath )
 
             if os.path.exists( filePath ):
-                if Any.isFileNonEmpty( filePath ):
+                if FastScript.isFileNonEmpty( filePath ):
                     found = True
                     logging.info( 'DOC01: found: %s', filePath )
                 else:
@@ -2229,28 +2167,6 @@ Hence a doxygen mainpage is not needed in such case.
             logging.info( 'DOC01: neither README.md nor doxygen mainpage found' )
 
             return FAILED, 0, 1, 'documentation not found'
-
-
-    def _searchMatlab( self, details ):
-        logging.debug( 'Matlab package detected, looking for HTML documentation' )
-
-        # Matlab-packages do not contain a doxygen mainpage, hence only
-        # check for existence of index.html after doc-build
-
-        DocumentationCreator( details.topLevelDir ).generate()
-
-        indexPath = os.path.join( details.topLevelDir, 'doc/html/index.html' )
-        logging.debug( 'looking for documentation in: %s', indexPath )
-        found     = os.path.exists( indexPath )
-
-        if found:
-            return OK, 1, 0, 'documentation (index.html) found'
-        else:
-            return FAILED, 0, 1, 'documentation (index.html) found'
-
-
-    def _searchRTMaps( self, *kwargs ):
-        return NOT_APPLICABLE, 0, 0, 'API docs not required for RTMaps components'
 
 
 class Rule_DOC02( AbstractRule ):
@@ -2293,15 +2209,12 @@ provide small, easy-to-understand example programs / showcases.
         """
             Looks for example programs to demonstrate basic usage.
 
-            Test passes if there are any Non-SVN files within the
+            Test passes if there are any files within the
             "examples" subdirectory.
         """
-        Any.requireIsNotNone( details.packageCategory, 'Package category not specified. '
+        FastScript.requireIsNotNone( details.packageCategory, 'Package category not specified. '
                                                        'Please check pkginfo.py '
                                                        'or CMakeLists.txt for category information.' )
-
-        if details.isComponent():
-            return NOT_APPLICABLE, 0, 0, 'examples not required for components'
 
         logging.debug( 'looking for example programs' )
         examplesDir = os.path.join( details.topLevelDir, 'examples' )
@@ -2309,8 +2222,7 @@ provide small, easy-to-understand example programs / showcases.
         if not os.path.exists( examplesDir ):
             result  = ( FAILED, 0, 1, '"examples" directory not found' )
         else:
-            exclude = re.compile( '^.svn' )
-            files   = FastScript.getFilesInDir( examplesDir, exclude )
+            files   = FastScript.getFilesInDir( examplesDir )
             found   = len(files)
 
             if found == 0:
@@ -2359,7 +2271,7 @@ valid pointers, reasonable value ranges etc. catch a lot of typical root
 causes for later errors.'''
 
     goodExample = '''
-    #include <Any.h>
+    #include <FastScript.h>
 
     [...]
 
@@ -2528,10 +2440,10 @@ must be specified. Traditional functions like `strlen()` which search for the
 terminating `\\0` must not be used.'''
 
     goodExample = '''
-    Any_strnlen()
-    Any_snprintf()
-    Any_strncmp()
-    Any_strncat()
+    FastScript.strnlen()
+    FastScript.snprintf()
+    FastScript.strncmp()
+    FastScript.strncat()
     [...]
 '''
 
@@ -2679,7 +2591,7 @@ systems.
 At least it pro-actively eases a possible future porting to either of such
 platforms, without any sideeffects.
 
-The ToolBOSCore library defines `Any_strcmp()`, `Any_memset()` and friends for
+The ToolBOSCore library defines `FastScript.strcmp()`, `Any_memset()` and friends for
 such purpose. They map to the underlying O.S.-specific functions with no cost
 (resolved at compile-time).'''
 
@@ -2713,8 +2625,8 @@ future or for other Python implementations like PyPy, Jython or IronPython.
 In this case you have to use other means to ensure thread-safety instead.
 Do not rely on such implementation-specific side effects!'''
 
-    seeAlso     = { 'Thread handling and synchronization primitives in Python 2.7':
-                    'https://docs.python.org/2/library/threading.html',
+    seeAlso     = { 'Thread handling and synchronization primitives in Python 3':
+                    'https://docs.python.org/3/library/threading.html',
 
                     'Wikipedia: Thread safety':
                     'https://en.wikipedia.org/wiki/Thread_safety' }
@@ -3228,7 +3140,7 @@ def findNonAsciiCharacters( filePath, rule ):
             line.encode( 'ascii' )
             passed += 1
         except UnicodeEncodeError as e:
-            # PyCharm linter fails to recognize the start property
+            # PyCharm linter fails to recognize the start property,
             # so we silence the warning.
             # noinspection PyUnresolvedReferences
             logging.info( '%s: %s:%d - Non-ASCII character found at position %d',
@@ -3260,7 +3172,7 @@ def getRules():
 
     # keep sorting as appears in SQ Guideline
 
-    for category in ( 'GEN', 'C', 'PY', 'MAT', 'JAVA', 'DOC', 'SAFE',
+    for category in ( 'GEN', 'C', 'PY', 'MAT', 'DOC', 'SAFE',
                       'MT', 'SPEC', 'BASH' ):
         for i in range(50):
 
@@ -3268,7 +3180,7 @@ def getRules():
 
             try:
                 func = ctors[ 'Rule_%s' % ruleID ]
-                Any.requireIsCallable( func )
+                FastScript.requireIsCallable( func )
                 instance = func()
                 result.append( ( ruleID, instance ) )
             except KeyError:
@@ -3283,10 +3195,10 @@ def getRuleIDs():
         Software Quality Guideline.
     """
     ruleTuples = getRules()
-    Any.requireIsListNonEmpty( ruleTuples )
+    FastScript.requireIsListNonEmpty( ruleTuples )
 
     result = [ rule[0] for rule in ruleTuples ]
-    Any.requireIsListNonEmpty( result )
+    FastScript.requireIsListNonEmpty( result )
 
     return result
 

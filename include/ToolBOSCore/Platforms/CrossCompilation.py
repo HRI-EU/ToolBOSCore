@@ -45,7 +45,6 @@ import re
 from ToolBOSCore.Platforms import Platforms
 from ToolBOSCore.Settings  import ToolBOSConf
 from ToolBOSCore.Util      import FastScript
-from ToolBOSCore.Util      import Any
 
 
 #----------------------------------------------------------------------------
@@ -63,7 +62,7 @@ def switchEnvironment( toPlatform ):
         function. When you are done, you can then reset the whole environment
         by calling "FastScript.setEnv( origMap )".
     """
-    Any.requireIsTextNonEmpty( toPlatform )
+    FastScript.requireIsTextNonEmpty( toPlatform )
 
     fromPlatform = Platforms.getHostPlatform()
     src          = fromPlatform.replace( '-', '' )
@@ -104,7 +103,7 @@ def getSwitchEnvironmentList( fromPlatform=None ):
         return result
 
 
-    Any.requireIsTextNonEmpty( fromPlatform )
+    FastScript.requireIsTextNonEmpty( fromPlatform )
 
     if fromPlatform not in Platforms.getPlatformNames():
         raise ValueError( '%s: unsupported platform name' % fromPlatform )
@@ -126,10 +125,10 @@ def getSwitchEnvironmentList( fromPlatform=None ):
 
         if tmp is not None:
             targetPlatform = tmp.group(1)
-            Any.requireIsTextNonEmpty( targetPlatform )
+            FastScript.requireIsTextNonEmpty( targetPlatform )
 
             # Windows-platforms are named e.g. 'windows-amd64-vs2017'.
-            # However names with dashes can't be used as function names
+            # However, names with dashes can't be used as function names
             # thus the above candidates don't contain such dashes.
             #
             # As a hack I'm replacing such well-known names here by hand.
@@ -181,7 +180,7 @@ def getNativeCompileHost( platform ):
         Such values are site-specific and hence need to be configured via
         ToolBOS.conf.
     """
-    Any.requireIsTextNonEmpty( platform )
+    FastScript.requireIsTextNonEmpty( platform )
 
 
     hosts = ToolBOSConf.getConfigOption( 'BST_userCompileHosts' )
@@ -209,7 +208,7 @@ def getCrossCompileHost( platform ):
         Such values are site-specific and hence need to be configured via
         ToolBOS.conf.
     """
-    Any.requireIsTextNonEmpty( platform )
+    FastScript.requireIsTextNonEmpty( platform )
 
     hosts = ToolBOSConf.getConfigOption( 'BST_userCrossCompileHosts' )
 
@@ -232,12 +231,8 @@ def getCrossCompileHost( platform ):
 #----------------------------------------------------------------------------
 
 
-# Change the environment so it appears to the build system as if we would
+# Change the environment so that it appears to the build system as if we would
 # run on another platform, e.g. Windows with Visual Studio installed.
-
-
-def _switchEnv_bionic64_to_windowsamd64vs2017():
-    _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
 
 
 def _switchEnv_focal64_to_windowsamd64vs2017():
@@ -248,14 +243,6 @@ def _switchEnv_jammy64_to_windowsamd64vs2017():
     _switchEnv_linuxToWindows( 'windows-amd64-vs2017' )
 
 
-def _switchEnv_bionic64_to_peakcan():
-    _switchEnv_linuxIntelToARM( 'peakcan' )
-
-
-def _switchEnv_bionic64_to_phyboardwega():
-    _switchEnv_linuxIntelToARM( 'phyboardwega' )
-
-
 def _switchEnv_linuxToWindows( targetPlatform ):
     import logging
 
@@ -263,11 +250,11 @@ def _switchEnv_linuxToWindows( targetPlatform ):
     from ToolBOSCore.Settings import UserSetup
     from ToolBOSCore.Settings import ToolBOSConf
 
-    Any.requireIsTextNonEmpty( targetPlatform )
+    FastScript.requireIsTextNonEmpty( targetPlatform )
 
     def _set_msvc_2017_conf():
         UserSetup.ensureMSVCSetup( sdk, postfix = '.' + targetPlatform )
-        Any.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
+        FastScript.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
 
         msvcBasePath          = r'c:\BuildTools\VC'
         msvcToolsBasePath     = r'{}\Tools\MSVC\14.13.26128'.format( msvcBasePath )
@@ -321,7 +308,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
             pdkVersion    = 'v7.1'
 
         UserSetup.ensureMSVCSetup( sdk, postfix = '.' + targetPlatform )
-        Any.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
+        FastScript.requireMsg( FastScript.getEnv( 'WINEPREFIX' ), '$WINEPREFIX not set' )
 
         basePath          = '''c:\\msvc-sdk\\''' + compilerSuite + '''\\'''
         compilerBasePath  = basePath + '''VC\\'''
@@ -356,16 +343,16 @@ def _switchEnv_linuxToWindows( targetPlatform ):
     targetArch = tmp.group(2)
     sdk        = int(tmp.group(3))
 
-    Any.requireIsTextNonEmpty( targetArch )
-    Any.requireIsIntNotZero( sdk )
+    FastScript.requireIsTextNonEmpty( targetArch )
+    FastScript.requireIsIntNotZero( sdk )
 
     # source "ToolBOSPluginWindows" if not already done
 
     bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
-    Any.requireIsDictNonEmpty( bspMap )
+    FastScript.requireIsDictNonEmpty( bspMap )
 
     neededBSP  = bspMap[ targetPlatform ]
-    Any.requireIsTextNonEmpty( neededBSP )
+    FastScript.requireIsTextNonEmpty( neededBSP )
     ProcessEnv.source( neededBSP )
 
     logging.debug( 'using wine from: %s', ProcessEnv.which( 'wine' ) )
@@ -384,7 +371,7 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
                              'include/CMake/Platform/Linux-MSVC.cmake' )
-    Any.requireIsFileNonEmpty( fileName )
+    FastScript.requireIsFileNonEmpty( fileName )
 
     oldOptions = FastScript.getEnv( 'BST_CMAKE_OPTIONS' )
 
@@ -396,63 +383,6 @@ def _switchEnv_linuxToWindows( targetPlatform ):
 
     FastScript.unsetEnv( 'GLIBC_ALIAS' )
     FastScript.unsetEnv( 'GLIBC_VERSION' )
-
-
-def _switchEnv_linuxIntelToARM( targetPlatform ):
-    from ToolBOSCore.Settings import ProcessEnv
-    from ToolBOSCore.Settings import ToolBOSConf
-
-    Any.requireIsTextNonEmpty( targetPlatform )
-
-
-    # source cross-compiler package if not already done
-
-    bspMap     = ToolBOSConf.getConfigOption( 'BST_crossCompileBSPs' )
-    Any.requireIsDictNonEmpty( bspMap )
-
-    neededBSP  = bspMap[ targetPlatform ]
-    Any.requireIsTextNonEmpty( neededBSP )
-    ProcessEnv.source ( neededBSP )
-
-
-    # setup arguments which will be passed to CMake
-
-    if targetPlatform == 'peakcan':
-
-        fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'include/CMake/Peakcan-cross.cmake' )
-
-        Any.requireIsFileNonEmpty( fileName )
-
-        FastScript.setEnv( 'TARGETOS',   'peakcan' )
-        FastScript.setEnv( 'TARGETARCH', 'peakcan' )
-        FastScript.setEnv( 'COMPILER',   'gcc'     )
-        FastScript.setEnv( 'BST_CMAKE_OPTIONS', '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
-
-    elif targetPlatform == 'phyboardwega':
-
-        fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'include/CMake/phyBOARD-WEGA-cross.cmake' )
-
-        Any.requireIsFileNonEmpty( fileName )
-
-        FastScript.setEnv( 'TARGETOS', 'phyboardwega' )
-        FastScript.setEnv( 'TARGETARCH', 'phyboardwega' )
-        FastScript.setEnv( 'COMPILER', 'gcc' )
-        FastScript.setEnv( 'BST_CMAKE_OPTIONS',
-                           '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
-
-    else:
-
-        fileName = os.path.join( FastScript.getEnv( 'TOOLBOSCORE_ROOT' ),
-                                 'include/CMake/Linux-ARMv7-cross.cmake' )
-
-        Any.requireIsFileNonEmpty( fileName )
-
-        FastScript.setEnv( 'TARGETOS',   'linux'   )
-        FastScript.setEnv( 'TARGETARCH', 'armv7'   )
-        FastScript.setEnv( 'COMPILER',   'gcc'     )
-        FastScript.setEnv( 'BST_CMAKE_OPTIONS', '-DCMAKE_TOOLCHAIN_FILE=%s' % fileName )
 
 
 # EOF

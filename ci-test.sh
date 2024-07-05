@@ -34,54 +34,21 @@
 #
 
 
-CONDA_CANONICAL_PATH=""
-CONDA_VERSION="3.9" # backward compatability
+set -exo pipefail
 
+source ./useFromHere.sh
 
-SourceAnaconda() {
-    VERSION="$1"
-
-    # hack for now to parse the canonical path of anaconda correctly!
-    if [[ "${VERSION}" == "${CONDA_VERSION}" ]]
-    then
-        CONDA_CANONICAL_PATH="${SIT}/External/anaconda3/envs/common/${VERSION}/BashSrc"
-    else
-        CONDA_CANONICAL_PATH="${SIT}/External/anaconda/envs/common/${VERSION}/BashSrc"
-    fi
-
-    echo "sourcing Anaconda from ${CONDA_CANONICAL_PATH}"
-    # shellcheck source=/hri/sit/latest/External/anaconda/envs/common/3.11/BashSrc
-    source "${CONDA_CANONICAL_PATH}"
-}
-
-
-if [[ "$#" -eq 0 ]] # no arguments supplied
+if [[ -d "./venv" ]]
 then
-    echo "No arguments supplied, please provide the necessary arguments!"
-    echo "Usage: $0 TOOLBOSCORE_VERSION PYTHON_VERSION"
-    exit 1
-fi
-
-
-if [[ -n "$1" ]]
+    source ./activate-venv.sh
+elif [[ -d "./conda" ]]
 then
-    TOOLBOSCORE_VERSION="$1"
-fi
-
-
-# shellcheck source=/dev/null
-source useFromHere.sh "${TOOLBOSCORE_VERSION}"
-
-
-if [[ -z "$2" ]] # no argument supplied, using default
-then
-    echo "Using the default Python version from Ubuntu!"
+    source ./activate-conda.sh
 else
-    SourceAnaconda "$2"
+    echo "Using locally installed Python interpreter"
 fi
 
-
-set -euxo pipefail
+which python
 
 BST.py --test
 

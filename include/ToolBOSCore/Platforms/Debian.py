@@ -42,7 +42,7 @@
 import io
 import re
 
-from ToolBOSCore.Util import Any, FastScript
+from ToolBOSCore.Util     import FastScript
 from ToolBOSCore.Settings import ProcessEnv
 
 
@@ -97,7 +97,7 @@ def isInstalled( packageName ):
         computer running this Python process.
 
         The packageName must be in typical Debian/Ubuntu/... style, e.g.:
-        'gcc', 'php5-cli', 'libpng2',...
+        'gcc', 'libpng2',...
 
         Attention: This function will not work on Microsoft Windows and
                    Non-Debian-based Linux distributions unless the 'dpkg'
@@ -106,7 +106,7 @@ def isInstalled( packageName ):
     """
     global _debPkgCache
 
-    Any.requireIsTextNonEmpty( packageName )
+    FastScript.requireIsTextNonEmpty( packageName )
 
     if not _debPkgCache:
         try:
@@ -129,7 +129,7 @@ def getDepInstallCmd( canonicalPaths ):
         If 'canonicalPaths' does not contain any item starting with
         'deb://' the function will return None.
     """
-    Any.requireIsListNonEmpty( canonicalPaths )
+    FastScript.requireIsListNonEmpty( canonicalPaths )
 
     expr     = re.compile( '^deb://(.+)' )
     result   = '$ apt install'
@@ -141,7 +141,7 @@ def getDepInstallCmd( canonicalPaths ):
         if tmp:
             debFound = True
             pkgName  = tmp.group(1)
-            Any.requireIsTextNonEmpty( pkgName )
+            FastScript.requireIsTextNonEmpty( pkgName )
 
             result   = '%s %s' % ( result, pkgName )
 

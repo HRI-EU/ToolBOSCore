@@ -46,9 +46,7 @@ import sys
 
 from ToolBOSCore.BuildSystem         import BuildSystemTools
 from ToolBOSCore.Platforms.Platforms import getHostPlatform
-from ToolBOSCore.Util                import ArgsManagerV2
-from ToolBOSCore.Util                import FastScript
-from ToolBOSCore.Util                import Any
+from ToolBOSCore.Util                import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
@@ -56,77 +54,13 @@ from ToolBOSCore.Util                import Any
 #----------------------------------------------------------------------------
 
 
-def _checkForUpdates():
-    """
-        Check if there are any updates for this package.
-    """
-    from ToolBOSCore.CIA.PatchSystem import PatchSystem
-
-    logging.debug( 'checking for updates' )
-
-    oldDebugLevel = Any.getDebugLevel()
-    Any.setDebugLevel( 1 )
-
-    patcher = PatchSystem()
-    result  = patcher.run( dryRun=True )
-
-    Any.setDebugLevel( oldDebugLevel )
-
-    if len(result) > 0:
-        logging.info( '' )
-        logging.info( '\033[7;37m\033[1;31m' + ' ' * 60 + '\033[0m' )
-        logging.info( '\033[1;31mupdates are available for this package:\033[0m' )
-
-        for patch in result:
-            logging.info( '  - %s', patch[0] )
-
-        logging.info( '' )
-        logging.info( '' )
-        logging.info( '\033[0;31mYou may apply them using "BST.py --upgrade".\033[0m' )
-        logging.info( '\033[7;37m\033[1;31m' + ' ' * 60 + '\033[0m' )
-        logging.info( '' )
-    else:
-        logging.debug( 'no need to patch' )
-
-
-def _createPackage( args, flatStyle ):
-    from ToolBOSCore.Packages import PackageCreator
-
-
-    try:
-        templateName = args[0]
-    except IndexError:
-        templateName = None
-
-
-    if templateName is None:
-        # cmdline arguments were not specified, open GUI in this case
-        from ToolBOSCore.Packages.PackageCreatorGUI import PackageCreatorGUI
-        PackageCreatorGUI().main()
-        return True
-
-    elif templateName == 'help':
-        _showAvailableTemplates()
-        return True
-
-    else:
-        try:
-            packageName    = args[1]
-            packageVersion = args[2]
-            return PackageCreator.runTemplate( templateName, packageName, packageVersion,
-                                               flatStyle=flatStyle )
-        except IndexError:
-            logging.error( 'Please specify a package name and version (see help)' )
-            return False
-
-
 def _parseSqArgs( cr, argv ):
     import re
 
     from ToolBOSCore.SoftwareQuality import CheckRoutine, Common, Rules
 
-    Any.requireIsInstance( cr, CheckRoutine.CheckRoutine )
-    Any.requireIsList( argv )
+    FastScript.requireIsInstance( cr, CheckRoutine.CheckRoutine )
+    FastScript.requireIsList( argv )
 
     try:
         # ensure that script-name does not appear in this list
@@ -157,7 +91,7 @@ def _parseSqArgs( cr, argv ):
             forceFiles.add( os.path.abspath( arg ) )
 
         elif arg.startswith( 'sqLevel=' ):
-            tmp = re.search( 'sqLevel=(\S+)', ' '.join(argv) )
+            tmp = re.search( r'sqLevel=(\S+)', ' '.join(argv) )
 
             if tmp:
                 forceLevel = tmp.group(1)
@@ -166,7 +100,7 @@ def _parseSqArgs( cr, argv ):
                 raise ValueError( msg )
 
         elif arg.startswith( 'group=' ):
-            tmp = re.search( 'group=(\S+)', ' '.join(argv) )
+            tmp = re.search( r'group=(\S+)', ' '.join(argv) )
 
             if tmp:
                 forceGroups = tmp.group(1)
@@ -203,14 +137,6 @@ def _parseSqArgs( cr, argv ):
         cr.showSummary( True )
 
 
-def _runPatchSystemGUI():
-    logging.info( 'starting zen update' )
-
-    from ToolBOSCore.CIA import PatchSystemGUI
-
-    PatchSystemGUI.run()
-
-
 def _runCheckRoutineDialog():
     from ToolBOSCore.ZenBuildMode    import QtPackageModel
     from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
@@ -232,48 +158,6 @@ def _runZenBuildModeGUI():
 
     projectRoot = os.getcwd()
     MainWindow.MainWindow( projectRoot ).main()
-
-
-def _showAvailableTemplates():
-    """
-        Lists all available templates on the console.
-    """
-    from ToolBOSCore.Packages import PackageCreator
-
-
-    print( '' )
-    print( '\nAvailable templates:' )
-    print( '--------------------\n' )
-
-    for template in PackageCreator.getTemplatesAvailable():
-        print( '  %s' % template )
-
-    print( '\n\nExample usage:' )
-    print( '--------------\n' )
-
-    print( "<template>       -- specifies the type of package to be created" )
-    print( "<packageName>    -- descriptive name of new software project" )
-    print( "<packageVersion> -- version number, e.g.:" )
-    print( "                    0.1 = initial development" )
-    print( "                    1.0 = first release" )
-    print( "                    1.1 = minor update" )
-    print( "                    2.0 = major change\n" )
-
-    print( "BST.py -n <template> <packageName> <packageVersion>" )
-    print( "e.g.:" )
-    print( "BST.py -n C_Library MyPackage 0.1\n" )
-
-    print( "This will result in the following directory structure:" )
-    print( "MyPackage/" )
-    print( "└── 1.0" )
-    print( "    ├── bin" )
-    print( "    ├── CMakeLists.txt" )
-    print( "    ├── doc" )
-    print( "    ├── examples" )
-    print( "    ├── src" )
-    print( "    │   ├── MyPackage.c" )
-    print( "    │   └── MyPackage.h" )
-    print( "    └── test\n" )
 
 
 #----------------------------------------------------------------------------
@@ -335,13 +219,10 @@ argman.addArgument( '-l', '--list', action='store_true',
                     help='list all used env. variables + build settings' )
 
 argman.addArgument( '-M', '--message', action='store', type=str, default='',
-                    help='message for global installation and deprecation' )
+                    help='message for deprecation' )
 
 argman.addArgument( '-m', '--doc', action='store_true',
                     help='make API documentation (HTML)' )
-
-argman.addArgument( '-n', '--new', action='store_true',
-                    help='create new package from template (see examples below)' )
 
 argman.addArgument( '-p', '--platform', default=hostPlatform,
                     help='cross-compile for specified target platform ' + \
@@ -362,9 +243,6 @@ argman.addArgument( '-t', '--test', action='store_true' ,
 argman.addArgument( '-U', '--uninstall', action='store_true' ,
                     help='remove package from SIT' )
 
-argman.addArgument( '-u', '--upgrade', action='store_true' ,
-                    help='automatic upgrade (apply all available patches)' )
-
 argman.addArgument( '-x', '--proxy', action='store_true',
                     help='install package into SIT-Proxy (sandbox)' )
 
@@ -381,9 +259,6 @@ argman.addExample( '%(prog)s -bv                         # build in verbose mode
 argman.addExample( '%(prog)s /path/to/sourcetree         # out-of-tree build' )
 argman.addExample( '%(prog)s -p help                     # show cross-compile platforms' )
 argman.addExample( '%(prog)s -p windows-amd64-vs2017     # cross-compile for Windows' )
-argman.addExample( '%(prog)s -n                          # create new packages (GUI-version)' )
-argman.addExample( '%(prog)s -n help                     # show available templates' )
-argman.addExample( '%(prog)s -n --flat C_Library Foo 1.0 # create new-style C library "Foo"' )
 argman.addExample( '%(prog)s -q                          # run quality checks (configured for this package)' )
 argman.addExample( '%(prog)s -q --all                    # run all quality checks' )
 argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
@@ -413,7 +288,6 @@ globalInstall = args['install']
 jobs          = args['jobs']
 listEnv       = args['list']
 message       = args['message']
-new           = args['new']
 platform      = args['platform']
 proxyInstall  = args['proxy']
 quality       = args['quality']
@@ -422,7 +296,6 @@ shellfiles    = args['shellfiles']
 setup         = args['setup']
 test          = args['test']
 uninstall     = args['uninstall']
-upgrade       = args['upgrade']
 verbose       = args['verbose']
 yes           = args['yes']
 zen           = args['zen']
@@ -447,17 +320,13 @@ if yes:
     FastScript.setEnv( 'MAKEFILE_FASTINSTALL', 'TRUE' )
 
 
-if message:
-    FastScript.setEnv( 'MAKEFILE_GLOBALINSTALLREASON', message )
-
-
 try:
 
     if platform == 'help':
         from ToolBOSCore.Platforms.CrossCompilation import getSwitchEnvironmentList
 
         candidates = getSwitchEnvironmentList( hostPlatform )
-        Any.requireIsList( candidates )
+        FastScript.requireIsList( candidates )
 
         if not candidates:
             logging.info( 'No cross-compilation from %s hosts implemented :-(', hostPlatform )
@@ -476,7 +345,7 @@ try:
     if not any ( [ allTargets, build, codecheck, deprecate, deprecate_all,
                    distclean, documentation, globalInstall, listEnv, quality,
                    proxyInstall, release, setup, shellfiles, test, uninstall,
-                   upgrade, zen ] ):
+                   zen ] ):
         build = True
 
 
@@ -488,7 +357,7 @@ try:
         cwd       = os.getcwd()
 
         # check that unhandled[-1] is not by chance the script itself
-        if candidate != sys.argv and Any.isDir( candidate ):
+        if candidate != sys.argv and FastScript.isDir( candidate ):
             sourceTree = os.path.abspath( candidate )
             binaryTree = os.path.abspath( os.getcwd() )
 
@@ -531,7 +400,7 @@ try:
             except EOFError as details:
                 raise FileNotFoundError( details )
             except dill.UnpicklingError as e:
-                logging.warning( 'unable to deserialize %s: %s', bstCache, e )
+                logging.warning( 'unable to parse %s: %s', bstCache, e )
                 logging.warning( 'ignoring cache file!' )
                 raise IOError( e )
 
@@ -552,9 +421,7 @@ try:
                 FastScript.tryImport( 'dill' )
                 import dill
 
-                from ToolBOSCore.External.atomicfile import AtomicFile
-
-                with AtomicFile(bstCache, 'wb') as f:
+                with open( bstCache, 'wb' ) as f:
                     dill.dump( bst, f )
             except ( IOError, OSError ) as details:
                 logging.debug( 'unable to create %s', bstCache )
@@ -588,18 +455,10 @@ try:
         bst.distclean()
 
 
-    if new:
-        status = _createPackage( unhandled, flatStyle )
-        sys.exit( 0 if status else -5 )
-
-
     if zen:
         FastScript.tryImport( 'PyQt5' )
 
-        if upgrade:
-            _runPatchSystemGUI()
-
-        elif quality:
+        if quality:
             _runCheckRoutineDialog()
 
         else:
@@ -611,13 +470,6 @@ try:
     if setup or noArgs:
         if not bst.configure():
             sys.exit( -2 )
-
-
-    if upgrade:
-        from ToolBOSCore.CIA.PatchSystem import PatchSystem
-
-        patcher = PatchSystem()
-        patcher.run()
 
 
     if build or noArgs:
@@ -731,7 +583,7 @@ except ( AssertionError, EnvironmentError, RuntimeError, SyntaxError,
     logging.error( f'{details.__class__.__name__}: {details}' )
 
     # show stacktrace in verbose mode
-    if Any.getDebugLevel() >= 5:
+    if FastScript.getDebugLevel() >= 5:
         raise
 
     sys.exit( -1 )

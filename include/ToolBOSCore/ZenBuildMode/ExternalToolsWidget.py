@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Launchers for external tools (IDEs etc.)
@@ -40,13 +39,11 @@ import logging
 from PyQt5.QtCore    import QSize, Qt
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.ZenBuildMode import QtPackageModel,\
-                                     SettingsDialog, UpdateDialog
+from ToolBOSCore.ZenBuildMode    import QtPackageModel, SettingsDialog
 from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
-from ToolBOSCore.GenericGUI   import BusyWaitDialog, \
-                                     IconProvider, PixmapProvider, \
-                                     ProcessExecutor
-from ToolBOSCore.Util         import Any
+from ToolBOSCore.GenericGUI      import BusyWaitDialog, IconProvider, \
+                                        ProcessExecutor
+from ToolBOSCore.Util            import FastScript
 
 
 class ExternalToolsWidget( QWidget, object ):
@@ -54,7 +51,7 @@ class ExternalToolsWidget( QWidget, object ):
     def __init__( self, model, parent=None ):
         super( QWidget, self ).__init__()
 
-        Any.requireIsInstance( model, QtPackageModel.BSTPackageModel )
+        FastScript.requireIsInstance( model, QtPackageModel.BSTPackageModel )
 
         self.parent          = parent
         self.model           = model
@@ -67,28 +64,11 @@ class ExternalToolsWidget( QWidget, object ):
 
         iconSize             = QSize( 32, 32 )
 
-        self.updateButton = QToolButton()
-        self.updateButton.setEnabled( False )
-        self.updateButton.setIcon( IconProvider.getIcon( 'software-update-available' ) )
-        self.updateButton.setIconSize( iconSize )
-        self.updateButton.setToolTip( 'No patches available, package is up-to-date' )
-        self.updateButton.clicked.connect( self._onUpdateButtonPressed )
-
         settingsButton = QToolButton()
         settingsButton.setIconSize( iconSize )
         settingsButton.setToolTip( 'set preferences' )
         settingsButton.setIcon( IconProvider.getIcon( 'preferences-system' ) )
         settingsButton.clicked.connect( self._onSettingsButtonPressed )
-
-        logo = QLabel()
-        logo.setPixmap( PixmapProvider.getPixmap( 'ToolBOS-Logo-small' ) )
-        logo.setAlignment( Qt.AlignCenter )
-
-        icemonButton = QToolButton()
-        icemonButton.setIconSize( iconSize )
-        icemonButton.setToolTip( 'compile farm status (Icecream Monitor)' )
-        icemonButton.setIcon( IconProvider.getIcon( 'IcecreamMonitor' ) )
-        icemonButton.clicked.connect( self._onIceMonButtonPressed )
 
         sqButton = QToolButton()
         sqButton.setIconSize( iconSize )
@@ -98,10 +78,8 @@ class ExternalToolsWidget( QWidget, object ):
 
         iconGrid = QGridLayout()
         iconGrid.setContentsMargins( 0, 0, 0, 0 )
-        iconGrid.addWidget( icemonButton,      0, 0 )
-        iconGrid.addWidget( sqButton,          0, 1 )
-        iconGrid.addWidget( self.updateButton, 1, 0 )
-        iconGrid.addWidget( settingsButton,    1, 1 )
+        iconGrid.addWidget( sqButton,       0, 1 )
+        iconGrid.addWidget( settingsButton, 1, 1 )
 
         iconWidget = QGroupBox( 'utilities', self )
         iconWidget.setLayout( iconGrid )
@@ -109,36 +87,10 @@ class ExternalToolsWidget( QWidget, object ):
         mainLayout = QVBoxLayout()
         mainLayout.setContentsMargins( 0, 0, 0, 0 )
         mainLayout.addStretch( 1 )
-        mainLayout.addWidget( logo )
-        mainLayout.addStretch( 1 )
         mainLayout.addWidget( iconWidget )
+        mainLayout.addStretch( 1 )
 
         self.setLayout( mainLayout )
-
-
-    def showUpdateIndicator( self ):
-        self.updateButton.setToolTip( 'There are patches available for this package' )
-        self.updateButton.setEnabled( True )
-
-
-    def _onPkgCreatorButtonPressed( self ):
-        logging.info( 'starting Package Creator' )
-
-        from ToolBOSCore.Packages.PackageCreatorGUI import PackageCreatorGUI
-
-        self._pkgCreator = PackageCreatorGUI()
-        self._pkgCreator.runGUI( self.parent )
-
-
-    def _onCLionButtonPressed( self ):
-        from ToolBOSCore.Tools import CLion
-
-        CLion.createProject()
-        CLion.startGUI()
-
-
-    def _onIceMonButtonPressed( self ):
-        self._runProcess( 'icemon -n HRI1004', 'Icrecream Monitor' )
 
 
     def _onSoftwareQualityDialogPressed( self ):
@@ -155,18 +107,13 @@ class ExternalToolsWidget( QWidget, object ):
             self._busyDialog = BusyWaitDialog.BusyWaitDialog( 'analyzing package... (this may take some time)' )
 
 
-    def _onUpdateButtonPressed(self):
-        self._updateDialog = UpdateDialog.UpdateDialog()
-        self._updateDialog.show()
-
-
     def _onSettingsButtonPressed( self ):
         self._settings = SettingsDialog.SettingsDialog( self.parent )
 
 
     def _runProcess( self, cmd, description ):
-        Any.requireIsTextNonEmpty( cmd )
-        Any.requireIsTextNonEmpty( description )
+        FastScript.requireIsTextNonEmpty( cmd )
+        FastScript.requireIsTextNonEmpty( description )
 
         logging.info( 'launching %s', description )
 

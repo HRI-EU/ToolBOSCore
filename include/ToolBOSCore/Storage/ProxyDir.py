@@ -39,7 +39,7 @@
 #----------------------------------------------------------------------------
 
 
-import glob
+import concurrent.futures
 import logging
 import os
 import os.path
@@ -47,7 +47,7 @@ import re
 import stat
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import Any, FastScript, ThreadPool
+from ToolBOSCore.Util    import FastScript
 
 
 #----------------------------------------------------------------------------
@@ -89,8 +89,8 @@ def findProxyInstallations( checkLinks = False ):
     excludePattern = re.compile( r'^(parentTree|\d+\.\d+.*)$' )
     criteria       = re.compile( r"^(\d+)\.(\d+)(.*)" )
 
-    Any.requireIsDir( sit )
-    Any.requireIsDir( sitParent )
+    FastScript.requireIsDir( sit )
+    FastScript.requireIsDir( sitParent )
     requireIsProxyDir( sit )
 
     # find all entries within the proxy that seem to be a version number
@@ -124,56 +124,6 @@ def findProxyInstallations( checkLinks = False ):
     return resultList
 
 
-def createProxyDir( sitRoot, sitProxy, verbose=True ):
-    """
-        Creates an SIT proxy directory for the current user in the
-        directory <sitProxy> with symlinks pointing into <sitRoot>.
-    """
-    sitRootPkgList = []
-
-    if not os.path.isdir( sitRoot ):
-        msg = '%s: No such directory (please check $SIT)' % sitRoot
-        raise AssertionError( msg )
-
-    if os.path.exists( sitProxy ):
-        msg = '%s: Directory exists' % sitProxy
-        raise AssertionError( msg )
-
-    if os.path.exists( os.path.join( sitRoot, SIT.parentLink ) ):
-        msg = '$SIT=%s already points to a proxy ' % sitRoot + \
-              'directory (cascades are not allowed)'
-        raise AssertionError( msg )
-
-    if os.path.realpath( sitRoot ) == os.path.realpath( sitProxy ):
-        msg = 'SIT proxy path must be different from parent SIT!'
-        raise AssertionError( msg )
-
-
-    SIT.getProjectsWithErrorHandling( sitRoot, sitRootPkgList )
-
-    for package in sitRootPkgList:
-        linkName = os.path.join( sitProxy, package )
-        target   = os.path.join( sitRoot, package )
-
-        if verbose:
-            logging.info( 'linking %s', package )
-
-        # create directory where the link shall be created
-        FastScript.mkdir( os.path.dirname( linkName ) )
-
-        logging.debug( 'linking %s --> %s', linkName, target )
-        os.symlink( target, linkName )
-
-
-    # create a symlink inside the proxy that points to the parent
-    linkName = os.path.join( sitProxy, SIT.parentLink )
-    os.symlink( sitRoot, linkName )
-
-
-    logging.info( '' )
-    logging.info( 'Proxy created in %s', sitProxy )
-
-
 def updateProxyDir( removeBrokenSymlinks     = True,
                     removeEmptyCategories    = True,
                     linkNewPackagesIntoProxy = True,
@@ -181,7 +131,6 @@ def updateProxyDir( removeBrokenSymlinks     = True,
                     checkProxyLinkedVersion  = True,
                     removeProxyInstallations = False,
                     cleanHomeDirectory       = True,
-                    updateRTMapsIndex        = True,
                     dryRun                   = False ):
     """
         Updates the SIT proxy directory of the current user.
@@ -212,12 +161,8 @@ def updateProxyDir( removeBrokenSymlinks     = True,
 
           cleanHomeDirectory:       clean-up unused files under ~/.HRI
 
-          updateRTMapsIndex:        update *.pck symlinks in ~/.HRI/RTMaps
-
         If dryRun=True, nothing will actually be done.
     """
-    from ToolBOSCore.Tools import RTMaps
-
     sitRoot         = SIT.getParentPath()
     sitProxy        = SIT.getPath()
     proxyChanged    = False
@@ -225,17 +170,16 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     sitProxyPkgList = []
     pluginsEnabled  = []
 
-    Any.requireIsBool( removeBrokenSymlinks     )
-    Any.requireIsBool( removeEmptyCategories    )
-    Any.requireIsBool( linkNewPackagesIntoProxy )
-    Any.requireIsBool( checkProxyLinkTarget     )
-    Any.requireIsBool( checkProxyLinkedVersion  )
-    Any.requireIsBool( removeProxyInstallations )
-    Any.requireIsBool( cleanHomeDirectory       )
-    Any.requireIsBool( updateRTMapsIndex        )
-    Any.requireIsBool( dryRun )
+    FastScript.requireIsBool( removeBrokenSymlinks     )
+    FastScript.requireIsBool( removeEmptyCategories    )
+    FastScript.requireIsBool( linkNewPackagesIntoProxy )
+    FastScript.requireIsBool( checkProxyLinkTarget     )
+    FastScript.requireIsBool( checkProxyLinkedVersion  )
+    FastScript.requireIsBool( removeProxyInstallations )
+    FastScript.requireIsBool( cleanHomeDirectory       )
+    FastScript.requireIsBool( dryRun )
 
-    Any.requireMsg( sitRoot != sitProxy,
+    FastScript.requireMsg( sitRoot != sitProxy,
                        '%s: Is not a proxy directory' % sitProxy )
 
 
@@ -265,38 +209,20 @@ def updateProxyDir( removeBrokenSymlinks     = True,
     if not pluginsEnabled:
         raise ValueError( 'Nothing to do. Please check your parameters.' )
 
-
-    # in any case, after updating the proxy verify that there are no legacy
-    # *.def files laying around
-    pluginsEnabled.append( _checkDefFiles )
-
-    tp = ThreadPool.ThreadPool()
-
-    tp.add( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
-    tp.add( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
-
-    tp.run()
-
+    with concurrent.futures.ThreadPoolExecutor() as tp:
+        tp.submit( SIT.getProjectsWithErrorHandling, sitRoot, sitRootPkgList )
+        tp.submit( SIT.getProjectsWithErrorHandling, sitProxy, sitProxyPkgList )
 
     if removeProxyInstallations:
         changed = _removeProxyInstallations( sitRootPkgList, sitProxyPkgList,
                                              sitRoot, sitProxy, dryRun )
-
         if changed > 0:
             sitProxyPkgList = []
             SIT.getProjectsWithErrorHandling( sitProxy, sitProxyPkgList )
 
-
     for func in pluginsEnabled:
         proxyChanged |= func( sitRootPkgList, sitProxyPkgList,
                               sitRoot, sitProxy, dryRun )
-
-
-    if updateRTMapsIndex:
-        if RTMaps.isInstalled( sitRoot ):
-            RTMaps.updateComponentIndex( sitRoot, sitProxy, dryRun )
-        else:
-            logging.debug( 'RTMaps not installed' )
 
     msg = 'Your proxy is up-to-date%s.' % ( ' now' if proxyChanged == True else '' )
     logging.info( '' )
@@ -326,7 +252,7 @@ def _removeProxyInstallations( sitRootPkgList, sitProxyPkgList,
     requireIsProxyDir( sitProxy )
 
     toDelete = findProxyInstallations()  # list of absolute paths into proxy
-    Any.requireIsList( toDelete )
+    FastScript.requireIsList( toDelete )
 
     if len(toDelete) == 0:
         logging.info( 'no proxy installations to be deleted' )
@@ -426,10 +352,10 @@ def _linkNewPackagesIntoProxy( sitRootPkgList, sitProxyPkgList,
         Creates a symlink in the proxy for each newly globally installed
         package.
     """
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
+    FastScript.requireIsListNonEmpty( sitRootPkgList )
+    FastScript.requireIsListNonEmpty( sitProxyPkgList )
+    FastScript.requireIsDir( sitRoot )
+    FastScript.requireIsDir( sitProxy )
 
     proxyChanged = False
     diffList     = _getTreeDifferences( sitRootPkgList, sitProxyPkgList )
@@ -454,64 +380,6 @@ def _linkNewPackagesIntoProxy( sitRootPkgList, sitProxyPkgList,
     return proxyChanged
 
 
-def _checkDefFiles( sitRootPkgList, sitProxyPkgList,
-                    sitRoot, sitProxy, dryRun ):
-    """
-        Checks that there are no orphaned *.def files in the proxy,
-        f.i. leftovers from previous proxy-installations that have been
-        deleted in the meanwhile.
-
-        Superfluous *.def files might be a really hard-to-track source of
-        errors: In case they don't match the actual interface of the
-        (globally) installed component, it might be very difficult to find
-        out why certain inputs/outputs/references do / don't appear in DTBOS.
-    """
-    from ToolBOSCore.Packages.ProjectProperties import isCanonicalPath
-    from ToolBOSCore.Packages.ProjectProperties import splitPath
-
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
-
-
-    proxyPackages = findProxyInstallations()  # list of absolute paths
-    Any.requireIsList( proxyPackages )
-    proxyPackages = map( SIT.strip, proxyPackages )
-
-    # filter-out 3-digit version numbers, as *.def files by convention
-    # are for 2-digit versions only
-    proxyPackages = filter( isCanonicalPath, proxyPackages )
-
-    # create a corresponding fake-index for each proxy installation, for easy
-    # string-based matching later
-    #
-    fakeDefs      = []
-
-    for package in proxyPackages:
-        ( category, packageName, packageVersion ) = splitPath( package )
-        fakeDefs.append( '%s_%s.def' % ( packageName, packageVersion ) )
-
-    indexDir      = os.path.join( sitProxy, 'Modules/Index' )
-    defPathList   = glob.glob( os.path.join( indexDir, '*.def' ) )
-    proxyChanged  = False
-
-    for defPath in defPathList:
-        defFile = os.path.basename( defPath )
-
-        # delete superfluous *.def files
-        if defFile not in fakeDefs:
-            collapsed = SIT.collapseSIT( defPath )
-
-            if dryRun:
-                logging.info( '-- DRY RUN --   found superfluous %s', collapsed )
-            else:
-                logging.info( 'deleting %s', defPath )
-                FastScript.remove( defPath )
-
-    return proxyChanged
-
-
 def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
                            sitRoot, sitProxy, dryRun ):
     """
@@ -519,12 +387,12 @@ def _checkProxyLinkTarget( sitRootPkgList, sitProxyPkgList,
         points into the SIT root directory or outside (e.g. group proxy)
 
         'projectList' must be a list containing canonical path names such
-        as ['Libraries/Serialize/3.0'].
+        as ['Libraries/Example/3.0'].
     """
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
+    FastScript.requireIsListNonEmpty( sitRootPkgList )
+    FastScript.requireIsListNonEmpty( sitProxyPkgList )
+    FastScript.requireIsDir( sitRoot )
+    FastScript.requireIsDir( sitProxy )
 
     for project in sitProxyPkgList:
         pkgProxyPath = os.path.join( sitProxy, project )
@@ -547,19 +415,19 @@ def _checkProxyLinkedVersion( sitRootPkgList, sitProxyPkgList,
                               sitRoot, sitProxy, dryRun ):
     """
         Checks if the two-digit version in the proxy points to the most
-        recent version. Otherwise this can happen:
+        recent version. Otherwise, this can happen:
 
-          * Developer A installs "Serialize/3.0.100" into his proxy, the
+          * Developer A installs "Example/3.0.100" into their proxy, the
             2-digit link "3.0" points into the proxy to version 3.0.100.
 
-          * Developer B installs "Serialize/3.0.101" globally.
+          * Developer B installs "Example/3.0.101" globally.
 
           * Now the 3.0-symlink of developer A is outdated.
     """
-    Any.requireIsListNonEmpty( sitRootPkgList )
-    Any.requireIsListNonEmpty( sitProxyPkgList )
-    Any.requireIsDir( sitRoot )
-    Any.requireIsDir( sitProxy )
+    FastScript.requireIsListNonEmpty( sitRootPkgList )
+    FastScript.requireIsListNonEmpty( sitProxyPkgList )
+    FastScript.requireIsDir( sitRoot )
+    FastScript.requireIsDir( sitProxy )
 
     proxyChanged = False
 
@@ -586,7 +454,7 @@ def _checkProxyLinkedVersion( sitRootPkgList, sitProxyPkgList,
 def _cleanHomeDirectory( sitRootPkgList, sitProxyPkgList,
                          sitRoot, sitProxy, dryRun ):
     """
-        Clean-up really old / unused files under ~/.HRI
+        Clean-up old / unused files under ~/.HRI
     """
     configDir = os.path.expanduser( '~/.HRI' )
 
@@ -621,13 +489,6 @@ def _findBrokenLinks( sitProxy ):
                         resultList.append( path )
 
                 except OSError as details:
-
-                    # Symlink cannot be read e.g. due to I/O error
-                    #
-                    # We experienced this when sbd. by chance was installing
-                    # a BBCM component and the corresponding index file link
-                    # has not been written, yet. Indeed a cornercase ;-)
-
                     logging.debug( 'unable to read symlink: %s', details )
 
     return resultList

@@ -37,7 +37,6 @@
 import subprocess
 
 from ToolBOSCore.Packages                 import ProjectProperties
-
 from ToolBOSCore.Platforms                import Debian
 from ToolBOSCore.Packages.AbstractPackage import AbstractPackage
 

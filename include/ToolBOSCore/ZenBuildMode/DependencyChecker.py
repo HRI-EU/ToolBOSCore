@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 #  Checks if all package dependencies are present
@@ -39,7 +38,7 @@ from PyQt5.QtCore import QByteArray, QObject
 from PyQt5.QtCore import pyqtSignal
 
 from ToolBOSCore.GenericGUI import ProcessExecutor
-from ToolBOSCore.Util       import Any
+from ToolBOSCore.Util       import FastScript
 
 
 class DependencyChecker( QObject, object ):
@@ -54,8 +53,8 @@ class DependencyChecker( QObject, object ):
     def __init__( self, hostname, topLevelDir ):
         QObject.__init__( self )
 
-        Any.requireIsTextNonEmpty( hostname )
-        Any.requireIsTextNonEmpty( topLevelDir )
+        FastScript.requireIsTextNonEmpty( hostname )
+        FastScript.requireIsTextNonEmpty( topLevelDir )
 
         self._hostname    = hostname
         self._output      = QByteArray()

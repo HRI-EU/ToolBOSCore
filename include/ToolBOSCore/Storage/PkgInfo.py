@@ -37,7 +37,6 @@
 import os
 
 from ToolBOSCore.Storage import SIT
-from ToolBOSCore.Util    import Any
 from ToolBOSCore.Util    import FastScript
 
 
@@ -61,12 +60,12 @@ def getPkgInfoContent( project = None, dirName = None, filename = None ):
             requireIsCanonicalPath( project )
             filename = os.path.join( SIT.getPath(), project, 'pkgInfo.py' )
         elif dirName:
-            Any.requireIsDir( dirName )
+            FastScript.requireIsDir( dirName )
             filename = os.path.join( dirName, 'pkgInfo.py' )
         else:
             filename = 'pkgInfo.py'
 
-    Any.requireIsFile( filename )
+    FastScript.requireIsFile( filename )
 
     try:
         content = FastScript.execFile( filename )
@@ -74,27 +73,6 @@ def getPkgInfoContent( project = None, dirName = None, filename = None ):
         raise SyntaxError( 'unable to parse %s: %s' % ( filename, details ) )
 
     return content
-
-
-def getSVNRevision( package ):
-    """
-        Returns the last globally installed SVN revision of the package
-        as stored in the pkgInfo.py file.
-    """
-    return getPkgInfoContent( package )['revision']
-
-
-def getSVNLocation( package ):
-    """
-        Returns the SVN repository URL of the package as stored in the
-        pkgInfo.py file.
-    """
-    try:
-        return getPkgInfoContent( package )['repositoryUrl']
-    except AssertionError:
-        raise AssertionError( "%s: No such package" % package )
-    except KeyError:
-        raise AssertionError( "%s: SVN repository location unknown" % package )
 
 
 # EOF

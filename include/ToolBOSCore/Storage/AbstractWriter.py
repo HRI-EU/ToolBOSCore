@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  GnuPG facade
+#  Superclass for generators of BashSrc, packageVar.cmake and pkgInfo.py
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -38,7 +38,6 @@ import logging
 import os
 
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Util                     import Any
 from ToolBOSCore.Util                     import FastScript
 
 
@@ -54,7 +53,7 @@ class AbstractWriter( object ):
             to avoid multiple detection of package meta-information
             (for each derived subclass BashSrcWriter etc.)
         """
-        Any.require( isinstance( details, PackageDetector ) )
+        FastScript.require( isinstance( details, PackageDetector ) )
 
         self.content = ''
         self.details = details
@@ -72,28 +71,26 @@ class AbstractWriter( object ):
         suggestions        = self.addSuggestions()
         buildSystemInfo    = self.addBuildSystemInfo()
         mainLoop           = self.addMainLoop()
-        componentInterface = self.addComponentInterface()
         leadOut            = self.addLeadOut()
 
-        Any.requireIsText( leadIn )
-        Any.requireIsText( basicInfo )
-        Any.requireIsText( originalName )
-        Any.requireIsText( maintainer )
-        Any.requireIsText( repositoryInfo )
-        Any.requireIsText( dependencies )
-        Any.requireIsText( buildDependencies )
-        Any.requireIsText( recommendations )
-        Any.requireIsText( suggestions )
-        Any.requireIsText( buildSystemInfo )
-        Any.requireIsText( mainLoop )
-        Any.requireIsText( componentInterface )
-        Any.requireIsText( leadOut )
+        FastScript.requireIsText( leadIn )
+        FastScript.requireIsText( basicInfo )
+        FastScript.requireIsText( originalName )
+        FastScript.requireIsText( maintainer )
+        FastScript.requireIsText( repositoryInfo )
+        FastScript.requireIsText( dependencies )
+        FastScript.requireIsText( buildDependencies )
+        FastScript.requireIsText( recommendations )
+        FastScript.requireIsText( suggestions )
+        FastScript.requireIsText( buildSystemInfo )
+        FastScript.requireIsText( mainLoop )
+        FastScript.requireIsText( leadOut )
 
         self.content       = leadIn + basicInfo + originalName + \
                              maintainer + repositoryInfo + dependencies + \
                              buildDependencies + recommendations + \
                              suggestions + buildSystemInfo + mainLoop + \
-                             componentInterface + leadOut
+                             leadOut
 
 
     def _replace( self, string, substMap ):
@@ -143,9 +140,6 @@ class AbstractWriter( object ):
         return ''
 
     def addBuildSystemInfo( self ):
-        return ''
-
-    def addComponentInterface( self ):
         return ''
 
     def addMainLoop( self ):
