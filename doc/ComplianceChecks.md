@@ -16,7 +16,7 @@ license makes use of 3rd-party-code licensed under a different
 ### Specifying license details
 
 The checker is configured in a way that you define a Python variable
-'copyright' within your [pkgInfo.py](../../../examples/pkgInfo.py) .
+'copyright' within your `pkgInfo.py`.
 Depending on its datatype the behavior can be fine-tuned.
 
 a) If 'copyright' is a string, this string must be found in each and

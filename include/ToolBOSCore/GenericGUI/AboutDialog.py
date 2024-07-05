@@ -44,9 +44,7 @@ from PyQt5.QtCore    import pyqtSignal, QThread, Qt
 from PyQt5.QtGui     import *
 from PyQt5.QtWidgets import *
 
-from ToolBOSCore.GenericGUI               import PixmapProvider
 from ToolBOSCore.Packages.PackageDetector import PackageDetector
-from ToolBOSCore.Packages.CopyrightHeader import getCopyright
 from ToolBOSCore.Util                     import FastScript
 
 
@@ -58,19 +56,7 @@ class AboutDialog( QDialog ):
     def __init__( self, parent=None ):
         super( AboutDialog, self ).__init__( parent )
 
-        logo = QLabel()
-        logo.setPixmap( PixmapProvider.getPixmap( 'ToolBOS-Logo-small' ) )
-        logo.setAlignment( Qt.AlignCenter )
-
-        copyrightInfo = QPlainTextEdit()
-        copyrightInfo.setFont( self._font )
-        copyrightInfo.setPlainText( getCopyright() )
-        copyrightInfo.setReadOnly( True )
-
-        layout = QGridLayout()
-        layout.addWidget( logo,          0, 0 )
-        layout.addWidget( copyrightInfo, 0, 1 )
-
+        layout     = QGridLayout()
         tcRoot     = FastScript.getEnv( 'TOOLBOSCORE_ROOT' )
         tcDetector = PackageDetector( tcRoot )
         tcDetector.retrieveMakefileInfo()

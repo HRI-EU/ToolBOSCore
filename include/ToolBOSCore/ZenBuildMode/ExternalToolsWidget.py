@@ -41,8 +41,7 @@ from PyQt5.QtWidgets import *
 
 from ToolBOSCore.ZenBuildMode    import QtPackageModel, SettingsDialog
 from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
-from ToolBOSCore.GenericGUI      import BusyWaitDialog, \
-                                        IconProvider, PixmapProvider, \
+from ToolBOSCore.GenericGUI      import BusyWaitDialog, IconProvider, \
                                         ProcessExecutor
 from ToolBOSCore.Util            import FastScript
 
@@ -71,10 +70,6 @@ class ExternalToolsWidget( QWidget, object ):
         settingsButton.setIcon( IconProvider.getIcon( 'preferences-system' ) )
         settingsButton.clicked.connect( self._onSettingsButtonPressed )
 
-        logo = QLabel()
-        logo.setPixmap( PixmapProvider.getPixmap( 'ToolBOS-Logo-small' ) )
-        logo.setAlignment( Qt.AlignCenter )
-
         sqButton = QToolButton()
         sqButton.setIconSize( iconSize )
         sqButton.setToolTip( 'Software Quality' )
@@ -92,9 +87,8 @@ class ExternalToolsWidget( QWidget, object ):
         mainLayout = QVBoxLayout()
         mainLayout.setContentsMargins( 0, 0, 0, 0 )
         mainLayout.addStretch( 1 )
-        mainLayout.addWidget( logo )
-        mainLayout.addStretch( 1 )
         mainLayout.addWidget( iconWidget )
+        mainLayout.addStretch( 1 )
 
         self.setLayout( mainLayout )
 
