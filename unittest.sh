@@ -36,18 +36,17 @@
 
 set -euxo pipefail
 
-source useFromHere.sh
 # shellcheck source=/dev/null
 source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 
 CWD=$(pwd)
 
 
-cd "${CWD}/test/MakeShellfiles"   && runTest ./TestMakeShellfiles.py
-cd "${CWD}/test/Misc"             && runTest ./TestMisc.sh
-cd "${CWD}/test/SIT"              && runTest ./TestSIT.sh
-cd "${CWD}/test/Tools"            && runTest ./TestTools.sh
-cd "${CWD}/test/UserSetup"        && runTest ./TestUserSetup.sh
+cd "${CWD}/test/ArgsManagerV2"       && runTest ./TestArgsManagerV2.py
+cd "${CWD}/test/Git"                 && runTest ./test_Git.py
+cd "${CWD}/test/HelpTextConsistency" && runTest ./TestHelpTextConsistency.py
+cd "${CWD}/test/MakeShellfiles"      && runTest ./TestMakeShellfiles.py
+cd "${CWD}/test/SetupWineMSVC"       && runTest ./TestSetupWineMSVC.py
 
 
 # we managed to get here --> success
