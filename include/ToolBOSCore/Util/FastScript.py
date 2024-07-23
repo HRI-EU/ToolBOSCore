@@ -35,6 +35,7 @@
 
 
 import atexit
+import collections.abc
 import getpass
 import glob
 import io
@@ -1903,7 +1904,22 @@ def flattenList( nestedList ):
         Flattens a nested list into a one-dimensional list.
     """
     requireIsList( nestedList )
-    return [ i for j in nestedList for i in j ]
+
+    resultList = list( flatten( nestedList ) )
+    requireIsList( resultList )
+
+    return resultList
+
+
+def flatten( i ):
+    """
+        Flattens an iterable into a one-dimensional list, using generators.
+    """
+    for x in i:
+        if isinstance( x, collections.abc.Iterable ) and not isinstance( x, ( str, bytes ) ):
+            yield from flattenList( x )
+        else:
+            yield x
 
 
 def removeDuplicates( aList ):
