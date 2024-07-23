@@ -42,11 +42,12 @@ source "${TOOLBOSCORE_ROOT}/include/Unittest.bash"
 CWD=$(pwd)
 
 
-cd "${CWD}/test/ArgsManagerV2"       && runTest ./TestArgsManagerV2.py
 cd "${CWD}/test/Git"                 && runTest ./test_Git.py
 cd "${CWD}/test/HelpTextConsistency" && runTest ./TestHelpTextConsistency.py
 cd "${CWD}/test/MakeShellfiles"      && runTest ./TestMakeShellfiles.py
 cd "${CWD}/test/SetupWineMSVC"       && runTest ./TestSetupWineMSVC.py
+cd "${CWD}/test/Util"                && runTest ./TestArgsManagerV2.py
+cd "${CWD}/test/Util"                && runTest ./TestFastScript.py
 
 
 # we managed to get here --> success

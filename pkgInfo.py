@@ -47,7 +47,7 @@ recommends       = [ 'deb://git',
 
 usePatchlevels   = True
 
-patchlevel       = 4
+patchlevel       = 1
 
 install          = [ 'external',
                      'share' ]
