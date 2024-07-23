@@ -1,5 +1,15 @@
 
-                     RELEASE NOTES FOR TOOLBOS CORE 5.0
+                     RELEASE NOTES FOR TOOLBOS CORE 5.0.1
+
+FIXED BUGS
+==========
+
+  - [#131] 🐛 fixed FastScript.flattenList() for nested lists containing strings
+
+
+-----------------------------------------------------------------------------
+
+                     RELEASE NOTES FOR TOOLBOS CORE 5.0.0
 
 
 NEW FEATURES
