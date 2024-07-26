@@ -37,24 +37,26 @@ stages:
   - test
 
 
-default:
-  image: dmz-gitlab.honda-ri.de:5050/tech_team/docker/ubuntu2004-hri-main:1.0
-  interruptible: true
-
-
 all-conda:
+  image: $CI_SERVER_FQDN:5050/tech_team/docker/ubuntu2004-hri-main:1.0
+  interruptible: true
   script:
     - ./ci-all-conda.sh
 
 
 all-venv:
+  image: $CI_SERVER_FQDN:5050/tech_team/docker/ubuntu2004-hri-main:1.0
+  interruptible: true
   script:
     - ./ci-all-venv.sh
 
-
 include:
-  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/dependency-scanning@1.0.0
-  - component: dmz-gitlab.honda-ri.de/TECH_Team/cicd-components/secrets-detection@1.0.0
+  # fail due to quality issues in this package (see ticket #135)
+  #  - component: $CI_SERVER_FQDN/TECH_Team/cicd-components/bst-quality-checks@1.0.0
+  #  - component: $CI_SERVER_FQDN/TECH_Team/cicd-components/ci-check@1.0.0
+  #  - component: $CI_SERVER_FQDN/TECH_Team/cicd-components/ci-test@1.0.0
+  - component: $CI_SERVER_FQDN/TECH_Team/cicd-components/dependency-scanning@1.0.0
+  - component: $CI_SERVER_FQDN/TECH_Team/cicd-components/secrets-detection@1.0.0
 
 
 # EOF
