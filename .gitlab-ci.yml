@@ -56,7 +56,7 @@ include:
 # - component: $CI_SERVER_FQDN/TECH_Team/ci/ci-check/ci-check@1.1.0
 # - component: $CI_SERVER_FQDN/TECH_Team/ci/ci-test/ci-test@1.1.0
   - component: $CI_SERVER_FQDN/TECH_Team/ci/dependency-scanning/dependency-scanning@1.1.0
-  - component: $CI_SERVER_FQDN/TECH_Team/ci/secrets-detection/secrets-detection@1.0.0
+  - component: $CI_SERVER_FQDN/TECH_Team/ci/secrets-detection/secrets-detection@1.4.0
 
 
 # EOF
