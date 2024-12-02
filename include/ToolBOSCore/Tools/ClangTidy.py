@@ -35,40 +35,37 @@
 
 
 import io
-import time
 import re
+import time
 
 from ToolBOSCore.Util import FastScript
 
 
-def stripAnsi(line):
+def _stripAnsi(line):
     return re.sub(r'\x1b\[[\d;]+m', '', line)
 
 
-def checkScript(buildDir):
-    command = 'run-clang-tidy'
-
+def checkScript( buildDir ):
+    cmd    = f'run-clang-tidy -p {buildDir}'
     stdout = io.StringIO()
     stderr = io.StringIO()
-    failed = False
-    reportedIssues = []
 
-    cmd = f'{command} -p {buildDir}'
+    FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
 
-    FastScript.execProgram(cmd, stdout=stdout, stderr=stderr)
-    reportedIssues = stdout.getvalue().splitlines(keepends=True)
+    reportedIssues = stdout.getvalue().splitlines( keepends=True )
+    timestamp      = time.strftime( '%Y-%m-%d_%H-%M-%S' )
+    logFileName    = buildDir + '/clang-tidy-' + timestamp + '.log'
 
-    timestamp = time.strftime('%Y-%m-%d_%H-%M-%S')
-    logFileName = buildDir + '/clang-tidy-' + timestamp + '.log'
-    with open(logFileName, 'w') as logFile:
-        logFile.writelines(reportedIssues)
+    with open( logFileName, 'w' ) as logFile:
+        logFile.writelines( reportedIssues )
 
-    warnings = [stripAnsi(i) for i in reportedIssues if 'warning' in i]
+    warnings        = [ _stripAnsi( i ) for i in reportedIssues if 'warning' in i ]
     warningFileName = buildDir + '/clang-tidy-warnings-' + timestamp + '.log'
-    with open(warningFileName, 'w') as logFile:
-        logFile.writelines(warnings)
 
-    if len(warnings) > 0:
+    with open( warningFileName, 'w' ) as logFile:
+        logFile.writelines( warnings )
+
+    if len( warnings ) > 0:
         failed = True
     else:
         failed = False

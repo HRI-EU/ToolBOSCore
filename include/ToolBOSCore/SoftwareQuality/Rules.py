@@ -1291,11 +1291,11 @@ Hence, please ensure that your package is compatible with `BST.py`.'''
         return result
 
 
-class Rule_C10(AbstractRule):
+class Rule_C10( AbstractRule ):
 
-    name = 'security, reliability: static analysis'
+    name        = 'security, reliability: static analysis'
 
-    brief = '''Use a static source code analyzer (f.i. clang-tidy).'''
+    brief       = '''Use a static source code analyzer (f.i. `clang-tidy`).'''
 
     description = '''Compilers do find code issues within functions, such as
 using variables that potentially are not initialized. This is referred to as
@@ -1310,28 +1310,29 @@ problems (e.g. division by zero), or possible execution paths that lead to
 resource leaks.
 
 Such inter-functional checks are complicated and time-consuming, but please
-once in a while inspect your code using clang-tidy.'''
+once in a while inspect your code using `clang-tidy`.'''
 
-    sqLevel = frozenset(['basic', 'advanced', 'safety'])
 
-    def run(self, details, files):
+    sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
+    def run( self, details, files ):
         """
-            Execute clang-tidy analyzer.
+            Execute the clang-tidy source code analyzer.
         """
-        logging.debug("performing source code analysis using clang-tidy")
+        logging.debug( 'performing source code analysis using clang-tidy' )
         passed = 0
         failed = 0
 
-        bst = BuildSystemTools.BuildSystemTools()
+        bst      = BuildSystemTools.BuildSystemTools()
         buildDir = bst.getBuildDir()
-        results = ClangTidy.checkScript(buildDir)
-        failed = len(results[1])
-        if results[0]:
-            result = (FAILED, passed, failed,
-                       'clang-tidy found %d defects in code' %failed)
+        results  = ClangTidy.checkScript( buildDir )
+        failed   = len( results[ 1 ] )
+
+        if results[ 0 ]:
+            result = ( FAILED, passed, failed,
+                      'clang-tidy found %d defects in code' % failed )
         else:
-            result = (OK, passed, failed,
-                       'clang-tidy found no defects in code')
+            result = ( OK, passed, failed,
+                      'clang-tidy found no defects in code' )
 
         return result
 
