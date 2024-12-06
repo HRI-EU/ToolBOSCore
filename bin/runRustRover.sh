@@ -37,8 +37,8 @@
 #set -euo pipefail
 
 
-DESCRIPTION="CLion IDE"
-TOOLBOS_CONF_KEY=package_clion
+DESCRIPTION="RustRover IDE"
+TOOLBOS_CONF_KEY=package_rustrover
 
 IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
 
@@ -59,34 +59,11 @@ then
 fi
 
 
-# If we are within a source package, attempt to pre-configure the IDE
-# accordingly. Otherwise just start the tool.
-
-if [[ -e CMakeLists.txt || -e pkgInfo.py ]]
-then
-
-    # generate the BashSrc file for the current package and source it, in order
-    # to get PYTHONPATH and dependencies right, also add local "include" and "src"
-    # directories (to be sure they are found)
-
-    BST.py --shellfiles &> /dev/null
-    source ./install/BashSrc
-
-    CWD=$(pwd)
-    export LD_LIBRARY_PATH=${CWD}/lib/${MAKEFILE_PLATFORM}:${LD_LIBRARY_PATH}
-
-    echo -e "\nLD_LIBRARY_PATH:"
-    echo "${LD_LIBRARY_PATH}" | tr ":" "\n"
-    echo -e "\n"
-
-fi
-
-
-CMD="clion.sh $(pwd)"
+CMD="rustrover.sh $(pwd)"
 
 # launch the application
 echo "Launching ${DESCRIPTION}..."
-# shellcheck source=/hri/sit/latest/External/CLion/2022.2/BashSrc
+# shellcheck source=/hri/sit/latest/External/RustRover/2024.3/BashSrc
 source "${SIT}/${IDE_PACKAGE}/BashSrc"
 exec ${CMD}
 
