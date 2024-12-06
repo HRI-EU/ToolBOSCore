@@ -1323,16 +1323,26 @@ once in a while inspect your code using `clang-tidy`.'''
         failed = 0
 
         bst      = BuildSystemTools.BuildSystemTools()
-        buildDir = bst.getBuildDir()
-        results  = ClangTidy.checkScript( buildDir )
-        failed   = len( results[ 1 ] )
+        bst.compile()
 
-        if results[ 0 ]:
-            result = ( FAILED, passed, failed,
-                      'clang-tidy found %d defects in code' % failed )
+        buildDir = bst.getBuildDir()
+
+        ccFilePath = os.path.join( buildDir, 'compile_commands.json' )
+
+        if FastScript.isFileNonEmpty( ccFilePath ):
+            results  = ClangTidy.run( buildDir )
+            failed   = len( results[ 1 ] )
+
+            if results[ 0 ]:
+                result = ( FAILED, passed, failed,
+                          'clang-tidy found %d defects in code' % failed )
+            else:
+                result = ( OK, passed, failed,
+                          'clang-tidy found no defects in code' )
         else:
-            result = ( OK, passed, failed,
-                      'clang-tidy found no defects in code' )
+            logging.info( 'not a C/C++ project (or not BST.py compliant)' )
+            msg    = "no build to check with clang-tidy"
+            result = ( NOT_APPLICABLE, 0, 1, msg )
 
         return result
 

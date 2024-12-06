@@ -35,6 +35,8 @@
 
 
 import io
+import logging
+import os
 import re
 import time
 
@@ -45,30 +47,34 @@ def _stripAnsi(line):
     return re.sub(r'\x1b\[[\d;]+m', '', line)
 
 
-def checkScript( buildDir ):
+def run( buildDir ):
+    ccFilePath = os.path.join( buildDir, 'compile_commands.json' )
+
+    FastScript.requireMsg( FastScript.isFileNonEmpty( ccFilePath ),
+                           f'{ccFilePath}: No such file, forgot to compile?' )
+
     cmd    = f'run-clang-tidy -p {buildDir}'
     stdout = io.StringIO()
     stderr = io.StringIO()
 
     FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
 
-    reportedIssues = stdout.getvalue().splitlines( keepends=True )
-    timestamp      = time.strftime( '%Y-%m-%d_%H-%M-%S' )
-    logFileName    = buildDir + '/clang-tidy-' + timestamp + '.log'
-
-    with open( logFileName, 'w' ) as logFile:
-        logFile.writelines( reportedIssues )
-
+    reportedIssues  = stdout.getvalue().splitlines( keepends=True )
+    timestamp       = time.strftime( '%Y-%m-%d_%H-%M-%S' )
+    logFileName     = f'{timestamp}-clang-tidy-errors.log'
+    warningFileName = f'{timestamp}-clang-tidy-warnings.log'
     warnings        = [ _stripAnsi( i ) for i in reportedIssues if 'warning' in i ]
-    warningFileName = buildDir + '/clang-tidy-warnings-' + timestamp + '.log'
+    failed          = len( warnings ) > 0
 
-    with open( warningFileName, 'w' ) as logFile:
-        logFile.writelines( warnings )
+    if reportedIssues:
+        logging.info( f'writing {logFileName}' )
+        with open( logFileName, 'w' ) as logFile:
+            logFile.writelines( reportedIssues )
 
-    if len( warnings ) > 0:
-        failed = True
-    else:
-        failed = False
+    if warnings:
+        logging.info( f'writing {warningFileName}' )
+        with open( warningFileName, 'w' ) as logFile:
+            logFile.writelines( warnings )
 
     stdout.close()
     stderr.close()
