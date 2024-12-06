@@ -1,30 +1,24 @@
 
-                     RELEASE NOTES FOR <PACKAGE> <VERSION>
-                     (to be populated in release branches)
-
+                     RELEASE NOTES FOR TOOLBOS CORE 5.1.0
 
 NEW FEATURES
-=============
+============
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [#141] ✨ added launcher for JetBrains RustRover 🦀
 
 
 CHANGES
 =======
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [#141] ⬆️ JetBrains IDE launchers: updated to 2024.3
+  - [#140] 🏗️ SQ C10: replaced Klocwork by clang-tidy
 
 
-FIXED BUGS
-==========
+-----------------------------------------------------------------------------
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+
+ToolBOS Core 5.1.0 is based upon ToolBOS Core 5.0.1.
+You may continue reading the Release Notes there.
 
 
 # EOF
