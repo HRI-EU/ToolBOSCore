@@ -5,13 +5,19 @@ This package provides `BST.py` which:
 * performs basic software compliance-checks
 
 
-### Installation
+## Environment Setup
 
-    $ pip install toolbos-core
+### Setup (daily use)
 
-or:
+```bash
+$ source /path/to/ToolBOSCore/BashSrc
+```
 
-    $ conda install toolbos-core
+Optionally, we recommend to use the Anaconda environment provided by us: 
+
+```bash
+$ source /hri/sit/latest/External/anaconda/envs/common/3.11/BashSrc
+```
 
 
 ### Usage
