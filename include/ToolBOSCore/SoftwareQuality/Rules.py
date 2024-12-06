@@ -45,18 +45,16 @@ import re
 import shlex
 import subprocess
 import sys
-import tempfile
 
-from ToolBOSCore.BuildSystem                      import BuildSystemTools
-from ToolBOSCore.Packages.BSTPackage              import BSTSourcePackage
-from ToolBOSCore.Packages.PackageDetector         import PackageDetector
-from ToolBOSCore.Settings                         import ProcessEnv
-from ToolBOSCore.Settings.ToolBOSConf             import getConfigOption
-from ToolBOSCore.SoftwareQuality.Common           import *
-from ToolBOSCore.Storage                          import SIT
-from ToolBOSCore.Tools                            import Klocwork,\
-                                                         Valgrind, Shellcheck
-from ToolBOSCore.Util                             import FastScript
+from ToolBOSCore.BuildSystem              import BuildSystemTools
+from ToolBOSCore.Packages.BSTPackage      import BSTSourcePackage
+from ToolBOSCore.Packages.PackageDetector import PackageDetector
+from ToolBOSCore.Settings                 import ProcessEnv
+from ToolBOSCore.Settings.ToolBOSConf     import getConfigOption
+from ToolBOSCore.SoftwareQuality.Common   import *
+from ToolBOSCore.Storage                  import SIT
+from ToolBOSCore.Tools                    import ClangTidy, Shellcheck, Valgrind
+from ToolBOSCore.Util                     import FastScript
 
 
 FILE_EXTENSIONS_TO_EXCLUDE  = { 'GEN03': [ 'ipynb' ] }
@@ -1297,8 +1295,7 @@ class Rule_C10( AbstractRule ):
 
     name        = 'security, reliability: static analysis'
 
-    brief       = '''Use a static source code analyzer (f.i. Klocwork
-Insight).'''
+    brief       = '''Use a static source code analyzer (f.i. `clang-tidy`).'''
 
     description = '''Compilers do find code issues within functions, such as
 using variables that potentially are not initialized. This is referred to as
@@ -1313,66 +1310,39 @@ problems (e.g. division by zero), or possible execution paths that lead to
 resource leaks.
 
 Such inter-functional checks are complicated and time-consuming, but please
-once in a while inspect your code using Klocwork.'''
+once in a while inspect your code using `clang-tidy`.'''
 
-    seeAlso     = { 'Klocwork HowTo':
-                    'https://hri-wiki.honda-ri.de/Klocwork' }
 
     sqLevel     = frozenset( [ 'basic', 'advanced', 'safety' ] )
-
     def run( self, details, files ):
         """
-            Execute the Klocwork source code analyzer in CLI mode.
+            Execute the clang-tidy source code analyzer.
         """
-        logging.debug( 'performing source code analysis using Klocwork' )
+        logging.debug( 'performing source code analysis using clang-tidy' )
         passed = 0
         failed = 0
-        output = io.StringIO()
-        error  = False
-        kwDir  = tempfile.mkdtemp( prefix='klocwork-' )
 
-        # Klocwork operates on the whole project, hence we cannot compute
-        # failed/passed files like this, instead later on we parse the output.
+        bst      = BuildSystemTools.BuildSystemTools()
+        bst.compile()
 
-        try:
-            Klocwork.createLocalProject( kwDir, output, output )
-            Klocwork.codeCheck( kwDir, output, output, logToConsole=True )
+        buildDir = bst.getBuildDir()
 
-            output = output.getvalue()
+        ccFilePath = os.path.join( buildDir, 'compile_commands.json' )
 
-            if FastScript.getDebugLevel() > 3:
-                logging.info( 'output:\n%s', output )
+        if FastScript.isFileNonEmpty( ccFilePath ):
+            results  = ClangTidy.run( buildDir )
+            failed   = len( results[ 1 ] )
 
-            if output:
-                defects = Klocwork.parseCodeCheckResult( output )
-
-                if defects:
-                    for item in defects:
-                        logging.info( 'C10: %s:%s: %s [%s]', *item )
-                        failed += 1
-
-        except ( AssertionError, subprocess.CalledProcessError,
-                 EnvironmentError, RuntimeError ) as e:
-
-            logging.info( 'output:\n%s', output.getvalue() )
-
-            logging.error( 'C10: %s', e )
-            failed += 1
-            error   = True
-
-
-        FastScript.remove( kwDir )
-
-        if failed == 0:
-            result = ( OK, passed, failed,
-                       'no defects found by Klocwork' )
-        else:
-            if error:
-                result = ( FAILED, 0, 1,
-                           'unable to run code analysis with Klocwork' )
-            else:
+            if results[ 0 ]:
                 result = ( FAILED, passed, failed,
-                           'Klocwork found %d defects' % failed )
+                          'clang-tidy found %d defects in code' % failed )
+            else:
+                result = ( OK, passed, failed,
+                          'clang-tidy found no defects in code' )
+        else:
+            logging.info( 'not a C/C++ project (or not BST.py compliant)' )
+            msg    = "no build to check with clang-tidy"
+            result = ( NOT_APPLICABLE, 0, 1, msg )
 
         return result
 
