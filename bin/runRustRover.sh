@@ -59,7 +59,7 @@ then
 fi
 
 
-CMD="rustrover.sh $(pwd)"
+CMD="rustrover $(pwd)"
 
 # launch the application
 echo "Launching ${DESCRIPTION}..."

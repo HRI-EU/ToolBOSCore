@@ -82,7 +82,7 @@ then
 fi
 
 
-CMD="clion.sh $(pwd)"
+CMD="clion $(pwd)"
 
 # launch the application
 echo "Launching ${DESCRIPTION}..."
