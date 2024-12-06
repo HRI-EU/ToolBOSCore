@@ -34,19 +34,14 @@
 #
 
 
-OLD_VERSION=( 4[.]3 )
-NEW_VERSION=5.0
+OLD_VERSION=( 5[.]0 )
+NEW_VERSION=5.1
 
 
 sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc \
-                                          bin/ToolBOS-Setup.py \
                                           ci-check.sh \
                                           ci-test.sh \
                                           etc/ToolBOS.conf \
-                                          doc/documentation.h \
-                                          doc/ToolBOSCore/Concepts/QualityGuidelines.md \
-                                          doc/ToolBOSCore/Concepts/Terminology.md \
-                                          doc/ToolBOSCore/Setup/ShellConfig.md \
                                           include/ToolBOSCore/Settings/ToolBOSConf.py \
                                           useFromHere.sh \
                                           .gitlab-ci.yml
