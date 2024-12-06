@@ -1,80 +1,23 @@
 
-                     RELEASE NOTES FOR TOOLBOS CORE 5.0.1
-
-FIXED BUGS
-==========
-
-  - [#131] 🐛 fixed FastScript.flattenList() for nested lists containing strings
-
-
------------------------------------------------------------------------------
-
-                     RELEASE NOTES FOR TOOLBOS CORE 5.0.0
-
+                     RELEASE NOTES FOR TOOLBOS CORE 5.1.0
 
 NEW FEATURES
 ============
 
-  - [#101] ⬆️ support Python 3.12
+  - [#141] ✨ added launcher for JetBrains RustRover 🦀
 
 
 CHANGES
 =======
 
-  - [#132] ♻️ fused Any.py into FastScript.py
-  - [#129] 🗑️ dropped Klocwork taxonomy-file
-  - [#128] 🗑️ dropped Bash-based Install Procedure
-  - [#127] 📝 expect Doxygen to be installed locally
-  - [#126] 🗑️ dropped Ubuntu 18.04 (bionic64) support
-  - [#124] 🗑️ dropped Clang + IceCC support
-  - [#123] 🗑️ dropped Python 2.x support
-  - [#122] 🗑️ dropped ToolBOS Middleware integration
-  - [#121] 🗑️ dropped RTMaps integration
-  - [#120] 🗑️ dropped Matlab + MEX integration
-  - [#119] 🗑️ dropped CIA + Patch System
-  - [#118] 🗑️ dropped Java compilation + installation support
-  - [#117] 🗑️ dropped unused examples
-  - [#117] 🗑️ dropped outdated PyCharm configfiles
-  - [#117] 🗑  dropped WebBrowser.py
-  - [#117] 🗑️ dropped ThreadPool.py
-  - [#117] 🗑️ dropped outdated file-patterns for installation/cleaning
-  - [#117] 🚚 GitLab.py moved to standalone repository
-  - [#117] 🗑️ dropped support for PyQt4
-  - [#117] 🗑️ dropped support for opening documentation from SIT
-  - [#116] 🗑️ dropped PackageCreator, templates, and sourcetree conventions
-  - [#115] 🗑️ dropped 'sitorphan.py'
-  - [#114] 🗑️ dropped support for PEAK CAN-Router, PhyBoard-WEGA, and ARMv7
-  - [#113] 🗑️ dropped SonarQube integration
-  - [#112] 🗑️ dropped 'RunFromSourceTree.sh'
-  - [#111] 🗑️ dropped 'ExecInAllProjects.py'
-  - [#110] 🗑️ discouraged usage of proxy directories
-  - [#109] 🗑️ dropped support for native Windows and cmd.exe
-  - [#108] 🗑️ dropped functions to bootstrap a new SIT
-  - [#107] 🗑️ dropped globalinstall log messages
-  - [#106] 🗑️ dropped outdated + superfluous documentation, restructured
-  - [#53] 🗑️ dropped Subversion (SVN) support
-
-
-INTERNAL
-========
-
-  - [#134] 🔧 GitLab CI: bootstrap Anaconda environment
-  - [#133] 🔧 GitLab CI: bootstrap PyPI environment
-  - [#132] 💄 codestyle, typos
-  - [#131] ➖ replace bundled flatten() by list comprehension
-  - [#130] ➖ replace bundled f5() by list comprehension
-  - [#125] 🛡️ GitLab CI: enable dependency scanning + secrets detection
-  - [#125] 🔧 GitLab CI: use "ubuntu2004-hri-main" image
-  - [#117] 🚚 simplified unittest dir.structure
-  - [#117]🗑️ useFromHere.sh clean-up
-  - [#117] ➖ dropped 'atomicfile' dependency
-  - [#117] 📄 updated 3rd-party licenses
+  - [#141] ⬆️ JetBrains IDE launchers: updated to 2024.3
+  - [#140] 🏗️ SQ C10: replaced Klocwork by clang-tidy
 
 
 -----------------------------------------------------------------------------
 
 
-ToolBOS Core 5.0.0 is based upon ToolBOS Core 4.3.4.
+ToolBOS Core 5.1.0 is based upon ToolBOS Core 5.0.1.
 You may continue reading the Release Notes there.
 
 

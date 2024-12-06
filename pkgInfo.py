@@ -36,7 +36,7 @@
 
 name             = 'ToolBOSCore'
 
-version          = '5.0'
+version          = '5.1'
 
 category         = 'DevelopmentTools'
 
@@ -63,16 +63,6 @@ installMatching  = [ ('', '^useFromHere.+'),
 
 sqLevel          = 'advanced'
 
-
-# ToolBOSCore does not get compiled, hence no executable exists for the
-# unittest.c examples or unittests that solely work on file level.
-# By suppressing the following directories the C12 checker (Valgrind) will
-# not attempt to run them. Also Klocwork (C10) shall not be invoked.
-#
-# HRI-EU copyright header has been replaced by typical BSD 3-clause license preamble
-
-sqOptOutRules    = [ 'C10' ]
-
 # unittest.sh: base for all HRI-EU code projects and therefore must contain
 #              the resulting copyright header of the project and not the one
 #              of ToolBOSCore itself
@@ -90,8 +80,7 @@ sqOptOutDirs     = [ 'test/BuildSystemTools/BashSrcWriter',
                      'test/MakeShellfiles',
                      'test/SoftwareQuality/CheckRoutine/ReferenceData' ]
 
-sqComments       = { 'GEN03': 'confirmed, to be fixed',
-                     'C10'  : 'do not invoke Klocwork on example files' }
+sqComments       = { 'GEN03': 'confirmed, to be fixed' }
 
 copyright        = [ 'Copyright (c) Honda Research Institute Europe GmbH',
                      'Redistribution and use in source and binary forms, with or without',

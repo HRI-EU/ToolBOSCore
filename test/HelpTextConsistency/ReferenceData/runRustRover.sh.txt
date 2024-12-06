@@ -1,0 +1,10 @@
+
+Launches the RustRover IDE pre-configured for this package.
+
+Usage: runRustRover.sh [--help]
+
+options:
+  -h|--help       show this help and exit
+
+Examples: runRustRover.sh
+

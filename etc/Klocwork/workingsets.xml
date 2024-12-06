@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<workingsets version="1.0">
-    <selected name="default"/>
-    <workingset name="default">
-        % for dir in dirList:
-        <file>${dir}</file>
-        % endfor
-    </workingset>
-</workingsets>

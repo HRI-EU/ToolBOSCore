@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  Switch to a different ToolBOS SDK installation
+#  JetBrains IDE launcher
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -32,59 +32,40 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-#  Note:  This file needs to be sourced, not executed! For example:
-#         $ source ./switchSDK.rc
-#
 
 
-# define env.variable if not set, yet
+#set -euo pipefail
 
-if [[ -z ${LD_LIBRARY_PATH+x} ]]
+
+DESCRIPTION="RustRover IDE"
+TOOLBOS_CONF_KEY=package_rustrover
+
+IDE_PACKAGE=$(ToolBOS-Config.py -p "${TOOLBOS_CONF_KEY}")
+
+if [[ "$#" != 0 ]]
 then
-    export LD_LIBRARY_PATH=""
-fi
+    SCRIPTNAME=$(basename "$0")
 
-if [[ -z ${MAKEFILE_PLATFORM+x} ]]
-then
-    export MAKEFILE_PLATFORM=focal64
-fi
+    echo -e "\nLaunches the ${DESCRIPTION} pre-configured for this package.\n"
 
-if [[ -z ${PYTHONPATH+x} ]]
-then
-    export PYTHONPATH=""
-fi
+    echo -e "Usage: ${SCRIPTNAME} [--help]\n"
 
-if [[ -z ${SIT+x} ]]
-then
-    export SIT="/hri/sit/latest"
-fi
+    echo -e "options:"
+    echo -e "  -h|--help       show this help and exit\n"
 
-if [[ -z ${TOOLBOSCORE_ROOT+x} ]]
-then
-    export TOOLBOSCORE_ROOT=""
-fi
+    echo -e "Examples: ${SCRIPTNAME}\n"
 
-if [[ -z ${VERBOSE+x} ]]
-then
-    export VERBOSE=""
+    exit 0
 fi
 
 
-SCRIPT_PATH=$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")
-NEW_TOOLBOSCORE_ROOT=$(builtin cd "${SCRIPT_PATH}" ; pwd) || exit 1
-echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
+CMD="rustrover $(pwd)"
 
-export TOOLBOSCORE_ROOT="${NEW_TOOLBOSCORE_ROOT}"
-
-export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/5.1"
-export PATH="${TOOLBOSCORE_ROOT}/bin:${PATH}"
-export PYTHONPATH="${TOOLBOSCORE_ROOT}/include:${PYTHONPATH}"
-
-
-function bst {
-   BST.py "$@"
-}
-export -f bst
+# launch the application
+echo "Launching ${DESCRIPTION}..."
+# shellcheck source=/hri/sit/latest/External/RustRover/2024.3/BashSrc
+source "${SIT}/${IDE_PACKAGE}/BashSrc"
+exec ${CMD}
 
 
 # EOF

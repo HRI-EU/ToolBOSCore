@@ -93,7 +93,7 @@ then
 fi
 
 
-CMD="pycharm.sh $(pwd)"
+CMD="pycharm $(pwd)"
 
 
 # launch the application

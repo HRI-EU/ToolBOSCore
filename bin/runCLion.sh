@@ -59,13 +59,6 @@ then
 fi
 
 
-if [[ ! -e "${SIT}/External/OracleJava/1.0/BashSrc" ]]
-then
-    echo -e "\nOracle Java is required. Please run 'UpdateProxyDir.py' to get it.\n "
-    exit 1
-fi
-
-
 # If we are within a source package, attempt to pre-configure the IDE
 # accordingly. Otherwise just start the tool.
 
@@ -89,7 +82,7 @@ then
 fi
 
 
-CMD="clion.sh $(pwd)"
+CMD="clion $(pwd)"
 
 # launch the application
 echo "Launching ${DESCRIPTION}..."

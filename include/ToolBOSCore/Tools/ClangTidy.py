@@ -1,6 +1,6 @@
-#!/bin/bash
+# -*- coding: utf-8 -*-
 #
-#  Switch to a different ToolBOS SDK installation
+#  run clang-tidy on project
 #
 #  Copyright (c) Honda Research Institute Europe GmbH
 #
@@ -32,59 +32,54 @@
 #  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
-#  Note:  This file needs to be sourced, not executed! For example:
-#         $ source ./switchSDK.rc
-#
 
 
-# define env.variable if not set, yet
+import io
+import logging
+import os
+import re
+import time
 
-if [[ -z ${LD_LIBRARY_PATH+x} ]]
-then
-    export LD_LIBRARY_PATH=""
-fi
-
-if [[ -z ${MAKEFILE_PLATFORM+x} ]]
-then
-    export MAKEFILE_PLATFORM=focal64
-fi
-
-if [[ -z ${PYTHONPATH+x} ]]
-then
-    export PYTHONPATH=""
-fi
-
-if [[ -z ${SIT+x} ]]
-then
-    export SIT="/hri/sit/latest"
-fi
-
-if [[ -z ${TOOLBOSCORE_ROOT+x} ]]
-then
-    export TOOLBOSCORE_ROOT=""
-fi
-
-if [[ -z ${VERBOSE+x} ]]
-then
-    export VERBOSE=""
-fi
+from ToolBOSCore.Util import FastScript
 
 
-SCRIPT_PATH=$(dirname "$(readlink -f "${BASH_SOURCE:-$0}")")
-NEW_TOOLBOSCORE_ROOT=$(builtin cd "${SCRIPT_PATH}" ; pwd) || exit 1
-echo "new ToolBOSCore location: ${NEW_TOOLBOSCORE_ROOT}"
-
-export TOOLBOSCORE_ROOT="${NEW_TOOLBOSCORE_ROOT}"
-
-export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/5.1"
-export PATH="${TOOLBOSCORE_ROOT}/bin:${PATH}"
-export PYTHONPATH="${TOOLBOSCORE_ROOT}/include:${PYTHONPATH}"
+def _stripAnsi(line):
+    return re.sub(r'\x1b\[[\d;]+m', '', line)
 
 
-function bst {
-   BST.py "$@"
-}
-export -f bst
+def run( buildDir ):
+    ccFilePath = os.path.join( buildDir, 'compile_commands.json' )
+
+    FastScript.requireMsg( FastScript.isFileNonEmpty( ccFilePath ),
+                           f'{ccFilePath}: No such file, forgot to compile?' )
+
+    cmd    = f'run-clang-tidy -p {buildDir}'
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+
+    FastScript.execProgram( cmd, stdout=stdout, stderr=stderr )
+
+    reportedIssues  = stdout.getvalue().splitlines( keepends=True )
+    timestamp       = time.strftime( '%Y-%m-%d_%H-%M-%S' )
+    logFileName     = f'{timestamp}-clang-tidy-errors.log'
+    warningFileName = f'{timestamp}-clang-tidy-warnings.log'
+    warnings        = [ _stripAnsi( i ) for i in reportedIssues if 'warning' in i ]
+    failed          = len( warnings ) > 0
+
+    if reportedIssues:
+        logging.info( f'writing {logFileName}' )
+        with open( logFileName, 'w' ) as logFile:
+            logFile.writelines( reportedIssues )
+
+    if warnings:
+        logging.info( f'writing {warningFileName}' )
+        with open( warningFileName, 'w' ) as logFile:
+            logFile.writelines( warnings )
+
+    stdout.close()
+    stderr.close()
+
+    return failed, warnings
 
 
 # EOF
