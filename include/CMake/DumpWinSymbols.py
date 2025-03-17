@@ -44,7 +44,6 @@ import logging
 import re
 import sys
 
-from ToolBOSCore.Util import Any
 from ToolBOSCore.Util import ArgsManagerV2
 from ToolBOSCore.Util import FastScript
 
@@ -162,11 +161,11 @@ reg     = "[0-9a-fA-F]+ (?P<length>([0-9a-fA-F]+)) (?P<table>(SECT[0-9A-F]+|UNDE
 reg1    = "(?P<token>.*)@[0-9]+$"
 filt    = re.compile( reg )
 tokfilt = re.compile( reg1 )
-Any.requireMsg( filt, "Invalid regex pattern \"%s\"" % reg )
+FastScript.requireMsg( filt, "Invalid regex pattern \"%s\"" % reg )
 
 
 if inputFile:
-    Any.requireIsFileNonEmpty( inputFile )
+    FastScript.requireIsFileNonEmpty( inputFile )
     logging.debug( 'reading from %s', inputFile )
 else:
     logging.debug( 'reading from stdin' )
@@ -192,8 +191,8 @@ with open( inputFile, 'r' ) as fd:
 
         undefSym = True if res.group( 'table' ) == 'UNDEF' else False
 
-        Any.requireMsg( alloc is not None, 'Unexpected output of dumpbin.exe' )
-        Any.requireMsg( sym   is not None, 'Unexpected output of dumpbin.exe' )
+        FastScript.requireMsg( alloc is not None, 'Unexpected output of dumpbin.exe' )
+        FastScript.requireMsg( sym   is not None, 'Unexpected output of dumpbin.exe' )
 
 
         if verbose:
