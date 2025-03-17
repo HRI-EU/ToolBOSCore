@@ -44,12 +44,12 @@
 
 # This fix creates trouble when re-sourcing ToolBOS as a dependency of other
 # packages. In this case, regardless what TOOLBOSCORE_ROOT was being set to
-# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/5.1 :-/
+# in gets reset to /hri/sit/builds/<build>/.../ToolBOSCore/5.2 :-/
 #
 ## workaround for LD_LIBRARY_PATH being emptied for security reasons
 ## at "newgrp" command while all other variables survive
 #if [[ ! -z ${TOOLBOSCORE_SOURCED} &&
-#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/5.1" ]]
+#      ! ${LD_LIBRARY_PATH} =~ "DevelopmentTools/ToolBOSCore/5.2" ]]
 #then
 #    unset TOOLBOSCORE_SOURCED
 #fi
@@ -69,7 +69,7 @@ fi
 
 
 # avoid multiple inclusion
-if [[ ! "${TOOLBOSCORE_SOURCED}" =~ DevelopmentTools/ToolBOSCore/5.1 ]]
+if [[ ! "${TOOLBOSCORE_SOURCED}" =~ DevelopmentTools/ToolBOSCore/5.2 ]]
 then
 
     # auto-detect location of this BashSrc file
@@ -91,7 +91,7 @@ then
         export TOOLBOSCORE_AUTO_VERSION=""
     fi
 
-    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/5.1 ${TOOLBOSCORE_SOURCED}"
+    export TOOLBOSCORE_SOURCED="DevelopmentTools/ToolBOSCore/5.2 ${TOOLBOSCORE_SOURCED}"
 
 
     #------------------------------------------------------------------------

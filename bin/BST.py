@@ -50,117 +50,6 @@ from ToolBOSCore.Util                import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
-# Helper functions
-#----------------------------------------------------------------------------
-
-
-def _parseSqArgs( cr, argv ):
-    import re
-
-    from ToolBOSCore.SoftwareQuality import CheckRoutine, Common, Rules
-
-    FastScript.requireIsInstance( cr, CheckRoutine.CheckRoutine )
-    FastScript.requireIsList( argv )
-
-    try:
-        # ensure that script-name does not appear in this list
-        argv.remove( sys.argv[0] )
-    except ValueError:
-        pass
-
-
-    ruleIDs     = Rules.getRuleIDs()
-    forceDirs   = set()
-    forceFiles  = set()
-    forceLevel  = None
-    forceGroups = None
-    forceRules  = []
-
-    for arg in argv:
-
-        if arg in ruleIDs:
-            logging.debug( 'requested checking rule ID: %s', arg )
-            forceRules.append( arg )
-
-        elif os.path.isdir( arg ):
-            logging.debug( 'requested checking directory: %s', arg )
-            forceDirs.add( os.path.abspath( arg ) )
-
-        elif os.path.exists( arg ):
-            logging.debug( 'requested checking file: %s', arg )
-            forceFiles.add( os.path.abspath( arg ) )
-
-        elif arg.startswith( 'sqLevel=' ):
-            tmp = re.search( r'sqLevel=(\S+)', ' '.join(argv) )
-
-            if tmp:
-                forceLevel = tmp.group(1)
-            else:
-                msg = f"Wrong usage: please specify a quality level {Common.sqLevelNames}"
-                raise ValueError( msg )
-
-        elif arg.startswith( 'group=' ):
-            tmp = re.search( r'group=(\S+)', ' '.join(argv) )
-
-            if tmp:
-                forceGroups = tmp.group(1)
-            else:
-                msg = f"Wrong usage: please specify at least one group {Common.sectionKeys}"
-                raise ValueError( msg )
-
-        else:
-            msg = '%s: No such file or directory, or rule ID' % arg
-            raise ValueError( msg )
-
-
-    if forceDirs:
-        logging.debug( 'check directories: %s', forceDirs )
-        cr.setDirs( forceDirs )
-
-    if forceFiles:
-        logging.debug( 'check files: %s', forceFiles )
-        cr.setFiles( forceFiles )
-
-    if forceLevel:
-        logging.debug( 'check level: %s', forceLevel )
-        cr.setLevel( forceLevel )
-
-    if forceGroups:
-        logging.debug( 'check groups: %s', forceGroups )
-        cr.setRulesForGroups( forceGroups )
-
-    if forceRules:
-        logging.debug( 'check rules: %s', forceRules )
-        cr.setRules( forceRules )
-        cr.showSummary( False )
-    else:
-        cr.showSummary( True )
-
-
-def _runCheckRoutineDialog():
-    from ToolBOSCore.ZenBuildMode    import QtPackageModel
-    from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
-
-    logging.info( 'starting software quality check GUI' )
-
-    projectRoot = os.getcwd()
-
-    model = QtPackageModel.BSTPackageModel()
-    model.open( projectRoot )
-
-    CheckRoutineDialog.run( model )
-
-
-def _runZenBuildModeGUI():
-    from ToolBOSCore.ZenBuildMode import MainWindow
-
-    logging.info( 'starting zen build mode' )
-
-    projectRoot = os.getcwd()
-    MainWindow.MainWindow( projectRoot ).main()
-
-
-#----------------------------------------------------------------------------
 # Commandline parsing
 #----------------------------------------------------------------------------
 
@@ -229,7 +118,7 @@ argman.addArgument( '-p', '--platform', default=hostPlatform,
                           '("-p help" to list supported platforms)' )
 
 argman.addArgument( '-q', '--quality', action='store_true',
-                    help='run software quality checks' )
+                    help='[REMOVED]' )
 
 argman.addArgument( '-r', '--release', action='store_true',
                     help='create release tarball' )
@@ -250,7 +139,7 @@ argman.addArgument( '-y', '--yes', action='store_true',
                     help='reply "yes" to all prompts, f.i. run non-interactively' )
 
 argman.addArgument( '-z', '--zen', action='store_true',
-                    help='zen build mode (GUI)' )
+                    help='[REMOVED]' )
 
 argman.addExample( '%(prog)s                             # build (setup once + compile)' )
 argman.addExample( '%(prog)s -avx                        # all + install into proxy (verbose)' )
@@ -259,11 +148,6 @@ argman.addExample( '%(prog)s -bv                         # build in verbose mode
 argman.addExample( '%(prog)s /path/to/sourcetree         # out-of-tree build' )
 argman.addExample( '%(prog)s -p help                     # show cross-compile platforms' )
 argman.addExample( '%(prog)s -p windows-amd64-vs2017     # cross-compile for Windows' )
-argman.addExample( '%(prog)s -q                          # run quality checks (configured for this package)' )
-argman.addExample( '%(prog)s -q --all                    # run all quality checks' )
-argman.addExample( '%(prog)s -q src C01 C02 C03          # run specified checks on "src" only' )
-argman.addExample( '%(prog)s -q sqLevel=advanced         # check with specified quality level' )
-argman.addExample( '%(prog)s -q group=GEN,PY             # check only rules for GEN & PY group' )
 argman.addExample( '%(prog)s -u                          # check for updates / apply patches' )
 argman.addExample( '%(prog)s --uninstall                 # remove package from SIT' )
 argman.addExample( '%(prog)s --deprecate                 # deprecate this package' )
@@ -456,15 +340,8 @@ try:
 
 
     if zen:
-        FastScript.tryImport( 'PyQt5' )
-
-        if quality:
-            _runCheckRoutineDialog()
-
-        else:
-            _runZenBuildModeGUI()
-
-        sys.exit( 0 )
+        logging.error( 'Feature was removed' )
+        sys.exit( -9 )
 
 
     if setup or noArgs:
@@ -501,36 +378,8 @@ try:
 
 
     if quality:
-        from ToolBOSCore.SoftwareQuality import CheckRoutine
-
-        sqArgs = unhandled
-
-        try:
-            # ensure that script-name does not appear in this list
-            sqArgs.remove( sys.argv[0] )
-        except ValueError:
-            pass
-
-        cr = CheckRoutine.CheckRoutine()
-
-        if unhandled:
-            _parseSqArgs( cr, unhandled )
-
-        # exclude 3rd-party content from being checked:
-        cr.excludeDir( './external' )
-        cr.excludeDir( './3rdParty' )
-
-        if allTargets:
-            # ignore all the sqOptOut rules and flags and
-            # perform SQ checks for all the available rules
-            cr.setup( False )
-        else:
-            # consider the rules and level set in the pkgInfo
-            cr.setup()
-        cr.run()
-
-        if cr.overallResult() is not True:
-            sys.exit( -5 )
+        logging.error( 'Feature was removed' )
+        sys.exit( -9 )
 
 
     if proxyInstall:

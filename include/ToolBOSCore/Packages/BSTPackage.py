@@ -177,31 +177,12 @@ class BSTSourcePackage( BSTPackage ):
         self.creator     = None
         self.documenter  = None
         self.installer   = None
-        self.sqChecker   = None
 
 
     def open( self, topLevelDir ):
         super( BSTSourcePackage, self ).open( topLevelDir )
 
         self.detector.retrieveVCSInfo()
-
-
-    def prepareQualityCheck( self, enabled=None ):
-        from ToolBOSCore.SoftwareQuality import CheckRoutine
-
-        self.sqChecker = CheckRoutine.CheckRoutine( self.detector.topLevelDir,
-                                                    self.detector )
-
-
-    def setSQLevel( self, level ):
-        from ToolBOSCore.SoftwareQuality import CheckRoutine
-
-        FastScript.requireIsTextNonEmpty( level )
-
-        if level == CheckRoutine.sqLevelDefault:
-            self.pkgInfo_remove( 'sqLevel' )     # no need to store
-        else:
-            self.pkgInfo_set( 'sqLevel', level )
 
 
     def pkgInfo_remove( self, key ):

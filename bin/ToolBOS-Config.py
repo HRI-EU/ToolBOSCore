@@ -42,6 +42,7 @@
 
 import logging
 import pprint
+import sys
 
 from ToolBOSCore.Settings import ToolBOSConf
 from ToolBOSCore.Util     import ArgsManagerV2, FastScript
@@ -69,7 +70,7 @@ argman.addArgument( '-s', '--set', type=str, metavar='EXPR',
                     help='set config option in user conf in Python syntax ("key=value")' )
 
 argman.addArgument( '-z', '--zen', action='store_true',
-                    help='open configuration GUI' )
+                    help='[REMOVED]' )
 
 
 argman.addExample( '%(prog)s' )
@@ -78,7 +79,6 @@ argman.addExample( '%(prog)s -p defaultPlatform' )
 argman.addExample( '%(prog)s -r "foo"' )
 argman.addExample( '%(prog)s -s "defaultPlatform = \'qnx\'"' )
 argman.addExample( '%(prog)s -s "myList = [1,2,3,4]"' )
-argman.addExample( '%(prog)s -z                   # opens GUI' )
 
 args     = vars( argman.run() )
 
@@ -137,9 +137,8 @@ elif setVar:
     tconf.setUserConfigOption( key, eval( value ) )
 
 elif zen:
-    from ToolBOSCore.Settings import PreferencesDialog
-
-    PreferencesDialog.run()
+    logging.error( 'Feature was removed' )
+    sys.exit( -9 )
 
 else:
     # read ground-truth of available config options

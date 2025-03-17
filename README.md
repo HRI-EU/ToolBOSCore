@@ -1,32 +1,64 @@
+![image](doc/Logos/BST-small.png)
+
 # ToolBOS Core
 
-This package provides `BST.py` which:
-* simplifies (cross-)compilation
-* performs basic software compliance-checks
+This package provides `BST.py` and helper scripts, to make native and
+cross-compilations easier when using a Software Installation Tree (SIT).
 
+## Setup
 
-## Environment Setup
-
-### Setup (daily use)
+### a) From Git repository
 
 ```bash
-$ source /path/to/ToolBOSCore/BashSrc
+$ uv sync
+
+$ source .venv/bin/activate
+
+$ source useFromHere.sh
+
+$ BST.py [options]
 ```
 
-Optionally, we recommend to use the Anaconda environment provided by us: 
+### b) From SIT
 
 ```bash
-$ source /hri/sit/latest/External/anaconda/envs/common/3.11/BashSrc
+$ source /hri/sit/latest/DevelopmentTools/ToolBOSCore/5.2/BashSrc
+
+$ BST.py [options]
 ```
 
+## Usage
 
-### Usage
+```bash
+$ BST.py [options]
+```
 
-* [Compliance checks](doc/ComplianceChecks.md)
-* [Cross-compilation](doc/CrossCompilation.md)
-* [ToolBOS.conf (settings)](doc/ToolBOSConf.md)
+### Native compilation
+
+```bash
+$ cd ~/local/ToolBOSLib
+
+$ BST.py
+```
+
+### Cross-compilation from Linux to Windows
+
+```bash
+$ cd ~/local/ToolBOSLib
+
+$ BST.py -p windows-amd64-vs2017
+```
+
+Note: We execute the Microsoft Visual Studio compiler and linker under Linux,
+using the [Wine](https://www.winehq.org) framework. Thus, the resulting
+binaries do not link against any emulation layer or helper libraries.    
+
+## Documentation
+
+* [Advanced options (ToolBOS.conf)](doc/ToolBOSConf.md)
+* [FAQ Windows/VisualStudio troubleshooting](doc/WindowsFAQ.md)
 
 
-### License
+## License
 
 * [BSD 3-Clause License](LICENSE)

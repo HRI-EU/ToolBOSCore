@@ -34,8 +34,8 @@
 #
 
 
-OLD_VERSION=( 5[.]0 )
-NEW_VERSION=5.1
+OLD_VERSION=( 5[.]1 )
+NEW_VERSION=5.2
 
 
 sed -i "s@${OLD_VERSION[*]}@${NEW_VERSION}@" pkgInfo.py BashSrc \
