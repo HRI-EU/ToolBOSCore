@@ -2,9 +2,7 @@
 
 ### How it works
 
-We execute the Microsoft Visual Studio compiler and linker under Linux,
-using the Wine framework. Thus, the resulting binaries do not link against
-any emulation layer or helper libraries.    
+
 
 
 ###  GUI usage

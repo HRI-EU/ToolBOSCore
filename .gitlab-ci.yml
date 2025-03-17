@@ -1,18 +1,3 @@
-stages:
-  - test
-
-all-conda:
-  image: $CI_SERVER_FQDN:5050/tech_team/docker/ubuntu2204-hri-main:1.3
-  interruptible: true
-  script:
-    - ./ci-all-conda.sh
-
-all-venv:
-  image: $CI_SERVER_FQDN:5050/tech_team/docker/ubuntu2204-hri-main:1.3
-  interruptible: true
-  script:
-    - ./ci-all-venv.sh
-
 include:
   - component: $CI_SERVER_FQDN/TECH_Team/ci/secrets-detection/secrets-detection@~latest
   - component: $CI_SERVER_FQDN/TECH_Team/ci/trust/trust@~latest

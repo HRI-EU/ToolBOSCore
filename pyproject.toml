@@ -1,0 +1,42 @@
+[project]
+name = "ToolBOSCore"
+version = "5.2.0"
+description = "BST.py makes native and cross-compilations easier when using the SIT"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Honda Research Institute Europe GmbH", email = "info@honda-ri.de" },
+]
+license = { text = "BSD-3-Clause" }
+dependencies = [
+    "dill>=0.3.9",
+    "mako>=1.3.9",
+    "pytest>=8.3.5",
+    "termcolor>=2.5.0",
+]
+packages = [ { include = "ToolBOSCore", from = "src" } ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+
+[tool.ruff.format]
+
+[tool.uv]
+allow-insecure-host = ["package-cache.honda-ri.de"]
+package = true
+
+[[tool.uv.index]]
+url = "https://package-cache.honda-ri.de/repository/pypi-proxy/simple"
+default = true
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.4",
+]
+
