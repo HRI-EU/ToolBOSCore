@@ -48,6 +48,7 @@ dependencies:
   - pyqt
   - pylint
   - pytest
+  - python=3.11
   - termcolor
   - terminaltables
   - urllib3
