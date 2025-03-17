@@ -1,30 +1,38 @@
 
-                     RELEASE NOTES FOR <PACKAGE> <VERSION>
-                     (to be populated in release branches)
-
-
-NEW FEATURES
-=============
-
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-
-
-CHANGES
-=======
-
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+                     RELEASE NOTES FOR TOOLBOS CORE 5.2.0
 
 
 FIXED BUGS
 ==========
 
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
-  - [TBCORE-xxx] Description
+  - [#147] 🐛 fixed Python import
+
+
+CHANGES
+=======
+
+  - [#146] 🏗' migrated to 'uv'
+
+
+DROPPED
+=======
+
+  - [#147] 🗑 dropped BST.py's "Zen Build Mode"
+  - [#145] 🗑 dropped JetBrains IDE launchers
+  - [#144] 🗑 dropped Software Quality Checks (replaced by 'trust')
+
+
+INTERNAL
+========
+
+  - [#146] 🏗' migrated to 'uv' Python package manager
+
+
+-----------------------------------------------------------------------------
+
+
+ToolBOS Core 5.2.0 is based upon ToolBOS Core 5.1.0.
+You may continue reading the Release Notes there.
 
 
 # EOF
