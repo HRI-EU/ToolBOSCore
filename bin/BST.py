@@ -50,20 +50,6 @@ from ToolBOSCore.Util                import ArgsManagerV2, FastScript
 
 
 #----------------------------------------------------------------------------
-# Helper functions
-#----------------------------------------------------------------------------
-
-
-def _runZenBuildModeGUI():
-    from ToolBOSCore.ZenBuildMode import MainWindow
-
-    logging.info( 'starting zen build mode' )
-
-    projectRoot = os.getcwd()
-    MainWindow.MainWindow( projectRoot ).main()
-
-
-#----------------------------------------------------------------------------
 # Commandline parsing
 #----------------------------------------------------------------------------
 
@@ -153,7 +139,7 @@ argman.addArgument( '-y', '--yes', action='store_true',
                     help='reply "yes" to all prompts, f.i. run non-interactively' )
 
 argman.addArgument( '-z', '--zen', action='store_true',
-                    help='zen build mode (GUI)' )
+                    help='[REMOVED]' )
 
 argman.addExample( '%(prog)s                             # build (setup once + compile)' )
 argman.addExample( '%(prog)s -avx                        # all + install into proxy (verbose)' )
@@ -354,16 +340,8 @@ try:
 
 
     if zen:
-        FastScript.tryImport( 'PyQt5' )
-
-        if quality:
-            logging.error( 'Feature was removed' )
-            sys.exit( -9 )
-
-        else:
-            _runZenBuildModeGUI()
-
-        sys.exit( 0 )
+        logging.error( 'Feature was removed' )
+        sys.exit( -9 )
 
 
     if setup or noArgs:
