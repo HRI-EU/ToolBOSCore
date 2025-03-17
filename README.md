@@ -1,28 +1,20 @@
+![image](doc/Logos/BST.png)
+
 # ToolBOS Core
 
-This package provides `BST.py` which:
-* simplifies (cross-)compilation
-* performs basic software compliance-checks
+This package provides `BST.py`, which makes native and cross-compilations
+easier when using a Software Installation Tree (SIT).
 
-
-## Environment Setup
-
-### Setup (daily use)
+# Usage
 
 ```bash
 $ source /path/to/ToolBOSCore/BashSrc
+
+$ BST.py --help
 ```
-
-Optionally, we recommend to use the Anaconda environment provided by us: 
-
-```bash
-$ source /hri/sit/latest/External/anaconda/envs/common/3.11/BashSrc
-```
-
 
 ### Usage
 
-* [Compliance checks](doc/ComplianceChecks.md)
 * [Cross-compilation](doc/CrossCompilation.md)
 * [ToolBOS.conf (settings)](doc/ToolBOSConf.md)
 
