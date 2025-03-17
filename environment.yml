@@ -47,6 +47,7 @@ dependencies:
   - psutil
   - pyqt
   - pylint
+  - pyqt<=6.0.0
   - pytest
   - python=3.11
   - termcolor

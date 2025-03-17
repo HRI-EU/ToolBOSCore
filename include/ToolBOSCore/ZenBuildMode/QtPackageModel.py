@@ -43,10 +43,9 @@ import dill
 
 from PyQt5.QtCore import pyqtSignal, QByteArray, QObject, QThread
 
-from ToolBOSCore.GenericGUI      import ProcessExecutor, UnicodeSupport
-from ToolBOSCore.Packages        import BSTPackage
-from ToolBOSCore.SoftwareQuality import CheckRoutine
-from ToolBOSCore.Util            import FastScript
+from ToolBOSCore.GenericGUI import ProcessExecutor, UnicodeSupport
+from ToolBOSCore.Packages   import BSTPackage
+from ToolBOSCore.Util       import FastScript
 
 
 class BSTPackageModel( QObject, object ):
@@ -60,7 +59,6 @@ class BSTPackageModel( QObject, object ):
     newCategory      = pyqtSignal( str )
     newRevision      = pyqtSignal( str )
     depsDetected     = pyqtSignal( bool )
-    sqCheckPrepared  = pyqtSignal()
 
 
     def __init__( self ):
@@ -71,8 +69,6 @@ class BSTPackageModel( QObject, object ):
         self._depDetector         = None
         self._depDetectorData     = None
         self._globallyInstalled   = None
-        self._sqPreparer          = None
-        self._sqPreparationDone   = False
         self._topLevelDir         = None
         self._installStatus       = {}
         self._installStatusLocal  = {}
@@ -82,8 +78,6 @@ class BSTPackageModel( QObject, object ):
 
     def open( self, topLevelDir ):
         FastScript.requireIsDir( topLevelDir )
-
-        self._sqPreparationDone = False
 
         self._open_main()
         self._open_details()
@@ -151,41 +145,6 @@ class BSTPackageModel( QObject, object ):
             return self._bstpkg_global
 
 
-    def getSQLevelIndex( self ):
-        name  = self.getSQLevelName()
-        FastScript.requireIsTextNonEmpty( name )
-
-        index = CheckRoutine.sqLevelNames.index( name )
-        FastScript.requireIsInt( index )
-
-        return index
-
-
-    def getSQLevelName( self ):
-        name = self._bstpkg_src.detector.sqLevel
-
-        if name:
-            return name
-        else:
-            return CheckRoutine.sqLevelDefault
-
-
-    def getSQOptInRules( self ):
-        return self._bstpkg_src.detector.sqOptInRules
-
-
-    def getSQOptOutRules( self ):
-        return self._bstpkg_src.detector.sqOptOutRules
-
-
-    def getSQComments( self ):
-        return self._bstpkg_src.detector.sqComments
-
-
-    def getCheckRoutine( self ):
-        return self._bstpkg_src.sqChecker
-
-
     def isInstalled( self, packageURL ):
         try:
             result = self._installStatus[ packageURL ]
@@ -224,52 +183,6 @@ class BSTPackageModel( QObject, object ):
             result = False
 
         return result
-
-
-    def isQualityCheckPreparationFinished( self ):
-        return self._sqPreparationDone
-
-
-    def runSQCheck( self, rule ):
-        self._bstpkg_src.sqChecker.setup()
-        return rule.run( self._bstpkg_src.detector, self._bstpkg_src.sqChecker.filesByType )
-
-
-    def setSQLevel( self, level ):
-        FastScript.requireIsTextNonEmpty( level )
-
-        if level == CheckRoutine.sqLevelDefault:
-            self._bstpkg_src.pkgInfo_remove('sqLevel')
-        else:
-            self._bstpkg_src.pkgInfo_set('sqLevel', level)
-
-
-    def setSQOptInRules( self, value ):
-        FastScript.requireIsList( value )
-
-        if value:
-            self._bstpkg_src.pkgInfo_set('sqOptInRules', value)
-        else:
-            self._bstpkg_src.pkgInfo_remove('sqOptInRules')
-
-
-    def setSQOptOutRules( self, value ):
-        FastScript.requireIsList( value )
-
-        if value:
-            self._bstpkg_src.pkgInfo_set('sqOptOutRules', value)
-        else:
-            self._bstpkg_src.pkgInfo_remove('sqOptOutRules')
-
-
-    def setSQComments( self, value ):
-        FastScript.requireIsDict( value )
-
-        if value:
-            self._bstpkg_src.pkgInfo_set('sqComments', value)
-        else:
-            self._bstpkg_src.pkgInfo_remove('sqComments')
-
 
     def _open_main( self ):
         self._bstpkg_src.open( self._topLevelDir )
@@ -329,13 +242,6 @@ class BSTPackageModel( QObject, object ):
         self._depDetector.start()
 
         logging.debug( 'dependency detection in progress (helper-process started)' )
-
-        logging.debug( 'SQ-check setup started' )
-
-        self._sqPreparer = self.QualityCheckPreparationThread( self._bstpkg_src )
-        # noinspection PyUnresolvedReferences
-        self._sqPreparer.finished.connect( self._onSQPreparerFinished )
-        self._sqPreparer.start()
 
 
     def _onDepDetectorFinished( self ):
@@ -435,31 +341,6 @@ class BSTPackageModel( QObject, object ):
         text = UnicodeSupport.convertQByteArray( data )
 
         self._depDetectorData.write( bytes( text, 'utf-8' ) )
-
-
-    def _onSQPreparerFinished( self ):
-        FastScript.requireIsNotNone( self._bstpkg_src.sqChecker )
-        FastScript.requireIsInstance( self._bstpkg_src.sqChecker,
-                               CheckRoutine.CheckRoutine )
-
-        FastScript.requireIsDict( self._bstpkg_src.sqChecker.filesByType )
-
-        self._sqPreparationDone = True
-        self.sqCheckPrepared.emit()
-
-        logging.debug( 'SQ-check setup finished' )
-
-
-    class QualityCheckPreparationThread( QThread, object ):
-
-        def __init__( self,  bstpkg ):
-            QThread.__init__( self )
-
-            self._bstpkg = bstpkg
-
-
-        def run( self ):
-            self._bstpkg.prepareQualityCheck()
 
 
 # EOF

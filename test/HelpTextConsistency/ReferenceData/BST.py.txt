@@ -29,7 +29,7 @@ options:
   -p PLATFORM, --platform PLATFORM
                         cross-compile for specified target platform ("-p help"
                         to list supported platforms)
-  -q, --quality         run software quality checks
+  -q, --quality         [REMOVED]
   -r, --release         create release tarball
   -s, --setup           setup/configure the package for being built
   -t, --test            run the unittest suite of the package
@@ -48,11 +48,6 @@ examples:
   BST.py /path/to/sourcetree         # out-of-tree build
   BST.py -p help                     # show cross-compile platforms
   BST.py -p ${MAKEFILE_PLATFORM}     # cross-compile for Windows
-  BST.py -q                          # run quality checks (configured for this package)
-  BST.py -q --all                    # run all quality checks
-  BST.py -q src C01 C02 C03          # run specified checks on "src" only
-  BST.py -q sqLevel=advanced         # check with specified quality level
-  BST.py -q group=GEN,PY             # check only rules for GEN & PY group
   BST.py -u                          # check for updates / apply patches
   BST.py --uninstall                 # remove package from SIT
   BST.py --deprecate                 # deprecate this package

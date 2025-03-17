@@ -56,9 +56,6 @@ class PackageDetector( object ) :
     """
 
     def __init__( self, projectRoot=None, pkgInfoContent=None ):
-
-        from ToolBOSCore.SoftwareQuality.Common import sqLevelDefault, pylintConf
-
         if not projectRoot:
             projectRoot = ProjectProperties.detectTopLevelDir()
 
@@ -107,22 +104,12 @@ class PackageDetector( object ) :
         self.installGroup      = None
         self.installUmask      = None
         self.installMode       = 'incremental'
-        self.pylintConf        = pylintConf
         self.usePatchlevels    = False
         self.userSrcContent    = None
         self.userSrcEnv        = ()
         self.userSrcAlias      = ()
         self.userSrcBashCode   = ()
         self.userSrcCmdCode    = ()
-        self.sqLevel           = sqLevelDefault
-        self.sqOptInRules      = []
-        self.sqOptOutRules     = []
-        self.sqOptInDirs       = []
-        self.sqOptOutDirs      = []
-        self.sqOptInFiles      = []
-        self.sqOptOutFiles     = []
-        self.sqCheckExe        = []
-        self.sqComments        = {}
 
         # revision control system
         self.gitBranch         = None
@@ -476,7 +463,6 @@ class PackageDetector( object ) :
         self.gitOrigin         = getValue( 'origin',           self.gitOrigin )
         self.gitRelPath        = getValue( 'repoRelPath',      self.gitRelPath )
         self.packageName       = getValue( 'package',          self.packageName ) # legacy 2018-09-26
-        self.sqCheckExe        = getValue( 'SQ_12',            self.sqCheckExe )  # legacy 2019-10-08
 
         # 2020-07-14  Legacy, can be dropped later on
         self.packageCategory   = getValue( 'section',          self.packageCategory )
@@ -520,18 +506,8 @@ class PackageDetector( object ) :
         self.installUmask      = getValue( 'installUmask',     self.installUmask )
         self.packageName       = getValue( 'name',             self.packageName )
         self.patchlevel        = getValue( 'patchlevel',       self.patchlevel )
-        self.pylintConf        = getValue( 'pylintConf',       self.pylintConf )
         self.recommendations   = getValue( 'recommends',       self.recommendations )
         self.scripts           = getValue( 'scripts',          self.scripts )
-        self.sqComments        = getValue( 'sqComments',       self.sqComments )
-        self.sqCheckExe        = getValue( 'sqCheckExe',       self.sqCheckExe )
-        self.sqLevel           = getValue( 'sqLevel',          self.sqLevel )
-        self.sqOptInRules      = getValue( 'sqOptInRules',     self.sqOptInRules )
-        self.sqOptOutRules     = getValue( 'sqOptOutRules',    self.sqOptOutRules )
-        self.sqOptInDirs       = getValue( 'sqOptInDirs',      self.sqOptInDirs )
-        self.sqOptOutDirs      = getValue( 'sqOptOutDirs',     self.sqOptOutDirs )
-        self.sqOptInFiles      = getValue( 'sqOptInFiles',     self.sqOptInFiles )
-        self.sqOptOutFiles     = getValue( 'sqOptOutFiles',    self.sqOptOutFiles )
         self.suggestions       = getValue( 'suggests',         self.suggestions )
         self.usePatchlevels    = getValue( 'usePatchlevels',   self.usePatchlevels )
         self.packageVersion    = getValue( 'version',          self.packageVersion )    # both the same

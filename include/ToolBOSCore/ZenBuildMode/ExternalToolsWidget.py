@@ -40,7 +40,6 @@ from PyQt5.QtCore    import QSize, Qt
 from PyQt5.QtWidgets import *
 
 from ToolBOSCore.ZenBuildMode    import QtPackageModel, SettingsDialog
-from ToolBOSCore.SoftwareQuality import CheckRoutineDialog
 from ToolBOSCore.GenericGUI      import BusyWaitDialog, IconProvider, \
                                         ProcessExecutor
 from ToolBOSCore.Util            import FastScript
@@ -58,8 +57,6 @@ class ExternalToolsWidget( QWidget, object ):
 
         self._pkgCreator     = None
         self._settingsDialog = None
-        self._sqDialog       = None
-
         self._busyDialog     = None
 
         iconSize             = QSize( 32, 32 )
@@ -70,15 +67,8 @@ class ExternalToolsWidget( QWidget, object ):
         settingsButton.setIcon( IconProvider.getIcon( 'preferences-system' ) )
         settingsButton.clicked.connect( self._onSettingsButtonPressed )
 
-        sqButton = QToolButton()
-        sqButton.setIconSize( iconSize )
-        sqButton.setToolTip( 'Software Quality' )
-        sqButton.setIcon( IconProvider.getIcon( 'QualityGuideline' ) )
-        sqButton.clicked.connect( self._onSoftwareQualityDialogPressed )
-
         iconGrid = QGridLayout()
         iconGrid.setContentsMargins( 0, 0, 0, 0 )
-        iconGrid.addWidget( sqButton,       0, 1 )
         iconGrid.addWidget( settingsButton, 1, 1 )
 
         iconWidget = QGroupBox( 'utilities', self )
@@ -91,20 +81,6 @@ class ExternalToolsWidget( QWidget, object ):
         mainLayout.addStretch( 1 )
 
         self.setLayout( mainLayout )
-
-
-    def _onSoftwareQualityDialogPressed( self ):
-        if self.model.isQualityCheckPreparationFinished():
-            if self._busyDialog is not None:
-                self._busyDialog.close()
-                self._busyDialog = None
-
-            self._sqDialog = CheckRoutineDialog.CheckRoutineDialog( self.model, self.parent )
-            self._sqDialog.show()
-        else:
-            self.model.sqCheckPrepared.connect( self._onSoftwareQualityDialogPressed )
-
-            self._busyDialog = BusyWaitDialog.BusyWaitDialog( 'analyzing package... (this may take some time)' )
 
 
     def _onSettingsButtonPressed( self ):

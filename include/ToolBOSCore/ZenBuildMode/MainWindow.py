@@ -457,7 +457,7 @@ class MainWindow( QObject, object ):
         windowWidth  = int( screen.width()  * 0.75 )
         windowHeight = int( screen.height() * 0.75 )
 
-        self.window.setWindowIcon( IconProvider.getIcon( 'ToolBOS' ) )
+        self.window.setWindowIcon( IconProvider.getIcon( 'BST' ) )
         self.window.setWindowTitle( 'BST.py (zen build mode)' )
         self.window.setMenuBar( self.menuBar )
         self.window.setCentralWidget( self.mainWidget )
